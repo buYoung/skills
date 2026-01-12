@@ -3,6 +3,7 @@
   "owner": {
     "name": "buYoung"
   },
+  "repository": "https://github.com/buYoung/skills",
   "metadata": {
     "description": "A collection of AI agent skills for efficient collaboration between developers and AI coding assistants",
     "pluginRoot": "./skills"
@@ -18,7 +19,8 @@
       },
       "license": "MIT",
       "keywords": ["agents", "documentation", "generator", "ai-collaboration"],
-      "category": "documentation"
+      "category": "documentation",
+      "repository": "https://github.com/buYoung/skills"
     },
     {
       "name": "kysely-converter",
@@ -30,7 +32,8 @@
       },
       "license": "MIT",
       "keywords": ["kysely", "sql", "typescript", "database", "converter"],
-      "category": "database"
+      "category": "database",
+      "repository": "https://github.com/buYoung/skills"
     }
   ]
 }
