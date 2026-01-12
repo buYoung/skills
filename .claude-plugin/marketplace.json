@@ -1,30 +1,31 @@
 {
-  "name": "buyoung-skills",
+  "name": "buyoung-agent-skills",
   "owner": {
-    "name": "buYoung"
+    "name": "buYoung",
+    "email": "leebu18@gmail.com"
   },
   "metadata": {
-    "description": "A collection of AI agent skills for Claude Code",
-    "version": "1.0.0",
-    "pluginRoot": "./skills"
+    "description": "buYoung agent skills for Claude Code",
+    "version": "1.0.0"
   },
   "plugins": [
     {
-      "name": "agents-md-generator",
-      "source": "./skills/agents-md-generator",
-      "description": "Analyze repository structure and generate standardized AGENTS.md files that serve as contributor guides for AI agents.",
-      "version": "1.0.0",
-      "category": "documentation",
-      "tags": ["agents", "documentation", "markdown", "generator"],
-      "license": "MIT"
+      "name": "document-skills",
+      "description": "Collection of document generation skills including AGENTS.md generator for AI agent collaboration",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/agents-md-generator"
+      ]
     },
     {
-      "name": "kysely-converter",
-      "source": "./skills/kysely-converter",
-      "description": "Convert raw SQL queries into type-safe Kysely TypeScript code with support for various SQL dialects.",
-      "version": "1.0.0",
-      "category": "database",
-      "tags": ["kysely", "sql", "typescript", "orm", "query-builder"]
+      "name": "backend-skills",
+      "description": "Collection of backend development skills including Kysely SQL query conversion",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/kysely-converter"
+      ]
     }
   ]
 }

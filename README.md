@@ -28,13 +28,19 @@ Some skills require external tools to be installed:
    /plugin marketplace add buYoung/skills
    ```
 
-2. Install desired skills:
+2. Install the skills plugin:
+   - Select `Browse and install plugins`
+   - Select `buyoung-agent-skills`
+   - Select `document-skills` or `backend-skills`
+   - Select `Install now`
+
+   Or directly install via:
    ```
-   /plugin install agents-md-generator@buyoung-skills
-   /plugin install kysely-converter@buyoung-skills
+   /plugin install document-skills@buyoung-agent-skills
+   /plugin install backend-skills@buyoung-agent-skills
    ```
 
-3. The skill will be available as an agent in Claude Code
+3. Use skills by mentioning them in your prompts (e.g., "Use agents-md-generator to create an AGENTS.md file")
 
 ### Codex
 
