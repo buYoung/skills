@@ -1,0 +1,36 @@
+{
+  "name": "buyoung-skills",
+  "owner": {
+    "name": "buYoung"
+  },
+  "metadata": {
+    "description": "A collection of AI agent skills for efficient collaboration between developers and AI coding assistants",
+    "pluginRoot": "./skills"
+  },
+  "plugins": [
+    {
+      "name": "agents-md-generator",
+      "source": "./agents-md-generator",
+      "description": "Analyze repository structure and generate standardized AGENTS.md files that serve as contributor guides for AI agents",
+      "version": "1.0.0",
+      "author": {
+        "name": "buYoung"
+      },
+      "license": "MIT",
+      "keywords": ["agents", "documentation", "generator", "ai-collaboration"],
+      "category": "documentation"
+    },
+    {
+      "name": "kysely-converter",
+      "source": "./kysely-converter",
+      "description": "Convert raw SQL queries into type-safe Kysely TypeScript code with support for various SQL dialects and complex query structures",
+      "version": "1.0.0",
+      "author": {
+        "name": "buYoung"
+      },
+      "license": "MIT",
+      "keywords": ["kysely", "sql", "typescript", "database", "converter"],
+      "category": "database"
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "name": "agents-md-generator",
+  "description": "Analyze repository structure and generate standardized AGENTS.md files that serve as contributor guides for AI agents",
+  "version": "1.0.0",
+  "author": {
+    "name": "buYoung"
+  },
+  "license": "MIT",
+  "keywords": ["agents", "documentation", "generator", "ai-collaboration"],
+  "agents": ["./SKILL.md"]
+}

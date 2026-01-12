@@ -1,0 +1,11 @@
+{
+  "name": "kysely-converter",
+  "description": "Convert raw SQL queries into type-safe Kysely TypeScript code with support for various SQL dialects and complex query structures",
+  "version": "1.0.0",
+  "author": {
+    "name": "buYoung"
+  },
+  "license": "MIT",
+  "keywords": ["kysely", "sql", "typescript", "database", "converter"],
+  "agents": ["./SKILL.md"]
+}

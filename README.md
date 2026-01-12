@@ -21,7 +21,34 @@ Some skills require external tools to be installed:
 
 ## 📖 How to Use
 
+### Claude Code (Marketplace)
+
+1. Add the marketplace:
+   ```
+   /plugin marketplace add buYoung/skills
+   ```
+
+2. Install desired skills:
+   ```
+   /plugin install agents-md-generator@buyoung-skills
+   /plugin install kysely-converter@buyoung-skills
+   ```
+
+3. The skill will be available as an agent in Claude Code
+
 ### Codex
+
+#### Method 1: Using skill-installer (Recommended)
+
+1. Run Codex
+2. Enter the following command:
+   ```
+   $skill-installer install https://github.com/buYoung/skills/tree/main/skills/agents-md-generator
+   ```
+3. Restart Codex after installation completes
+4. The skill will be available for use
+
+#### Method 2: Manual Installation
 
 1. Copy `agents-md-generator` folder to `~/.codex/skills/`
 2. Run Codex
