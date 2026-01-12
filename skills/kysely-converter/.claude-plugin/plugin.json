@@ -1,11 +1,10 @@
 {
   "name": "kysely-converter",
-  "description": "Convert raw SQL queries into type-safe Kysely TypeScript code with support for various SQL dialects and complex query structures",
+  "description": "Capable of converting raw SQL queries into type-safe Kysely TypeScript code. Knows how to handle various SQL dialects and complex query structures.",
   "version": "1.0.0",
   "author": {
     "name": "buYoung"
   },
-  "license": "MIT",
-  "keywords": ["kysely", "sql", "typescript", "database", "converter"],
-  "agents": ["./SKILL.md"]
+  "repository": "https://github.com/buYoung/skills",
+  "keywords": ["kysely", "sql", "typescript", "orm", "query-builder", "database"]
 }

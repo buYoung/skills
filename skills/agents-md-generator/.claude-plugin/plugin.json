@@ -1,11 +1,11 @@
 {
   "name": "agents-md-generator",
-  "description": "Analyze repository structure and generate standardized AGENTS.md files that serve as contributor guides for AI agents",
+  "description": "Analyze repository structure and generate standardized AGENTS.md files that serve as contributor guides for AI agents. Measures LOC to determine character limits and produces 5-section documents covering overview, folder structure, patterns, conventions, and working agreements.",
   "version": "1.0.0",
+  "license": "MIT",
   "author": {
     "name": "buYoung"
   },
-  "license": "MIT",
-  "keywords": ["agents", "documentation", "generator", "ai-collaboration"],
-  "agents": ["./SKILL.md"]
+  "repository": "https://github.com/buYoung/skills",
+  "keywords": ["agents", "documentation", "markdown", "generator", "ai-agents"]
 }
