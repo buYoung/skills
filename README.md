@@ -10,20 +10,20 @@ Some skills require external tools to be installed:
 
 | Skill | Required Tools |
 |-------|----------------|
-| initialize-repo | [ripgrep (rg)](https://github.com/BurntSushi/ripgrep), [tokei](https://github.com/XAMPPRocky/tokei) |
+| agents-md-generator | [ripgrep (rg)](https://github.com/BurntSushi/ripgrep), [tokei](https://github.com/XAMPPRocky/tokei) |
 
 ## 🚀 Available Skills
 
 | Skill | Description |
 |-------|-------------|
-| [initialize-repo](skills/agents-md-generator/) | Automatically sets up project structure and generates metadata files like `AGENTS.md` for AI collaboration |
+| [agents-md-generator](skills/agents-md-generator/) | Automatically sets up project structure and generates metadata files like `AGENTS.md` for AI collaboration |
 | [kysely-converter](./skills/kysely-converter/) | Converts database queries and schemas using Kysely |
 
 ## 📖 How to Use
 
 ### Codex
 
-1. Copy `initialize-repo` folder to `~/.codex/skills/`
+1. Copy `agents-md-generator` folder to `~/.codex/skills/`
 2. Run Codex
 3. Navigate to the folder where you want to add `AGENTS.md`
 4. Enter the following command and wait for completion:
