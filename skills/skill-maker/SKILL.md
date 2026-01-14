@@ -1,9 +1,9 @@
 ---
-name: skill-creator
+name: skill-maker
 description: Create new AI agent skills following the SKILL.md guidelines. Generates complete skill structure including SKILL.md with YAML frontmatter, optional bundled resources (scripts/, references/, assets/), and updates the repository README.md. Validates user input and requests clarification when information is insufficient.
 ---
 
-# Skill Creator
+# Skill maker
 
 Create production-ready skills that follow the SKILL.md guidelines.
 

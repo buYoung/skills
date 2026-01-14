@@ -19,7 +19,7 @@ Some skills require external tools to be installed:
 |-------|-------------|
 | [agents-md-generator](skills/agents-md-generator/) | Automatically sets up project structure and generates metadata files like `AGENTS.md` for AI collaboration |
 | [kysely-converter](./skills/kysely-converter/) | Converts database queries and schemas using Kysely |
-| [skill-creator](skills/skill-creator/) | Create new AI agent skills following the SKILL.md guidelines with complete structure and README updates |
+| [skill-maker](skills/skill-maker/) | Create new AI agent skills following the SKILL.md guidelines with complete structure and README updates |
 
 ## 📖 How to Use
 
