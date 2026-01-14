@@ -1,31 +1,34 @@
 {
-  "name": "buyoung-agent-skills",
-  "owner": {
-    "name": "buYoung",
-    "email": "leebu18@gmail.com"
-  },
-  "metadata": {
-    "description": "buYoung agent skills for Claude Code",
-    "version": "1.0.0"
-  },
-  "plugins": [
-    {
-      "name": "document-skills",
-      "description": "Collection of document generation skills including AGENTS.md generator for AI agent collaboration",
-      "source": "./",
-      "strict": false,
-      "skills": [
-        "./skills/agents-md-generator"
-      ]
-    },
-    {
-      "name": "backend-skills",
-      "description": "Collection of backend development skills including Kysely SQL query conversion",
-      "source": "./",
-      "strict": false,
-      "skills": [
-        "./skills/kysely-converter"
-      ]
-    }
-  ]
+	"name": "buyoung-agent-skills",
+	"owner": {
+		"name": "buYoung",
+		"email": "leebu18@gmail.com"
+	},
+	"metadata": {
+		"description": "buYoung agent skills for Claude Code",
+		"version": "1.0.0"
+	},
+	"plugins": [
+		{
+			"name": "document-skills",
+			"description": "Collection of document generation skills including AGENTS.md generator for AI agent collaboration",
+			"source": "./",
+			"strict": false,
+			"skills": ["./skills/agents-md-generator"]
+		},
+		{
+			"name": "analysis-skills",
+			"description": "Collection of analysis skills",
+			"source": "./",
+			"strict": false,
+			"skills": ["./skills/code-review"]
+		},
+		{
+			"name": "backend-skills",
+			"description": "Collection of backend development skills including Kysely SQL query conversion",
+			"source": "./",
+			"strict": false,
+			"skills": ["./skills/kysely-converter"]
+		}
+	]
 }
