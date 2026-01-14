@@ -11,6 +11,7 @@ Some skills require external tools to be installed:
 | Skill | Required Tools |
 |-------|----------------|
 | agents-md-generator | [ripgrep (rg)](https://github.com/BurntSushi/ripgrep), [tokei](https://github.com/XAMPPRocky/tokei) |
+| skill-creator | None |
 
 ## 🚀 Available Skills
 
@@ -18,6 +19,7 @@ Some skills require external tools to be installed:
 |-------|-------------|
 | [agents-md-generator](skills/agents-md-generator/) | Automatically sets up project structure and generates metadata files like `AGENTS.md` for AI collaboration |
 | [kysely-converter](./skills/kysely-converter/) | Converts database queries and schemas using Kysely |
+| [skill-creator](skills/skill-creator/) | Create new AI agent skills following the SKILL.md guidelines with complete structure and README updates |
 
 ## 📖 How to Use
 
@@ -49,7 +51,9 @@ Some skills require external tools to be installed:
 1. Run Codex
 2. Enter the following command:
    ```
-   $skill-installer install https://github.com/buYoung/skills/tree/main/skills/agents-md-generator
+   $skill-installer install https://github.com/buYoung/skills/tree/main/skills/{skill-name}
+   # Example:
+   $skill-installer install https://github.com/buYoung/skills/tree/main/skills/skill-creator
    ```
 3. Restart Codex after installation completes
 4. The skill will be available for use
