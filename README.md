@@ -11,6 +11,7 @@ Some skills require external tools to be installed:
 | Skill | Required Tools |
 |-------|----------------|
 | agents-md-generator | [ripgrep (rg)](https://github.com/BurntSushi/ripgrep), [tokei](https://github.com/XAMPPRocky/tokei) |
+| create-plan | None |
 | skill-creator | None |
 
 ## 🚀 Available Skills
@@ -19,7 +20,9 @@ Some skills require external tools to be installed:
 |-------|-------------|
 | [agents-md-generator](skills/agents-md-generator/) | Automatically sets up project structure and generates metadata files like `AGENTS.md` for AI collaboration |
 | [kysely-converter](./skills/kysely-converter/) | Converts database queries and schemas using Kysely |
+| [create-plan](skills/create-plan/) | Generate structured work plans before task execution. Collects context from user requirements, creates checklist-style plan files in the plan folder, and awaits user approval or modification before proceeding with implementation. |
 | [skill-maker](skills/skill-maker/) | Create new AI agent skills following the SKILL.md guidelines with complete structure and README updates |
+| [biz-opportunity-scout](skills/biz-opportunity-scout/) | Identify and validate profitable business opportunities by analyzing TAM/SAM/SOM, unit economics, competitive landscape, and PMF indicators with HTML report generation |
 
 ## 📖 How to Use
 
