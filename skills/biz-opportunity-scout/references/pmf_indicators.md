@@ -80,3 +80,15 @@ Overall PMF Confidence: Low / Medium / High
 | Smoke Test | Pre-product demand measurement |
 | Concierge MVP | Manual service delivery test |
 | Waitlist Size | Demand proxy before launch |
+
+## Data Collection via Web Search
+
+Use web search to validate PMF signals:
+
+| Search Query Examples | Target Data |
+|-----------------------|-------------|
+| "[product/industry] NPS benchmark" | NPS comparison baseline |
+| "[industry] retention rate average" | Retention benchmarks |
+| "[competitor] user reviews" | Demand signal from competitors |
+| "[problem statement] solutions" | Market demand validation |
+| "[industry] churn rate SaaS B2B" | Churn benchmarks by segment |

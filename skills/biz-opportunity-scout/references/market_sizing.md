@@ -47,7 +47,18 @@ SOM: $X million (Year 1-3 Target)
 Market Growth: X% CAGR
 ```
 
-## Data Sources for External Research
+## Data Collection via Web Search
+
+Use web search to gather the following data points:
+
+| Search Query Examples | Target Data |
+|-----------------------|-------------|
+| "[industry] market size 2024" | TAM estimation |
+| "[industry] CAGR forecast" | Growth rate projections |
+| "[target segment] demographics statistics" | SAM calculation inputs |
+| "[competitor] revenue annual report" | Market share benchmarks |
+
+## Additional Data Sources
 
 | Category | Sources |
 |----------|---------|

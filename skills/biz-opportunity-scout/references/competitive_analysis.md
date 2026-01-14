@@ -61,7 +61,19 @@ Moat Potential: Weak / Moderate / Strong
 Entry Barriers: Low / Medium / High
 ```
 
-## Data Sources for External Research
+## Data Collection via Web Search
+
+Use web search to gather competitive intelligence:
+
+| Search Query Examples | Target Data |
+|-----------------------|-------------|
+| "[competitor name] funding series" | Competitor financial strength |
+| "[competitor name] pricing plans" | Pricing comparison |
+| "[industry] market share leader 2024" | Market position mapping |
+| "[competitor name] reviews complaints" | Weakness identification |
+| "alternatives to [competitor]" | Indirect competitor discovery |
+
+## Additional Data Sources
 
 | Category | Sources |
 |----------|---------|

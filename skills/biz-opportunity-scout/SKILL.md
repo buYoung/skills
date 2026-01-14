@@ -28,8 +28,11 @@ Capability to identify, analyze, and validate business opportunities through qua
 
 | Method | Description |
 |--------|-------------|
-| External Research | Web search, industry reports, public data sources |
+| Web Search | Real-time market data, competitor info, industry trends via web search |
+| External Research | Industry reports, public data sources, academic papers |
 | User Input | Business-specific assumptions and known metrics |
+
+**Note:** Use web search actively to gather up-to-date market data, pricing information, and competitor intelligence. Search queries should target specific data points needed for each framework.
 
 ## Output Specification
 

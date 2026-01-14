@@ -75,6 +75,17 @@ Core financial metrics for evaluating business viability at the unit level.
 | Gross Margin | < 40% | 40-60% | 60-80% | > 80% |
 | CM % | < 20% | 20-40% | 40-60% | > 60% |
 
+## Data Collection via Web Search
+
+Use web search to benchmark unit economics:
+
+| Search Query Examples | Target Data |
+|-----------------------|-------------|
+| "[industry] average CAC benchmark" | CAC baseline |
+| "[industry] customer lifetime value" | LTV comparison |
+| "[industry] SaaS gross margin benchmark" | Margin targets |
+| "[business model] churn rate average" | Retention benchmarks |
+
 ## Output Format
 
 ```
