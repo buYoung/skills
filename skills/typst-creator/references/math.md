@@ -4,7 +4,11 @@ Mathematical notation syntax in Typst.
 
 ## Function Parameters
 
+These functions provide fine-grained control over mathematical typesetting when the shorthand syntax isn't sufficient.
+
 ### `equation` Function
+
+The wrapper for all math content. Usually implicit, but use explicitly for numbering control or advanced configuration.
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
@@ -15,6 +19,8 @@ Mathematical notation syntax in Typst.
 | `body` | content | required | Equation content |
 
 ### `mat` Function (Matrix)
+
+Creates matrices with customizable delimiters and alignment. Rows are separated by semicolons, columns by commas.
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
@@ -28,6 +34,8 @@ Mathematical notation syntax in Typst.
 
 ### `vec` Function (Vector)
 
+Creates column vectors. Elements are stacked vertically with configurable delimiters.
+
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
 | `delim` | none \| str | `"("` | Delimiter: `"("`, `"["`, `"{"`, `"|"`, `"||"` |
@@ -37,12 +45,16 @@ Mathematical notation syntax in Typst.
 
 ### `frac` Function (Fraction)
 
+Explicit fraction function for when the `/` shorthand produces unwanted grouping or styling.
+
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
 | `num` | content | required | Numerator |
 | `denom` | content | required | Denominator |
 
 ### `cases` Function
+
+Creates piecewise function definitions with conditions. Each case is separated by commas.
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
@@ -52,6 +64,8 @@ Mathematical notation syntax in Typst.
 | `children` | content | required | Case rows (`,` separated) |
 
 ### `cancel` Function
+
+Draws a strikethrough line through content, commonly used to show cancellation in algebraic simplification.
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
@@ -64,6 +78,8 @@ Mathematical notation syntax in Typst.
 
 ### `accent` Function
 
+Places diacritical marks above mathematical symbols. Use for vectors, estimates, averages, and other notations.
+
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
 | `base` | content | required | Base content |
@@ -72,6 +88,8 @@ Mathematical notation syntax in Typst.
 
 ## Math Mode Entry
 
+The presence of spaces after `$` determines whether math renders inline or as a centered block. This is the most important distinction for equation layout.
+
 | Type | Syntax | Result |
 |------|--------|--------|
 | Inline | `$x^2$` | Inline equation |
@@ -79,7 +97,11 @@ Mathematical notation syntax in Typst.
 
 ## Basic Notation
 
+Core syntax for mathematical expressions. Use parentheses to group complex sub/superscripts.
+
 ### Subscripts and Superscripts
+
+Use `_` for subscripts and `^` for superscripts. Wrap multi-character expressions in parentheses.
 
 ```typst
 $x^2$           // x squared
@@ -91,6 +113,8 @@ $x_(i j)$       // grouped subscript
 
 ### Fractions
 
+The `/` operator creates fractions automatically. Parentheses control grouping. Use `frac()` for explicit control.
+
 ```typst
 $a/b$               // simple fraction
 $(a + b)/(c + d)$   // grouped fraction
@@ -99,6 +123,8 @@ $frac(a, b)$        // explicit fraction function
 
 ### Roots
 
+Square roots use `sqrt()`. For other roots, use `root(n, x)` where `n` is the root degree.
+
 ```typst
 $sqrt(x)$           // square root
 $root(3, x)$        // cube root
@@ -106,6 +132,8 @@ $root(n, x)$        // nth root
 ```
 
 ## Common Functions
+
+Standard mathematical functions are recognized automatically and rendered in upright text. Limits and bounds attach with subscripts.
 
 ```typst
 $sin(x)$, $cos(x)$, $tan(x)$
@@ -116,6 +144,8 @@ $max(a, b)$, $min(a, b)$
 
 ## Sums and Products
 
+Large operators like summation, product, and integral accept limits via subscript/superscript syntax. Use `dif` for differential notation.
+
 ```typst
 $sum_(i=1)^n i$             // summation
 $product_(i=1)^n i$         // product
@@ -123,6 +153,8 @@ $integral_0^1 f(x) dif x$   // integral
 ```
 
 ## Matrices and Vectors
+
+Matrices use semicolons for row breaks and commas for column separation. Vectors are single-column matrices.
 
 ```typst
 // Vector
@@ -144,6 +176,8 @@ $mat(delim: "[",
 
 ## Brackets and Delimiters
 
+Use `lr()` for auto-scaling delimiters that grow with content. Special functions like `abs()`, `norm()`, `floor()`, and `ceil()` provide semantic delimiters.
+
 ```typst
 $(a + b)$           // parentheses
 $[a + b]$           // brackets
@@ -156,6 +190,8 @@ $ceil(x)$           // ceiling
 ```
 
 ## Greek Letters
+
+Greek letters are written by name without any prefix. Lowercase names produce lowercase letters; capitalize the first letter for uppercase.
 
 | Letter | Typst | Letter | Typst |
 |--------|-------|--------|-------|
@@ -176,6 +212,8 @@ Capital letters: `Alpha`, `Beta`, `Gamma`, `Delta`, `Theta`, `Lambda`, `Pi`, `Si
 
 ## Operators and Symbols
 
+Common mathematical operators and symbols. Use these names directly in math mode without any prefix.
+
 ```typst
 $+$, $-$, $times$, $div$
 $=$, $!=$, $<$, $>$, $<=$, $>=$
@@ -191,6 +229,8 @@ $partial$, $nabla$            // calculus
 
 ## Alignment
 
+Use `&` as alignment points and `\` for line breaks. Multiple equations align at the `&` symbols across lines.
+
 ```typst
 // Multi-line aligned equations
 $ x &= 2 + 3 \
@@ -203,6 +243,8 @@ $ E = m c^2 $
 
 ## Cases
 
+Piecewise function notation using the `cases` function. Separate conditions with `&` and cases with commas.
+
 ```typst
 $f(x) = cases(
   0 &"if" x < 0,
@@ -212,12 +254,16 @@ $f(x) = cases(
 
 ## Text in Math
 
+Wrap regular text in quotes to include it in equations. Quoted text renders in the document's text font rather than math italics.
+
 ```typst
 $x "where" x > 0$
 $"area" = pi r^2$
 ```
 
 ## Accents
+
+Mathematical accents and diacritical marks for vectors, estimates, derivatives, and other notations.
 
 ```typst
 $accent(x, hat)$      // x̂
@@ -232,12 +278,16 @@ $underline(x y)$      // underline
 
 ## Cancel and Strikethrough
 
+Show algebraic cancellation or struck-out terms. Useful for demonstrating simplification steps.
+
 ```typst
 $cancel(x)$           // strikethrough
 $cancel(x, cross: true)$  // X mark
 ```
 
 ## Spacing in Math
+
+Typst automatically handles spacing in math mode. Override with explicit spaces when needed for clarity.
 
 ```typst
 $a b$               // implicit multiplication (thin space)

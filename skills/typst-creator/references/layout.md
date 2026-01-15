@@ -4,7 +4,11 @@ Page setup, positioning, and layout elements.
 
 ## Function Parameters
 
+These functions control document structure, positioning, and visual layout. They are the foundation for page design and content arrangement.
+
 ### `page` Function
+
+Configures page dimensions, margins, headers, footers, and numbering. This is typically one of the first set rules in a document.
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
@@ -26,6 +30,8 @@ Page setup, positioning, and layout elements.
 
 ### `grid` Function
 
+Creates flexible multi-column/row layouts. Unlike tables, grids have no default styling—use them for pure layout without visual borders.
+
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
 | `columns` | auto \| int \| array | `()` | Column widths: `3`, `(1fr, 2fr)`, `(auto, 1fr)` |
@@ -41,6 +47,8 @@ Page setup, positioning, and layout elements.
 
 ### `table` Function
 
+Creates data tables with automatic borders and styling. Tables are semantic containers for tabular data with built-in visual formatting.
+
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
 | `columns` | auto \| int \| array | `()` | Column widths |
@@ -54,6 +62,8 @@ Page setup, positioning, and layout elements.
 
 **`table.cell` Parameters:**
 
+Use `table.cell` for fine control over individual cells, including spanning multiple rows or columns.
+
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
 | `colspan` | int | `1` | Columns to span |
@@ -63,6 +73,8 @@ Page setup, positioning, and layout elements.
 | `body` | content | required | Cell content |
 
 ### `figure` Function
+
+Wraps content (images, tables, code) with automatic numbering and captions. Figures can be referenced and appear in lists of figures.
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
@@ -76,6 +88,8 @@ Page setup, positioning, and layout elements.
 
 ### `image` Function
 
+Embeds external images in the document. Supports PNG, JPG, GIF, and SVG formats with automatic or manual sizing.
+
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
 | `path` | str | required | Image file path |
@@ -87,7 +101,11 @@ Page setup, positioning, and layout elements.
 
 ## Page Setup
 
+Page configuration is typically done once at the document start. These settings affect all subsequent pages unless overridden.
+
 ### Basic Page Configuration
+
+Set paper size and margins. Use dictionary syntax for asymmetric margins.
 
 ```typst
 #set page(
@@ -100,6 +118,8 @@ Page setup, positioning, and layout elements.
 
 ### Page Numbering
 
+Automatic page numbers with customizable format. Use `"1"` for arabic, `"i"` for roman numerals, or combine with total count.
+
 ```typst
 #set page(numbering: "1")           // 1, 2, 3...
 #set page(numbering: "1 / 1")       // 1 / 10
@@ -108,6 +128,8 @@ Page setup, positioning, and layout elements.
 ```
 
 ### Header and Footer
+
+Headers and footers accept arbitrary content. Use `context` to access the current page number and other document state.
 
 ```typst
 #set page(
@@ -127,6 +149,8 @@ Page setup, positioning, and layout elements.
 
 ### Background and Foreground
 
+Add watermarks, decorations, or overlays. Background renders behind content; foreground renders on top.
+
 ```typst
 #set page(
   background: place(center + horizon, 
@@ -137,7 +161,11 @@ Page setup, positioning, and layout elements.
 
 ## Spacing
 
+Control whitespace between elements. The `fr` unit is particularly powerful for flexible layouts.
+
 ### Horizontal Spacing
+
+Use `h()` for horizontal gaps. The `fr` (fraction) unit distributes remaining space proportionally.
 
 ```typst
 #h(1cm)           // fixed space
@@ -147,12 +175,16 @@ Page setup, positioning, and layout elements.
 
 ### Vertical Spacing
 
+Use `v()` for vertical gaps between block elements. Works the same as horizontal spacing.
+
 ```typst
 #v(1cm)           // fixed vertical space
 #v(1fr)           // flexible vertical space
 ```
 
 ## Alignment
+
+Control content positioning within its container. Combine horizontal and vertical alignment with `+`.
 
 ```typst
 #set align(center)          // center align
@@ -167,7 +199,11 @@ Page setup, positioning, and layout elements.
 
 ## Blocks and Boxes
 
+Containers for grouping and styling content. Blocks are block-level (cause line breaks); boxes are inline.
+
 ### Block
+
+Block-level containers with optional background, border, and padding. Use for callouts, sidebars, or any visually distinct sections.
 
 ```typst
 #block(
@@ -181,6 +217,8 @@ Page setup, positioning, and layout elements.
 
 ### Box (Inline)
 
+Inline containers that flow with text. Use for highlighting words or adding inline decorations.
+
 ```typst
 #box(
   fill: yellow,
@@ -191,7 +229,11 @@ Page setup, positioning, and layout elements.
 
 ## Grid Layout
 
+Grids arrange content in rows and columns without table styling. Ideal for multi-column layouts, card layouts, or any structured arrangement.
+
 ### Basic Grid
+
+Specify column widths as an array. Content fills cells left-to-right, top-to-bottom.
 
 ```typst
 #grid(
@@ -204,6 +246,8 @@ Page setup, positioning, and layout elements.
 
 ### Grid with Varying Columns
 
+Mix `auto` (content-sized), fixed lengths, and `fr` (fractional) units for flexible layouts.
+
 ```typst
 #grid(
   columns: (auto, 1fr, 2fr),  // auto + proportional
@@ -215,7 +259,11 @@ Page setup, positioning, and layout elements.
 
 ## Tables
 
+Tables include default borders and padding. Use for displaying structured data that benefits from visual separation.
+
 ### Basic Table
+
+Specify column count or widths. Content is placed sequentially into cells.
 
 ```typst
 #table(
@@ -227,6 +275,8 @@ Page setup, positioning, and layout elements.
 ```
 
 ### Styled Table
+
+Customize appearance with fill functions (for alternating rows), alignment, and header styling.
 
 ```typst
 #table(
@@ -244,6 +294,8 @@ Page setup, positioning, and layout elements.
 
 ### Table Spanning
 
+Use `table.cell` with `colspan` or `rowspan` to merge cells across columns or rows.
+
 ```typst
 #table(
   columns: 3,
@@ -255,6 +307,8 @@ Page setup, positioning, and layout elements.
 
 ## Figures
 
+Figures wrap content with automatic numbering and captions. Add labels for cross-referencing with `@label` syntax.
+
 ```typst
 #figure(
   image("diagram.png", width: 80%),
@@ -265,6 +319,8 @@ Page setup, positioning, and layout elements.
 ```
 
 ## Columns
+
+Create multi-column text flow. Use `colbreak()` to force content to the next column.
 
 ```typst
 #set page(columns: 2)           // two-column layout
@@ -279,7 +335,11 @@ Page setup, positioning, and layout elements.
 
 ## Positioning
 
+Control exact element placement when automatic flow isn't sufficient.
+
 ### Place (Absolute Positioning)
+
+Position elements relative to page or container edges. Does not affect document flow.
 
 ```typst
 #place(
@@ -292,11 +352,15 @@ Page setup, positioning, and layout elements.
 
 ### Move (Relative Positioning)
 
+Shift elements from their natural position while maintaining document flow.
+
 ```typst
 #move(dx: 5pt, dy: -3pt)[Shifted text]
 ```
 
 ## Transforms
+
+Apply geometric transformations to content. Useful for decorative effects or specialized layouts.
 
 ```typst
 #rotate(45deg)[Rotated]
@@ -305,6 +369,8 @@ Page setup, positioning, and layout elements.
 ```
 
 ## Length Units
+
+Typst supports both absolute and relative length units. Use `em` for font-relative sizing, `fr` for flexible space distribution.
 
 | Unit | Description |
 |------|-------------|
@@ -318,12 +384,16 @@ Page setup, positioning, and layout elements.
 
 ## Page Breaks
 
+Control page flow. Use `weak: true` to only break if there's already content on the page.
+
 ```typst
 #pagebreak()              // force page break
 #pagebreak(weak: true)    // only if needed
 ```
 
 ## Padding
+
+Add space around content. Use named parameters for asymmetric padding.
 
 ```typst
 #pad(x: 1em, y: 0.5em)[Padded content]

@@ -4,7 +4,11 @@ Typst has three syntactical modes: Markup, Math, and Code.
 
 ## Function Parameters
 
+These tables provide quick reference for the most commonly used markup functions and their configurable options.
+
 ### `heading` Function
+
+Defines document structure with hierarchical sections. The number of `=` signs determines the heading level.
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
@@ -20,6 +24,8 @@ Typst has three syntactical modes: Markup, Math, and Code.
 
 ### `list` Function (Bullet List)
 
+Creates unordered lists with customizable bullet markers. Use `-` in markup mode for quick list creation.
+
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
 | `tight` | bool | `true` | Reduce spacing between items |
@@ -30,6 +36,8 @@ Typst has three syntactical modes: Markup, Math, and Code.
 | `children` | content | required | List items |
 
 ### `enum` Function (Numbered List)
+
+Creates ordered lists with automatic numbering. Use `+` in markup mode. Supports various numbering formats including letters and roman numerals.
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
@@ -44,6 +52,8 @@ Typst has three syntactical modes: Markup, Math, and Code.
 
 ### `raw` Function (Code Block)
 
+Displays text exactly as written without interpretation. Use backticks in markup mode for inline code or triple backticks for code blocks with syntax highlighting.
+
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
 | `text` | str | required | Raw text content |
@@ -56,12 +66,16 @@ Typst has three syntactical modes: Markup, Math, and Code.
 
 ### `link` Function
 
+Creates clickable hyperlinks to URLs, labels, or document locations. URLs are automatically detected in markup mode.
+
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
 | `dest` | str \| label \| location \| dict | required | URL, label, or location |
 | `body` | auto \| content | `auto` | Link text (auto shows URL) |
 
 ### `ref` Function
+
+Creates cross-references to labeled elements like headings, figures, or equations. Use `@label` syntax in markup mode.
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
@@ -70,6 +84,8 @@ Typst has three syntactical modes: Markup, Math, and Code.
 
 ## Mode Switching
 
+Typst has three syntactical modes that you can switch between at any point. Understanding mode transitions is essential for combining text, math, and logic.
+
 | New Mode | Syntax | Example |
 |----------|--------|---------|
 | Code | Prefix with `#` | `Number: #(1 + 2)` |
@@ -77,6 +93,8 @@ Typst has three syntactical modes: Markup, Math, and Code.
 | Markup | Surround with `[..]` | `let name = [*Typst!*]` |
 
 ## Markup Mode Syntax
+
+Markup mode is the default in a Typst document. It provides lightweight syntax for common document elements, with each shorthand corresponding to a function.
 
 | Element | Syntax | Function |
 |---------|--------|----------|
@@ -97,6 +115,8 @@ Typst has three syntactical modes: Markup, Math, and Code.
 
 ### Heading Levels
 
+The number of `=` signs determines the heading depth. Add more `=` for deeper nesting levels.
+
 ```typst
 = Level 1 Heading
 == Level 2 Heading
@@ -104,6 +124,8 @@ Typst has three syntactical modes: Markup, Math, and Code.
 ```
 
 ### Lists
+
+Typst supports bullet lists (`-`), numbered lists (`+`), and term/definition lists (`/`). Indent with spaces for nested items.
 
 ```typst
 - Bullet item 1
@@ -119,6 +141,8 @@ Typst has three syntactical modes: Markup, Math, and Code.
 
 ## Math Mode Syntax
 
+Math mode is entered by wrapping equations in `$` characters. The equation becomes a block if it has spaces after `$` and before the closing `$`; otherwise it renders inline.
+
 | Element | Syntax | Example |
 |---------|--------|---------|
 | Inline math | `$...$` (no spaces) | `$x^2$` |
@@ -130,6 +154,8 @@ Typst has three syntactical modes: Markup, Math, and Code.
 | Line break | `\` | `$x \ y$` |
 
 ### Math Examples
+
+These examples demonstrate common mathematical notation patterns including inline equations, block equations, matrices, and aligned multi-line equations.
 
 ```typst
 // Inline equation
@@ -148,6 +174,8 @@ $ x &= 2 + 3 \
 
 ## Code Mode Syntax
 
+Code mode lets you use Typst's scripting features. Prefix with `#` to enter code mode from markup. Once in code mode, you don't need additional hashes until switching back.
+
 | Element | Syntax |
 |---------|--------|
 | Variable binding | `#let x = 1` |
@@ -158,6 +186,8 @@ $ x &= 2 + 3 \
 | Loop | `#for x in items { }` |
 
 ### Code Examples
+
+These examples show variable definitions, loops, and conditionals. Content blocks `[...]` are used to return markup from code.
 
 ```typst
 #let title = "My Document"
@@ -176,6 +206,8 @@ $ x &= 2 + 3 \
 
 ## Escape Sequences
 
+Use backslash to escape special characters that would otherwise be interpreted as markup syntax.
+
 | Character | Escape |
 |-----------|--------|
 | `\` | `\\` |
@@ -188,6 +220,8 @@ $ x &= 2 + 3 \
 | `@` | `\@` |
 
 ## Symbol Shorthands
+
+Typst provides convenient shortcuts for commonly used typographic symbols. These work in both markup and math modes.
 
 | Symbol | Shorthand |
 |--------|-----------|
