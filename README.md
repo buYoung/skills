@@ -16,14 +16,23 @@ Some skills require external tools to be installed:
 
 ## 🚀 Available Skills
 
+Only skills that have been personally tested and approved by the user are listed here.
+
 | Skill | Description |
 |-------|-------------|
 | [agents-md-generator](skills/agents-md-generator/) | Automatically sets up project structure and generates metadata files like `AGENTS.md` for AI collaboration |
 | [kysely-converter](./skills/kysely-converter/) | Converts database queries and schemas using Kysely |
-| [create-plan](skills/create-plan/) | Generate structured work plans before task execution. Collects context from user requirements, creates checklist-style plan files in the plan folder, and awaits user approval or modification before proceeding with implementation. |
+
+## 🧪 Skills Waiting for Review
+
+These skills are currently under evaluation and will be promoted to **Available Skills** once verified.
+
+| Skill | Description |
+|-------|-------------|
 | [skill-maker](skills/skill-maker/) | Create new AI agent skills following the SKILL.md guidelines with complete structure and README updates |
 | [biz-opportunity-scout](skills/biz-opportunity-scout/) | Identify and validate profitable business opportunities by analyzing TAM/SAM/SOM, unit economics, competitive landscape, and PMF indicators with HTML report generation |
 | [typst-creator](skills/typst-creator/) | Generate Typst documents with proper syntax for markup, math, scripting, and styling. Based on Typst v0.14.2 |
+| [create-plan](skills/create-plan/) | Generate structured work plans before task execution. Collects context from user requirements, creates checklist-style plan files in the plan folder, and awaits user approval or modification before proceeding with implementation. |
 
 ## 📖 How to Use
 
