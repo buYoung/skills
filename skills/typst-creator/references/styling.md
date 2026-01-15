@@ -2,6 +2,56 @@
 
 Typst uses set rules and show rules for styling documents.
 
+## Function Parameters
+
+### `text` Function
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `font` | str \| array | `"libertinus serif"` | Font family or priority list |
+| `size` | length | `11pt` | Font size |
+| `fill` | color | `black` | Text color |
+| `weight` | int \| str | `"regular"` | `"thin"`, `"light"`, `"regular"`, `"medium"`, `"bold"`, or 100-900 |
+| `style` | str | `"normal"` | `"normal"`, `"italic"`, `"oblique"` |
+| `lang` | str | `"en"` | Language code (e.g., `"ko"`, `"ja"`, `"zh"`) |
+| `region` | str \| none | `none` | Region code (e.g., `"KR"`, `"US"`) |
+| `hyphenate` | auto \| bool | `auto` | Enable hyphenation |
+| `tracking` | length | `0pt` | Letter spacing |
+| `spacing` | relative | `100%` | Word spacing |
+| `baseline` | length | `0pt` | Baseline shift |
+| `body` | content | required | Text content |
+
+### `par` Function
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `leading` | length | `0.65em` | Line spacing (between lines) |
+| `spacing` | length | `1.2em` | Paragraph spacing (between paragraphs) |
+| `justify` | bool | `false` | Justify text |
+| `linebreaks` | auto \| str | `auto` | `"simple"`, `"optimized"` |
+| `first-line-indent` | length | `0pt` | First line indentation |
+| `hanging-indent` | length | `0pt` | Hanging indent for subsequent lines |
+| `body` | content | required | Paragraph content |
+
+### `block` Function
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `width` | auto \| relative | `auto` | Block width |
+| `height` | auto \| relative | `auto` | Block height |
+| `fill` | none \| color | `none` | Background color |
+| `stroke` | none \| stroke | `none` | Border stroke |
+| `radius` | relative \| dict | `(:)` | Corner radius |
+| `inset` | relative \| dict | `(:)` | Inner padding |
+| `outset` | relative \| dict | `(:)` | Outer expansion |
+| `spacing` | relative | `1.2em` | Spacing around block (sets above & below) |
+| `above` | auto \| relative | `auto` | Spacing above |
+| `below` | auto \| relative | `auto` | Spacing below |
+| `breakable` | bool | `true` | Allow page breaks |
+| `clip` | bool | `false` | Clip overflow content |
+| `sticky` | bool | `false` | Stick to next block |
+| `body` | content | `none` | Block content |
+
 ## Set Rules
 
 Set rules apply property values to elements throughout the document or scope.

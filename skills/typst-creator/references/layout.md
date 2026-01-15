@@ -2,6 +2,89 @@
 
 Page setup, positioning, and layout elements.
 
+## Function Parameters
+
+### `page` Function
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `paper` | str | `"a4"` | `"a4"`, `"us-letter"`, `"a5"`, `"a3"`, etc. |
+| `width` | auto \| length | `auto` | Custom page width |
+| `height` | auto \| length | `auto` | Custom page height |
+| `margin` | auto \| relative \| dict | `auto` | Margins: single value, `(x:, y:)`, or `(top:, bottom:, left:, right:)` |
+| `columns` | int | `1` | Number of columns |
+| `fill` | none \| color | `none` | Background color |
+| `numbering` | none \| str \| func | `none` | Page number format: `"1"`, `"i"`, `"1 / 1"` |
+| `number-align` | alignment | `center + bottom` | Page number alignment |
+| `header` | none \| auto \| content | `auto` | Header content |
+| `header-ascent` | relative | `30%` | Header distance from top |
+| `footer` | none \| auto \| content | `auto` | Footer content |
+| `footer-descent` | relative | `30%` | Footer distance from bottom |
+| `background` | none \| content | `none` | Background content |
+| `foreground` | none \| content | `none` | Foreground overlay |
+| `body` | content | required | Page content |
+
+### `grid` Function
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `columns` | auto \| int \| array | `()` | Column widths: `3`, `(1fr, 2fr)`, `(auto, 1fr)` |
+| `rows` | auto \| int \| array | `()` | Row heights |
+| `gutter` | auto \| length \| array | `0pt` | Gap between cells |
+| `column-gutter` | auto \| length \| array | `auto` | Column gap |
+| `row-gutter` | auto \| length \| array | `auto` | Row gap |
+| `fill` | none \| color \| func | `none` | Cell fill: `(x, y) => color` |
+| `align` | auto \| alignment \| func | `auto` | Cell alignment |
+| `stroke` | none \| stroke | `none` | Cell borders |
+| `inset` | relative \| dict | `0pt` | Cell padding |
+| `children` | content | required | Grid cells |
+
+### `table` Function
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `columns` | auto \| int \| array | `()` | Column widths |
+| `rows` | auto \| int \| array | `()` | Row heights |
+| `gutter` | auto \| length \| array | `0pt` | Gap between cells |
+| `fill` | none \| color \| func | `none` | Cell fill: `(x, y) => color` |
+| `align` | auto \| alignment \| func | `auto` | Cell alignment |
+| `stroke` | none \| stroke | `1pt + black` | Cell borders |
+| `inset` | relative \| dict | `5pt` | Cell padding |
+| `children` | content | required | Table cells |
+
+**`table.cell` Parameters:**
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `colspan` | int | `1` | Columns to span |
+| `rowspan` | int | `1` | Rows to span |
+| `fill` | auto \| none \| color | `auto` | Cell fill |
+| `align` | auto \| alignment | `auto` | Cell alignment |
+| `body` | content | required | Cell content |
+
+### `figure` Function
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `body` | content | required | Figure content |
+| `caption` | none \| content | `none` | Caption text |
+| `kind` | auto \| str \| func | `auto` | Figure type: `"image"`, `"table"`, `"raw"` |
+| `supplement` | auto \| none \| content | `auto` | Reference prefix: `"Figure"`, `"Table"` |
+| `numbering` | none \| str \| func | `"1"` | Figure number format |
+| `gap` | length | `0.65em` | Gap between body and caption |
+| `placement` | none \| auto \| alignment | `none` | Float placement: `auto`, `top`, `bottom` |
+
+### `image` Function
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `path` | str | required | Image file path |
+| `format` | auto \| str | `auto` | `"png"`, `"jpg"`, `"gif"`, `"svg"` |
+| `width` | auto \| relative | `auto` | Image width |
+| `height` | auto \| relative | `auto` | Image height |
+| `alt` | none \| str | `none` | Alt text for accessibility |
+| `fit` | str | `"cover"` | `"cover"`, `"contain"`, `"stretch"` |
+
 ## Page Setup
 
 ### Basic Page Configuration

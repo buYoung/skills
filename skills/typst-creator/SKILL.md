@@ -1,6 +1,6 @@
 ---
 name: typst-creator
-description: Generate Typst documents with proper syntax for markup, math, scripting, and styling. Based on Typst v0.14.2 documentation. Includes MCP tools for syntax validation and LaTeX conversion.
+description: Generate Typst documents with proper syntax for markup, math, scripting, and styling. Based on Typst v0.14.2 documentation.
 ---
 
 # Typst Document Creation Capability
@@ -32,7 +32,6 @@ This skill enables the agent to create Typst documents with correct syntax, styl
 | **Scripting** | Variables, functions, control flow. See [./references/scripting.md](./references/scripting.md) |
 | **Math** | Mathematical notation and symbols. See [./references/math.md](./references/math.md) |
 | **Layout** | Page setup, grids, alignment. See [./references/layout.md](./references/layout.md) |
-| **MCP Tools** | Validation and conversion tools. See [./references/mcp-tools.md](./references/mcp-tools.md) |
 
 ## Key Differences from LaTeX
 

@@ -2,6 +2,74 @@
 
 Mathematical notation syntax in Typst.
 
+## Function Parameters
+
+### `equation` Function
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `block` | bool | `false` | Display as block (centered) equation |
+| `numbering` | none \| str \| func | `none` | Equation number format: `"(1)"`, `"[1]"` |
+| `number-align` | alignment | `end + horizon` | Number alignment |
+| `supplement` | auto \| none \| content | `auto` | Reference prefix (e.g., "Equation") |
+| `body` | content | required | Equation content |
+
+### `mat` Function (Matrix)
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `delim` | none \| str | `"("` | Delimiter: `"("`, `"["`, `"{"`, `"|"`, `"||"` |
+| `align` | alignment | `center` | Cell alignment |
+| `augment` | none \| int \| dict | `none` | Augmentation line position |
+| `gap` | relative | `0pt` | Gap between cells |
+| `row-gap` | relative | `0.2em` | Gap between rows |
+| `column-gap` | relative | `0.5em` | Gap between columns |
+| `rows` | content | required | Matrix rows (`;` separated) |
+
+### `vec` Function (Vector)
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `delim` | none \| str | `"("` | Delimiter: `"("`, `"["`, `"{"`, `"|"`, `"||"` |
+| `align` | alignment | `center` | Element alignment |
+| `gap` | relative | `0.2em` | Gap between elements |
+| `children` | content | required | Vector elements (`,` separated) |
+
+### `frac` Function (Fraction)
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `num` | content | required | Numerator |
+| `denom` | content | required | Denominator |
+
+### `cases` Function
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `delim` | str | `"{"` | Delimiter |
+| `reverse` | bool | `false` | Place delimiter on right |
+| `gap` | relative | `0.2em` | Gap between rows |
+| `children` | content | required | Case rows (`,` separated) |
+
+### `cancel` Function
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `body` | content | required | Content to cancel |
+| `length` | relative | `100% + 3pt` | Line length |
+| `inverted` | bool | `false` | Invert line angle |
+| `cross` | bool | `false` | Draw X instead of line |
+| `angle` | auto \| angle | `auto` | Line angle |
+| `stroke` | stroke | `0.5pt` | Line stroke |
+
+### `accent` Function
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `base` | content | required | Base content |
+| `accent` | str \| content | required | Accent: `hat`, `tilde`, `macron`, `dot`, `dot.double`, `arrow` |
+| `size` | auto \| relative | `auto` | Accent size |
+
 ## Math Mode Entry
 
 | Type | Syntax | Result |

@@ -2,6 +2,72 @@
 
 Typst has three syntactical modes: Markup, Math, and Code.
 
+## Function Parameters
+
+### `heading` Function
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `level` | auto \| int | `auto` | Heading level (1-6), auto-detected from `=` count |
+| `depth` | int | - | (read-only) Nesting depth relative to `offset` |
+| `offset` | int | `0` | Starting level offset for numbering |
+| `numbering` | none \| str \| func | `none` | Number format: `"1."`, `"1.1"`, `"I.a"` |
+| `supplement` | auto \| none \| content | `auto` | Reference prefix (e.g., "Section") |
+| `outlined` | bool | `true` | Include in outline |
+| `bookmarked` | auto \| bool | `auto` | Include in PDF bookmarks |
+| `hanging-indent` | auto \| length | `auto` | Indent for wrapped lines |
+| `body` | content | required | Heading text |
+
+### `list` Function (Bullet List)
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `tight` | bool | `true` | Reduce spacing between items |
+| `marker` | content \| array \| func | `[•]` | Bullet marker(s) per level |
+| `indent` | length | `0pt` | Indent from left |
+| `body-indent` | length | `0.5em` | Gap between marker and text |
+| `spacing` | auto \| relative | `auto` | Space between items |
+| `children` | content | required | List items |
+
+### `enum` Function (Numbered List)
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `tight` | bool | `true` | Reduce spacing between items |
+| `numbering` | str \| func | `"1."` | Number format: `"1."`, `"a)"`, `"(i)"` |
+| `start` | int | `1` | Starting number |
+| `full` | bool | `false` | Show full numbering (e.g., "1.1.1") |
+| `indent` | length | `0pt` | Indent from left |
+| `body-indent` | length | `0.5em` | Gap between number and text |
+| `spacing` | auto \| relative | `auto` | Space between items |
+| `children` | content | required | List items |
+
+### `raw` Function (Code Block)
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `text` | str | required | Raw text content |
+| `block` | bool | `false` | Display as block (true for fenced blocks) |
+| `lang` | none \| str | `none` | Language for syntax highlighting |
+| `align` | alignment | `start` | Text alignment |
+| `syntaxes` | str \| array | `()` | Additional syntax definition files |
+| `theme` | auto \| str \| none | `auto` | Syntax highlighting theme |
+| `tab-size` | int | `2` | Tab width in spaces |
+
+### `link` Function
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `dest` | str \| label \| location \| dict | required | URL, label, or location |
+| `body` | auto \| content | `auto` | Link text (auto shows URL) |
+
+### `ref` Function
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `target` | label | required | Target label |
+| `supplement` | auto \| none \| content | `auto` | Reference prefix |
+
 ## Mode Switching
 
 | New Mode | Syntax | Example |
