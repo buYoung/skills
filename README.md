@@ -23,6 +23,7 @@ Some skills require external tools to be installed:
 | [create-plan](skills/create-plan/) | Generate structured work plans before task execution. Collects context from user requirements, creates checklist-style plan files in the plan folder, and awaits user approval or modification before proceeding with implementation. |
 | [skill-maker](skills/skill-maker/) | Create new AI agent skills following the SKILL.md guidelines with complete structure and README updates |
 | [biz-opportunity-scout](skills/biz-opportunity-scout/) | Identify and validate profitable business opportunities by analyzing TAM/SAM/SOM, unit economics, competitive landscape, and PMF indicators with HTML report generation |
+| [typst-creator](skills/typst-creator/) | Generate Typst documents with proper syntax for markup, math, scripting, and styling. Based on Typst v0.14.2. Includes MCP tools for syntax validation and LaTeX conversion |
 
 ## 📖 How to Use
 
