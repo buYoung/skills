@@ -32,6 +32,12 @@ When it helps: Balancing startup responsiveness vs peak throughput.
 
 Notes: `n` is `os::active_processor_count()` and `log2` is integer log2.
 
+Usage Notes:
+- `-XX:CICompilerCount`: Helps when compilation queues grow or CPU contention affects UI responsiveness.
+- `-XX:CompileThreshold`: Lower values front-load compilation for faster warmup; higher values favor interpreted execution.
+- `-XX:+BackgroundCompilation`: Reduces foreground stalls by compiling off the main path.
+- `-XX:+UseCompilerSafepoints`: Improves safepoint responsiveness during long-running compiled code.
+
 ### Example Configuration
 
 ```
@@ -59,6 +65,11 @@ When it helps: Large projects with heavy String churn or memory pressure.
 | `-XX:+OptimizeStringConcat` | true | Optimize string concatenation |
 | `-XX:+CompactStrings` | true | Use compact strings (Latin-1) |
 
+Usage Notes:
+- `-XX:+UseStringDeduplication`: Helps when many duplicate Strings inflate heap usage (G1GC/ZGC only).
+- `-XX:+OptimizeStringConcat`: Reduces temporary allocations in heavy concatenation paths.
+- `-XX:+CompactStrings`: Saves memory when most Strings are Latin-1.
+
 ### Example Configuration
 
 ```
@@ -85,6 +96,10 @@ When it helps: Investigating OOMs, GC pauses, or JVM crashes.
 | `-XX:+HeapDumpOnOutOfMemoryError` | false | Dump heap on OOM |
 | `-XX:HeapDumpPath=<path>` | working dir | Heap dump location |
 
+Usage Notes:
+- `-XX:+HeapDumpOnOutOfMemoryError`: Captures heap state for post-mortem analysis.
+- `-XX:HeapDumpPath=<path>`: Use a writable location with sufficient disk space.
+
 ### GC Logging (JDK 9+ Unified Logging)
 
 | Flag | Description |
@@ -94,6 +109,13 @@ When it helps: Investigating OOMs, GC pauses, or JVM crashes.
 | `-Xlog:gc*:file=gc.log` | Log to file |
 | `-Xlog:gc*:file=gc.log:time,uptime` | With timestamps |
 | `-Xlog:gc*:file=gc.log:time,uptime:filecount=5,filesize=10m` | Rotating logs |
+
+Usage Notes:
+- `-Xlog:gc`: Basic GC health signal during tuning.
+- `-Xlog:gc*`: Adds detailed event fields for deeper analysis.
+- `-Xlog:gc*:file=gc.log`: Redirects logs to a file for later review.
+- `-Xlog:gc*:file=gc.log:time,uptime`: Adds time context for correlating with UI pauses.
+- `-Xlog:gc*:file=gc.log:time,uptime:filecount=5,filesize=10m`: Limits disk usage with rotation.
 
 ### GC Logging Patterns
 
@@ -105,6 +127,13 @@ When it helps: Investigating OOMs, GC pauses, or JVM crashes.
 | `-Xlog:gc*=debug:file=gc.log` | All GC debug info to file |
 | `-Xlog:gc+age=trace` | Object age distribution |
 
+Usage Notes:
+- `-Xlog:gc`: Lightweight overview when looking for long pauses.
+- `-Xlog:gc+heap=debug`: Helps diagnose heap sizing and promotion behavior.
+- `-Xlog:gc+phases=debug`: Breaks down phase timings to spot bottlenecks.
+- `-Xlog:gc*=debug:file=gc.log`: Captures full detail for offline analysis.
+- `-Xlog:gc+age=trace`: Useful when tuning tenuring behavior.
+
 ### System.gc() Behavior
 
 | Flag | Default | Description |
@@ -112,12 +141,20 @@ When it helps: Investigating OOMs, GC pauses, or JVM crashes.
 | `-XX:+ExplicitGCInvokesConcurrent` | false | System.gc() triggers concurrent GC |
 | `-XX:+DisableExplicitGC` | false | Ignore System.gc() calls |
 
+Usage Notes:
+- `-XX:+ExplicitGCInvokesConcurrent`: Reduces stop-the-world impact of explicit GCs.
+- `-XX:+DisableExplicitGC`: Helps when libraries trigger costly explicit GCs.
+
 ### Error Handling
 
 | Flag | Default | Description |
 |------|---------|-------------|
 | `-XX:ErrorFile=<path>` | `hs_err_pid%p.log` in current working directory (unless ErrorFileToStdout/ErrorFileToStderr) | Error log location |
 | `-XX:+ShowMessageBoxOnError` | false | Show dialog on crash |
+
+Usage Notes:
+- `-XX:ErrorFile=<path>`: Redirects crash logs to a known location for collection.
+- `-XX:+ShowMessageBoxOnError`: Useful for interactive debugging on desktop setups.
 
 ### Example Configuration
 
@@ -141,6 +178,10 @@ When it helps: Choosing faster startup vs sustained throughput.
 |------|---------|-------------|
 | `-XX:+TieredCompilation` | true | Enable tiered compilation |
 | `-XX:TieredStopAtLevel=<n>` | 4 | Max compilation level (1-4) |
+
+Usage Notes:
+- `-XX:+TieredCompilation`: Balances startup and peak performance with multi-level JIT.
+- `-XX:TieredStopAtLevel=<n>`: Lower levels favor faster startup; level 4 maximizes optimization.
 
 ### Compilation Levels
 
@@ -181,6 +222,9 @@ When it helps: Deep recursion, constrained memory, or GC thread tuning.
 | `-Xss<size>` | Platform constant in `globals_<os>_<arch>.hpp` (KB); 0 means OS default (e.g., linux_x86_64=1024, bsd_x86_64=1024, linux_aarch64=2040, windows_*=0) | Thread stack size |
 | `-XX:ThreadStackSize=<size>` | Platform constant in `globals_<os>_<arch>.hpp` (KB); 0 means OS default (e.g., linux_x86_64=1024, bsd_x86_64=1024, linux_aarch64=2040, windows_*=0) | Thread stack size (KB) |
 
+Usage Notes:
+- `-Xss<size>` / `-XX:ThreadStackSize=<size>`: Increase for deep recursion; reduce for many threads under memory pressure.
+
 ### Typical Values
 
 | Use Case | Stack Size |
@@ -195,6 +239,10 @@ When it helps: Deep recursion, constrained memory, or GC thread tuning.
 |------|---------|-------------|
 | `-XX:ParallelGCThreads=<n>` | auto | Parallel GC thread count |
 | `-XX:ConcGCThreads=<n>` | auto | Concurrent GC thread count |
+
+Usage Notes:
+- `-XX:ParallelGCThreads=<n>`: Tune when GC phases over- or under-utilize CPU.
+- `-XX:ConcGCThreads=<n>`: Adjust when concurrent phases impact UI responsiveness.
 
 ---
 

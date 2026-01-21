@@ -85,6 +85,15 @@ When it helps: Large heaps, latency-sensitive IDE workloads, frequent allocation
 | `-XX:ZUncommitDelay` | 300 | Uncommit unused memory delay (seconds) |
 | `-XX:ZTenuringThreshold` | -1 | Tenuring threshold, -1 = dynamic |
 
+Usage Notes:
+- `-XX:ZYoungCompactionLimit`: Lower values compact young pages more aggressively to reduce fragmentation.
+- `-XX:ZCollectionIntervalMinor` / `-XX:ZCollectionIntervalMajor`: Forces periodic cycles when heuristics lag behind allocation spikes.
+- `-XX:ZAllocationSpikeTolerance`: Increase to tolerate short allocation bursts without immediate GC.
+- `-XX:ZFragmentationLimit`: Tighten to trigger compaction earlier when fragmentation grows.
+- `-XX:ZMarkStackSpaceLimit`: Raise if mark stacks overflow on large heaps.
+- `-XX:ZUncommitDelay`: Shorten to release memory sooner; lengthen to avoid frequent commit/uncommit.
+- `-XX:ZTenuringThreshold`: Pin to a fixed value when dynamic aging is unstable.
+
 ### Diagnostic Flags
 
 | Flag | Default | Description |
@@ -95,6 +104,13 @@ When it helps: Large heaps, latency-sensitive IDE workloads, frequent allocation
 | `-XX:+ZUncommit` | true | Uncommit unused memory |
 | `-XX:+ZCollectionIntervalOnly` | false | Use only timers for GC heuristics |
 | `-XX:ZStatisticsInterval` | 10 | Statistics print interval (seconds) |
+
+Usage Notes:
+- `-XX:ZYoungGCThreads` / `-XX:ZOldGCThreads`: Tune when GC threads contend with UI threads.
+- `-XX:+ZProactive`: Keeps heap headroom by running cycles before pressure spikes.
+- `-XX:+ZUncommit`: Frees unused memory to reduce footprint.
+- `-XX:+ZCollectionIntervalOnly`: Useful for deterministic periodic GC behavior.
+- `-XX:ZStatisticsInterval`: Lower values provide finer telemetry at higher overhead.
 
 ### Example Configuration
 
@@ -124,6 +140,14 @@ When it helps: Tail latency tuning, memory footprint control, and allocation spi
 | `-XX:+ZProactive` | true | Proactive GC cycles |
 | `-XX:+ZUncommit` | true | Uncommit unused memory |
 | `-XX:ZUncommitDelay` | 300 | Uncommit delay (seconds) |
+
+Usage Notes:
+- `-XX:ZAllocationSpikeTolerance`: Increase to dampen short allocation bursts.
+- `-XX:ZFragmentationLimit`: Lower to prefer compaction when fragmentation rises.
+- `-XX:ZMarkStackSpaceLimit`: Raise when mark stack space is insufficient on large heaps.
+- `-XX:ZCollectionInterval`: Forces periodic cycles when needed.
+- `-XX:+ZProactive`: Maintains headroom to avoid sudden pauses.
+- `-XX:+ZUncommit` / `-XX:ZUncommitDelay`: Controls memory return behavior.
 
 ---
 
@@ -156,6 +180,18 @@ When it helps: Mixed workloads with moderate latency sensitivity and predictable
 | `-XX:G1ConcMarkStepDurationMillis` | 10.0 | Concurrent marking step duration (ms) |
 | `-XX:G1EagerReclaimRemSetThreshold` | 0 | RSet threshold for humongous eager reclaim |
 
+Usage Notes:
+- `-XX:MaxGCPauseMillis`: Tighten to reduce pause targets; can increase CPU overhead.
+- `-XX:G1HeapRegionSize`: Increase for very large heaps to reduce region count.
+- `-XX:G1ReservePercent`: Raise to keep more free space for evacuation.
+- `-XX:G1NewSizePercent` / `-XX:G1MaxNewSizePercent`: Tune young gen size for allocation rate vs pause time.
+- `-XX:G1MixedGCCountTarget`: Adjust when old gen reclamation is too slow or too aggressive.
+- `-XX:G1HeapWastePercent`: Lower to reclaim more aggressively from mixed collections.
+- `-XX:InitiatingHeapOccupancyPercent`: Lower to start marking earlier.
+- `-XX:G1MixedGCLiveThresholdPercent`: Lower to include more regions in mixed GCs.
+- `-XX:G1ConcMarkStepDurationMillis`: Reduce to smooth marking work across time.
+- `-XX:G1EagerReclaimRemSetThreshold`: Increase to reclaim humongous regions sooner.
+
 ### Concurrency Flags
 
 | Flag | Default | Description |
@@ -165,6 +201,11 @@ When it helps: Mixed workloads with moderate latency sensitivity and predictable
 | `-XX:ParallelGCThreads` | 0 | Parallel GC threads (0 = auto) |
 | `-XX:+G1UseAdaptiveIHOP` | true | Adaptive IHOP |
 
+Usage Notes:
+- `-XX:G1ConcRefinementThreads`: Tune when refinement work lags or competes with UI threads.
+- `-XX:ConcGCThreads` / `-XX:ParallelGCThreads`: Adjust when GC CPU usage is too high or too low.
+- `-XX:+G1UseAdaptiveIHOP`: Keeps marking start adaptive to allocation behavior.
+
 ### Periodic GC
 
 | Flag | Default | Description |
@@ -172,6 +213,11 @@ When it helps: Mixed workloads with moderate latency sensitivity and predictable
 | `-XX:G1PeriodicGCInterval` | 0 | Periodic GC interval (ms), 0 = disabled |
 | `-XX:+G1PeriodicGCInvokesConcurrent` | true | Use concurrent GC for periodic |
 | `-XX:G1PeriodicGCSystemLoadThreshold` | 0.0 | System load threshold |
+
+Usage Notes:
+- `-XX:G1PeriodicGCInterval`: Use to trigger periodic cleanup during long idle phases.
+- `-XX:+G1PeriodicGCInvokesConcurrent`: Reduces pause impact of periodic cycles.
+- `-XX:G1PeriodicGCSystemLoadThreshold`: Skips periodic GC under high system load.
 
 ### Example Configuration
 
@@ -213,6 +259,17 @@ When it helps: Latency-sensitive workflows where pause time dominates.
 | `-XX:+ShenandoahUncommit` | true | Uncommit unused memory |
 | `-XX:ShenandoahUncommitDelay` | 300000 | Uncommit delay (ms) |
 
+Usage Notes:
+- `-XX:ShenandoahGCMode`: Choose `satb` for general use; `iu` for specific update-heavy workloads; `passive` for debugging.
+- `-XX:ShenandoahGCHeuristics`: `adaptive` is typical; `aggressive` favors latency over throughput.
+- `-XX:ShenandoahMinFreeThreshold`: Raise to keep more free space for evacuation.
+- `-XX:ShenandoahAllocationThreshold`: Lower to trigger GC earlier under allocation spikes.
+- `-XX:ShenandoahGuaranteedGCInterval`: Use to enforce periodic cycles during idle periods.
+- `-XX:ShenandoahEvacReserve`: Increase if evacuation failures occur.
+- `-XX:+ShenandoahPacing`: Smooths allocation to avoid running GC out of time.
+- `-XX:ShenandoahPacingMaxDelay`: Cap pacing delay to limit application slowdowns.
+- `-XX:+ShenandoahUncommit` / `-XX:ShenandoahUncommitDelay`: Controls memory return behavior.
+
 ### GC Modes
 
 | Mode | Description |
@@ -220,6 +277,11 @@ When it helps: Latency-sensitive workflows where pause time dominates.
 | `satb` | Snapshot-at-the-beginning (default, 3-pass mark-evac-update) |
 | `iu` | Incremental-update (3-pass mark-evac-update) |
 | `passive` | Stop-the-world only (degenerated or full GC) |
+
+Usage Notes:
+- `satb`: General-purpose mode with balanced pause behavior.
+- `iu`: Useful when concurrent update barriers are preferred.
+- `passive`: Mainly for diagnostics or constrained environments.
 
 ### Heuristics Modes
 
@@ -229,6 +291,12 @@ When it helps: Latency-sensitive workflows where pause time dominates.
 | `static` | Fixed triggering thresholds |
 | `compact` | Aggressive space compaction |
 | `aggressive` | Continuous concurrent GC |
+
+Usage Notes:
+- `adaptive`: Adjusts to workload changes without manual tuning.
+- `static`: Keeps stable thresholds for predictable behavior.
+- `compact`: Useful when fragmentation is a dominant issue.
+- `aggressive`: Prioritizes pause time over throughput.
 
 ### Example Configuration
 
@@ -264,6 +332,13 @@ When it helps: Batch-like workloads where throughput matters more than pause tim
 | `-XX:GCTimeRatio` | 99 | App time to GC time ratio |
 | `-XX:MaxGCPauseMillis` | max | Target max pause time |
 | `-XX:YoungGenerationSizeIncrement` | 20 | Young gen size increment (%) |
+
+Usage Notes:
+- `-XX:ParallelGCThreads`: Tune when GC threads saturate CPU or underutilize cores.
+- `-XX:+UseAdaptiveSizePolicy`: Keeps heap sizing automatic for throughput focus.
+- `-XX:GCTimeRatio`: Lower values allocate more CPU to GC to keep heap smaller.
+- `-XX:MaxGCPauseMillis`: Use when pauses exceed acceptable targets.
+- `-XX:YoungGenerationSizeIncrement`: Adjust when young gen growth is too slow or too aggressive.
 
 ### Example Configuration
 

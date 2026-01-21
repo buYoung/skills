@@ -31,6 +31,13 @@ When it helps: Large projects, heavy indexing, or frequent analysis workloads.
 | `-XX:MaxHeapSize=<size>` | Maximum heap size (alternative) | - |
 | `-XX:SoftMaxHeapSize=<size>` | Soft limit for max heap | - |
 
+Usage Notes:
+- `-Xms<size>`: Higher values reduce ramp-up GC but increase startup memory footprint.
+- `-Xmx<size>`: Upper bound for heap growth; set based on available RAM and project size.
+- `-XX:MinHeapSize=<size>`: Controls minimum committed heap in ergonomic mode.
+- `-XX:InitialHeapSize=<size>` / `-XX:MaxHeapSize=<size>`: Alternative forms of `-Xms`/`-Xmx`.
+- `-XX:SoftMaxHeapSize=<size>`: Limits growth under normal pressure while allowing bursts.
+
 ### Heap Size Ranges by RAM
 
 | RAM | Typical -Xmx | Use Case |
@@ -64,6 +71,11 @@ When it helps: Large codebases, heavy refactoring, and long IDE sessions.
 | `-XX:InitialCodeCacheSize=<size>` | 2496K | Initial code cache size |
 | `-XX:CodeCacheExpansionSize=<size>` | 64K | Expansion increment |
 
+Usage Notes:
+- `-XX:ReservedCodeCacheSize=<size>`: Increase when seeing code cache full or frequent deoptimizations.
+- `-XX:InitialCodeCacheSize=<size>`: Helps reduce early expansions during startup bursts.
+- `-XX:CodeCacheExpansionSize=<size>`: Larger increments reduce expansion frequency at the cost of memory jumps.
+
 ### Typical Values
 
 | Project Size | ReservedCodeCacheSize |
@@ -96,6 +108,11 @@ When it helps: Projects with many modules/plugins or heavy code generation.
 | `-XX:MaxMetaspaceSize=<size>` | unlimited | Maximum metaspace size |
 | `-XX:CompressedClassSpaceSize=<size>` | 1G | Compressed class space |
 
+Usage Notes:
+- `-XX:MetaspaceSize=<size>`: Higher values reduce early metadata GCs.
+- `-XX:MaxMetaspaceSize=<size>`: Cap when runaway class loading is suspected.
+- `-XX:CompressedClassSpaceSize=<size>`: Adjust when class space pressure is high.
+
 ### Example Values
 
 ```
@@ -118,6 +135,10 @@ When it helps: Balancing memory footprint vs cache hit rate.
 |------|---------|-------------|
 | `-XX:SoftRefLRUPolicyMSPerMB=<ms>` | 1000 | Soft reference retention (ms per MB of free heap) |
 | `-XX:+ParallelRefProcEnabled` | false | Parallel reference processing |
+
+Usage Notes:
+- `-XX:SoftRefLRUPolicyMSPerMB=<ms>`: Lower values free caches sooner under memory pressure.
+- `-XX:+ParallelRefProcEnabled`: Helps when reference processing time dominates pauses.
 
 ### Example Configuration
 
@@ -146,6 +167,10 @@ When it helps: Large heaps where consistent latency is more important than start
 |------|---------|-------------|
 | `-XX:+AlwaysPreTouch` | false | Pre-touch all committed pages |
 | `-XX:+AlwaysPreTouchStacks` | false | Pre-touch thread stacks |
+
+Usage Notes:
+- `-XX:+AlwaysPreTouch`: Reduces runtime page faults on large heaps.
+- `-XX:+AlwaysPreTouchStacks`: Stabilizes thread stack latency for many threads.
 
 ### Behavior / Trade-offs
 
@@ -181,6 +206,11 @@ When it helps: Very large heaps on OSes with huge page support enabled.
 | `-XX:LargePageSizeInBytes=<size>` | 0 | Large page size (0 = OS default) |
 | `-XX:+UseLargePagesIndividualAllocation` | false | Allocate large pages individually |
 
+Usage Notes:
+- `-XX:+UseLargePages`: Helps when OS huge pages are configured and heaps are large.
+- `-XX:LargePageSizeInBytes=<size>`: Overrides OS default huge page size.
+- `-XX:+UseLargePagesIndividualAllocation`: Useful when full reservation fails.
+
 ### Platform Requirements
 
 | OS | Requirement |
@@ -213,6 +243,11 @@ When it helps: Multi-socket machines with large heaps and memory-intensive workl
 | `-XX:+UseNUMAInterleaving` | false | Interleave memory across NUMA nodes |
 | `-XX:NUMAInterleaveGranularity=<size>` | 2m | Interleaving granularity (Windows) |
 
+Usage Notes:
+- `-XX:+UseNUMA`: Helps on multi-socket systems with large heaps.
+- `-XX:+UseNUMAInterleaving`: Balances memory across NUMA nodes to avoid hotspots.
+- `-XX:NUMAInterleaveGranularity=<size>`: Controls interleaving chunk size.
+
 ### Behavior / When it helps
 
 - Multi-socket server systems
@@ -244,6 +279,12 @@ When it helps: Running IDEs inside containers or constrained VMs.
 | `-XX:InitialRAMPercentage=<percent>` | 1.5625 | Initial heap as percentage of RAM |
 | `-XX:ActiveProcessorCount=<n>` | -1 | Override detected CPU count (-1 = auto) |
 
+Usage Notes:
+- `-XX:MaxRAMPercentage=<percent>`: Caps heap size inside containers with limited memory.
+- `-XX:MinRAMPercentage=<percent>`: Avoids tiny heaps on small containers.
+- `-XX:InitialRAMPercentage=<percent>`: Speeds warmup by setting a larger initial heap.
+- `-XX:ActiveProcessorCount=<n>`: Stabilizes thread heuristics in constrained CPU environments.
+
 ### Container Configuration Example
 
 ```
@@ -259,6 +300,9 @@ When it helps: Running IDEs inside containers or constrained VMs.
 | `-XX:MaxRAMFraction` | `-XX:MaxRAMPercentage` |
 | `-XX:MinRAMFraction` | `-XX:MinRAMPercentage` |
 | `-XX:InitialRAMFraction` | `-XX:InitialRAMPercentage` |
+
+Usage Notes:
+- Fraction-based flags map to percentage-based flags for modern JVMs.
 
 ---
 
