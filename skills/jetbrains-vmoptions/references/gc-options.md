@@ -4,17 +4,66 @@ Detailed garbage collector flags for JetBrains IDE VM options.
 
 ## Table of Contents
 
-1. [Generational ZGC (JDK 21+)](#generational-zgc-jdk-21)
-2. [ZGC Common Flags](#zgc-common-flags)
-3. [G1GC Flags](#g1gc-flags)
-4. [Shenandoah Flags](#shenandoah-flags)
-5. [Parallel GC Flags](#parallel-gc-flags)
+1. [IDE Version Compatibility](#ide-version-compatibility)
+2. [GC Selection by IDE Version](#gc-selection-by-ide-version)
+3. [Generational ZGC (JDK 21+)](#generational-zgc-jdk-21)
+4. [ZGC Common Flags](#zgc-common-flags)
+5. [G1GC Flags](#g1gc-flags)
+6. [Shenandoah Flags](#shenandoah-flags)
+7. [Parallel GC Flags](#parallel-gc-flags)
+
+---
+
+## IDE Version Compatibility
+
+Support range and default GC behavior by IDE version.
+
+| Version Range | JDK | Support Status |
+|---------------|-----|----------------|
+| 243+ | 21 | Supported |
+| 222-242 | 17 | Supported |
+| < 222 | - | Not supported |
+
+---
+
+## GC Selection by IDE Version
+
+GC selection and behavior summary (why/when) by version range.
+
+| Version Range | Default GC | Flags | Behavior / When it helps |
+|---------------|------------|-------|---------------------------|
+| 243+ | Generational ZGC | `-XX:+UseZGC -XX:+ZGenerational` | Low-pause, large heaps, latency-sensitive IDE workloads |
+| 222-242 | G1GC | `-XX:+UseG1GC` | Balanced throughput/latency for mixed workloads |
+
+### For Version 243+ (JDK 21)
+
+| GC | Flags | Behavior / When it helps |
+|----|-------|---------------------------|
+| Generational ZGC | `-XX:+UseZGC -XX:+ZGenerational` | Low latency with young/old separation; effective with large heaps |
+| ZGC (Legacy) | `-XX:+UseZGC` | Low latency with simpler tuning surface |
+| G1GC | `-XX:+UseG1GC` | Balanced throughput/latency for mixed workloads |
+| Shenandoah | `-XX:+UseShenandoahGC` | Very low pause times with concurrent compaction |
+| Parallel GC | `-XX:+UseParallelGC` | Throughput-oriented, stop-the-world pauses |
+| Serial GC | `-XX:+UseSerialGC` | Single-threaded, small heaps or constrained cores |
+
+### For Version 222-242 (JDK 17)
+
+| GC | Flags | Behavior / When it helps |
+|----|-------|---------------------------|
+| G1GC | `-XX:+UseG1GC` | Balanced throughput/latency for mixed workloads |
+| ZGC | `-XX:+UseZGC` | Low latency (non-generational) |
+| Shenandoah | `-XX:+UseShenandoahGC` | Very low pause times with concurrent compaction |
+| Parallel GC | `-XX:+UseParallelGC` | Throughput-oriented, stop-the-world pauses |
+| Serial GC | `-XX:+UseSerialGC` | Single-threaded, small heaps or constrained cores |
 
 ---
 
 ## Generational ZGC (JDK 21+)
 
-Version 243 이상에서 사용 가능. JDK 21의 기본 권장 GC.
+Available in version 243+. Generational mode is available on JDK 21.
+
+Behavior: Concurrent low-pause GC with young/old separation; reduces pause impact as heaps grow.
+When it helps: Large heaps, latency-sensitive IDE workloads, frequent allocation spikes.
 
 ### Activation
 
@@ -44,8 +93,10 @@ Version 243 이상에서 사용 가능. JDK 21의 기본 권장 GC.
 | `-XX:ZOldGCThreads` | 0 | Old generation GC threads (0 = auto) |
 | `-XX:+ZProactive` | true | Enable proactive GC cycles |
 | `-XX:+ZUncommit` | true | Uncommit unused memory |
+| `-XX:+ZCollectionIntervalOnly` | false | Use only timers for GC heuristics |
+| `-XX:ZStatisticsInterval` | 10 | Statistics print interval (seconds) |
 
-### IDE Recommended Configuration
+### Example Configuration
 
 ```
 -XX:+UseZGC
@@ -59,12 +110,15 @@ Version 243 이상에서 사용 가능. JDK 21의 기본 권장 GC.
 
 ## ZGC Common Flags
 
-ZGC 공통 플래그 (Generational/Non-generational).
+Common ZGC flags (Generational/Non-generational).
+
+Behavior: Adjusts ZGC heuristics around allocation spikes, fragmentation, and memory uncommit.
+When it helps: Tail latency tuning, memory footprint control, and allocation spike smoothing.
 
 | Flag | Default | Description |
 |------|---------|-------------|
 | `-XX:ZAllocationSpikeTolerance` | 2.0 | Allocation spike tolerance factor |
-| `-XX:ZFragmentationLimit` | varies | Maximum heap fragmentation (%) |
+| `-XX:ZFragmentationLimit` | ZGC default: 5.0; XGC default: 25.0 | Maximum heap fragmentation (%) |
 | `-XX:ZMarkStackSpaceLimit` | 8G | Mark stack space limit |
 | `-XX:ZCollectionInterval` | 0 | Force GC interval (seconds) |
 | `-XX:+ZProactive` | true | Proactive GC cycles |
@@ -75,7 +129,10 @@ ZGC 공통 플래그 (Generational/Non-generational).
 
 ## G1GC Flags
 
-Version 222-242 기본 GC. Version 243+에서도 사용 가능.
+Default GC for versions 222-242. Also available in 243+.
+
+Behavior: Region-based GC balancing throughput and pause times using concurrent marking.
+When it helps: Mixed workloads with moderate latency sensitivity and predictable throughput needs.
 
 ### Activation
 
@@ -95,6 +152,9 @@ Version 222-242 기본 GC. Version 243+에서도 사용 가능.
 | `-XX:G1MixedGCCountTarget` | 8 | Target mixed GC count after marking |
 | `-XX:G1HeapWastePercent` | 5 | Allowed uncollected space (%) |
 | `-XX:InitiatingHeapOccupancyPercent` | 45 | IHOP for concurrent marking |
+| `-XX:G1MixedGCLiveThresholdPercent` | 85 | Max live bytes for mixed GC region (%) |
+| `-XX:G1ConcMarkStepDurationMillis` | 10.0 | Concurrent marking step duration (ms) |
+| `-XX:G1EagerReclaimRemSetThreshold` | 0 | RSet threshold for humongous eager reclaim |
 
 ### Concurrency Flags
 
@@ -113,7 +173,7 @@ Version 222-242 기본 GC. Version 243+에서도 사용 가능.
 | `-XX:+G1PeriodicGCInvokesConcurrent` | true | Use concurrent GC for periodic |
 | `-XX:G1PeriodicGCSystemLoadThreshold` | 0.0 | System load threshold |
 
-### IDE Recommended Configuration
+### Example Configuration
 
 ```
 -XX:+UseG1GC
@@ -129,6 +189,9 @@ Version 222-242 기본 GC. Version 243+에서도 사용 가능.
 
 Ultra-low pause time GC.
 
+Behavior: Concurrent compaction with very low pauses; may trade throughput for latency.
+When it helps: Latency-sensitive workflows where pause time dominates.
+
 ### Activation
 
 ```
@@ -139,10 +202,24 @@ Ultra-low pause time GC.
 
 | Flag | Default | Description |
 |------|---------|-------------|
+| `-XX:ShenandoahGCMode` | satb | GC mode (satb, iu, passive) |
 | `-XX:ShenandoahGCHeuristics` | adaptive | Heuristics mode |
 | `-XX:ShenandoahMinFreeThreshold` | 10 | Min free threshold (%) |
-| `-XX:ShenandoahAllocationThreshold` | 0 | Allocation threshold |
+| `-XX:ShenandoahAllocationThreshold` | 0 | Allocation threshold (%) |
 | `-XX:ShenandoahGuaranteedGCInterval` | 300000 | Guaranteed GC interval (ms) |
+| `-XX:ShenandoahEvacReserve` | 5 | Evacuation reserve space (%) |
+| `-XX:+ShenandoahPacing` | true | Pace allocations to give GC time |
+| `-XX:ShenandoahPacingMaxDelay` | 10 | Max pacing delay (ms) |
+| `-XX:+ShenandoahUncommit` | true | Uncommit unused memory |
+| `-XX:ShenandoahUncommitDelay` | 300000 | Uncommit delay (ms) |
+
+### GC Modes
+
+| Mode | Description |
+|------|-------------|
+| `satb` | Snapshot-at-the-beginning (default, 3-pass mark-evac-update) |
+| `iu` | Incremental-update (3-pass mark-evac-update) |
+| `passive` | Stop-the-world only (degenerated or full GC) |
 
 ### Heuristics Modes
 
@@ -153,12 +230,14 @@ Ultra-low pause time GC.
 | `compact` | Aggressive space compaction |
 | `aggressive` | Continuous concurrent GC |
 
-### IDE Recommended Configuration
+### Example Configuration
 
 ```
 -XX:+UseShenandoahGC
+-XX:ShenandoahGCMode=satb
 -XX:ShenandoahGCHeuristics=adaptive
 -XX:ShenandoahGuaranteedGCInterval=300000
+-XX:+ShenandoahPacing
 ```
 
 ---
@@ -166,6 +245,9 @@ Ultra-low pause time GC.
 ## Parallel GC Flags
 
 Maximum throughput GC.
+
+Behavior: Stop-the-world parallel collector optimized for throughput.
+When it helps: Batch-like workloads where throughput matters more than pause times.
 
 ### Activation
 
@@ -183,7 +265,7 @@ Maximum throughput GC.
 | `-XX:MaxGCPauseMillis` | max | Target max pause time |
 | `-XX:YoungGenerationSizeIncrement` | 20 | Young gen size increment (%) |
 
-### IDE Recommended Configuration
+### Example Configuration
 
 ```
 -XX:+UseParallelGC

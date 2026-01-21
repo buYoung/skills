@@ -1,6 +1,6 @@
 # Memory Options Reference
 
-JetBrains IDE 메모리 관련 VM 옵션.
+Memory-related VM options for JetBrains IDEs.
 
 ## Table of Contents
 
@@ -9,14 +9,20 @@ JetBrains IDE 메모리 관련 VM 옵션.
 3. [Metaspace](#metaspace)
 4. [Reference Processing](#reference-processing)
 5. [Memory Pre-touch](#memory-pre-touch)
+6. [Large Pages](#large-pages)
+7. [NUMA Support](#numa-support)
+8. [Container Environment](#container-environment)
 
 ---
 
 ## Heap Memory
 
+Behavior: Controls Java heap size boundaries; larger heaps reduce GC frequency but increase memory footprint.
+When it helps: Large projects, heavy indexing, or frequent analysis workloads.
+
 ### Core Flags
 
-| Flag | Description | Recommended |
+| Flag | Description | Typical |
 |------|-------------|-------------|
 | `-Xms<size>` | Initial heap size | 2g |
 | `-Xmx<size>` | Maximum heap size | 4g-8g |
@@ -25,9 +31,9 @@ JetBrains IDE 메모리 관련 VM 옵션.
 | `-XX:MaxHeapSize=<size>` | Maximum heap size (alternative) | - |
 | `-XX:SoftMaxHeapSize=<size>` | Soft limit for max heap | - |
 
-### Heap Size Guidelines
+### Heap Size Ranges by RAM
 
-| RAM | Recommended -Xmx | Use Case |
+| RAM | Typical -Xmx | Use Case |
 |-----|------------------|----------|
 | 8GB | 2g-4g | Light development |
 | 16GB | 4g-6g | Standard development |
@@ -47,15 +53,18 @@ JetBrains IDE 메모리 관련 VM 옵션.
 
 JIT compiled code storage.
 
+Behavior: Stores compiled methods; larger cache reduces deoptimization and recompilation.
+When it helps: Large codebases, heavy refactoring, and long IDE sessions.
+
 ### Flags
 
 | Flag | Default | Description |
 |------|---------|-------------|
-| `-XX:ReservedCodeCacheSize=<size>` | varies | Maximum code cache size |
+| `-XX:ReservedCodeCacheSize=<size>` | base = platform default (C1: 32M, C2: 48M); if TieredCompilation and flag default -> min(2G, base * 5); if JVMCI native lib disabled -> max(64M, value) | Maximum code cache size |
 | `-XX:InitialCodeCacheSize=<size>` | 2496K | Initial code cache size |
 | `-XX:CodeCacheExpansionSize=<size>` | 64K | Expansion increment |
 
-### Recommended Values
+### Typical Values
 
 | Project Size | ReservedCodeCacheSize |
 |--------------|----------------------|
@@ -63,7 +72,7 @@ JIT compiled code storage.
 | Medium | 512m |
 | Large | 1g |
 
-### IDE Configuration
+### Example Configuration
 
 ```
 -XX:ReservedCodeCacheSize=512m
@@ -76,15 +85,18 @@ JIT compiled code storage.
 
 Class metadata storage (replaced PermGen in JDK 8+).
 
+Behavior: Holds class metadata; limits guard against runaway class loading.
+When it helps: Projects with many modules/plugins or heavy code generation.
+
 ### Flags
 
 | Flag | Default | Description |
 |------|---------|-------------|
-| `-XX:MetaspaceSize=<size>` | varies | Initial metaspace size |
+| `-XX:MetaspaceSize=<size>` | LP64: 21M; 32-bit: 16M | Initial metaspace size |
 | `-XX:MaxMetaspaceSize=<size>` | unlimited | Maximum metaspace size |
 | `-XX:CompressedClassSpaceSize=<size>` | 1G | Compressed class space |
 
-### Recommended Values
+### Example Values
 
 ```
 -XX:MetaspaceSize=512m
@@ -97,6 +109,9 @@ Class metadata storage (replaced PermGen in JDK 8+).
 
 Soft/Weak reference handling.
 
+Behavior: Controls how aggressively soft references are cleared under memory pressure.
+When it helps: Balancing memory footprint vs cache hit rate.
+
 ### Flags
 
 | Flag | Default | Description |
@@ -104,7 +119,7 @@ Soft/Weak reference handling.
 | `-XX:SoftRefLRUPolicyMSPerMB=<ms>` | 1000 | Soft reference retention (ms per MB of free heap) |
 | `-XX:+ParallelRefProcEnabled` | false | Parallel reference processing |
 
-### IDE Configuration
+### Example Configuration
 
 Lower values = more aggressive soft reference clearing = reduced memory usage.
 
@@ -122,6 +137,9 @@ Lower values = more aggressive soft reference clearing = reduced memory usage.
 
 Commit pages at startup for more predictable performance.
 
+Behavior: Touches memory pages at startup to reduce runtime page faults.
+When it helps: Large heaps where consistent latency is more important than startup time.
+
 ### Flags
 
 | Flag | Default | Description |
@@ -129,14 +147,14 @@ Commit pages at startup for more predictable performance.
 | `-XX:+AlwaysPreTouch` | false | Pre-touch all committed pages |
 | `-XX:+AlwaysPreTouchStacks` | false | Pre-touch thread stacks |
 
-### Trade-offs
+### Behavior / Trade-offs
 
 | Setting | Startup Time | Runtime Performance |
 |---------|--------------|---------------------|
 | Off (default) | Faster | Variable latency |
 | On | Slower | More predictable |
 
-### When to Enable
+### Behavior / When it helps
 
 - Large heap sizes (8GB+)
 - Latency-sensitive workflows
@@ -145,6 +163,102 @@ Commit pages at startup for more predictable performance.
 ```
 -XX:+AlwaysPreTouch
 ```
+
+---
+
+## Large Pages
+
+Using large pages reduces TLB misses.
+
+Behavior: Uses large pages to reduce TLB misses and improve memory throughput.
+When it helps: Very large heaps on OSes with huge page support enabled.
+
+### Flags
+
+| Flag | Default | Description |
+|------|---------|-------------|
+| `-XX:+UseLargePages` | false | Enable large page memory |
+| `-XX:LargePageSizeInBytes=<size>` | 0 | Large page size (0 = OS default) |
+| `-XX:+UseLargePagesIndividualAllocation` | false | Allocate large pages individually |
+
+### Platform Requirements
+
+| OS | Requirement |
+|----|-------------|
+| Linux | `vm.nr_hugepages` kernel parameter |
+| Windows | "Lock pages in memory" privilege |
+| macOS | Not supported |
+
+### Example Configuration
+
+```
+-XX:+UseLargePages
+-XX:LargePageSizeInBytes=2m
+```
+
+---
+
+## NUMA Support
+
+Non-Uniform Memory Access optimization.
+
+Behavior: Improves allocation locality on multi-socket systems.
+When it helps: Multi-socket machines with large heaps and memory-intensive workloads.
+
+### Flags
+
+| Flag | Default | Description |
+|------|---------|-------------|
+| `-XX:+UseNUMA` | false | Enable NUMA-aware allocation |
+| `-XX:+UseNUMAInterleaving` | false | Interleave memory across NUMA nodes |
+| `-XX:NUMAInterleaveGranularity=<size>` | 2m | Interleaving granularity (Windows) |
+
+### Behavior / When it helps
+
+- Multi-socket server systems
+- Large heap sizes (16GB+)
+- Memory-intensive workloads
+
+### Example Configuration
+
+```
+-XX:+UseNUMA
+-XX:+UseNUMAInterleaving
+```
+
+---
+
+## Container Environment
+
+Memory options for container/cloud environments.
+
+Behavior: Binds heap sizing to detected container limits and CPU count.
+When it helps: Running IDEs inside containers or constrained VMs.
+
+### Flags
+
+| Flag | Default | Description |
+|------|---------|-------------|
+| `-XX:MaxRAMPercentage=<percent>` | 25.0 | Max heap as percentage of available RAM |
+| `-XX:MinRAMPercentage=<percent>` | 50.0 | Min heap percentage for small memory systems |
+| `-XX:InitialRAMPercentage=<percent>` | 1.5625 | Initial heap as percentage of RAM |
+| `-XX:ActiveProcessorCount=<n>` | -1 | Override detected CPU count (-1 = auto) |
+
+### Container Configuration Example
+
+```
+-XX:MaxRAMPercentage=75.0
+-XX:InitialRAMPercentage=50.0
+-XX:+UseContainerSupport
+```
+
+### Deprecated Flags (Use Percentage Instead)
+
+| Deprecated | Replacement |
+|------------|-------------|
+| `-XX:MaxRAMFraction` | `-XX:MaxRAMPercentage` |
+| `-XX:MinRAMFraction` | `-XX:MinRAMPercentage` |
+| `-XX:InitialRAMFraction` | `-XX:InitialRAMPercentage` |
 
 ---
 
