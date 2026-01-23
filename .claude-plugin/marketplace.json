@@ -11,10 +11,10 @@
 	"plugins": [
 		{
 			"name": "document-skills",
-			"description": "Collection of document generation skills including AGENTS.md generator for AI agent collaboration",
+			"description": "Collection of document and configuration skills including AGENTS.md generator and JetBrains VM options guidance",
 			"source": "./",
 			"strict": false,
-			"skills": ["./skills/agents-md-generator"]
+			"skills": ["./skills/agents-md-generator", "./skills/jetbrains-vmoptions"]
 		},
 		{
 			"name": "analysis-skills",

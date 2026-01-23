@@ -23,6 +23,7 @@ Only skills that have been personally tested and approved by the user are listed
 |-------|-------------|
 | [agents-md-generator](skills/agents-md-generator/) | Automatically sets up project structure and generates metadata files like `AGENTS.md` for AI collaboration |
 | [kysely-converter](./skills/kysely-converter/) | Converts database queries and schemas using Kysely |
+| [jetbrains-vmoptions](skills/jetbrains-vmoptions/) | Generates JetBrains IDE VM options based on IDE version. Supports version-specific GC selection (Generational ZGC for 243+, G1GC for 222-242) and memory configuration. |
 
 ## 🧪 Skills Waiting for Review
 
@@ -30,7 +31,6 @@ These skills are currently under evaluation and will be promoted to **Available 
 
 | Skill | Description |
 |-------|-------------|
-| [jetbrains-vmoptions](skills/jetbrains-vmoptions/) | Generates JetBrains IDE VM options based on IDE version. Supports version-specific GC selection (Generational ZGC for 243+, G1GC for 222-242) and memory configuration. |
 | [skill-maker](skills/skill-maker/) | Create new AI agent skills following the SKILL.md guidelines with complete structure and README updates |
 | [biz-opportunity-scout](skills/biz-opportunity-scout/) | Identify and validate profitable business opportunities by analyzing TAM/SAM/SOM, unit economics, competitive landscape, and PMF indicators with HTML report generation |
 | [typst-creator](skills/typst-creator/) | Generate Typst documents with proper syntax for markup, math, scripting, and styling. Based on Typst v0.14.2 |
