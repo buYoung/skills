@@ -13,6 +13,12 @@ Defines the allowed commands for repository analysis during AGENTS.md generation
 | `tree` | Display directory structure |
 | `cat` | Display file contents |
 
+### LOC Measurement
+
+| Command | Purpose | Notes |
+|---------|---------|-------|
+| `tokei` | Count lines of code | **Required** for determining character limits. See [loc_measurement.md](./loc_measurement.md) |
+
 ### Content Search
 
 | Command | Priority | Notes |
@@ -57,9 +63,13 @@ rg -F "exact.string()"      # Literal search (no regex)
 
 ### Line Limit Enforcement
 
+Use `rg` with match limit to enforce line limits without external piping:
+
 ```bash
-rg -v "^import" [FILE_PATH] -m 800   # Skip imports, max 800 lines
+rg [FILE_PATH] --max-count 1200   # limit to 1200 matching lines
 ```
+
+**Note**: Use `--max-count` (or `-m`) to limit output lines directly within `rg`. Avoid piping to `head` as it may conflict with global workspace rules.
 
 ## tree Command Usage
 
@@ -68,6 +78,8 @@ tree -I 'node_modules|.git|dist|build|.turbo|.next|out' -L 3
 ```
 
 **Purpose**: Ignore large, low-signal directories (node_modules, build artifacts, VCS metadata)
+
+**Note**: `-L 3` is an example depth. Increase depth as needed for full structural analysis (e.g., `-L 5` or `-L 8` for deeper hierarchies).
 
 ## Files to Ignore
 
@@ -107,6 +119,6 @@ Lock files must NOT be read:
 
 ## Source File Analysis Rules
 
-- **Line Limit**: Maximum 800 lines per file (excluding imports)
+- **Line Limit**: Maximum 1600 lines per file (excluding imports)
 - **Skip**: Import/require/using sections
 - **Infer Stack From**: Package manifests, not import statements

@@ -28,24 +28,19 @@ Defines the standard working agreements to be included in generated `AGENTS.md` 
 | New Code | New functions/modules should be small, single-purpose, and colocated near related code |
 | Dependencies | Avoid new external dependencies unless necessary; if added, briefly explain why |
 
-## Compressed Format for AGENTS.md
+## Monorepo Package Format
 
-Due to the 12,000 character limit, working agreements in generated AGENTS.md should be compressed. Example format:
+For AGENTS.md files generated within a package of a monorepo, reference the root document instead of duplicating rules.
 
 ```markdown
 ## 5. Working Agreements
 
-- 응답은 한국어 (기술 용어는 영어 유지, 코드 블록 번역 금지)
-- 테스트/린트는 명시적 요청 시에만 작성
-- 코드 수정 전 관련 사용처와 패턴 파악
-- 단순한 해결책 우선, 불필요한 추상화 지양
-- 요구사항 불명확 시 먼저 질문
-- 최소한의 변경, 공개 API 유지
-- 새 함수는 단일 목적, 관련 코드 근처 배치
-- 외부 의존성 추가는 필요 시에만, 사유 설명
+See root `/AGENTS.md` for common working agreements.
 ```
 
-## Alternative English Compressed Format
+## Compressed Format for AGENTS.md
+
+Due to the **dynamic character limit** (based on LOC), working agreements in generated AGENTS.md should be compressed. Example format:
 
 ```markdown
 ## 5. Working Agreements
@@ -59,3 +54,4 @@ Due to the 12,000 character limit, working agreements in generated AGENTS.md sho
 - New functions: single-purpose, colocated with related code
 - External dependencies: only when necessary, explain why
 ```
+

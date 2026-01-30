@@ -15,20 +15,20 @@ tokei -e "*.json" -e "*.yaml" -e "*.yml" -e "*.md" -e "*.sh" -e "*.lock" -e "*.m
 If `tokei` is not installed:
 
 ```
-tokei가 설치되어 있지 않습니다.
-https://github.com/XAMPPRocky/tokei 에서 설치 후 다시 시도하세요.
+tokei is not installed.
+https://github.com/XAMPPRocky/tokei Please install it from here and try again.
 ```
 
 ## Character Limit by Repository Scale
 
 | Scale | LOC Range | Character Limit |
 |-------|-----------|-----------------|
-| 소규모 (Small) | ≤ 10,000 | 10,000자 |
-| 중소규모 (Small-Medium) | 10,001 ~ 50,000 | 10,000자 |
-| 중규모 (Medium) | 50,001 ~ 100,000 | 10,000자 |
-| 중대규모 (Medium-Large) | 100,001 ~ 500,000 | 15,000자 |
-| 대규모 (Large) | 500,001 ~ 1,000,000 | 20,000자 |
-| 초대규모 (Extra-Large) | > 1,000,000 | 30,000자 |
+| Small | ≤ 10,000 | 10,000 chars |
+| Small-Medium | 10,001 ~ 50,000 | 10,000 chars |
+| Medium | 50,001 ~ 100,000 | 10,000 chars |
+| Medium-Large | 100,001 ~ 500,000 | 15,000 chars |
+| Large | 500,001 ~ 1,000,000 | 20,000 chars |
+| Extra-Large | > 1,000,000 | 30,000 chars |
 
 ## Workflow
 
@@ -52,4 +52,4 @@ Use the **Total** lines value from tokei output:
 ===============================================================================
 ```
 
-In this example: Total Lines = 50,000 → 중소규모 → 10,000자 limit
+In this example: Total Lines = 50,000 → Small-Medium → 10,000 chars limit

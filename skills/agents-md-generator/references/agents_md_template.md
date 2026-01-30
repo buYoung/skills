@@ -2,7 +2,24 @@
 
 Defines the exact structure and content requirements for generated `AGENTS.md` files.
 
-## Document Structure
+## Monorepo Root Document Structure (`/AGENTS.md`)
+
+Used only when generating the root document for a monorepo.
+
+```markdown
+# AGENTS.md
+
+## 1. Overview
+[1-2 sentences describing the monorepo's purpose]
+
+## 2. Folder Structure
+[High-level map of apps, packages, and shared configs]
+
+## 3. Working Agreements
+[Common working agreements applicable to all packages]
+```
+
+## Standard Document Structure (Single Repo & Packages)
 
 ```markdown
 # AGENTS.md
@@ -108,7 +125,7 @@ See [./working_agreements.md](./working_agreements.md) for the full specificatio
 
 ## Format Requirements
 
-- **Language**: English only
+- **Language**: English only (for the content of the `AGENTS.md` file)
 - **Max Length**: Dynamic based on repository LOC. See [./loc_measurement.md](./loc_measurement.md)
 - **Format**: Valid Markdown
 - **Tone**: Concise, neutral

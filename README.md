@@ -36,7 +36,7 @@ These skills are currently under evaluation and will be promoted to **Available 
 | [typst-creator](skills/typst-creator/) | Generate Typst documents with proper syntax for markup, math, scripting, and styling. Based on Typst v0.14.2 |
 | [create-plan](skills/create-plan/) | Generate structured work plans before task execution. Collects context from user requirements, creates checklist-style plan files in the plan folder, and awaits user approval or modification before proceeding with implementation. |
 
-## 📖 How to Use
+## 📖 How to Install Skills
 
 ### Claude Code (Marketplace)
 
@@ -82,6 +82,20 @@ These skills are currently under evaluation and will be promoted to **Available 
    ```
    $agents-md-generator
    ```
+
+## 💡 How to Use
+
+### agents-md-generator
+
+**Basic Usage**:
+Add `agents-md-generator` to the skills of your AI Agent (Claude Code, Codex, OpenCode, Gemini, etc.) and run the skill in your codebase. You can also type "Create AGENTS.md for this project" or call the skill directly.
+
+> ⚠️ **Note**: This skill defaults to `--all`, meaning it will generate `AGENTS.md` for all sub-packages in a monorepo.
+
+**Options**:
+- `--root-only`: Generate for the root only.
+- `--package <name>`: Generate for a specific package only.
+- `--all`: Generate for the root and all packages (Default).
 
 ## 📄 What is SKILL.md?
 
