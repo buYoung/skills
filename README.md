@@ -85,17 +85,47 @@ These skills are currently under evaluation and will be promoted to **Available 
 
 ## 💡 How to Use
 
+Add the desired skill to your AI Agent (Claude Code, Codex, OpenCode, Gemini, etc.) and run it within your codebase. You can trigger skills by describing the task (e.g., "Create AGENTS.md for this project") or by calling the skill command directly.
+
 ### agents-md-generator
 
-**Basic Usage**:
-Add `agents-md-generator` to the skills of your AI Agent (Claude Code, Codex, OpenCode, Gemini, etc.) and run the skill in your codebase. You can also type "Create AGENTS.md for this project" or call the skill directly.
+> ⚠️ Note: This skill defaults to `--all`, meaning it will generate `AGENTS.md` for all sub-packages in a monorepo.
 
-> ⚠️ **Note**: This skill defaults to `--all`, meaning it will generate `AGENTS.md` for all sub-packages in a monorepo.
-
-**Options**:
+#### Options
 - `--root-only`: Generate for the root only.
 - `--package <name>`: Generate for a specific package only.
 - `--all`: Generate for the root and all packages (Default).
+
+#### Example
+- "Create AGENTS.md for this project"
+- "Generate AGENTS.md --root-only"
+- $agents-md-generator --package my-package
+
+### skill-maker
+
+This skill guides you through the process of creating a new AI agent skill. It requires a mandatory input validation step to ensure all necessary details are gathered before generation begins.
+
+#### Required Information
+You will be asked to provide the following details:
+- Purpose: The specific task or problem the skill automates.
+- Scope: Choice between general-purpose or domain-specific.
+- Domain: Target language, framework, or tool (if applicable).
+- Trigger: Concrete situations where the skill should be invoked.
+- Input/Output: Clear definition of inputs and expected outputs.
+- Resources: Any scripts, reference docs, or assets needed.
+
+For detailed sufficiency criteria, refer to [input_validation.md](skills/skill-maker/references/input_validation.md).
+
+#### Examples
+- Initial Request: "Create a new skill for automated code review" (Triggers clarification loop)
+- Complete Request:
+  > Create a new skill with following details:  
+  > - Purpose: Automated code review for TypeScript projects  
+  > - Scope: Domain-specific  
+  > - Domain: TypeScript, Node.js  
+  > - Trigger: Triggered manually or during PR review process  
+  > - Input/Output: Takes git diffs as input and generates inline comments as output  
+  > - Resources: Refer to the project's `.eslintrc.js` and `STYLE_GUIDE.md`  
 
 ## 📄 What is SKILL.md?
 
