@@ -1,25 +1,33 @@
 ---
 name: skill-maker
-description: Create new AI agent skills following the SKILL.md guidelines. Generates complete skill structure including SKILL.md with YAML frontmatter, optional bundled resources (scripts/, references/, assets/), and updates the repository README.md. Validates user input and requests clarification when information is insufficient.
+description: Generates AI agent skill packages with SKILL.md, optional bundled resources (scripts/, references/, assets/), and README.md integration.
 ---
 
-# Skill maker
+# Skill Maker Capabilities
 
-Create production-ready skills that follow the SKILL.md guidelines.
+Skill generation tooling for AI agent capability packages.
 
-## Workflow Steps
+## Core Capabilities
 
-| Step | Name | Reference |
-|------|------|-----------|
-| 1 | Input Analysis & Clarification | [step1.md](references/step1.md) |
-| 2 | Structure Planning | [step2.md](references/step2.md) |
-| 3 | Content Scoping | [step3.md](references/step3.md) |
-| 4 | Skill Generation | [step4.md](references/step4.md) |
-| 5 | Self-Validation | [step5.md](references/step5.md) |
-| 6 | README.md Update | [step6.md](references/step6.md) |
+- **Skill Package Generation**: Creates complete skill directory structures
+- **YAML Frontmatter Support**: Generates compliant frontmatter with name/description fields
+- **Resource Bundling**: Supports scripts/, references/, assets/ subdirectories
+- **README Integration**: Updates repository README.md with skill entries
 
-## Additional References
+## Supported Outputs
 
-| File | When to Read |
-|------|--------------|
-| [validation-checklist.md](references/validation-checklist.md) | Detailed validation rules and anti-patterns |
+| Output Type | Description |
+|-------------|-------------|
+| `SKILL.md` | Entry point with YAML frontmatter and capability index |
+| `references/` | Detailed technical specifications and domain knowledge |
+| `scripts/` | Executable automation code |
+| `assets/` | Templates, images, boilerplate files |
+
+## Technical References
+
+| Reference | Content |
+|-----------|---------|
+| [skill_structure.md](references/skill_structure.md) | File structure specifications and directory purposes |
+| [frontmatter_spec.md](references/frontmatter_spec.md) | YAML frontmatter field constraints and examples |
+| [content_spec.md](references/content_spec.md) | Capability vs behavior content classification |
+| [readme_spec.md](references/readme_spec.md) | README.md update format and section specifications |
