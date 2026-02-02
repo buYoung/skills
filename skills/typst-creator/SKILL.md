@@ -1,6 +1,6 @@
 ---
 name: typst-creator
-description: Generate Typst documents with proper syntax for markup, math, scripting, and styling. Based on Typst v0.14.2 documentation.
+description: Generate Typst source code for documents, reports, papers, and presentations, covering markup, math, scripting, and layout syntax.
 ---
 
 # Typst Document Creation Capability
