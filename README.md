@@ -13,6 +13,7 @@ Some skills require external tools to be installed:
 | agents-md-generator | [ripgrep (rg)](https://github.com/BurntSushi/ripgrep), [tokei](https://github.com/XAMPPRocky/tokei) |
 | jetbrains-vmoptions | None |
 | skill-maker | None |
+| system-prompt-creator | None |
 
 ## 🚀 Available Skills
 
@@ -24,6 +25,7 @@ Only skills that have been personally tested and approved by the user are listed
 | [kysely-converter](./skills/kysely-converter/) | Converts database queries and schemas using Kysely |
 | [jetbrains-vmoptions](skills/jetbrains-vmoptions/) | Generates JetBrains IDE VM options based on IDE version. Supports version-specific GC selection (Generational ZGC for 243+, G1GC for 222-242) and memory configuration. |
 | [skill-maker](skills/skill-maker/) | Create new AI agent skills following the SKILL.md guidelines with complete structure and README updates |
+| [system-prompt-creator](skills/system-prompt-creator/) | Analyzes user requirements to generate production-ready system prompts. It determines whether a single or multi-prompt architecture is needed and requests missing information if requirements are insufficient. |
 
 ## 🧪 Skills Waiting for Review
 
