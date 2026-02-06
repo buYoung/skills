@@ -129,3 +129,7 @@ Format selection guide for system prompt design:
   high: Markdown, YAML, JSON
   low: TOML, INI, Pipe-Delimited
 ```
+
+## Source
+
+The accuracy comparison data and selection criteria in this guide are based on the analysis from [Improving Agents - The Best Data Formats for LLMs](https://www.improvingagents.com).

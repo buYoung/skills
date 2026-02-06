@@ -130,6 +130,10 @@ For detailed sufficiency criteria, refer to [input_validation.md](skills/skill-m
 
 `SKILL.md` defines tools (capabilities) and skills usable by AI agents. It is compatible with Claude Skills and provides structured instructions for AI to perform specific tasks effectively.
 
+## 📚 References
+
+- [system-prompt-creator](skills/system-prompt-creator/): The [Data Format Selection Guide](skills/system-prompt-creator/references/data_format_selection.md) was developed referencing the analysis table from [Improving Agents](https://www.improvingagents.com).
+
 ## 🤝 Contributing
 
 This project is open source. Bug reports, feature suggestions, and PRs are always welcome.
