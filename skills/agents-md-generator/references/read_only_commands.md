@@ -6,36 +6,39 @@ Defines the allowed commands for repository analysis during AGENTS.md generation
 
 ### Basic Inspection
 
-| Command | Purpose |
-|---------|---------|
-| `pwd` | Print working directory |
-| `ls` | List directory contents |
-| `tree` | Display directory structure |
-| `find` | File and directory discovery (Linux / macOS) |
-| `Get-ChildItem` | File and directory discovery (Windows PowerShell) |
+- **`pwd`**: Print working directory
+- **`ls`**: List directory contents
+- **`tree`**: Display directory structure
+- - **`find`**: File and directory discovery (Linux / macOS)
+- - **`Get-ChildItem`**: File and directory discovery (Windows PowerShell)
 
 ### LOC Measurement
 
-| Command | Purpose | Notes |
-|---------|---------|-------|
-| `tokei` | Count lines of code | **Required** for determining character limits. See [loc_measurement.md](./loc_measurement.md) |
+- **`tokei`**: Count lines of code — **Required** for determining character limits. See [loc_measurement.md](./loc_measurement.md)
 
 ### Content Search
 
-| Command | Platform | Priority | Notes |
-|---------|----------|----------|-------|
-| `rg` (ripgrep) | All | **Preferred** | Check availability first with `rg --version` |
-| `grep` | Linux / macOS | Fallback | Use only if `rg` unavailable |
-| `Select-String` | Windows (PowerShell) | Fallback | Use only if `rg` unavailable |
+```yaml
+- command: rg (ripgrep)
+  platform: All
+  priority: Preferred
+  notes: Check availability first with `rg --version`
+- command: grep
+  platform: Linux / macOS
+  priority: Fallback
+  notes: Use only if `rg` unavailable
+- command: Select-String
+  platform: Windows (PowerShell)
+  priority: Fallback
+  notes: Use only if `rg` unavailable
+```
 
 ### Paginated File Reading
 
 When additional context is needed beyond initial search results, read files in incremental ranges:
 
-| Platform | Command | Example |
-|----------|---------|----------|
-| Linux / macOS | `sed -n 'START,ENDp' FILE` | `sed -n '1,80p' src/app.js` |
-| Windows (PowerShell) | `Get-Content FILE \| Select-Object -Skip (START-1) -First COUNT` | `Get-Content src\app.js \| Select-Object -Skip 0 -First 80` |
+- **Linux / macOS**: `sed -n 'START,ENDp' FILE` — e.g. `sed -n '1,80p' src/app.js`
+- **Windows (PowerShell)**: `Get-Content FILE | Select-Object -Skip (START-1) -First COUNT` — e.g. `Get-Content src\app.js | Select-Object -Skip 0 -First 80`
 
 **Incremental reading pattern**:
 
@@ -46,6 +49,7 @@ When additional context is needed beyond initial search results, read files in i
 **Per-file reading limit**:
 
 - Default upper bound: **800 lines** per file
+- Line budget applies **from the first non-import line**; import/require/using blocks at the top of a file are excluded from the count
 - Extend beyond 800 lines **only** when architecture boundaries (e.g., module exports, class definitions, route registrations) have not yet been identified
 - When extending, read in additional 400-line increments and re-evaluate after each increment
 - **Hard cap: 1600 lines** per file — never read beyond this limit regardless of context needs

@@ -20,30 +20,32 @@ This skill enables the agent to generate `AGENTS.md` files that serve as contrib
 ### Standard / Package Document (5 Sections)
 For single repositories or individual packages in a monorepo:
 
-| # | Section | Purpose |
-|---|---------|---------|
-| 1 | Overview | 1-2 sentence project description (abstract, no tool/framework lists) |
-| 2 | Folder Structure | Key directories and their contents |
-| 3 | Core Behaviors & Patterns | Logging, error handling, control flow, module structure patterns observed in code |
-| 4 | Conventions | Naming, comments, code style derived from analysis |
-| 5 | Working Agreements | Rules for agent behavior and communication |
+- **Overview**: 1-2 sentence project description (abstract, no tool/framework lists)
+- **Folder Structure**: Key directories and their contents
+- **Core Behaviors & Patterns**: Logging, error handling, control flow, module structure patterns observed in code
+- **Conventions**: Naming, comments, code style derived from analysis
+- **Working Agreements**: Rules for agent behavior and communication
 
 ### Monorepo Root Document (3 Sections)
 For the root of a monorepo structure:
 
-| # | Section | Purpose |
-|---|---------|---------|
-| 1 | Overview | 1-2 sentences describing the monorepo's purpose |
-| 2 | Folder Structure | High-level map of apps, packages, and shared configs |
-| 3 | Working Agreements | Common working agreements applicable to all packages |
+- **Overview**: 1-2 sentences describing the monorepo's purpose
+- **Folder Structure**: High-level map of apps, packages, and shared configs
+- **Working Agreements**: Common working agreements applicable to all packages
 
 ## Generation Modes (Monorepo)
 
-| Mode | Scope | When to Use |
-|------|-------|-------------|
-| All (Default) | Root + All Packages | Initial setup, full regeneration |
-| Root Only | Root document only | Update shared working agreements |
-| Single Package | One specific package | Package-specific changes |
+```yaml
+- mode: All (Default)
+  scope: Root + All Packages
+  when_to_use: Initial setup, full regeneration
+- mode: Root Only
+  scope: Root document only
+  when_to_use: Update shared working agreements
+- mode: Single Package
+  scope: One specific package
+  when_to_use: Package-specific changes
+```
 
 See [./references/monorepo_strategy.md](./references/monorepo_strategy.md) for detailed strategy.
 
@@ -51,15 +53,13 @@ See [./references/monorepo_strategy.md](./references/monorepo_strategy.md) for d
 
 This skill uses the following read-only tools for repository analysis. See [./references/read_only_commands.md](./references/read_only_commands.md) for detailed usage patterns.
 
-| Tool | Purpose |
-|------|----------|
-| `tokei` | LOC measurement (required) |
-| `rg` (ripgrep) | Content search (preferred) |
-| `grep` / `Select-String` | Content search (fallback per OS) |
-| `sed -n` / `Get-Content \| Select-Object` | Paginated file reading per OS |
-| `tree` | Directory structure visualization |
-| `find` | File and directory discovery (Linux / macOS) |
-| `ls`, `pwd` | Basic directory navigation |
+- **`tokei`**: LOC measurement (required)
+- **`rg` (ripgrep)**: Content search (preferred)
+- **`grep` / `Select-String`**: Content search (fallback per OS)
+- **`sed -n` / `Get-Content \| Select-Object`**: Paginated file reading per OS
+- **`tree`**: Directory structure visualization
+- **`find`**: File and directory discovery (Linux / macOS)
+- **`ls`, `pwd`**: Basic directory navigation
 
 ## Domain Knowledge
 

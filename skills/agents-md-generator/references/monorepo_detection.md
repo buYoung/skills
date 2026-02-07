@@ -6,24 +6,20 @@ Defines the method for identifying if the current repository is a monorepo.
 
 A repository is considered a monorepo if **any** of the following files exist in the root directory:
 
-| File | Framework/Tool |
-|------|----------------|
-| `pnpm-workspace.yaml` | pnpm workspaces |
-| `lerna.json` | Lerna |
-| `nx.json` | Nx |
-| `turbo.json` | Turborepo |
-| `rush.json` | Rush |
+- **`pnpm-workspace.yaml`**: pnpm workspaces
+- **`lerna.json`**: Lerna
+- **`nx.json`**: Nx
+- **`turbo.json`**: Turborepo
+- **`rush.json`**: Rush
 
 ## Workspace Package Discovery
 
 After identifying a monorepo, discover packages from these configuration files:
 
-| Source | Field to Read |
-|--------|---------------|
-| `pnpm-workspace.yaml` | `packages` |
-| `package.json` | `workspaces` |
-| `lerna.json` | `packages` |
-| `nx.json` | Check `projects` or scan directories |
+- **`pnpm-workspace.yaml`**: `packages`
+- **`package.json`**: `workspaces`
+- **`lerna.json`**: `packages`
+- **`nx.json`**: Check `projects` or scan directories
 
 ## Fallback Discovery
 
