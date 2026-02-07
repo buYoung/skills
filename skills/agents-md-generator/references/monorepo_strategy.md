@@ -32,3 +32,15 @@ Defines the strategy for generating AGENTS.md files in a monorepo environment.
 | Package | "See root `/AGENTS.md`" (reference only, no additions) |
 
 **Note**: Package-specific behaviors and conventions belong in **Section 3 (Core Behaviors & Patterns)** and **Section 4 (Conventions)**, not in Working Agreements.
+
+## Section Boundary Rules
+
+Defines what content belongs in which section of a package AGENTS.md.
+
+| Content Type | Target Section | Examples                                                               |
+|-------------|----------------|------------------------------------------------------------------------|
+| Package-specific implementation patterns | Section 3 (Core Behaviors & Patterns) | Logging approach, error handling, control flow                         |
+| Package-specific naming/style conventions | Section 4 (Conventions) | Naming rules, comment style, file organization                         |
+| Common working principles across all packages | Section 5 (Working Agreements) | Response language, code block handling, commit rules, context building |
+
+**Anti-pattern**: Do NOT place package-specific technical details (e.g., how a particular package handles errors or structures modules) into Section 5 (Working Agreements). Working Agreements are reserved for shared behavioral rules that apply uniformly across the entire repository.

@@ -101,12 +101,12 @@ Used only when generating the root document for a monorepo.
 
 ### Section 3: Core Behaviors & Patterns
 
-Patterns derived from code analysis (800 lines per file max, excluding imports):
+Patterns derived from code analysis:
 
 | Pattern Type | Description |
 |--------------|-------------|
 | Debugging & Logging | Logger utilities, log levels, structured logs |
-| Error Handling | Try-catch patterns, error propagation |
+| Error Handling | Error propagation, recovery strategies |
 | Control Flow | Early returns, guard clauses |
 | Module Structure | Responsibility separation between modules |
 

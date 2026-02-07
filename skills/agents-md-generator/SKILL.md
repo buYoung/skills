@@ -24,7 +24,7 @@ For single repositories or individual packages in a monorepo:
 |---|---------|---------|
 | 1 | Overview | 1-2 sentence project description (abstract, no tool/framework lists) |
 | 2 | Folder Structure | Key directories and their contents |
-| 3 | Core Behaviors & Patterns | Logging, error handling, control flow patterns observed in code |
+| 3 | Core Behaviors & Patterns | Logging, error handling, control flow, module structure patterns observed in code |
 | 4 | Conventions | Naming, comments, code style derived from analysis |
 | 5 | Working Agreements | Rules for agent behavior and communication |
 
@@ -55,8 +55,10 @@ This skill uses the following read-only tools for repository analysis. See [./re
 |------|----------|
 | `tokei` | LOC measurement (required) |
 | `rg` (ripgrep) | Content search (preferred) |
+| `grep` / `Select-String` | Content search (fallback per OS) |
+| `sed -n` / `Get-Content \| Select-Object` | Paginated file reading per OS |
 | `tree` | Directory structure visualization |
-| `cat` | File content inspection |
+| `find` | File and directory discovery (Linux / macOS) |
 | `ls`, `pwd` | Basic directory navigation |
 
 ## Domain Knowledge
