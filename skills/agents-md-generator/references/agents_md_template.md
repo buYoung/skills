@@ -58,10 +58,8 @@ Used only when generating the root document for a monorepo.
 
 **Analysis vs Output Principle**:
 
-| Phase | Scope | Purpose |
-|-------|-------|---------|
-| Analysis | All depths | Understand full structure and identify architectural boundaries |
-| Output | Significant levels only | Present only directories where distinct roles and responsibilities exist |
+- **Analysis**: All depths — Understand full structure and identify architectural boundaries
+- **Output**: Significant levels only — Present only directories where distinct roles and responsibilities exist
 
 **When to Stop Drilling Down**:
 
@@ -101,23 +99,19 @@ Used only when generating the root document for a monorepo.
 
 ### Section 3: Core Behaviors & Patterns
 
-Patterns derived from code analysis (800 lines per file max, excluding imports):
+Patterns derived from code analysis:
 
-| Pattern Type | Description |
-|--------------|-------------|
-| Debugging & Logging | Logger utilities, log levels, structured logs |
-| Error Handling | Try-catch patterns, error propagation |
-| Control Flow | Early returns, guard clauses |
-| Module Structure | Responsibility separation between modules |
+- **Debugging & Logging**: Logger utilities, log levels, structured logs
+- **Error Handling**: Error propagation, recovery strategies
+- **Control Flow**: Early returns, guard clauses
+- **Module Structure**: Responsibility separation between modules
 
 ### Section 4: Conventions
 
-| Convention Type | Examples |
-|-----------------|----------|
-| Naming | camelCase, snake_case, PascalCase usage |
-| Prefixes/Suffixes | `SomethingService`, `useSomething`, `SomethingProps` |
-| Comments | Tone, language, brevity |
-| Legacy Handling | TODO, FIXME, NOTE, deprecated markers |
+- **Naming**: camelCase, snake_case, PascalCase usage
+- **Prefixes/Suffixes**: `SomethingService`, `useSomething`, `SomethingProps`
+- **Comments**: Tone, language, brevity
+- **Legacy Handling**: TODO, FIXME, NOTE, deprecated markers
 
 ### Section 5: Working Agreements
 
