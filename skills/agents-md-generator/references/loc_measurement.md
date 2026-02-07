@@ -21,14 +21,26 @@ https://github.com/XAMPPRocky/tokei Please install it from here and try again.
 
 ## Character Limit by Repository Scale
 
-| Scale | LOC Range | Character Limit |
-|-------|-----------|-----------------|
-| Small | ≤ 10,000 | 10,000 chars |
-| Small-Medium | 10,001 ~ 50,000 | 10,000 chars |
-| Medium | 50,001 ~ 100,000 | 10,000 chars |
-| Medium-Large | 100,001 ~ 500,000 | 15,000 chars |
-| Large | 500,001 ~ 1,000,000 | 20,000 chars |
-| Extra-Large | > 1,000,000 | 30,000 chars |
+```yaml
+- scale: Small
+  loc_range: "≤ 10,000"
+  character_limit: 10,000
+- scale: Small-Medium
+  loc_range: "10,001 ~ 50,000"
+  character_limit: 10,000
+- scale: Medium
+  loc_range: "50,001 ~ 100,000"
+  character_limit: 10,000
+- scale: Medium-Large
+  loc_range: "100,001 ~ 500,000"
+  character_limit: 15,000
+- scale: Large
+  loc_range: "500,001 ~ 1,000,000"
+  character_limit: 20,000
+- scale: Extra-Large
+  loc_range: "> 1,000,000"
+  character_limit: 30,000
+```
 
 ## Workflow
 
