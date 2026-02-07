@@ -10,8 +10,9 @@ Some skills require external tools to be installed:
 
 | Skill | Required Tools |
 |-------|----------------|
-| agents-md-generator | [ripgrep (rg)](https://github.com/BurntSushi/ripgrep), [tokei](https://github.com/XAMPPRocky/tokei) |
+| agents-md-generator | [tokei (required)](https://github.com/XAMPPRocky/tokei), [ripgrep (rg) (preferred)](https://github.com/BurntSushi/ripgrep), [tree](https://mama.indstate.edu/users/ice/tree/) |
 | jetbrains-vmoptions | None |
+| kysely-converter | None |
 | skill-maker | None |
 | system-prompt-creator | None |
 
@@ -21,7 +22,7 @@ Only skills that have been personally tested and approved by the user are listed
 
 | Skill | Description |
 |-------|-------------|
-| [agents-md-generator](skills/agents-md-generator/) | Automatically sets up project structure and generates metadata files like `AGENTS.md` for AI collaboration |
+| [agents-md-generator](skills/agents-md-generator/) | Automatically sets up project structure and generates standardized `AGENTS.md` files. Supports both single-repo and monorepo structures. |
 | [kysely-converter](./skills/kysely-converter/) | Converts database queries and schemas using Kysely |
 | [jetbrains-vmoptions](skills/jetbrains-vmoptions/) | Generates JetBrains IDE VM options based on IDE version. Supports version-specific GC selection (Generational ZGC for 243+, G1GC for 222-242) and memory configuration. |
 | [skill-maker](skills/skill-maker/) | Create new AI agent skills following the SKILL.md guidelines with complete structure and README updates |
