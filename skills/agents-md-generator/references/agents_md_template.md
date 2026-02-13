@@ -2,6 +2,14 @@
 
 Defines the exact structure and content requirements for generated `AGENTS.md` files.
 
+## Table of Contents
+
+- [Monorepo Root Document Structure](#monorepo-root-document-structure-agentsmd)
+- [Standard Document Structure](#standard-document-structure-single-repo--packages)
+- [Section Specifications](#section-specifications)
+- [Format Requirements](#format-requirements)
+- [Anti-Patterns (Excluded Content)](#anti-patterns-excluded-content)
+
 ## Monorepo Root Document Structure (`/AGENTS.md`)
 
 Used only when generating the root document for a monorepo.
@@ -115,12 +123,12 @@ Patterns derived from code analysis:
 
 ### Section 5: Working Agreements
 
-See [./working_agreements.md](./working_agreements.md) for the full specification.
+See the working agreements specification referenced from SKILL.md.
 
 ## Format Requirements
 
 - **Language**: English only (for the content of the `AGENTS.md` file)
-- **Max Length**: Dynamic based on repository LOC. See [./loc_measurement.md](./loc_measurement.md)
+- **Max Length**: Dynamic based on repository LOC (see LOC measurement specification referenced from SKILL.md)
 - **Format**: Valid Markdown
 - **Tone**: Concise, neutral
 - **Headings**: Short and descriptive

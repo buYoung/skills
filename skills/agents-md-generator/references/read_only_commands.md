@@ -2,6 +2,15 @@
 
 Defines the allowed commands for repository analysis during AGENTS.md generation.
 
+## Table of Contents
+
+- [Allowed Command Categories](#allowed-command-categories)
+- [ripgrep (`rg`) Usage Patterns](#ripgrep-rg-usage-patterns)
+- [tree Command Usage](#tree-command-usage)
+- [Files to Ignore](#files-to-ignore)
+- [Files Allowed to Read](#files-allowed-to-read)
+- [Source File Analysis Rules](#source-file-analysis-rules)
+
 ## Allowed Command Categories
 
 ### Basic Inspection
@@ -9,12 +18,12 @@ Defines the allowed commands for repository analysis during AGENTS.md generation
 - **`pwd`**: Print working directory
 - **`ls`**: List directory contents
 - **`tree`**: Display directory structure
-- - **`find`**: File and directory discovery (Linux / macOS)
-- - **`Get-ChildItem`**: File and directory discovery (Windows PowerShell)
+- **`find`**: File and directory discovery (Linux / macOS)
+- **`Get-ChildItem`**: File and directory discovery (Windows PowerShell)
 
 ### LOC Measurement
 
-- **`tokei`**: Count lines of code — **Required** for determining character limits. See [loc_measurement.md](./loc_measurement.md)
+- **`tokei`**: Count lines of code — **Required** for determining character limits (see LOC measurement specification referenced from SKILL.md)
 
 ### Content Search
 

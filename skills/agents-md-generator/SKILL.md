@@ -1,6 +1,6 @@
 ---
 name: agents-md-generator
-description: Analyze repository structure and generate standardized AGENTS.md files that serve as contributor guides for AI agents. Supports both single-repo and monorepo structures. Measures LOC to determine character limits and produces structured documents covering overview, folder structure, patterns, conventions, and working agreements.
+description: Analyze repository structure and generate or update standardized AGENTS.md files that serve as contributor guides for AI agents. Supports both single-repo and monorepo structures. Measures LOC to determine character limits and produces structured documents covering overview, folder structure, patterns, conventions, and working agreements. Update mode refreshes only the standard sections while preserving user-defined custom sections. Use when setting up a new repository, onboarding AI agents to an existing codebase, updating an existing AGENTS.md, or when the user mentions AGENTS.md.
 license: MIT
 ---
 
@@ -10,14 +10,15 @@ This skill enables the agent to generate `AGENTS.md` files that serve as contrib
 
 ## Core Capability
 
-- **Function**: Analyze repository structure and generate a standardized `AGENTS.md` document
+- **Function**: Analyze repository structure and generate or update a standardized `AGENTS.md` document
 - **Output Format**: Markdown file with structured sections
 - **Character Limit**: Dynamic, based on repository LOC (Lines of Code)
 - **Monorepo Support**: Automatically detects monorepo structures and generates hierarchical documentation (Root + Packages)
+- **Update Support**: Refreshes only standard sections in an existing `AGENTS.md`, preserving user-defined custom sections
 
 ## Output Sections
 
-### Standard / Package Document (5 Sections)
+### Single Repo / Package Document (5 Sections)
 For single repositories or individual packages in a monorepo:
 
 - **Overview**: 1-2 sentence project description (abstract, no tool/framework lists)
@@ -33,21 +34,18 @@ For the root of a monorepo structure:
 - **Folder Structure**: High-level map of apps, packages, and shared configs
 - **Working Agreements**: Common working agreements applicable to all packages
 
-## Generation Modes (Monorepo)
+## Operation Modes
 
-```yaml
-- mode: All (Default)
-  scope: Root + All Packages
-  when_to_use: Initial setup, full regeneration
-- mode: Root Only
-  scope: Root document only
-  when_to_use: Update shared working agreements
-- mode: Single Package
-  scope: One specific package
-  when_to_use: Package-specific changes
-```
+### Generate vs Update
 
-See [./references/monorepo_strategy.md](./references/monorepo_strategy.md) for detailed strategy.
+- **Generate**: Creates a new `AGENTS.md` from scratch (default when no `AGENTS.md` exists)
+- **Update**: Refreshes standard sections in an existing `AGENTS.md` while preserving custom sections. See [./references/update_strategy.md](./references/update_strategy.md) for detailed workflow and section matching rules.
+
+The agent automatically selects the appropriate mode based on whether an `AGENTS.md` file already exists at the target location.
+
+### Generation Modes (Monorepo)
+
+Supports three modes: **All** (root + all packages, default), **Root Only**, and **Single Package**. See [./references/monorepo_strategy.md](./references/monorepo_strategy.md) for detailed strategy and mode selection criteria.
 
 ## Tools
 
@@ -69,9 +67,10 @@ This skill uses the following read-only tools for repository analysis. See [./re
 - **Working Agreements**: Agent behavior rules for generated documents. See [./references/working_agreements.md](./references/working_agreements.md)
 - **Monorepo Detection**: Capability to identify monorepo structures. See [./references/monorepo_detection.md](./references/monorepo_detection.md)
 - **Monorepo Strategy**: Strategy for generating documentation in monorepos. See [./references/monorepo_strategy.md](./references/monorepo_strategy.md)
+- **Update Strategy**: Strategy for updating existing AGENTS.md files with selective section refresh. See [./references/update_strategy.md](./references/update_strategy.md)
 
-## Constraints
+## Scope Boundaries
 
-- **Read-Only Analysis**: Repository inspection uses only non-destructive commands
-- **No Run/Test/Build/Deploy**: Generated AGENTS.md excludes execution instructions
-- **Files to Ignore**: Lock files (`pnpm-lock.yaml`, `package-lock.json`, `yarn.lock`, etc.)
+- **Read-Only Analysis**: Supports non-destructive commands for repository inspection
+- **Output Scope**: Produces documentation content only; excludes run/test/build/deploy instructions
+- **Excluded Inputs**: Lock files (`pnpm-lock.yaml`, `package-lock.json`, `yarn.lock`, etc.) are outside analysis scope
