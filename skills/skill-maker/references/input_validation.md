@@ -8,37 +8,49 @@ This is the **first mandatory step** in skill creation. Parse user input and val
 
 ## Required Information Checklist
 
-| Item | Check | Question if Missing |
-|------|-------|---------------------|
-| Purpose | What problem does this skill solve? | "What task should this skill automate or support?" |
-| Scope | General-purpose or domain-specific? | "Is this skill intended to be general-purpose (applicable across domains) or specialized for a specific domain (e.g., language, framework, platform)?" |
-| Domain | Target technology/framework specified? | "What language/framework/tool is this for?" |
-| Trigger | When should the skill activate? | "In what situations should this skill be invoked?" |
-| Input/Output | Clear inputs and expected outputs? | "What input does it receive and what output does it produce?" |
-| Resources | Need scripts/references/assets? | "Are there scripts to execute or reference docs needed?" |
+```yaml
+- item: Purpose
+  check: What specific problem does this skill solve? Is the core value clear?
+  question_if_missing: "What specific problem does this skill solve? Describe the concrete task it automates or the knowledge it provides (e.g., 'Automates unit test generation', 'Refactors legacy code', 'Provides mandatory backend coding conventions for code structure')."
+- item: Scope
+  check: Project-specific or universally applicable?
+  question_if_missing: "Is this skill tied to a specific project structure or tech stack, or is it a universal utility usable in any project? (e.g., project-specific: depends on monorepo layout; universal: works with any codebase)"
+- item: Domain
+  check: Target technology/framework specified?
+  question_if_missing: "What language/framework/tool is this for?"
+- item: Input/Output
+  check: Clear input format and output format defined?
+  question_if_missing: "What is the input format and output format? (e.g., Input: File Path, String, JSON, Diff, Natural Language Prompt / Output: Markdown file, Code snippet, JSON, CLI output)"
+- item: Resources
+  check: Need scripts/references/assets?
+  question_if_missing: "Are there scripts to execute or reference docs needed?"
+```
 
 ## Scope Clarification
 
-| Scope Type | Description | Content Style |
-|------------|-------------|---------------|
-| **General-purpose** | Skill applies broadly without assuming specific technology stack | Abstract patterns, technology-agnostic guidance |
-| **Domain-specific** | Skill is optimized for a particular language, framework, or platform | Concrete syntax, APIs, tool-specific details |
+```yaml
+- scope_type: Universal
+  description: Skill works in any project regardless of structure or tech stack
+  content_style: Abstract patterns, technology-agnostic guidance
+  example: "Markdown linter, git commit message generator"
+- scope_type: Project-specific
+  description: Skill depends on a particular project structure, language, or platform
+  content_style: Concrete syntax, APIs, tool-specific details
+  example: "Next.js App Router migration, monorepo AGENTS.md generator"
+```
 
 ## Sufficiency Criteria
 
-| Item | Minimum Requirement |
-|------|---------------------|
-| Purpose | Specific problem statement, not just a category name |
-| Scope | Explicit choice between general-purpose or domain-specific |
-| Domain | If domain-specific: language/framework/platform explicitly named; if general-purpose: "N/A" or broad applicability stated |
-| Trigger | At least one concrete invocation scenario |
-| Input/Output | Both defined explicitly, use "none" if not applicable |
-| Resources | Explicit "none needed" or specific list of required resources |
+- **Purpose**: Specific problem statement with clear value proposition, not just a category name (e.g., "code review" → "Automates TypeScript code review by analyzing diffs against style guide")
+- **Scope**: Explicit choice between project-specific (tied to a structure/stack) or universal (any project)
+- **Domain**: If project-specific: language/framework/platform explicitly named; if universal: "N/A" or broad applicability stated
+- **Input/Output**: Both formats defined explicitly (e.g., "Diff → inline comments", "File Path → Markdown"), use "none" if not applicable
+- **Resources**: Explicit "none needed" or specific list of required resources
 
 ## Loop Logic
 
 ```text
-1. Parse input → extract purpose, scope, domain, trigger, I/O, resources
+1. Parse input → extract purpose, scope, domain, I/O, resources
 2. Check each required item against sufficiency criteria
 3. If any missing or insufficient → generate clarification questions → wait for response → repeat
 4. If all sufficient → proceed to skill generation
@@ -52,15 +64,14 @@ This is the **first mandatory step** in skill creation. Parse user input and val
 User: "Create a skill for code review"
 
 Missing:
-- Scope: General-purpose or domain-specific?
+- Scope: Project-specific or universal?
 - Domain: Which language/framework?
-- Trigger: When to invoke?
-- Input/Output: What files/format?
+- Input/Output: What data format?
 
 Response: "To create this skill, I need more details:
-1. Is this for a specific language (e.g., TypeScript, Python) or general-purpose?
-2. What triggers this skill - PR review, on-demand, pre-commit?
-3. What input format (diff, full file) and output format (comments, report)?"
+1. Is this tied to a specific project structure/tech stack, or usable in any project?
+2. What language/framework is this for (e.g., TypeScript, Python)?
+3. What is the input format (e.g., Diff, File Path, JSON) and output format (e.g., Markdown, inline comments)?"
 ```
 
 ### Sufficient Input
@@ -69,10 +80,9 @@ Response: "To create this skill, I need more details:
 User: "Create a TypeScript code review skill that activates on PR reviews, 
 takes diff input, and outputs inline comments following our style guide"
 
-✅ Purpose: Code review automation
-✅ Scope: Domain-specific
+✅ Purpose: Automates TypeScript code review by analyzing diffs against style guide
+✅ Scope: Universal (works with any TypeScript project)
 ✅ Domain: TypeScript
-✅ Trigger: PR reviews
 ✅ Input/Output: Diff → inline comments
 ✅ Resources: Style guide reference needed
 

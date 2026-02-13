@@ -36,8 +36,6 @@ $skill-installer install https://github.com/{owner}/{repo}/tree/main/skills/{ski
 
 ## Field Mappings
 
-| README Field | Source |
-|--------------|--------|
-| Skill name | SKILL.md frontmatter `name` |
-| Description | SKILL.md frontmatter `description` |
-| Prerequisites | Skill's external dependencies (tools, CLIs, APIs) |
+- **Skill name**: SKILL.md frontmatter `name`
+- **Description**: SKILL.md frontmatter `description`
+- **Prerequisites**: Skill's external dependencies (tools, CLIs, APIs)

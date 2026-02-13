@@ -9,19 +9,15 @@ Skill generation tooling for AI agent capability packages.
 
 ## Tools
 
-| Tool | Purpose |
-|------|---------|
-| File system operations | Create directories, write SKILL.md and reference files |
-| YAML parser | Generate and validate frontmatter |
-| Markdown generator | Structure capability documentation |
+- **File system operations**: Create directories, write SKILL.md and reference files
+- **YAML parser**: Generate and validate frontmatter
+- **Markdown generator**: Structure capability documentation
 
 ## Domains
 
-| Domain | Scope |
-|--------|-------|
-| AI agent skills | Primary domain - skill package structure and conventions |
-| Documentation | SKILL.md authoring, capability vs behavior classification |
-| Repository management | README.md integration, directory layout |
+- **AI agent skills**: Primary domain - skill package structure and conventions
+- **Documentation**: SKILL.md authoring, capability vs behavior classification
+- **Repository management**: README.md integration, directory layout
 
 ## Workflow
 
@@ -44,19 +40,15 @@ After all required information is collected, proceed with package creation.
 
 ## Supported Outputs
 
-| Output Type | Description |
-|-------------|-------------|
-| `SKILL.md` | Entry point with YAML frontmatter and capability index |
-| `references/` | Detailed technical specifications and domain knowledge |
-| `scripts/` | Executable automation code |
-| `assets/` | Templates, images, boilerplate files |
+- **`SKILL.md`**: Entry point with YAML frontmatter and capability index
+- **`references/`**: Detailed technical specifications and domain knowledge
+- **`scripts/`**: Executable automation code
+- **`assets/`**: Templates, images, boilerplate files
 
 ## Technical References
 
-| Reference | Content |
-|-----------|---------|
-| [input_validation.md](references/input_validation.md) | **Required first step** - Input analysis and clarification loop |
-| [skill_structure.md](references/skill_structure.md) | File structure specifications and directory purposes |
-| [frontmatter_spec.md](references/frontmatter_spec.md) | YAML frontmatter field constraints and examples |
-| [content_spec.md](references/content_spec.md) | Capability vs behavior content classification |
-| [readme_spec.md](references/readme_spec.md) | README.md update format and section specifications |
+- **[input_validation.md](references/input_validation.md)**: **Required first step** - Input analysis and clarification loop
+- **[skill_structure.md](references/skill_structure.md)**: File structure specifications and directory purposes
+- **[frontmatter_spec.md](references/frontmatter_spec.md)**: YAML frontmatter field constraints and examples
+- **[content_spec.md](references/content_spec.md)**: Capability vs behavior content classification
+- **[readme_spec.md](references/readme_spec.md)**: README.md update format and section specifications
