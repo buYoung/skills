@@ -1,28 +1,36 @@
 ---
 name: code-review
-description: Capable of performing comprehensive code reviews on git commits. Analyzes commit changes, investigates side effects in the codebase, and categorizes findings by severity levels (critical, major, minor, nit).
+description: Performs comprehensive code reviews on git commits. Analyzes commit changes, investigates side effects in the codebase, and categorizes findings by severity levels (critical, major, minor, nit).
 ---
 
 # Code Review Capabilities
 
-This skill enables the agent to perform structured code reviews on git commits by analyzing changes, tracing side effects, and providing categorized feedback.
+Structured code review tooling for git commit analysis and feedback generation.
+
+## Tools
+
+- **Git CLI**: Retrieves commit metadata, diffs, and file change information
+- **Search tools (rg, fd)**: Traces function/class usage across the codebase for impact detection
+
+## Domains
+
+- **Code analysis**: Primary domain - commit diff interpretation and code inspection
+- **Git operations**: Commit metadata retrieval, diff operations, range analysis
+- **Impact assessment**: Dependency tracing, test coverage verification
 
 ## Core Capabilities
 
 - **Git Commit Analysis**: Retrieves commit metadata, messages, and diffs from git hash
 - **Change Classification**: Categorizes modified files by type (source, test, config, new, modified, deleted)
 - **Side Effect Detection**: Traces function/class usage across the codebase to identify potential impacts
-- **Severity Classification**: Categorizes review findings into four severity levels
+- **Severity Classification**: Categorizes review findings into four severity levels (Critical, Major, Minor, Nit)
+- **Verdict Generation**: Produces structured review verdicts (APPROVE, REQUEST_CHANGES, COMMENT)
 
-## Review Flow
+## Supported Analysis Types
 
-| Phase | Capability | Output |
-|-------|-----------|--------|
-| 1. Context Collection | Git hash lookup, diff statistics | Commit metadata, change scope |
-| 2. Change Analysis | File-by-file diff inspection | Categorized file changes |
-| 3. Impact Analysis | Dependency tracing, test coverage check | Side effect report |
-| 4. Review Execution | Code inspection with severity classification | Categorized findings |
-| 5. Result Summary | Formatted output generation | Structured review report |
+- **Single Commit**: Review changes in a specific commit hash
+- **Commit Range**: Review changes across multiple commits
+- **File-Scoped**: Review specific files within a commit
 
 ## Severity Levels
 
@@ -33,21 +41,10 @@ This skill enables the agent to perform structured code reviews on git commits b
 | **Minor** | Code quality, readability, duplication |
 | **Nit** | Style, naming conventions, comment improvements |
 
-## Domain Knowledge
+## Technical References
 
-- **Git Operations**: Commands for retrieving commit information and diffs. See [./references/git_operations.md](./references/git_operations.md)
-- **Change Analysis**: File categorization and diff interpretation methods. See [./references/change_analysis.md](./references/change_analysis.md)
-- **Impact Detection**: Side effect tracing and dependency analysis techniques. See [./references/impact_detection.md](./references/impact_detection.md)
-- **Severity Criteria**: Detailed classification criteria for each severity level. See [./references/severity_criteria.md](./references/severity_criteria.md)
-- **Output Format**: Review result structure and formatting specification. See [./references/output_format.md](./references/output_format.md)
-
-## Supported Analysis Types
-
-- **Single Commit**: Review changes in a specific commit hash
-- **Commit Range**: Review changes across multiple commits
-- **File-Scoped**: Review specific files within a commit
-
-## Constraints
-
-- **Read-Only Operations**: Uses only non-destructive git commands
-- **Local Repository**: Operates on locally available git history
+- **[git_operations.md](references/git_operations.md)**: Git commands for retrieving commit information and diffs
+- **[change_analysis.md](references/change_analysis.md)**: File categorization and diff interpretation methods
+- **[impact_detection.md](references/impact_detection.md)**: Side effect tracing and dependency analysis techniques
+- **[severity_criteria.md](references/severity_criteria.md)**: Classification criteria for each severity level
+- **[output_format.md](references/output_format.md)**: Review result structure and formatting specification
