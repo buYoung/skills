@@ -53,3 +53,23 @@ Methods for categorizing and interpreting file changes in commits.
 - **Files Changed**: Total number of modified files
 - **Hunks per File**: Number of separate change regions
 - **Functions Touched**: Distinct functions with changes
+
+## Large Change Handling
+
+### Noise Reduction
+Large diffs often contain noise that obscures meaningful changes. Identify and separate:
+
+| Noise Type | Detection | Handling |
+|------------|-----------|----------|
+| **Auto-generated files** | Paths matching `generated/`, `*_gen.*`, `*.pb.go`, `*.graphql.ts` | Skip from review, verify generation source only |
+| **Format-only changes** | Diff contains only whitespace/indent changes, no logic change | Acknowledge and skip |
+| **Dependency lock files** | `package-lock.json`, `yarn.lock`, `go.sum`, `Cargo.lock` | Verify consistency with manifest, skip line-by-line review |
+| **Bulk renames/moves** | `git diff --name-status` shows mostly `R` status | Verify paths, skip content review |
+
+### Review Strategy by Scale
+
+| Files Changed | Strategy |
+|---------------|----------|
+| **1–10** | Full line-by-line review |
+| **11–30** | Prioritize source > config > test; skim documentation |
+| **30+** | Separate noise files first, focus on source changes, flag as "large PR — consider splitting" |

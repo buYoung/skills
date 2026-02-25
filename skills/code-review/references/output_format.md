@@ -48,6 +48,8 @@ Structure and formatting specification for code review results.
 
 ## Verdict Criteria
 
+### Base Rules
+
 | Verdict | Condition |
 |---------|-----------|
 | **REQUEST_CHANGES** | Any Critical finding exists |
@@ -55,6 +57,15 @@ Structure and formatting specification for code review results.
 | **COMMENT** | Major findings exist (1-2) |
 | **COMMENT** | 5+ Minor findings exist |
 | **APPROVE** | Only Minor/Nit findings or none |
+
+### Override Rules
+Base rules may be overridden when context demands it:
+
+| Context | Override |
+|---------|-----------|
+| Major finding involves **incorrect business logic** or **data corruption** | Escalate to REQUEST_CHANGES regardless of count |
+| Major finding is in **dead/unreachable code path** | May downgrade to COMMENT |
+| All findings are in **test files only** | COMMENT unless tests mask production bugs |
 
 ## Grouping Options
 
@@ -70,6 +81,24 @@ Findings grouped under severity headers
 ## src/user/controller.ts
 - [Minor] Long function (L30-85)
 ```
+
+## Positive Feedback
+
+Include a `Highlights` section when noteworthy good practices are observed:
+
+```
+## Highlights
+- <description of good practice and where it appears>
+```
+
+### Examples of Highlight-Worthy Patterns
+- Well-structured error handling with clear recovery paths
+- Comprehensive test coverage accompanying the change
+- Clean separation of concerns or thoughtful abstraction
+- Proactive performance optimization
+- Clear and helpful commit messages/code comments
+
+> Include highlights only when genuinely earned. Omit the section entirely if nothing stands out.
 
 ## Summary Statistics
 

@@ -12,12 +12,17 @@ Issues that pose immediate risk to system integrity, security, or data.
 | **Data Integrity** | Data loss potential, incorrect data migration, missing transaction boundaries |
 | **Availability** | Infinite loops, resource leaks causing crashes, deadlock potential |
 | **Authentication** | Broken auth flow, privilege escalation, session fixation |
+| **Breaking API Change** | Public API signature change with existing consumers |
+| **DB Migration** | Irreversible schema change, large-table lock without mitigation, missing rollback path |
 
 ### Indicators
 - Unvalidated user input in sensitive operations
 - Missing or incorrect access control checks
 - Cryptographic misuse (weak algorithms, improper key handling)
 - Direct database queries with string concatenation
+- `.env` files or secrets committed to version control
+- Schema migration without rollback script or backward-compatible strategy
+- Public function signature changed while consumers exist
 
 ## Major
 
@@ -29,12 +34,17 @@ Issues that cause incorrect behavior or significant degradation.
 | **Performance** | N+1 queries, missing indexes, unbounded data fetching |
 | **Error Handling** | Swallowed exceptions, missing error cases, incorrect error propagation |
 | **Concurrency** | Race conditions, missing synchronization, incorrect async handling |
+| **Logging/Observability** | Sensitive data in logs (PII, tokens), removed critical monitoring metrics |
+| **Environment/Config** | Missing env variable documentation, environment-specific values hardcoded |
 
 ### Indicators
 - Missing null/undefined checks on required values
 - Incorrect loop boundaries or termination conditions
 - Blocking calls in async contexts
 - Missing retry logic for unreliable operations
+- Error messages exposing internal system details to users
+- PII or authentication tokens written to log output
+- Environment-specific values (URLs, ports) hardcoded instead of configured
 
 ## Minor
 
@@ -52,6 +62,8 @@ Issues affecting code quality and maintainability.
 - Cyclomatic complexity > 10
 - More than 3 levels of nesting
 - Repeated code blocks (3+ occurrences)
+
+> **Note**: Numeric thresholds are language-agnostic defaults. Defer to project/language conventions when they exist (e.g., Go error handling naturally increases function length, Kotlin DSL encourages nesting).
 
 ## Nit
 
