@@ -1,129 +1,149 @@
 # Impact Detection
 
-Techniques for identifying side effects and dependencies of code changes.
+Techniques for identifying side effects, consumer impact, and contract compatibility of code changes.
+
+## Change Surface Identification
+
+Changed entities are analyzed by role:
+
+- **Behavioral units**: Functions, methods, handlers, jobs, workflows
+- **Data contracts**: Request/response payloads, persisted schemas, serialized structures
+- **Operational contracts**: Runtime entrypoints, scheduled tasks, event names, configuration keys
+
+## Symbol Exposure Analysis
+
+Exposure is classified by externally consumable surface:
+
+| Exposure Type | Description | Typical Evidence |
+|---------------|-------------|------------------|
+| **Externally Consumable Interface** | Contracts consumed across module/service boundaries | Public exports, API descriptors, protocol definitions |
+| **Module/Package Public Surface** | Symbols intended for downstream consumers | Re-export files, package entrypoint files, public manifest mappings |
+| **Runtime Entrypoint Contract** | Startup, routing, eventing, or job invocation interfaces | Route maps, event registration, scheduler/worker bindings |
 
 ## Dependency Tracing
 
-### Function/Method Usage Search
+### Exact Symbol Lookup
 ```bash
-rg "<function_name>\(" --type <lang>
+rg -F "<symbol_name>(" .
 ```
-- **Purpose**: Find all call sites of a modified function
+- **Purpose**: Finds direct executable call sites for changed callable symbols
 
-### Class/Type Reference Search
+### Broader Reference Lookup
 ```bash
-rg "(import|from).*<class_name>" --type <lang>
-rg "<class_name>" --type <lang>
+rg "<symbol_name>" .
 ```
-- **Purpose**: Locate imports and usages of modified classes
+- **Purpose**: Finds textual references when exact call patterns are insufficient
 
-### Export Analysis
+### Boundary/Entrypoint Lookup
 ```bash
-rg "export.*(function|class|const).*<name>"
+rg "<entrypoint_or_contract_name>" .
 ```
-- **Purpose**: Determine if changed entity is publicly exposed
+- **Purpose**: Identifies where a changed contract is wired into runtime behavior
 
-### Interface/Type Reference Search
+### Exposure Lookup
 ```bash
-rg "(implements|extends)\s+<class_name>" --type <lang>
+rg "<public_surface_indicator>.*<symbol_name>|<symbol_name>.*<public_surface_indicator>" .
 ```
-- **Purpose**: Find classes that implement or extend modified interfaces/base classes
+- **Purpose**: Confirms whether changed entities are reachable from external consumers
 
-### Constant/Enum Usage Search
-```bash
-rg "<EnumName>\.<member>" --type <lang>
-```
-- **Purpose**: Trace usage of modified constants or enum members
+## Consumer Counting
 
-### Configuration Key Search
-```bash
-rg "['\"]<config_key>['\"]" --type <lang>
-```
-- **Purpose**: Find code referencing modified config keys or environment variables
+Consumer impact is computed in two steps:
 
-### Cross-File Type Search (broad)
-```bash
-rg "<name>" -l
-```
-- **Purpose**: Quick file-level scan when unsure of usage patterns; refine with specific patterns after
+1. **Raw Match Count**
+- Count all matches from broad search to establish initial reference volume
 
-### Search Limitations
-- **Dynamic calls**: Reflection, dependency injection, decorators, and string-based lookups are invisible to `rg`. Note these as unverifiable in findings.
-- **Aliases/Re-exports**: A symbol may be re-exported under a different name. Search for the original name may miss indirect consumers.
-- **Generated code**: Auto-generated files may reference symbols but are not authored code. Exclude from impact analysis.
+2. **Normalized Consumer Count**
+- Include: production runtime references and executable call sites
+- Exclude: definition lines, comments/doc-only references, test-only references, generated files, vendor/third_party code
+- Deduplicate multiple references from the same logical consumer location
+
+> Normalized Consumer Count is the authoritative signal for impact and breaking-change severity.
+
+## Evidence Confidence Model
+
+| Confidence | Score Range | Characteristics |
+|------------|-------------|-----------------|
+| **High** | `>= 0.8` | Multiple direct executable references with call-path confirmation |
+| **Medium** | `0.5 - 0.79` | References exist but aliasing/re-export/indirection leaves partial uncertainty |
+| **Low** | `< 0.5` | Evidence depends on strings, reflection, dynamic dispatch, or incomplete traceability |
+
+### Verification Status Mapping
+
+| Verification Status | Criteria |
+|---------------------|----------|
+| **Verified** | High-confidence evidence with executable reference path |
+| **Partially Verified** | Medium-confidence evidence with unresolved indirection |
+| **Unverifiable** | Low-confidence evidence where static tracing cannot prove runtime linkage |
+
+Unverifiable findings are included explicitly in the review report under analysis limitations.
 
 ## Impact Categories
 
 ### Direct Impact
-- **Callers**: Functions that directly invoke modified code
-- **Implementors**: Classes implementing modified interfaces
-- **Extenders**: Classes extending modified base classes
+- **Callers/Invokers**: Executable consumers that directly invoke changed behavior
+- **Contract Consumers**: Components that parse, validate, or depend on changed contracts
+- **Runtime Integrations**: Route/event/job bindings mapped to changed interfaces
 
 ### Indirect Impact
-- **Transitive Callers**: Functions calling the direct callers
-- **Shared State**: Code accessing modified global/shared variables
-- **Event Listeners**: Handlers for events emitted by modified code
+- **Transitive Consumers**: Callers downstream from direct consumers
+- **Shared State Dependents**: Components reading or writing affected shared state
+- **Operational Coupling**: Alerting, retry, caching, and fallback layers coupled to changed behavior
 
-## Test Coverage Check
+## Behavioral Test Coverage Check
 
-### Related Test Files
-| Source Pattern | Test Pattern |
-|----------------|--------------|
-| `src/foo.ts` | `src/foo.test.ts`, `src/foo.spec.ts` |
-| `src/foo.ts` | `__tests__/foo.test.ts` |
-| `foo.py` | `test_foo.py`, `foo_test.py` |
+Coverage analysis evaluates changed behavior units, not only file presence.
 
-### Test Existence Verification
-```bash
-fd "<basename>.(test|spec).<ext>" <test_dir>
-```
+1. Map changed behavior units from the patch
+2. Identify tests asserting those behaviors (success path, failure path, boundary conditions)
+3. Classify coverage:
+- **Covered**: Relevant assertions exist for changed behavior
+- **Partially Covered**: Assertions exist but miss critical branch/edge path
+- **Not Covered**: No relevant assertions found
 
-## API Breaking Change Detection
+### Risk Escalation for Missing Coverage
 
-When a modified function/class is publicly exported, check for breaking changes:
+| Coverage Status | Escalation Guidance |
+|-----------------|---------------------|
+| **Covered** | No automatic escalation |
+| **Partially Covered** | Consider one-level risk increase when change is high impact |
+| **Not Covered** | Increase risk level for behavior/regression findings |
 
-| Change Type | Breaking? | Detection |
-|-------------|-----------|----------|
-| **Parameter added (required)** | Yes | Diff shows new non-optional parameter |
-| **Parameter removed** | Yes | Diff shows parameter deletion |
-| **Parameter type changed** | Yes | Diff shows type annotation change |
-| **Return type changed** | Yes | Diff shows return type annotation change |
-| **Method/field removed from class** | Yes | Diff shows public member deletion |
-| **Enum member removed** | Yes | Diff shows member deletion |
-| **HTTP endpoint path/method changed** | Yes | Diff shows route definition change |
-| **Parameter added (optional with default)** | No | New parameter has default value |
-| **New method/field added** | No | Additive changes are backward-compatible |
+## Breaking Change Detection (Generic)
 
-### Verification Steps
-1. Confirm the changed entity is exported/public (`rg "export.*<name>"`)
-2. Count consumers (`rg "<name>" -l | wc -l`)
-3. If breaking + consumers exist → **Critical** finding
+Breaking-change checks are contract-oriented and language-agnostic.
+
+| Contract Change Type | Breaking? | Detection Signal |
+|----------------------|-----------|------------------|
+| **Required input increased** | Yes | New mandatory field/argument/parameter requirement |
+| **Accepted value domain narrowed** | Yes | Removed valid values, stricter validation without compatibility path |
+| **Output contract changed incompatibly** | Yes | Removed/renamed output fields or changed semantic guarantees |
+| **Endpoint/operation signature changed** | Yes | Path/method/operation name or invocation shape changed |
+| **Externally consumed member removed/renamed** | Yes | Consumer-visible symbol removed or renamed without compatibility layer |
+| **Additive backward-compatible extension** | No (usually) | Optional additions preserving existing consumer behavior |
+
+### Decision Signal
+
+- If a breaking contract change has normalized consumers > 0, classify at least as **Critical candidate**
+- Final severity considers impact magnitude, confidence, and critical-domain context
 
 ## Risk Indicators
 
-| Indicator | Risk Level | Description |
-|-----------|------------|-------------|
-| **No Tests** | High | Modified code lacks test coverage |
-| **Many Callers** | Medium | Change affects multiple consumers |
-| **Public API** | High | Exported interface modified |
-| **Breaking API Change** | Critical | Public signature modified with existing consumers |
-| **Shared State** | High | Global or singleton state modified |
-| **Database Schema** | Critical | Data structure changes |
-| **Config Change** | Medium | Environment or runtime config modified |
+| Indicator | Base Risk | Description |
+|-----------|-----------|-------------|
+| **No Behavioral Coverage** | High | Changed behavior lacks relevant tests |
+| **High Normalized Consumers** | High | Change affects many runtime consumers |
+| **Exposed Public Surface** | High | Change is reachable by external consumers |
+| **Shared State Mutation** | High | Global or shared state semantics are modified |
+| **Data Shape Change** | High | Persisted or exchanged contract changed |
+| **Config Contract Change** | Medium | Runtime config keys/semantics changed |
 
-## Analysis Commands
+## Analysis Limitations
 
-### Find Dependents (TypeScript/JavaScript)
-```bash
-rg "from ['\"].*/<module_name>['\"]"
-```
+Static/textual analysis has known limits:
 
-### Find Implementations (Go)
-```bash
-rg "func \(.*\) <method_name>\("
-```
+- Dynamic invocation, reflection, and runtime plugin loading
+- Indirection through aliases, generated wiring, or external orchestration
+- Cross-repository consumers not present in current workspace
 
-### Find Overrides (Python)
-```bash
-rg "def <method_name>\(self"
-```
+These are recorded as confidence reductions and/or `Unverifiable` findings.

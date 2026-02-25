@@ -1,83 +1,100 @@
 # Severity Criteria
 
-Classification criteria for code review findings by severity level.
+Classification criteria for code review findings by severity level, with confidence-aware interpretation.
+
+## Severity Levels
 
 ## Critical
 
-Issues that pose immediate risk to system integrity, security, or data.
+Issues with immediate high risk to system integrity, security, availability, or external contract compatibility.
 
 | Category | Examples |
 |----------|----------|
-| **Security** | SQL injection, XSS vulnerabilities, hardcoded credentials, insecure deserialization |
-| **Data Integrity** | Data loss potential, incorrect data migration, missing transaction boundaries |
-| **Availability** | Infinite loops, resource leaks causing crashes, deadlock potential |
-| **Authentication** | Broken auth flow, privilege escalation, session fixation |
-| **Breaking API Change** | Public API signature change with existing consumers |
-| **DB Migration** | Irreversible schema change, large-table lock without mitigation, missing rollback path |
+| **Security Exposure** | Injection vectors, credential leakage, authorization bypass |
+| **Data Integrity Failure** | Corruption, irreversible mutation, destructive migration without safe path |
+| **Availability Risk** | Crash loops, deadlock potential, unbounded resource exhaustion |
+| **Externally Breaking Contract** | Incompatible changes on consumed public/runtime interfaces |
+| **Rollback Gap in High-Risk Change** | No rollback/mitigation path for high-impact operational changes |
 
 ### Indicators
-- Unvalidated user input in sensitive operations
-- Missing or incorrect access control checks
-- Cryptographic misuse (weak algorithms, improper key handling)
-- Direct database queries with string concatenation
-- `.env` files or secrets committed to version control
-- Schema migration without rollback script or backward-compatible strategy
-- Public function signature changed while consumers exist
+- Sensitive operation without required access control
+- Destructive schema/data change without compatibility or rollback path
+- Consumer-visible contract removed or renamed while consumers exist
+- Critical monitoring/remediation controls removed during risky behavior changes
 
 ## Major
 
-Issues that cause incorrect behavior or significant degradation.
+Issues that cause incorrect behavior, major reliability degradation, or high operational cost.
 
 | Category | Examples |
 |----------|----------|
-| **Logic Errors** | Incorrect conditionals, off-by-one errors, wrong operator |
-| **Performance** | N+1 queries, missing indexes, unbounded data fetching |
-| **Error Handling** | Swallowed exceptions, missing error cases, incorrect error propagation |
-| **Concurrency** | Race conditions, missing synchronization, incorrect async handling |
-| **Logging/Observability** | Sensitive data in logs (PII, tokens), removed critical monitoring metrics |
-| **Environment/Config** | Missing env variable documentation, environment-specific values hardcoded |
+| **Behavioral Defects** | Incorrect branch logic, boundary errors, invalid fallback behavior |
+| **Performance Degradation** | Unbounded processing, repeated expensive operations, excessive I/O |
+| **Error Handling Gaps** | Swallowed failures, incorrect retry boundaries, misclassified errors |
+| **Concurrency/Race Risk** | Inconsistent shared-state access, missing synchronization strategy |
+| **Observability Regression** | Loss of diagnostic context, reduced signal for incident response |
+| **Configuration Semantics Drift** | Runtime config meaning changed without compatibility handling |
 
 ### Indicators
-- Missing null/undefined checks on required values
-- Incorrect loop boundaries or termination conditions
-- Blocking calls in async contexts
-- Missing retry logic for unreliable operations
-- Error messages exposing internal system details to users
-- PII or authentication tokens written to log output
-- Environment-specific values (URLs, ports) hardcoded instead of configured
+- Changed behavior lacks reliable failure-path handling
+- Operationally expensive path triggered without guardrails
+- Logging/metrics signal required for detection or triage is significantly reduced
+- Consumer-impacting change exists but evidence or impact is below Critical threshold
 
 ## Minor
 
-Issues affecting code quality and maintainability.
+Issues affecting maintainability, readability, or medium-term quality.
 
 | Category | Examples |
 |----------|----------|
-| **Code Quality** | Long functions, deep nesting, high complexity |
-| **Duplication** | Copy-pasted code, repeated patterns without abstraction |
-| **Readability** | Unclear variable names, missing context, complex expressions |
-| **Design** | Tight coupling, missing abstraction, god objects |
+| **Maintainability** | Excessive complexity, duplicated logic, unclear module boundaries |
+| **Readability** | Ambiguous naming, difficult control flow, poor local context |
+| **Design Hygiene** | Tight coupling, low-cohesion utility placement |
 
 ### Indicators
-- Functions exceeding 50 lines
-- Cyclomatic complexity > 10
-- More than 3 levels of nesting
-- Repeated code blocks (3+ occurrences)
-
-> **Note**: Numeric thresholds are language-agnostic defaults. Defer to project/language conventions when they exist (e.g., Go error handling naturally increases function length, Kotlin DSL encourages nesting).
+- Complex change with limited local explanation
+- Duplication likely to drift over time
+- Readability issues that increase future defect risk
 
 ## Nit
 
-Minor suggestions for polish and consistency.
+Low-impact polish and consistency suggestions.
 
 | Category | Examples |
 |----------|----------|
-| **Style** | Inconsistent formatting, irregular spacing |
-| **Naming** | Non-descriptive names, inconsistent casing conventions |
-| **Comments** | Outdated comments, missing documentation on public APIs |
-| **Organization** | Import ordering, file structure |
+| **Style Consistency** | Formatting or local style drift |
+| **Naming Polish** | Naming clarity improvements with negligible behavioral impact |
+| **Comment Hygiene** | Outdated comments or missing short contextual notes |
 
 ### Indicators
-- Variable names less than 3 characters (excluding common idioms: i, j, k)
-- Commented-out code
-- TODO comments without issue references
-- Inconsistent quote style or semicolon usage
+- Cosmetic inconsistency without runtime impact
+- Minor naming or organization cleanup opportunities
+
+## Confidence Axis
+
+Confidence qualifies how strongly evidence supports a finding.
+
+| Confidence Tier | Score Range | Interpretation |
+|-----------------|-------------|----------------|
+| **High** | `>= 0.8` | Strong direct evidence; severity can be acted on directly |
+| **Medium** | `0.5 - 0.79` | Credible but partially indirect evidence; include verification notes |
+| **Low** | `< 0.5` | Weak or indirect evidence; avoid automatic escalation |
+
+## Critical vs Major Boundary Guidance
+
+| Decision Factor | Critical Lean | Major Lean |
+|-----------------|--------------|------------|
+| **Data Risk** | Data loss/corruption likely or irreversible | Data inconsistency possible but recoverable |
+| **Business Logic Impact** | Core transaction/authorization correctness is broken | Limited-path incorrect behavior without systemic failure |
+| **Rollback/Mitigation** | No safe rollback path for high-impact change | Rollback or mitigation exists and is practical |
+| **Observability Effect** | Incident detection/containment capability critically degraded | Detection degraded but still operationally manageable |
+
+## Escalation Conditions
+
+A Major finding is considered a `REQUEST_CHANGES` candidate when all conditions hold:
+
+- Impacts at least one critical domain (`authentication/authorization`, `payment/billing`, `data integrity/migration`, `availability/reliability`)
+- Impact is high for users, service continuity, or data correctness
+- Confidence is Medium or High (`>= 0.5`)
+
+If confidence is Low, keep the finding non-escalated and request manual verification.
