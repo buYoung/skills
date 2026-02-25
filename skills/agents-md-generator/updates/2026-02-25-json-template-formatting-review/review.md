@@ -1,4 +1,11 @@
 ---
+#### 작업 정보
+- 작업 agent : junie(gemini 3.0 flash)
+- 검증/분석 agent : junie(opus 4.6)
+- GitHub 주소 : https://github.com/buYoung/intellij-jsoninja
+- 태그명 : agents-test-base
+- 해당 태그에서 요구사항을 실행하면 동일한 결과를 얻을 수 있습니다.
+
 #### 요구사항
 - JSON 포맷팅 시 템플릿 문법(`{{.value}}`)도 포맷팅 결과에 포함되도록 함
 - 예시: `{ "test": {{.value}} }` 포맷 후에도 `{ "test": {{.value}} }`와 같이 유지되어야 함

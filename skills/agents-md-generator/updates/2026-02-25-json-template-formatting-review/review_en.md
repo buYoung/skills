@@ -1,4 +1,11 @@
 ---
+#### Task Information
+- Work agent: junie (gemini 3.0 flash)
+- Verification/Analysis agent: junie (opus 4.6)
+- GitHub Repository: https://github.com/buYoung/intellij-jsoninja
+- Tag Name: agents-test-base
+- Note: Running the requirements from this tag will produce the same results.
+
 #### Requirements
 - Ensure template syntax (`{{.value}}`) is preserved and included in formatting results when formatting JSON.
 - Example: `{ "test": {{.value}} }` should remain `{ "test": {{.value}} }` after formatting.
