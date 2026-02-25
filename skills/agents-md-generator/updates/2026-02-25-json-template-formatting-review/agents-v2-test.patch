@@ -1,0 +1,192 @@
+Subject: [PATCH] feat: onBoarding ui 정립 완료 #2
+---
+Index: src/test/kotlin/com/livteam/jsoninja/services/JsonFormatterTemplateTest.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/test/kotlin/com/livteam/jsoninja/services/JsonFormatterTemplateTest.kt b/src/test/kotlin/com/livteam/jsoninja/services/JsonFormatterTemplateTest.kt
+new file mode 100644
+--- /dev/null	(date 1772001693610)
++++ b/src/test/kotlin/com/livteam/jsoninja/services/JsonFormatterTemplateTest.kt	(date 1772001693610)
+@@ -0,0 +1,68 @@
++package com.livteam.jsoninja.services
++
++import com.intellij.testFramework.fixtures.BasePlatformTestCase
++import com.livteam.jsoninja.model.JsonFormatState
++
++class JsonFormatterTemplateTest : BasePlatformTestCase() {
++    private lateinit var jsonFormatterService: JsonFormatterService
++
++    override fun setUp() {
++        super.setUp()
++        jsonFormatterService = JsonFormatterService(project)
++    }
++
++    fun testFormatJsonWithTemplate() {
++        val jsonWithTemplate = """{  "test": {{.value}} }"""
++        val prettifiedJson = jsonFormatterService.formatJson(jsonWithTemplate, JsonFormatState.PRETTIFY)
++
++        assertTrue("Prettified JSON should contain newline", prettifiedJson.contains("\n"))
++        assertTrue("Prettified JSON should contain template", prettifiedJson.contains("{{.value}}"))
++        assertTrue("Prettified JSON should have property test", prettifiedJson.contains("\"test\""))
++        assertEquals(
++            """{
++  "test": {{.value}}
++}""", prettifiedJson.trim()
++        )
++    }
++
++    fun testFormatJsonWithTemplateKey() {
++        val jsonWithTemplateKey = """{ {{.key}}: "value" }"""
++        val prettifiedJson = jsonFormatterService.formatJson(jsonWithTemplateKey, JsonFormatState.PRETTIFY)
++
++        assertTrue(prettifiedJson.contains("\n"))
++        assertTrue(prettifiedJson.contains("{{.key}}"))
++        assertEquals(
++            """{
++  {{.key}}: "value"
++}""", prettifiedJson.trim()
++        )
++    }
++
++    fun testFormatJsonWithMixedTemplates() {
++        val json = """{"a":{{.a}},"b":"static {{.b}}","c":{{.c}}}"""
++        val prettifiedJson = jsonFormatterService.formatJson(json, JsonFormatState.PRETTIFY)
++
++        assertTrue(prettifiedJson.contains("\"a\": {{.a}}"))
++        assertTrue(prettifiedJson.contains("\"b\": \"static {{.b}}\""))
++        assertTrue(prettifiedJson.contains("\"c\": {{.c}}"))
++    }
++
++    fun testFormatJsonWithTemplateInTemplate() {
++        // Nested curly braces in template
++        val json = """{"test": {{.value { "foo": "bar" } }} }"""
++        val prettifiedJson = jsonFormatterService.formatJson(json, JsonFormatState.PRETTIFY)
++
++        assertTrue(prettifiedJson.contains("{{.value { \"foo\": \"bar\" } }}"))
++    }
++
++    fun testIsValidJsonWithTemplate() {
++        val jsonWithTemplate = """{ "test": {{.value}} }"""
++        assertTrue("Should be valid JSON with template", jsonFormatterService.isValidJson(jsonWithTemplate))
++
++        val invalidJsonWithTemplate = """{ "test": {{.value} }""" // Missing one }
++        assertFalse(
++            "Should be invalid JSON with broken template",
++            jsonFormatterService.isValidJson(invalidJsonWithTemplate)
++        )
++    }
++}
+Index: src/main/kotlin/com/livteam/jsoninja/services/JsonFormatterService.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/kotlin/com/livteam/jsoninja/services/JsonFormatterService.kt b/src/main/kotlin/com/livteam/jsoninja/services/JsonFormatterService.kt
+--- a/src/main/kotlin/com/livteam/jsoninja/services/JsonFormatterService.kt	(revision 802f52f85db89bab93211af3860d15cbd1720541)
++++ b/src/main/kotlin/com/livteam/jsoninja/services/JsonFormatterService.kt	(date 1772001658675)
+@@ -24,9 +24,11 @@
+ class JsonFormatterService(private val project: Project) {
+     private val LOG = logger<JsonFormatterService>()
+     private val settings: JsoninjaSettingsState = JsoninjaSettingsState.getInstance(project)
+-    
++
+     private val defaultMapper = service<JsonObjectMapperService>().objectMapper
+-    
++
++    private val templateRegex = Regex("""("(?:\\.|[^\\"])*")|(\{\{.*?\}\})""")
++
+     private val sortedMapper = defaultMapper.copy().apply {
+         configure(SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS, true)
+     }
+@@ -37,7 +39,7 @@
+ 
+     companion object {
+         private val prettyPrinterCache = ConcurrentHashMap<Pair<Int, Boolean>, DefaultPrettyPrinter>()
+-        
++
+         // 기본 들여쓰기 공백 수
+         private const val DEFAULT_INDENT_SIZE = 2
+     }
+@@ -129,8 +131,10 @@
+ 
+         if (isEmptyJson) return json
+ 
++        val (processedJson, templates) = replaceTemplates(json)
++
+         // Check if JSON is valid before attempting to format
+-        if (!isValidJson(json)) {
++        if (!isValidJson(processedJson)) {
+             LOG.debug("Invalid JSON detected, returning original: $json")
+             return json
+         }
+@@ -155,10 +159,10 @@
+ 
+             // 매퍼 설정
+             val mapper = getConfiguredMapper(usesSorting)
+-            val jsonNode = mapper.readTree(json)
++            val jsonNode = mapper.readTree(processedJson)
+ 
+ 
+-            when (formatState) {
++            val result = when (formatState) {
+                 JsonFormatState.PRETTIFY,
+                 JsonFormatState.PRETTIFY_COMPACT -> {
+                     val prettyPrinter = createConfiguredPrettyPrinter(formatState)
+@@ -174,6 +178,8 @@
+                     mapper.writeValueAsString(jsonNode)
+                 }
+             }
++
++            restoreTemplates(result, templates)
+         } catch (e: Exception) {
+             // 포맷팅 실패 시 원본 반환
+             LOG.warn("JSON 포맷팅 실패: ${e.message}")
+@@ -192,9 +198,11 @@
+         val isEmptyJson = trimedJson.isBlank() || trimedJson.isEmpty()
+         if (isEmptyJson) return false
+ 
++        val (processedJson, _) = replaceTemplates(json)
++
+         return try {
+             // Use JsonParser to validate the entire input string including trailing tokens
+-            defaultMapper.factory.createParser(json).use { parser ->
++            defaultMapper.factory.createParser(processedJson).use { parser ->
+                 // Parse the JSON value completely
+                 parser.nextToken()
+                 parser.skipChildren()
+@@ -207,6 +215,33 @@
+         }
+     }
+ 
++    private fun replaceTemplates(json: String): Pair<String, Map<String, String>> {
++        val templates = mutableMapOf<String, String>()
++        var counter = 0
++        val replaced = templateRegex.replace(json) { matchResult ->
++            val stringLiteral = matchResult.groups[1]
++            if (stringLiteral != null) {
++                // 문자열 리터럴은 그대로 유지
++                stringLiteral.value
++            } else {
++                // 템플릿 문법은 플레이스홀더로 치환
++                val template = matchResult.groups[2]!!.value
++                val placeholder = "\"__JSONINJA_TEMPLATE_${counter++}__\""
++                templates[placeholder] = template
++                placeholder
++            }
++        }
++        return Pair(replaced, templates)
++    }
++
++    private fun restoreTemplates(json: String, templates: Map<String, String>): String {
++        var restored = json
++        templates.forEach { (placeholder, original) ->
++            restored = restored.replace(placeholder, original)
++        }
++        return restored
++    }
++
+     /**
+      * 커스텀 PrettyPrinter 클래스
+      * JSON 포맷팅 시 사용되는 들여쓰기 및 출력 형식 정의

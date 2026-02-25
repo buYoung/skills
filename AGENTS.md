@@ -2,30 +2,33 @@
 
 ## 1. Overview
 
-A collection of AI agent skills providing structured capabilities for efficient developer-AI collaboration. Each skill defines what an agent can do or knows, enabling consistent task automation.
+This repository maintains reusable AI agent skills and supporting references for developer-AI collaboration tasks. Each skill package defines explicit capabilities in `SKILL.md` and details them through modular reference documents.
 
 ## 2. Folder Structure
 
-- `skills/`: Individual skill packages, each self-contained with documentation and references.
-    - `<skill-name>/SKILL.md`: Entry point defining capabilities, tools, and domains.
-    - `<skill-name>/references/`: Detailed technical specifications and domain knowledge.
-- `doc/`: Repository-level documentation and guidelines.
-    - `SKILL_GUIDELINES.md`: Authoring standards for creating new skills.
-- `.windsurf/skills/`: IDE-specific skill integrations.
+- `skills/`: Primary skill packages.
+    - `<skill-name>/SKILL.md`: Capability index with YAML frontmatter (`name`, `description`) and scoped sections.
+    - `<skill-name>/references/`: Deep-dive specifications, syntax rules, and domain documents linked from `SKILL.md`.
+    - `agents-md-generator/updates/`: Dated review artifacts and patch samples for skill revisions.
+- `doc/`: Repository-level authoring policy.
+    - `SKILL_GUIDELINES.md`: Capability-first writing rules and file structure standards.
+- `.aiassistant/rules/`: Tooling-specific agent guidance overlays.
+- `.windsurf/skills/`: IDE integration copies of selected skills.
+- `README.md`: Skill catalog, installation flows, and activation examples.
 
 ## 3. Core Behaviors & Patterns
 
-- **Capability-focused content**: SKILL.md defines "what the agent can do" (knowledge, tools, syntax), never "how it should behave."
-- **Modular structure**: Each skill is isolated with its own `references/` for detailed specs.
-- **YAML frontmatter**: Every SKILL.md requires `name` (max 64 chars, kebab-case) and `description` (max 1024 chars).
-- **Progressive disclosure**: High-level index in SKILL.md, deep-dive details in references.
+- **Progressive disclosure**: `SKILL.md` stays concise while linked `references/` files hold detailed specs and domain rules.
+- **Capability-first documentation**: Skill docs consistently describe what the agent knows or supports, separating behavior policies into dedicated guidance files.
+- **Frontmatter-driven metadata**: Skill entries use a consistent YAML frontmatter contract (`name`, `description`) for discoverability and validation.
+- **Structured update trail**: Skill evolution is tracked through dated `updates/` directories containing patches and review notes.
 
 ## 4. Conventions
 
-- **Naming**: Skill directories use `kebab-case` (e.g., `agents-md-generator`, `kysely-converter`).
-- **File structure**: `SKILL.md` as entry point, `references/` for detailed docs, optional `scripts/`, `assets/`.
-- **Tone**: Objective, descriptive language ("Is", "Has", "Supports"); avoid imperative rules.
-- **Documentation language**: English for SKILL.md content; Korean responses when interacting with users.
+- **Naming**: Skill directory names use `kebab-case`; reference document filenames are topic-oriented and typically `snake_case`.
+- **Document shape**: `SKILL.md` is the entry point, with relative markdown links to `references/` for deeper content.
+- **Style**: Capability descriptions use concise, objective wording and avoid imperative behavior language inside skill specs.
+- **Language split**: Repository documentation is written in English, while live agent-user interaction rules require Korean responses.
 
 ## 5. Working Agreements
 

@@ -107,12 +107,29 @@ Used only when generating the root document for a monorepo.
 
 ### Section 3: Core Behaviors & Patterns
 
-Patterns derived from code analysis:
+Document **cross-cutting patterns** that repeat across the codebase. Focus on patterns that a contributor must follow to keep code consistent — not individual function descriptions.
 
-- **Debugging & Logging**: Logger utilities, log levels, structured logs
-- **Error Handling**: Error propagation, recovery strategies
-- **Control Flow**: Early returns, guard clauses
-- **Module Structure**: Responsibility separation between modules
+**Pattern Discovery Approach**:
+
+- Search for **recurring idioms** that appear in 3+ files (e.g., shared error handling wrappers, common logging calls, repeated guard clause shapes)
+- Identify **architectural boundaries** and how data flows across them (e.g., Controller → Service → Repository, Action → Service → UI)
+- Look for **project-specific abstractions** the team has built on top of frameworks (e.g., custom base classes, shared decorators, wrapper utilities)
+- Note **implicit rules** not captured in linter configs (e.g., "all async operations go through a central queue", "state mutations only via specific helpers")
+
+**Pattern Categories** (include only those actually observed):
+
+- **Logging**: Logger initialization pattern, log levels, structured logging conventions
+- **Error Handling**: Error propagation strategy, recovery vs fail-fast, custom error types
+- **Control Flow**: Guard clauses, early returns, null-safety idioms
+- **Concurrency / Threading**: Thread model, async patterns, synchronization approaches
+- **Module Communication**: How modules call each other, dependency direction, event/message patterns
+- **State Management**: Where and how state is held, mutated, and shared
+
+**Anti-patterns**:
+
+- Listing individual functions or classes instead of cross-cutting patterns
+- Describing what a single file does rather than what the codebase does consistently
+- Including patterns that appear only once (not truly cross-cutting)
 
 ### Section 4: Conventions
 

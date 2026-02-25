@@ -24,7 +24,7 @@ Defines the strategy for generating AGENTS.md files in a monorepo environment.
   sections: 3
   character_limit: Dynamic based on LOC
 - document: Package
-  location: /packages/*/AGENTS.md, /apps/*/AGENTS.md, /libs/*/AGENTS.md
+  location: Per-package directories discovered via workspace config (see monorepo_detection.md)
   sections: 5 (Standard)
   character_limit: Dynamic based on LOC
 ```

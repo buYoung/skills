@@ -1,53 +1,86 @@
 ---
 name: code-review
-description: Capable of performing comprehensive code reviews on git commits. Analyzes commit changes, investigates side effects in the codebase, and categorizes findings by severity levels (critical, major, minor, nit).
+description: Performs production-ready code reviews on git changes. Supports commit/range/file-scoped analysis, impact assessment, breaking-change detection, confidence-aware finding classification, and risk-weighted verdict generation.
 ---
 
 # Code Review Capabilities
 
-This skill enables the agent to perform structured code reviews on git commits by analyzing changes, tracing side effects, and providing categorized feedback.
+Structured capability set for reviewing git changes with evidence-backed findings and risk-aware verdicts.
+
+## Tools
+
+- **Git CLI**: Retrieves commit metadata, diffs, range context, and history graph information
+- **Search tools (`rg`, `fd`)**: Traces references, consumer impact, and related tests across repositories
+
+## Domains
+
+- **Change analysis**: Diff interpretation, file classification, and change-scope characterization
+- **Impact assessment**: Consumer tracing, publicly exposed contract impact, behavioral regression risk
+- **Risk evaluation**: Severity classification, confidence modeling, and verdict generation
+
+## Input Contract
+
+Review targets support three input shapes:
+
+| Target Type | Required Fields | Description |
+|-------------|-----------------|-------------|
+| **Single Commit** | `commit_hash` | Reviews one commit and its patch-level changes |
+| **Commit Range** | `start_hash`, `end_hash` | Reviews a contiguous range where `start_hash` is earliest and `end_hash` is latest |
+| **File-Scoped** | target (`commit_hash` or range) + `file_path[]` | Limits analysis to selected files within the target |
+
+## Preconditions
+
+- Repository context is available and readable by git
+- Target commit or range can be resolved from repository history
+- Diff and metadata can be retrieved for the target
+- If analysis preconditions fail (unknown hash, missing parent, ambiguous range), limitations are recorded in the review output
 
 ## Core Capabilities
 
-- **Git Commit Analysis**: Retrieves commit metadata, messages, and diffs from git hash
-- **Change Classification**: Categorizes modified files by type (source, test, config, new, modified, deleted)
-- **Side Effect Detection**: Traces function/class usage across the codebase to identify potential impacts
-- **Severity Classification**: Categorizes review findings into four severity levels
+- **Commit and Range Analysis**: Collects metadata, patch details, and structural change information
+- **Change Classification**: Categorizes files by role and change type for review prioritization
+- **Impact Detection**: Traces direct and indirect consumers to estimate runtime and contract impact
+- **Breaking Change Detection**: Identifies incompatible changes on externally consumable contracts
+- **Confidence-Aware Findings**: Attaches evidence confidence and verification status to each finding
+- **Risk-Weighted Verdicts**: Combines severity, confidence, and critical-domain context to determine outcome
 
-## Review Flow
+## Output Contract
 
-| Phase | Capability | Output |
-|-------|-----------|--------|
-| 1. Context Collection | Git hash lookup, diff statistics | Commit metadata, change scope |
-| 2. Change Analysis | File-by-file diff inspection | Categorized file changes |
-| 3. Impact Analysis | Dependency tracing, test coverage check | Side effect report |
-| 4. Review Execution | Code inspection with severity classification | Categorized findings |
-| 5. Result Summary | Formatted output generation | Structured review report |
+Review output consists of:
+
+- **Findings**: Each finding includes severity, evidence, impact, confidence, verification status, and remediation suggestion
+- **Verdict**: `APPROVE`, `COMMENT`, or `REQUEST_CHANGES` with explicit decision rationale
+- **Analysis Limitations**: Unverifiable areas and constraints discovered during review
+- **Risk Context**: Critical-domain exposure and weighted risk interpretation
+
+## Supported Analysis Types
+
+- **Commit Range**: Review changes across a start~end commit range (start = earliest, end = latest)
+- **Single Commit**: Review changes in a specific commit hash
+- **File-Scoped**: Review specific files within a commit or range
+
+## Validation Scenarios
+
+- **Root Commit Review**: Handles commits without parents via root-safe diff retrieval
+- **Merge Commit Review**: Preserves first-parent and combined-merge perspectives for consistent interpretation
+- **Breaking Change + Consumer Counting**: Uses normalized consumer counting to reduce false positives
+- **Dynamic/Reflective Usage**: Reports unverifiable linkage with reduced confidence
+- **Behavior Coverage Risk**: Escalates risk when changed behavior lacks relevant test coverage
+- **Verdict Reproducibility**: Produces stable verdicts from deterministic weighted risk rules
 
 ## Severity Levels
 
 | Level | Scope |
 |-------|-------|
-| **Critical** | Security vulnerabilities, data loss risks, service outage potential |
-| **Major** | Bugs, performance issues, incorrect logic |
-| **Minor** | Code quality, readability, duplication |
-| **Nit** | Style, naming conventions, comment improvements |
+| **Critical** | Security exposure, data integrity risk, service availability risk, externally breaking contract changes |
+| **Major** | Behavioral defects, reliability degradation, significant performance or observability regressions |
+| **Minor** | Maintainability, readability, and medium-term quality concerns |
+| **Nit** | Low-impact consistency and polish suggestions |
 
-## Domain Knowledge
+## Technical References
 
-- **Git Operations**: Commands for retrieving commit information and diffs. See [./references/git_operations.md](./references/git_operations.md)
-- **Change Analysis**: File categorization and diff interpretation methods. See [./references/change_analysis.md](./references/change_analysis.md)
-- **Impact Detection**: Side effect tracing and dependency analysis techniques. See [./references/impact_detection.md](./references/impact_detection.md)
-- **Severity Criteria**: Detailed classification criteria for each severity level. See [./references/severity_criteria.md](./references/severity_criteria.md)
-- **Output Format**: Review result structure and formatting specification. See [./references/output_format.md](./references/output_format.md)
-
-## Supported Analysis Types
-
-- **Single Commit**: Review changes in a specific commit hash
-- **Commit Range**: Review changes across multiple commits
-- **File-Scoped**: Review specific files within a commit
-
-## Constraints
-
-- **Read-Only Operations**: Uses only non-destructive git commands
-- **Local Repository**: Operates on locally available git history
+- **[git_operations.md](references/git_operations.md)**: Git retrieval patterns, range calculation, and fallback handling
+- **[change_analysis.md](references/change_analysis.md)**: File classification, noise filtering, and large-change strategy
+- **[impact_detection.md](references/impact_detection.md)**: Exposure analysis, consumer counting, and confidence modeling
+- **[severity_criteria.md](references/severity_criteria.md)**: Severity boundaries, confidence axis, and escalation conditions
+- **[output_format.md](references/output_format.md)**: Finding schema and risk-weighted verdict specification

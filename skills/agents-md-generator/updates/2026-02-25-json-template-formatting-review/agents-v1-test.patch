@@ -1,0 +1,242 @@
+Subject: [PATCH] feat: onBoarding ui 정립 완료 #2
+---
+Index: src/test/kotlin/com/livteam/jsoninja/services/JsonTemplateFormatTest.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/test/kotlin/com/livteam/jsoninja/services/JsonTemplateFormatTest.kt b/src/test/kotlin/com/livteam/jsoninja/services/JsonTemplateFormatTest.kt
+new file mode 100644
+--- /dev/null	(date 1772003445937)
++++ b/src/test/kotlin/com/livteam/jsoninja/services/JsonTemplateFormatTest.kt	(date 1772003445937)
+@@ -0,0 +1,76 @@
++package com.livteam.jsoninja.services
++
++import com.intellij.testFramework.fixtures.BasePlatformTestCase
++import com.livteam.jsoninja.model.JsonFormatState
++
++class JsonTemplateFormatTest : BasePlatformTestCase() {
++    private lateinit var jsonFormatterService: JsonFormatterService
++
++    override fun setUp() {
++        super.setUp()
++        jsonFormatterService = JsonFormatterService(project)
++    }
++
++    fun testFormatJsonWithGoTemplate() {
++        val jsonWithTemplate = """{ "test": {{.value}} }"""
++        val formatted = jsonFormatterService.formatJson(jsonWithTemplate, JsonFormatState.PRETTIFY)
++
++        // 현재는 isValidJson이 false를 반환하여 원본이 그대로 나올 것으로 예상됨
++        // 하지만 목표는 포맷팅이 되는 것
++        val expected = """{
++  "test": {{.value}}
++}"""
++        assertEquals(expected, formatted)
++    }
++
++    fun testFormatJsonWithMultipleTemplates() {
++        val jsonWithTemplates = """{"key": {{.val}}, "list": [{{.item1}}, {{.item2}}], {{.dynamicKey}}: "value"}"""
++        val formatted = jsonFormatterService.formatJson(jsonWithTemplates, JsonFormatState.PRETTIFY)
++
++        val expected = """{
++  "key": {{.val}},
++  "list": [
++    {{.item1}},
++    {{.item2}}
++  ],
++  {{.dynamicKey}}: "value"
++}"""
++        assertEquals(expected, formatted)
++    }
++
++    fun testFormatJsonWithQuotedTemplate() {
++        val jsonWithQuotedTemplate = """{ "test": "{{.value}}" }"""
++        val formatted = jsonFormatterService.formatJson(jsonWithQuotedTemplate, JsonFormatState.PRETTIFY)
++
++        val expected = """{
++  "test": "{{.value}}"
++}"""
++        assertEquals(expected, formatted)
++    }
++
++    fun testFormatJsonWithTemplateInsideSpace() {
++        val jsonWithTemplateAndSpace = """{ "test": {{ .value }} }"""
++        val formatted = jsonFormatterService.formatJson(jsonWithTemplateAndSpace, JsonFormatState.PRETTIFY)
++
++        val expected = """{
++  "test": {{ .value }}
++}"""
++        assertEquals(expected, formatted)
++    }
++
++    fun testFormatJsonWithMixedTemplates() {
++        val mixedJson = """{ "unquoted": {{.val1}}, "quoted": "{{.val2}}", "key_{{.id}}": "value" }"""
++        val formatted = jsonFormatterService.formatJson(mixedJson, JsonFormatState.PRETTIFY)
++
++        val expected = """{
++  "unquoted": {{.val1}},
++  "quoted": "{{.val2}}",
++  "key_{{.id}}": "value"
++}"""
++        // "key_{{.id}}" 이 부분도 이제 잘 지원됩니다.
++        // "{{.id}}" 부분이 임시 식별자로 치환되었다가 다시 복구됩니다.
++
++        // 예시에서 요구한 `{ "test": {{.value}} }`와 같은 형태를 포함하여 다양한 템플릿 문법이 잘 동작합니다.
++        assertEquals(expected, formatted)
++    }
++}
+Index: src/main/kotlin/com/livteam/jsoninja/services/JsonFormatterService.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/kotlin/com/livteam/jsoninja/services/JsonFormatterService.kt b/src/main/kotlin/com/livteam/jsoninja/services/JsonFormatterService.kt
+--- a/src/main/kotlin/com/livteam/jsoninja/services/JsonFormatterService.kt	(revision 802f52f85db89bab93211af3860d15cbd1720541)
++++ b/src/main/kotlin/com/livteam/jsoninja/services/JsonFormatterService.kt	(date 1772003414765)
+@@ -24,9 +24,9 @@
+ class JsonFormatterService(private val project: Project) {
+     private val LOG = logger<JsonFormatterService>()
+     private val settings: JsoninjaSettingsState = JsoninjaSettingsState.getInstance(project)
+-    
++
+     private val defaultMapper = service<JsonObjectMapperService>().objectMapper
+-    
++
+     private val sortedMapper = defaultMapper.copy().apply {
+         configure(SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS, true)
+     }
+@@ -37,7 +37,7 @@
+ 
+     companion object {
+         private val prettyPrinterCache = ConcurrentHashMap<Pair<Int, Boolean>, DefaultPrettyPrinter>()
+-        
++
+         // 기본 들여쓰기 공백 수
+         private const val DEFAULT_INDENT_SIZE = 2
+     }
+@@ -115,6 +115,72 @@
+         }
+     }
+ 
++    private val templateRegex = Regex("""\{\{.*?\}\}""")
++
++    /**
++     * 템플릿 문법({{...}})을 고유한 플레이스홀더로 치환
++     *
++     * @param json 원본 JSON 문자열
++     * @return 치환된 JSON 문자열과 플레이스홀더 맵의 Pair
++     */
++    private fun replaceTemplates(json: String): Pair<String, Map<String, String>> {
++        if (!json.contains("{{")) return json to emptyMap()
++
++        val templates = mutableMapOf<String, String>()
++        var count = 0
++
++        // 1. 모든 {{...}}를 임시 식별자로 치환
++        val intermediate = templateRegex.replace(json) { matchResult ->
++            val placeholder = "__JNJ_TPL_${count++}__"
++            templates[placeholder] = matchResult.value
++            placeholder
++        }
++
++        // 2. 따옴표 없이 사용된 식별자들에 따옴표를 씌워 유효한 JSON으로 만듦
++        // 이때 식별자 이름을 변경하여 나중에 복구할 때 구분할 수 있게 함
++        var finalJson = intermediate
++        val finalTemplates = mutableMapOf<String, String>()
++
++        templates.forEach { (placeholder, original) ->
++            val quotePattern = Regex("""(?<!["'])$placeholder(?!["'])""")
++            if (quotePattern.containsMatchIn(finalJson)) {
++                val quotedPlaceholder = placeholder.replace("_TPL_", "_TPL_Q_")
++                finalJson = finalJson.replace(quotePattern, "\"$quotedPlaceholder\"")
++                finalTemplates[quotedPlaceholder] = original
++            } else {
++                finalTemplates[placeholder] = original
++            }
++        }
++
++        return finalJson to finalTemplates
++    }
++
++    /**
++     * 플레이스홀더를 다시 원래의 템플릿 문법으로 복구
++     *
++     * @param json 포맷팅된 JSON 문자열
++     * @param templates 플레이스홀더 맵
++     * @return 복구된 JSON 문자열
++     */
++    private fun restoreTemplates(json: String, templates: Map<String, String>): String {
++        if (templates.isEmpty()) return json
++        var restored = json
++
++        val sortedPlaceholders = templates.keys.sortedByDescending { it.length }
++
++        sortedPlaceholders.forEach { placeholder ->
++            val original = templates[placeholder] ?: return@forEach
++            if (placeholder.contains("_TPL_Q_")) {
++                // 따옴표와 함께 치환된 플레이스홀더 복구 (따옴표 제거)
++                restored = restored.replace("\"$placeholder\"", original)
++            } else {
++                // 문자열 내부 등에 따옴표 없이 치환된 플레이스홀더 복구
++                restored = restored.replace(placeholder, original)
++            }
++        }
++        return restored
++    }
++
+     /**
+      * JSON 문자열을 지정된 포맷 상태에 따라 포맷팅
+      *
+@@ -129,8 +195,11 @@
+ 
+         if (isEmptyJson) return json
+ 
++        // 템플릿 처리
++        val (tempJson, templates) = replaceTemplates(json)
++
+         // Check if JSON is valid before attempting to format
+-        if (!isValidJson(json)) {
++        if (!isValidJson(tempJson)) {
+             LOG.debug("Invalid JSON detected, returning original: $json")
+             return json
+         }
+@@ -155,10 +224,10 @@
+ 
+             // 매퍼 설정
+             val mapper = getConfiguredMapper(usesSorting)
+-            val jsonNode = mapper.readTree(json)
++            val jsonNode = mapper.readTree(tempJson)
+ 
+ 
+-            when (formatState) {
++            val result = when (formatState) {
+                 JsonFormatState.PRETTIFY,
+                 JsonFormatState.PRETTIFY_COMPACT -> {
+                     val prettyPrinter = createConfiguredPrettyPrinter(formatState)
+@@ -174,6 +243,8 @@
+                     mapper.writeValueAsString(jsonNode)
+                 }
+             }
++
++            restoreTemplates(result, templates)
+         } catch (e: Exception) {
+             // 포맷팅 실패 시 원본 반환
+             LOG.warn("JSON 포맷팅 실패: ${e.message}")
+@@ -188,13 +259,14 @@
+      * @return 유효한 JSON이면 true, 아니면 false
+      */
+     fun isValidJson(json: String): Boolean {
+-        val trimedJson = json.trim()
++        val (tempJson, _) = replaceTemplates(json)
++        val trimedJson = tempJson.trim()
+         val isEmptyJson = trimedJson.isBlank() || trimedJson.isEmpty()
+         if (isEmptyJson) return false
+ 
+         return try {
+             // Use JsonParser to validate the entire input string including trailing tokens
+-            defaultMapper.factory.createParser(json).use { parser ->
++            defaultMapper.factory.createParser(tempJson).use { parser ->
+                 // Parse the JSON value completely
+                 parser.nextToken()
+                 parser.skipChildren()
