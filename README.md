@@ -35,6 +35,7 @@ These skills are currently under evaluation and will be promoted to **Available 
 | Skill | Description |
 |-------|-------------|
 | [biz-opportunity-scout](skills/biz-opportunity-scout/) | Identify and validate profitable business opportunities by analyzing TAM/SAM/SOM, unit economics, competitive landscape, and PMF indicators with HTML report generation |
+| [react-vite-guide](skills/react-vite-guide/) | React 19 + Vite SPA development guidelines. Composition patterns, performance optimization, and web interface best practices for client-side React applications. |
 
 ## 📖 How to Install Skills
 
