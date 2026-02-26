@@ -1,83 +1,236 @@
 Subject: [PATCH] feat: onBoarding ui 정립 완료 #2
 ---
-Index: src/test/kotlin/com/livteam/jsoninja/services/JsonFormatterTemplateTest.kt
+Index: src/test/kotlin/com/livteam/jsoninja/services/JsonFormatterServiceTest.kt
 IDEA additional info:
 Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
 <+>UTF-8
 ===================================================================
-diff --git a/src/test/kotlin/com/livteam/jsoninja/services/JsonFormatterTemplateTest.kt b/src/test/kotlin/com/livteam/jsoninja/services/JsonFormatterTemplateTest.kt
-new file mode 100644
---- /dev/null	(date 1772001693610)
-+++ b/src/test/kotlin/com/livteam/jsoninja/services/JsonFormatterTemplateTest.kt	(date 1772001693610)
-@@ -0,0 +1,68 @@
-+package com.livteam.jsoninja.services
+diff --git a/src/test/kotlin/com/livteam/jsoninja/services/JsonFormatterServiceTest.kt b/src/test/kotlin/com/livteam/jsoninja/services/JsonFormatterServiceTest.kt
+--- a/src/test/kotlin/com/livteam/jsoninja/services/JsonFormatterServiceTest.kt	(revision 802f52f85db89bab93211af3860d15cbd1720541)
++++ b/src/test/kotlin/com/livteam/jsoninja/services/JsonFormatterServiceTest.kt	(date 1772087897062)
+@@ -154,17 +154,17 @@
+     fun testFormatJsonWithTrailingCommaInObject() {
+         // Test formatting JSON with trailing comma in object
+         val inputWithTrailingComma = """[{"items": 72183,}]"""
+-        
 +
-+import com.intellij.testFramework.fixtures.BasePlatformTestCase
-+import com.livteam.jsoninja.model.JsonFormatState
+         // Should be considered valid JSON
+         assertTrue(jsonFormatterService.isValidJson(inputWithTrailingComma))
+-        
 +
-+class JsonFormatterTemplateTest : BasePlatformTestCase() {
-+    private lateinit var jsonFormatterService: JsonFormatterService
+         // Should format correctly (trailing comma removed)
+         val prettified = jsonFormatterService.formatJson(inputWithTrailingComma, JsonFormatState.PRETTIFY)
+         assertTrue(prettified.contains("\n"))
+         assertTrue(prettified.contains("  "))
+         assertFalse(prettified.contains(",}"))
+         assertTrue(prettified.contains("72183"))
+-        
 +
-+    override fun setUp() {
-+        super.setUp()
-+        jsonFormatterService = JsonFormatterService(project)
-+    }
+         // Test uglify mode
+         val uglified = jsonFormatterService.formatJson(inputWithTrailingComma, JsonFormatState.UGLIFY)
+         assertEquals("""[{"items":72183}]""", uglified)
+@@ -173,10 +173,10 @@
+     fun testFormatJsonWithTrailingCommaInObjectAndArray() {
+         // Test formatting JSON with trailing commas in both object and array
+         val inputWithTrailingCommas = """[{"items": 72183,},]"""
+-        
 +
-+    fun testFormatJsonWithTemplate() {
-+        val jsonWithTemplate = """{  "test": {{.value}} }"""
-+        val prettifiedJson = jsonFormatterService.formatJson(jsonWithTemplate, JsonFormatState.PRETTIFY)
+         // Should be considered valid JSON
+         assertTrue(jsonFormatterService.isValidJson(inputWithTrailingCommas))
+-        
 +
-+        assertTrue("Prettified JSON should contain newline", prettifiedJson.contains("\n"))
-+        assertTrue("Prettified JSON should contain template", prettifiedJson.contains("{{.value}}"))
-+        assertTrue("Prettified JSON should have property test", prettifiedJson.contains("\"test\""))
+         // Should format correctly (trailing commas removed)
+         val prettified = jsonFormatterService.formatJson(inputWithTrailingCommas, JsonFormatState.PRETTIFY)
+         assertTrue(prettified.contains("\n"))
+@@ -184,7 +184,7 @@
+         assertFalse(prettified.contains(",}"))
+         assertFalse(prettified.contains(",]"))
+         assertTrue(prettified.contains("72183"))
+-        
++
+         // Test uglify mode
+         val uglified = jsonFormatterService.formatJson(inputWithTrailingCommas, JsonFormatState.UGLIFY)
+         assertEquals("""[{"items":72183}]""", uglified)
+@@ -193,14 +193,14 @@
+     fun testFormatSimpleObjectWithTrailingComma() {
+         // Test simple object with trailing comma
+         val inputWithTrailingComma = """{"a":1,}"""
+-        
++
+         // Should be considered valid JSON
+         assertTrue(jsonFormatterService.isValidJson(inputWithTrailingComma))
+-        
++
+         // Should format correctly
+         val uglified = jsonFormatterService.formatJson(inputWithTrailingComma, JsonFormatState.UGLIFY)
+         assertEquals("""{"a":1}""", uglified)
+-        
++
+         val prettified = jsonFormatterService.formatJson(inputWithTrailingComma, JsonFormatState.PRETTIFY)
+         assertTrue(prettified.contains("\n"))
+         assertFalse(prettified.contains(",}"))
+@@ -209,10 +209,10 @@
+     fun testFormatArrayWithTrailingComma() {
+         // Test array with trailing comma
+         val inputWithTrailingComma = """[1,2,3,]"""
+-        
++
+         // Should be considered valid JSON
+         assertTrue(jsonFormatterService.isValidJson(inputWithTrailingComma))
+-        
++
+         // Should format correctly
+         val uglified = jsonFormatterService.formatJson(inputWithTrailingComma, JsonFormatState.UGLIFY)
+         assertEquals("[1,2,3]", uglified)
+@@ -221,14 +221,15 @@
+     fun testInvalidJsonWithTrailingTokensStillFails() {
+         // Ensure FAIL_ON_TRAILING_TOKENS still works (not related to commas inside JSON)
+         val inputWithTrailingTokens = """{"a":1} junk"""
+-        
++
+         // Should be considered invalid
+         assertFalse(jsonFormatterService.isValidJson(inputWithTrailingTokens))
+-        
++
+         // Should return original when formatting fails
+         val result = jsonFormatterService.formatJson(inputWithTrailingTokens, JsonFormatState.PRETTIFY)
+         assertEquals(inputWithTrailingTokens, result)
+     }
++
+     fun testJson5Support() {
+         // Test JSON5 features: Comments, Single Quotes, Unquoted Field Names
+ 
+@@ -244,7 +245,11 @@
+         """.trimIndent()
+         assertTrue("Should accept JSON with comments", jsonFormatterService.isValidJson(jsonWithComments))
+         val formattedComments = jsonFormatterService.formatJson(jsonWithComments, JsonFormatState.UGLIFY)
+-        assertEquals("Should remove comments and format to valid JSON", """{"key":"value","number":123}""", formattedComments)
 +        assertEquals(
-+            """{
-+  "test": {{.value}}
-+}""", prettifiedJson.trim()
++            "Should remove comments and format to valid JSON",
++            """{"key":"value","number":123}""",
++            formattedComments
 +        )
-+    }
-+
-+    fun testFormatJsonWithTemplateKey() {
-+        val jsonWithTemplateKey = """{ {{.key}}: "value" }"""
-+        val prettifiedJson = jsonFormatterService.formatJson(jsonWithTemplateKey, JsonFormatState.PRETTIFY)
-+
-+        assertTrue(prettifiedJson.contains("\n"))
-+        assertTrue(prettifiedJson.contains("{{.key}}"))
+ 
+         // 2. Single Quotes
+         val jsonWithSingleQuotes = """
+@@ -255,7 +260,11 @@
+         """.trimIndent()
+         assertTrue("Should accept JSON with single quotes", jsonFormatterService.isValidJson(jsonWithSingleQuotes))
+         val formattedSingleQuotes = jsonFormatterService.formatJson(jsonWithSingleQuotes, JsonFormatState.UGLIFY)
+-        assertEquals("Should convert single quotes to double quotes", """{"key":"value","number":123}""", formattedSingleQuotes)
 +        assertEquals(
-+            """{
-+  {{.key}}: "value"
-+}""", prettifiedJson.trim()
++            "Should convert single quotes to double quotes",
++            """{"key":"value","number":123}""",
++            formattedSingleQuotes
 +        )
-+    }
-+
-+    fun testFormatJsonWithMixedTemplates() {
-+        val json = """{"a":{{.a}},"b":"static {{.b}}","c":{{.c}}}"""
-+        val prettifiedJson = jsonFormatterService.formatJson(json, JsonFormatState.PRETTIFY)
-+
-+        assertTrue(prettifiedJson.contains("\"a\": {{.a}}"))
-+        assertTrue(prettifiedJson.contains("\"b\": \"static {{.b}}\""))
-+        assertTrue(prettifiedJson.contains("\"c\": {{.c}}"))
-+    }
-+
-+    fun testFormatJsonWithTemplateInTemplate() {
-+        // Nested curly braces in template
-+        val json = """{"test": {{.value { "foo": "bar" } }} }"""
-+        val prettifiedJson = jsonFormatterService.formatJson(json, JsonFormatState.PRETTIFY)
-+
-+        assertTrue(prettifiedJson.contains("{{.value { \"foo\": \"bar\" } }}"))
-+    }
-+
-+    fun testIsValidJsonWithTemplate() {
-+        val jsonWithTemplate = """{ "test": {{.value}} }"""
-+        assertTrue("Should be valid JSON with template", jsonFormatterService.isValidJson(jsonWithTemplate))
-+
-+        val invalidJsonWithTemplate = """{ "test": {{.value} }""" // Missing one }
-+        assertFalse(
-+            "Should be invalid JSON with broken template",
-+            jsonFormatterService.isValidJson(invalidJsonWithTemplate)
+ 
+         // 3. Unquoted Field Names
+         val jsonWithUnquotedFields = """
+@@ -266,9 +275,16 @@
+                 ${'$'}specialVar: null
+             }
+         """.trimIndent()
+-        assertTrue("Should accept JSON with unquoted field names", jsonFormatterService.isValidJson(jsonWithUnquotedFields))
++        assertTrue(
++            "Should accept JSON with unquoted field names",
++            jsonFormatterService.isValidJson(jsonWithUnquotedFields)
 +        )
+         val formattedUnquoted = jsonFormatterService.formatJson(jsonWithUnquotedFields, JsonFormatState.UGLIFY)
+-        assertEquals("Should quote field names", """{"key":"value","number":123,"_validId":true,"${'$'}specialVar":null}""", formattedUnquoted)
++        assertEquals(
++            "Should quote field names",
++            """{"key":"value","number":123,"_validId":true,"${'$'}specialVar":null}""",
++            formattedUnquoted
++        )
+ 
+         // 4. Trailing Comma (Already tested, but checking combination with JSON5 features)
+         val json5Combination = """
+@@ -285,4 +301,85 @@
+         val formattedCombination = jsonFormatterService.formatJson(json5Combination, JsonFormatState.UGLIFY)
+         assertEquals("Should normalize to standard JSON", """{"key":"value","list":[1,2]}""", formattedCombination)
+     }
++
++    fun testFormatJsonWithTemplateSyntax() {
++        // Test with template syntax {{.value}}
++        val jsonWithTemplate = """{"test": {{.value}}}"""
++
++        // This should be considered valid for our purposes or handled by the formatter
++        // Currently it might fail isValidJson, so we need to fix that too if we want it to be formatted
++
++        val prettified = jsonFormatterService.formatJson(jsonWithTemplate, JsonFormatState.PRETTIFY)
++
++        // If it's formatted, it should look like:
++        // {
++        //   "test": {{.value}}
++        // }
++        // (depending on indent settings)
++
++        assertTrue("Formatted JSON should contain the template syntax", prettified.contains("{{.value}}"))
++        assertTrue("Formatted JSON should be pretty printed", prettified.contains("\n"))
++
++        val uglified = jsonFormatterService.formatJson(jsonWithTemplate, JsonFormatState.UGLIFY)
++        assertEquals("""{"test":{{.value}}}""", uglified.replace(" ", ""))
 +    }
-+}
++
++    fun testFormatJsonWithComplexTemplateSyntax() {
++        val complexJson = """
++            {
++                "key1": {{.val1}},
++                {{.key2}}: "val2",
++                "nested": {
++                    "inner": {{.val3}}
++                },
++                "array": [{{.val4}}, {{.val5}}],
++                "alreadyQuoted": "{{.val6}}"
++            }
++        """.trimIndent()
++
++        assertTrue(
++            "Should be considered valid JSON with our template handling",
++            jsonFormatterService.isValidJson(complexJson)
++        )
++
++        val formatted = jsonFormatterService.formatJson(complexJson, JsonFormatState.PRETTIFY)
++
++        assertTrue(formatted.contains("\"key1\": {{.val1}}"))
++        assertTrue(formatted.contains("{{.key2}}: \"val2\""))
++        assertTrue(formatted.contains("\"inner\": {{.val3}}"))
++        assertTrue(formatted.contains("{{.val4}}"))
++        assertTrue(formatted.contains("{{.val5}}"))
++        assertTrue(formatted.contains("\"alreadyQuoted\": \"{{.val6}}\""))
++    }
++
++    fun testFormatJsonWithSortedTemplates() {
++        val json = """
++            {
++                "z": 1,
++                "{{.a_key}}": 2,
++                "b": 3
++            }
++        """.trimIndent()
++
++        // Note: Our current TEMPLATE_PATTERN (?<!")\{\{[^{}]+\}\}(?!") 
++        // will NOT match "{{.a_key}}" because it HAS quotes.
++        // This is fine as it's already valid JSON.
++
++        val sorted = jsonFormatterService.formatJson(json, JsonFormatState.PRETTIFY_SORTED)
++
++        // Expected order: b, z, {{.a_key}} (since { comes after letters) or something similar
++        // The important part is that {{.a_key}} is preserved.
++        assertTrue("Should preserve template key when sorting", sorted.contains("{{.a_key}}"))
++
++        val jsonNoQuotes = """
++            {
++                "z": 1,
++                {{.a_key}}: 2,
++                "b": 3
++            }
++        """.trimIndent()
++
++        val sortedNoQuotes = jsonFormatterService.formatJson(jsonNoQuotes, JsonFormatState.PRETTIFY_SORTED)
++        assertTrue("Should preserve unquoted template key when sorting", sortedNoQuotes.contains("{{.a_key}}"))
++    }
+ }
 Index: src/main/kotlin/com/livteam/jsoninja/services/JsonFormatterService.kt
 IDEA additional info:
 Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
@@ -85,8 +238,8 @@ Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
 ===================================================================
 diff --git a/src/main/kotlin/com/livteam/jsoninja/services/JsonFormatterService.kt b/src/main/kotlin/com/livteam/jsoninja/services/JsonFormatterService.kt
 --- a/src/main/kotlin/com/livteam/jsoninja/services/JsonFormatterService.kt	(revision 802f52f85db89bab93211af3860d15cbd1720541)
-+++ b/src/main/kotlin/com/livteam/jsoninja/services/JsonFormatterService.kt	(date 1772001658675)
-@@ -24,9 +24,11 @@
++++ b/src/main/kotlin/com/livteam/jsoninja/services/JsonFormatterService.kt	(date 1772087914054)
+@@ -24,9 +24,9 @@
  class JsonFormatterService(private val project: Project) {
      private val LOG = logger<JsonFormatterService>()
      private val settings: JsoninjaSettingsState = JsoninjaSettingsState.getInstance(project)
@@ -95,12 +248,10 @@ diff --git a/src/main/kotlin/com/livteam/jsoninja/services/JsonFormatterService.
      private val defaultMapper = service<JsonObjectMapperService>().objectMapper
 -    
 +
-+    private val templateRegex = Regex("""("(?:\\.|[^\\"])*")|(\{\{.*?\}\})""")
-+
      private val sortedMapper = defaultMapper.copy().apply {
          configure(SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS, true)
      }
-@@ -37,7 +39,7 @@
+@@ -37,9 +37,43 @@
  
      companion object {
          private val prettyPrinterCache = ConcurrentHashMap<Pair<Int, Boolean>, DefaultPrettyPrinter>()
@@ -108,45 +259,74 @@ diff --git a/src/main/kotlin/com/livteam/jsoninja/services/JsonFormatterService.
 +
          // 기본 들여쓰기 공백 수
          private const val DEFAULT_INDENT_SIZE = 2
-     }
-@@ -129,8 +131,10 @@
- 
-         if (isEmptyJson) return json
- 
-+        val (processedJson, templates) = replaceTemplates(json)
 +
-         // Check if JSON is valid before attempting to format
--        if (!isValidJson(json)) {
-+        if (!isValidJson(processedJson)) {
-             LOG.debug("Invalid JSON detected, returning original: $json")
-             return json
-         }
-@@ -155,10 +159,10 @@
++        // Template syntax pattern (e.g., {{.value}}) - only match when NOT surrounded by quotes
++        private val TEMPLATE_PATTERN = Regex("""(?<!")\{\{[^{}]+\}\}(?!")""")
++        private const val TEMPLATE_PLACEHOLDER_PREFIX = "___JSONINJA_TEMPLATE_"
++        private const val TEMPLATE_PLACEHOLDER_SUFFIX = "___"
++    }
++
++    /**
++     * 템플릿 문법({{.value}})을 임시 플레이스홀더로 치환
++     */
++    private fun replaceTemplates(json: String): Pair<String, Map<String, String>> {
++        val templateMap = mutableMapOf<String, String>()
++        var counter = 0
++
++        val replacedJson = TEMPLATE_PATTERN.replace(json) { matchResult ->
++            // Wrap the placeholder in quotes so it's a valid JSON string value
++            val placeholder = "$TEMPLATE_PLACEHOLDER_PREFIX${counter++}$TEMPLATE_PLACEHOLDER_SUFFIX"
++            val quotedPlaceholder = "\"$placeholder\""
++            templateMap[quotedPlaceholder] = matchResult.value
++            quotedPlaceholder
++        }
++
++        return Pair(replacedJson, templateMap)
++    }
++
++    /**
++     * 플레이스홀더를 다시 원래의 템플릿 문법으로 원복
++     */
++    private fun restoreTemplates(json: String, templateMap: Map<String, String>): String {
++        var restoredJson = json
++        templateMap.forEach { (placeholder, original) ->
++            restoredJson = restoredJson.replace(placeholder, original)
++        }
++        return restoredJson
+     }
+ 
+ 
+@@ -155,10 +189,13 @@
  
              // 매퍼 설정
              val mapper = getConfiguredMapper(usesSorting)
 -            val jsonNode = mapper.readTree(json)
+ 
++            // Handle template syntax
++            val (processedJson, templateMap) = replaceTemplates(json)
 +            val jsonNode = mapper.readTree(processedJson)
  
- 
 -            when (formatState) {
-+            val result = when (formatState) {
++
++            val formattedJson = when (formatState) {
                  JsonFormatState.PRETTIFY,
                  JsonFormatState.PRETTIFY_COMPACT -> {
                      val prettyPrinter = createConfiguredPrettyPrinter(formatState)
-@@ -174,6 +178,8 @@
+@@ -174,6 +211,9 @@
                      mapper.writeValueAsString(jsonNode)
                  }
              }
 +
-+            restoreTemplates(result, templates)
++            // Restore templates
++            return restoreTemplates(formattedJson, templateMap)
          } catch (e: Exception) {
              // 포맷팅 실패 시 원본 반환
              LOG.warn("JSON 포맷팅 실패: ${e.message}")
-@@ -192,9 +198,11 @@
+@@ -192,9 +232,12 @@
          val isEmptyJson = trimedJson.isBlank() || trimedJson.isEmpty()
          if (isEmptyJson) return false
  
++        // First replace any template syntax placeholders
 +        val (processedJson, _) = replaceTemplates(json)
 +
          return try {
@@ -156,37 +336,3 @@ diff --git a/src/main/kotlin/com/livteam/jsoninja/services/JsonFormatterService.
                  // Parse the JSON value completely
                  parser.nextToken()
                  parser.skipChildren()
-@@ -207,6 +215,33 @@
-         }
-     }
- 
-+    private fun replaceTemplates(json: String): Pair<String, Map<String, String>> {
-+        val templates = mutableMapOf<String, String>()
-+        var counter = 0
-+        val replaced = templateRegex.replace(json) { matchResult ->
-+            val stringLiteral = matchResult.groups[1]
-+            if (stringLiteral != null) {
-+                // 문자열 리터럴은 그대로 유지
-+                stringLiteral.value
-+            } else {
-+                // 템플릿 문법은 플레이스홀더로 치환
-+                val template = matchResult.groups[2]!!.value
-+                val placeholder = "\"__JSONINJA_TEMPLATE_${counter++}__\""
-+                templates[placeholder] = template
-+                placeholder
-+            }
-+        }
-+        return Pair(replaced, templates)
-+    }
-+
-+    private fun restoreTemplates(json: String, templates: Map<String, String>): String {
-+        var restored = json
-+        templates.forEach { (placeholder, original) ->
-+            restored = restored.replace(placeholder, original)
-+        }
-+        return restored
-+    }
-+
-     /**
-      * 커스텀 PrettyPrinter 클래스
-      * JSON 포맷팅 시 사용되는 들여쓰기 및 출력 형식 정의
