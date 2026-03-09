@@ -14,6 +14,7 @@ Some skills require external tools to be installed:
 | jetbrains-vmoptions | None |
 | kysely-converter | None |
 | skill-maker | None |
+| code-security-audit | None |
 | system-prompt-creator | None |
 | veo-prompt-director | None |
 
@@ -28,6 +29,7 @@ Only skills that have been personally tested and approved by the user are listed
 | [jetbrains-vmoptions](skills/jetbrains-vmoptions/) | Generates JetBrains IDE VM options based on IDE version. Supports version-specific GC selection (Generational ZGC for 243+, G1GC for 222-242) and memory configuration. |
 | [skill-maker](skills/skill-maker/) | Create new AI agent skills following the SKILL.md guidelines with complete structure and README updates |
 | [system-prompt-creator](skills/system-prompt-creator/) | Analyzes user requirements to generate production-ready system prompts. It determines whether a single or multi-prompt architecture is needed and requests missing information if requirements are insufficient. |
+| [code-security-audit](skills/code-security-audit/) | Performs OWASP-based code security audits on any codebase. Analyzes source code against ASVS 5.0.0 verification requirements, API Security Top 10 2023 risk patterns, OWASP CheatSheet secure coding practices, and WSTG testing methodologies. |
 
 ## 🧪 Skills Waiting for Review
 
