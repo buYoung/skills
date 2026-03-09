@@ -15,6 +15,7 @@ Some skills require external tools to be installed:
 | kysely-converter | None |
 | skill-maker | None |
 | system-prompt-creator | None |
+| veo-prompt-director | None |
 
 ## 🚀 Available Skills
 
@@ -36,6 +37,7 @@ These skills are currently under evaluation and will be promoted to **Available 
 |-------|-------------|
 | [biz-opportunity-scout](skills/biz-opportunity-scout/) | Identify and validate profitable business opportunities by analyzing TAM/SAM/SOM, unit economics, competitive landscape, and PMF indicators with HTML report generation |
 | [react-vite-guide](skills/react-vite-guide/) | React 19 + Vite SPA development guidelines. Composition patterns, performance optimization, and web interface best practices for client-side React applications. |
+| [veo-prompt-director](skills/veo-prompt-director/) | Generates structured Google Veo 3.1 video prompts by collecting user input for subject, action, style, cinematography, and audio. Guides users through the Universal Prompt Formula to produce camera-ready prompts. |
 
 ## 📖 How to Install Skills
 
