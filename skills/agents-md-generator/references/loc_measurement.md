@@ -49,6 +49,42 @@ https://github.com/XAMPPRocky/tokei Please install it from here and try again.
 3. Determine repository scale from LOC value
 4. Apply corresponding character limit to AGENTS.md generation
 
+## Section Budget Allocation
+
+Distribute the total character limit across sections to prevent front-loading. These are recommended proportions — adjust slightly based on project characteristics.
+
+### Single Repo / Package Document (5 Sections)
+
+```yaml
+- section: "1. Overview"
+  budget: "5%"
+  note: "Keep brief; 1-2 sentences"
+- section: "2. Folder Structure"
+  budget: "35%"
+  note: "Proportional to directory depth and complexity"
+- section: "3. Core Behaviors & Patterns"
+  budget: "25%"
+  note: "Largest section; cross-cutting patterns need detail to be actionable"
+- section: "4. Conventions"
+  budget: "25%"
+  note: "Each convention should include rule + example"
+- section: "5. Working Agreements"
+  budget: "10%"
+  note: "Fixed rules; relatively stable across projects"
+```
+
+### Monorepo Root Document (3 Sections)
+
+```yaml
+- section: "1. Overview"
+  budget: "10%"
+- section: "2. Folder Structure"
+  budget: "50%"
+  note: "Main value of root doc is the structural map"
+- section: "3. Working Agreements"
+  budget: "40%"
+```
+
 ## tokei Output Interpretation
 
 Use the **Total** lines value from tokei output:

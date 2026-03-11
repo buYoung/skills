@@ -126,25 +126,68 @@ Document **cross-cutting patterns** that repeat across the codebase. Focus on pa
 - **Module Communication**: How modules call each other, dependency direction, event/message patterns
 - **State Management**: Where and how state is held, mutated, and shared
 
+**Content Requirements**:
+
+- Each pattern should explain **what** it is, **where** it appears, and **how** to follow it
+- Include enough detail so a new contributor can replicate the pattern without reading the source
+- When a pattern involves specific APIs or abstractions, name them explicitly
+- Group related patterns under their category heading with sub-bullets for details
+
+**Example Structure**:
+
+```markdown
+- **Error Handling**: All service-layer methods wrap external calls in `AppError.wrap()`, converting third-party exceptions into domain-specific `AppError` subtypes. Controllers catch `AppError` at the boundary and map to HTTP status codes via `ErrorMapper.toResponse()`.
+- **Logging**: Each class initializes a logger via `LoggerFactory.getLogger(ClassName::class)`. Business events use `logger.info` with structured key-value pairs (`action=`, `entity=`, `id=`). Debug-level logs are reserved for intermediate state during multi-step operations.
+- **Module Communication**: Services depend only on interfaces defined in the `ports/` package, never on concrete implementations. Wiring happens in `config/` modules via dependency injection. Cross-module calls always go through the interface boundary.
+- **State Management**: Application state is held in `StateStore` as immutable data classes. Mutations go through `StateStore.update { }` lambdas, which trigger UI re-renders via the observer pattern. Direct field assignment on state objects is prohibited.
+```
+
 **Anti-patterns**:
 
 - Listing individual functions or classes instead of cross-cutting patterns
 - Describing what a single file does rather than what the codebase does consistently
 - Including patterns that appear only once (not truly cross-cutting)
+- One-line summaries that name a pattern without explaining how it works (e.g., "Uses repository pattern" without describing the actual convention)
 
 ### Section 4: Conventions
 
-**Stack-Aware Analysis**:
+**Convention Discovery Approach**:
 
 - Read package manifests to understand the project's technology stack before analyzing conventions
 - Use stack context to focus on relevant convention patterns (e.g., framework-specific naming, project-specific abstractions built on top of dependencies)
+- Sample **10+ files** across different directories to confirm a convention is consistent, not accidental
+- Distinguish between **enforced conventions** (linter/formatter rules) and **team conventions** (implicit patterns) — both are worth documenting
 
-**Convention Categories**:
+**Convention Categories** (include only those actually observed):
 
-- **Naming**: camelCase, snake_case, PascalCase usage
-- **Prefixes/Suffixes**: `SomethingService`, `useSomething`, `SomethingProps`
-- **Comments**: Tone, language, brevity
-- **Legacy Handling**: TODO, FIXME, NOTE, deprecated markers
+- **Naming**: camelCase, snake_case, PascalCase usage per context (variables, classes, files, directories)
+- **Prefixes/Suffixes**: Consistent type indicators like `SomethingService`, `useSomething`, `SomethingProps`, `ISomething`
+- **File & Directory Naming**: kebab-case files, PascalCase component files, index barrel exports, co-location patterns
+- **Comments**: Tone, language, brevity, when comments are used vs omitted
+- **Legacy Handling**: TODO, FIXME, NOTE, deprecated markers and their conventions
+- **Import Organization**: Grouping order (stdlib → external → internal), path alias usage, barrel imports
+- **Type Patterns**: Type definition co-location, shared type files, generic usage conventions
+
+**Content Requirements**:
+
+- Each convention should state the **rule** and give a **concrete example** showing correct usage
+- When a convention has **exceptions**, note them explicitly
+- Cover both code-level conventions and project-structure-level conventions
+
+**Example Structure**:
+
+```markdown
+- **Naming**: Variables and functions use `camelCase`. Classes and types use `PascalCase`. Constants use `UPPER_SNAKE_CASE`. Boolean variables are prefixed with `is`, `has`, or `should` (e.g., `isLoading`, `hasPermission`).
+- **Prefixes/Suffixes**: Service classes are suffixed with `Service` (e.g., `UserService`). React hooks are prefixed with `use` (e.g., `useAuth`). Type/interface names for component props are suffixed with `Props` (e.g., `ButtonProps`).
+- **File & Directory Naming**: Component files use PascalCase (`UserProfile.tsx`). Utility and helper files use camelCase (`formatDate.ts`). Each feature directory has an `index.ts` barrel export.
+- **Import Organization**: Imports are grouped in three blocks separated by blank lines: (1) external packages, (2) internal aliases (`@/`), (3) relative imports. Side-effect imports (`import './styles.css'`) appear last.
+```
+
+**Anti-patterns**:
+
+- Listing a convention name without showing the actual rule (e.g., "Uses camelCase" without specifying where)
+- Mixing conventions with behavioral patterns that belong in Section 3
+- Documenting IDE or tooling settings instead of code-level conventions
 
 ### Section 5: Working Agreements
 
@@ -157,7 +200,7 @@ See the working agreements specification referenced from SKILL.md.
 - **Format**: Valid Markdown
 - **Tone**: Concise, neutral
 - **Headings**: Short and descriptive
-- **Content Style**: Compact bullet points or short sentences
+- **Content Style**: Bullet points with enough detail to be actionable; each item should convey the rule and how to follow it
 
 ## Anti-Patterns (Excluded Content)
 
