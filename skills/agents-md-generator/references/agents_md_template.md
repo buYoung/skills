@@ -111,6 +111,7 @@ Document **cross-cutting patterns** that repeat across the codebase. Focus on pa
 
 **Pattern Discovery Approach**:
 
+- Identify **installed dependencies and technology stack** by reading detected package manifests before searching for code patterns — use this context to focus pattern discovery on relevant frameworks and libraries (see read_only_commands.md > Dependency Discovery)
 - Search for **recurring idioms** that appear in 3+ files (e.g., shared error handling wrappers, common logging calls, repeated guard clause shapes)
 - Identify **architectural boundaries** and how data flows across them (e.g., Controller → Service → Repository, Action → Service → UI)
 - Look for **project-specific abstractions** the team has built on top of frameworks (e.g., custom base classes, shared decorators, wrapper utilities)
@@ -132,6 +133,13 @@ Document **cross-cutting patterns** that repeat across the codebase. Focus on pa
 - Including patterns that appear only once (not truly cross-cutting)
 
 ### Section 4: Conventions
+
+**Stack-Aware Analysis**:
+
+- Read package manifests to understand the project's technology stack before analyzing conventions
+- Use stack context to focus on relevant convention patterns (e.g., framework-specific naming, project-specific abstractions built on top of dependencies)
+
+**Convention Categories**:
 
 - **Naming**: camelCase, snake_case, PascalCase usage
 - **Prefixes/Suffixes**: `SomethingService`, `useSomething`, `SomethingProps`

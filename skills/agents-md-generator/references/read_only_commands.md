@@ -6,6 +6,7 @@ Defines the allowed commands for repository analysis during AGENTS.md generation
 
 - [Allowed Command Categories](#allowed-command-categories)
 - [ripgrep (`rg`) Usage Patterns](#ripgrep-rg-usage-patterns)
+- [Dependency Discovery](#dependency-discovery)
 - [tree Command Usage](#tree-command-usage)
 - [Files to Ignore](#files-to-ignore)
 - [Files Allowed to Read](#files-allowed-to-read)
@@ -98,6 +99,40 @@ rg "pattern" --json         # JSON output for parsing
 rg -F "exact.string()"      # Literal search (no regex)
 ```
 
+## Dependency Discovery
+
+Identify the technology stack by reading package manifest files before analyzing source code. This step provides essential context for Core Behaviors & Patterns and Conventions analysis.
+
+### Workflow
+
+1. **Check project root first**: Look for package manifests in the project root directory
+2. **Read manifests directly**: Use paginated reading (`sed -n` / `Get-Content`) to read the manifest content — this is more reliable than pattern-based search which may produce false positives in source files (e.g., `require` in CJS)
+3. **Fallback to subdirectories**: If no manifest is found at root, search subdirectories up to depth 2
+4. **Build stack context**: Note key frameworks, libraries, and tooling to guide subsequent pattern and convention analysis
+
+### Commands
+
+```bash
+# Step 1: Check project root for manifests
+ls package.json pyproject.toml go.mod Cargo.toml *.csproj \
+  build.gradle* pom.xml Gemfile 2>/dev/null
+
+# Step 2: Read the detected manifest directly
+sed -n '1,80p' <detected_manifest>
+
+# Step 3 (fallback): If no manifest at root, search subdirectories
+find . -maxdepth 2 -type f \( -name "package.json" -o -name "pyproject.toml" \
+  -o -name "go.mod" -o -name "Cargo.toml" -o -name "*.csproj" \
+  -o -name "build.gradle*" -o -name "pom.xml" -o -name "Gemfile" \) | head -20
+```
+
+### Rules
+
+- **Read manifests directly** rather than searching with `rg` — avoids false positives from source code (e.g., `require()` calls in CJS modules)
+- Do **not** hard-code language-specific extraction logic; adapt reading range to whatever manifest format is discovered
+- Focus on identifying **frameworks and libraries** that influence architectural patterns and naming conventions
+- Skip lock files — only read the manifest source files listed in [Files Allowed to Read](#files-allowed-to-read)
+
 ## tree Command Usage
 
 ```bash
@@ -147,5 +182,5 @@ Lock files must NOT be read:
 ## Source File Analysis Rules
 
 - **Skip**: Import/require/using sections when analyzing patterns
-- **Infer Stack From**: Package manifests, not import statements
+- **Infer Stack From**: Package manifests, not import statements — read dependency sections from detected manifests to build technology context before source analysis (see [Dependency Discovery](#dependency-discovery))
 - **Additional Context**: Use paginated file reading to collect more context as needed
