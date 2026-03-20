@@ -22,6 +22,26 @@ git --no-pager log -1 --format="%an <%ae> | %ai" <commit_hash>
 ```
 - **Output**: Author identity and commit timestamp
 
+## Staged Changes (Uncommitted)
+
+### Staged Diff
+```bash
+git --no-pager diff --cached
+```
+- **Output**: Diff of all staged (added to index) changes against HEAD
+
+### Staged File List
+```bash
+git --no-pager diff --cached --name-status
+```
+- **Output**: A/M/D/R status list of staged files
+
+### Staged Statistics
+```bash
+git --no-pager diff --cached --stat
+```
+- **Output**: Changed file count and line churn summary for staged changes
+
 ## Single-Commit Diff Retrieval
 
 ### Standard Commit Diff
