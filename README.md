@@ -13,7 +13,7 @@ Some skills require external tools to be installed:
 | agents-md-generator | [tokei (required)](https://github.com/XAMPPRocky/tokei), [ripgrep (rg) (preferred)](https://github.com/BurntSushi/ripgrep), [tree](https://mama.indstate.edu/users/ice/tree/) |
 | jetbrains-vmoptions | None |
 | kysely-converter | None |
-| skill-maker | None |
+
 | code-security-audit | None |
 | ux-design-guide | None |
 | system-prompt-creator | None |
@@ -28,7 +28,7 @@ Only skills that have been personally tested and approved by the user are listed
 | [agents-md-generator](skills/agents-md-generator/) | Automatically sets up project structure and generates standardized `AGENTS.md` files. Supports both single-repo and monorepo structures. |
 | [kysely-converter](./skills/kysely-converter/) | Converts database queries and schemas using Kysely |
 | [jetbrains-vmoptions](skills/jetbrains-vmoptions/) | Generates JetBrains IDE VM options based on IDE version. Supports version-specific GC selection (Generational ZGC for 243+, G1GC for 222-242) and memory configuration. |
-| [skill-maker](skills/skill-maker/) | Create new AI agent skills following the SKILL.md guidelines with complete structure and README updates |
+
 | [system-prompt-creator](skills/system-prompt-creator/) | Analyzes user requirements to generate production-ready system prompts. It determines whether a single or multi-prompt architecture is needed and requests missing information if requirements are insufficient. |
 | [code-security-audit](skills/code-security-audit/) | Performs OWASP-based code security audits on any codebase. Analyzes source code against ASVS 5.0.0 verification requirements, API Security Top 10 2023 risk patterns, OWASP CheatSheet secure coding practices, and WSTG testing methodologies. |
 
@@ -75,7 +75,7 @@ These skills are currently under evaluation and will be promoted to **Available 
    ```
    $skill-installer install https://github.com/buYoung/skills/tree/main/skills/{skill-name}
    # Example:
-   $skill-installer install https://github.com/buYoung/skills/tree/main/skills/skill-maker
+   $skill-installer install https://github.com/buYoung/skills/tree/main/skills/agents-md-generator
    ```
 3. Restart Codex after installation completes
 4. The skill will be available for use
@@ -108,31 +108,16 @@ Add the desired skill to your AI Agent (Claude Code, Codex, OpenCode, Gemini, et
 - "Generate AGENTS.md --root-only"
 - $agents-md-generator --package my-package
 
-### skill-maker
+### skill-creator (Claude Built-in)
 
-This skill guides you through the process of creating a new AI agent skill. It requires a mandatory input validation step to ensure all necessary details are gathered before generation begins.
+Claude Code has a built-in `/skill-creator` slash command that guides you through creating new skills. No additional installation is required.
 
-#### Required Information
-You will be asked to provide the following details:
-- Purpose: The specific task or problem the skill automates.
-- Scope: Choice between general-purpose or domain-specific.
-- Domain: Target language, framework, or tool (if applicable).
-- Trigger: Concrete situations where the skill should be invoked.
-- Input/Output: Clear definition of inputs and expected outputs.
-- Resources: Any scripts, reference docs, or assets needed.
+#### Usage
+```
+/skill-creator
+```
 
-For detailed sufficiency criteria, refer to [input_validation.md](skills/skill-maker/references/input_validation.md).
-
-#### Examples
-- Initial Request: "Create a new skill for automated code review" (Triggers clarification loop)
-- Complete Request:
-  > Create a new skill with following details:  
-  > - Purpose: Automated code review for TypeScript projects  
-  > - Scope: Domain-specific  
-  > - Domain: TypeScript, Node.js  
-  > - Trigger: Triggered manually or during PR review process  
-  > - Input/Output: Takes git diffs as input and generates inline comments as output  
-  > - Resources: Refer to the project's `.eslintrc.js` and `STYLE_GUIDE.md`  
+Claude will interactively collect the necessary information (purpose, scope, domain, triggers, input/output) and generate a complete skill package with `SKILL.md`, optional bundled resources, and README integration.
 
 ## 📄 What is SKILL.md?
 
