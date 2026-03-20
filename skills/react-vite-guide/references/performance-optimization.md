@@ -2,6 +2,60 @@
 
 Performance optimization patterns for React 19 + Vite SPA applications. Adapted from Vercel Engineering best practices with Next.js-specific patterns removed and Vite equivalents provided.
 
+## Table of Contents
+
+- [1. Async Optimization](#1-async-optimization)
+  - [1.1 Defer Await Until Needed](#11-defer-await-until-needed)
+  - [1.2 Promise.all() for Independent Operations](#12-promiseall-for-independent-operations)
+  - [1.3 Dependency-Based Parallelization](#13-dependency-based-parallelization)
+  - [1.4 Strategic Suspense Boundaries](#14-strategic-suspense-boundaries)
+- [2. Bundle Size Optimization](#2-bundle-size-optimization)
+  - [2.1 Barrel File Import Cost](#21-barrel-file-import-cost)
+  - [2.2 Dynamic Imports with React.lazy()](#22-dynamic-imports-with-reactlazy)
+  - [2.3 Conditional Module Loading](#23-conditional-module-loading)
+  - [2.4 Defer Non-Critical Third-Party Libraries](#24-defer-non-critical-third-party-libraries)
+  - [2.5 Preload Based on User Intent](#25-preload-based-on-user-intent)
+- [3. Client-Side Data Fetching](#3-client-side-data-fetching)
+  - [3.1 Use SWR for Automatic Deduplication](#31-use-swr-for-automatic-deduplication)
+  - [3.2 Deduplicate Global Event Listeners](#32-deduplicate-global-event-listeners)
+  - [3.3 Passive Event Listeners for Scrolling](#33-passive-event-listeners-for-scrolling)
+  - [3.4 Version and Minimize localStorage Data](#34-version-and-minimize-localstorage-data)
+- [4. Re-render Optimization](#4-re-render-optimization)
+  - [4.1 Calculate Derived State During Rendering](#41-calculate-derived-state-during-rendering)
+  - [4.2 Defer State Reads to Usage Point](#42-defer-state-reads-to-usage-point)
+  - [4.3 Simple Expressions vs useMemo](#43-simple-expressions-vs-usememo)
+  - [4.4 Extract Default Non-primitive Values](#44-extract-default-non-primitive-values-from-memoized-components)
+  - [4.5 Extract to Memoized Components](#45-extract-to-memoized-components)
+  - [4.6 Narrow Effect Dependencies](#46-narrow-effect-dependencies)
+  - [4.7 Interaction Logic in Event Handlers](#47-interaction-logic-in-event-handlers)
+  - [4.8 Subscribe to Derived State](#48-subscribe-to-derived-state)
+  - [4.9 Use Functional setState Updates](#49-use-functional-setstate-updates)
+  - [4.10 Lazy State Initialization](#410-lazy-state-initialization)
+  - [4.11 Use Transitions for Non-Urgent Updates](#411-use-transitions-for-non-urgent-updates)
+  - [4.12 Use useRef for Transient Values](#412-use-useref-for-transient-values)
+- [5. Rendering Performance](#5-rendering-performance)
+  - [5.1 Animate SVG Wrapper Instead of SVG Element](#51-animate-svg-wrapper-instead-of-svg-element)
+  - [5.2 CSS content-visibility for Long Lists](#52-css-content-visibility-for-long-lists)
+  - [5.3 Hoist Static JSX Elements](#53-hoist-static-jsx-elements)
+  - [5.4 Use Activity Component for Show/Hide](#54-use-activity-component-for-showhide)
+  - [5.5 Use Explicit Conditional Rendering](#55-use-explicit-conditional-rendering)
+  - [5.6 Use useTransition Over Manual Loading States](#56-use-usetransition-over-manual-loading-states)
+- [6. JavaScript Performance](#6-javascript-performance)
+  - [6.1 Layout Thrashing](#61-layout-thrashing)
+  - [6.2 Build Index Maps for Repeated Lookups](#62-build-index-maps-for-repeated-lookups)
+  - [6.3 Cache Repeated Function Calls](#63-cache-repeated-function-calls)
+  - [6.4 Cache Storage API Calls](#64-cache-storage-api-calls)
+  - [6.5 Combined Array Iterations](#65-combined-array-iterations)
+  - [6.6 Use Set/Map for O(1) Lookups](#66-use-setmap-for-o1-lookups)
+  - [6.7 Use toSorted() for Immutability](#67-use-tosorted-for-immutability)
+  - [6.8 Early Return from Functions](#68-early-return-from-functions)
+  - [6.9 Hoisted RegExp Creation](#69-hoisted-regexp-creation)
+  - [6.10 Early Length Check for Array Comparisons](#610-early-length-check-for-array-comparisons)
+- [7. Advanced Patterns](#7-advanced-patterns)
+  - [7.1 Initialize App Once, Not Per Mount](#71-initialize-app-once-not-per-mount)
+  - [7.2 Store Event Handlers in Refs](#72-store-event-handlers-in-refs)
+  - [7.3 useEffectEvent for Stable Callback Refs](#73-useeffectevent-for-stable-callback-refs)
+
 ---
 
 ## 1. Async Optimization
@@ -414,7 +468,7 @@ function useKeyboardShortcut(key: string, callback: () => void) {
 
 **Impact: MEDIUM**
 
-`{ passive: true }` on touch and wheel event listeners signals the browser that `preventDefault()` is not called, enabling scroll optimization.
+Without `{ passive: true }`, the browser must wait for the listener to finish before it can scroll, because the listener might call `preventDefault()`. Marking a listener as passive tells the browser it is safe to scroll immediately in parallel, eliminating scroll jank on touch and wheel events.
 
 **Incorrect:**
 
@@ -540,7 +594,7 @@ function ShareButton({ chatId }: { chatId: string }) {
 
 **Impact: LOW-MEDIUM**
 
-For simple expressions with primitive results, `useMemo` overhead exceeds the computation cost.
+`useMemo` itself has overhead: it stores the previous value, compares dependencies on every render, and adds memory pressure. For cheap operations like boolean OR or string concatenation, that bookkeeping costs more than just re-computing the value. Reserve `useMemo` for genuinely expensive work (large list transforms, deep object construction).
 
 **Incorrect:**
 
@@ -624,7 +678,7 @@ function Profile({ user, loading }: Props) {
 
 **Impact: LOW**
 
-Primitive dependencies trigger effects only on meaningful changes; object dependencies trigger on every new reference.
+Objects create a new reference on every render even when their contents haven't changed, causing effects to re-run unnecessarily. Extracting the specific primitive value you depend on (e.g., `user.id` instead of `user`) ensures the effect only fires when that value actually changes.
 
 ```tsx
 // ❌ Re-runs on any user field change
@@ -657,7 +711,7 @@ useEffect(() => {
 
 **Impact: MEDIUM**
 
-Side effects triggered by specific user actions belong in event handlers. Modeling actions as state + effect creates unnecessary render cycles.
+Encoding a user action as state (`setSubmitted(true)`) then reacting to it in `useEffect` creates an extra render cycle: one to set the flag, another after the effect runs. It also couples the side effect to every dependency of the effect (e.g., `theme`), causing unintended re-fires. Placing the logic directly in the event handler runs it once, synchronously, with no extra renders.
 
 **Incorrect:**
 
@@ -839,6 +893,8 @@ function Tracker() {
 
 **Impact: LOW**
 
+Browsers promote HTML `<div>` elements to their own GPU compositing layer when transforms/animations are applied, enabling hardware-accelerated rendering. SVG elements are not promoted the same way — animating them directly forces the browser to repaint on the CPU each frame. Wrapping the SVG in a `<div>` lets the GPU handle the animation.
+
 ```tsx
 // ❌ No hardware acceleration
 <svg className="animate-spin" width="24" height="24" viewBox="0 0 24 24">
@@ -905,6 +961,8 @@ Avoids expensive re-renders and state loss.
 ### 5.5 Use Explicit Conditional Rendering
 
 **Impact: LOW**
+
+JavaScript's `&&` operator returns the left-hand value when it's falsy — so `0 && <JSX>` renders the string `"0"` instead of nothing. Using an explicit comparison (`count > 0`) ensures a boolean left-hand side, which React correctly treats as "render nothing" when false.
 
 ```tsx
 // ❌ Renders "0" when count is 0

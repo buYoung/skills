@@ -2,6 +2,38 @@
 
 Configuration, conventions, and optimization patterns specific to Vite + React 19 SPA projects.
 
+## Table of Contents
+
+- [1. Project Setup](#1-project-setup)
+  - [1.1 Recommended Vite Config](#11-recommended-vite-config)
+  - [1.2 React Compiler with Vite](#12-react-compiler-with-vite)
+- [2. Environment Variables](#2-environment-variables)
+  - [2.1 Usage](#21-usage)
+  - [2.2 Type Safety](#22-type-safety)
+  - [2.3 Known Constraints](#23-known-constraints)
+- [3. Code Splitting](#3-code-splitting)
+  - [3.1 Route-Based Splitting](#31-route-based-splitting)
+  - [3.2 Named Exports with React.lazy](#32-named-exports-with-reactlazy)
+  - [3.3 Manual Chunks](#33-manual-chunks)
+- [4. Path Aliases](#4-path-aliases)
+  - [4.1 Vite Config](#41-vite-config)
+  - [4.2 TypeScript Config](#42-typescript-config)
+- [5. CSS Integration](#5-css-integration)
+  - [5.1 CSS Modules](#51-css-modules)
+  - [5.2 Tailwind CSS v4](#52-tailwind-css-v4)
+  - [5.3 Global CSS](#53-global-css)
+- [6. Static Assets](#6-static-assets)
+  - [6.1 Importing Assets](#61-importing-assets)
+  - [6.2 Public Directory](#62-public-directory)
+  - [6.3 SVG as Component](#63-svg-as-component)
+- [7. Development Patterns](#7-development-patterns)
+  - [7.1 Proxy API Requests](#71-proxy-api-requests)
+  - [7.2 HTTPS in Development](#72-https-in-development)
+- [8. Build Optimization](#8-build-optimization)
+  - [8.1 Analyze Bundle Size](#81-analyze-bundle-size)
+  - [8.2 Preload Critical Assets](#82-preload-critical-assets)
+  - [8.3 Compression](#83-compression)
+
 ---
 
 ## 1. Project Setup

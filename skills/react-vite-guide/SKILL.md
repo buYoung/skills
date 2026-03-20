@@ -1,12 +1,20 @@
 ---
 name: react-vite-guide
 description:
-  React 19 + Vite SPA development guidelines. Composition patterns, performance
-  optimization, and web interface best practices. Use when writing, reviewing, or
-  refactoring React components in Vite-based projects. Covers compound components,
-  state management, bundle optimization, re-render prevention, accessibility, and
-  UI patterns. Triggers on React component work, performance issues, code review,
-  or new feature development.
+  React 19 + Vite SPA development guidelines. Use PROACTIVELY when writing,
+  reviewing, or refactoring any React component — even if the user doesn't
+  explicitly ask for best practices. Covers composition patterns (compound
+  components, boolean prop elimination, state lifting, context providers),
+  performance optimization (React.lazy, Suspense, code splitting, useMemo,
+  useCallback, memo, re-render prevention, bundle size reduction), and web
+  interface best practices (accessibility, ARIA, forms, animation, dark mode).
+  Triggers on any work involving useState, useEffect, useRef, useMemo,
+  useCallback, useTransition, useContext, use(), React.lazy, Suspense, SWR,
+  React Router, Vite config, import.meta.env, manualChunks, rollupOptions,
+  Tailwind CSS, CSS Modules, or barrel file imports. Also triggers on
+  performance debugging, re-render issues, bundle analysis, code splitting
+  decisions, component architecture discussions, state management patterns,
+  or new feature development in React + Vite projects.
 license: MIT
 ---
 

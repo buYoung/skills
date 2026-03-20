@@ -2,6 +2,21 @@
 
 Composition patterns for flexible, maintainable React 19 components. Covers compound components, state lifting, and internal composition as alternatives to boolean prop proliferation.
 
+## Table of Contents
+
+- [1. Component Architecture](#1-component-architecture)
+  - [1.1 Avoid Boolean Prop Proliferation](#11-avoid-boolean-prop-proliferation)
+  - [1.2 Use Compound Components](#12-use-compound-components)
+- [2. State Management](#2-state-management)
+  - [2.1 Decouple State Management from UI](#21-decouple-state-management-from-ui)
+  - [2.2 Define Generic Context Interfaces for Dependency Injection](#22-define-generic-context-interfaces-for-dependency-injection)
+  - [2.3 Lift State into Provider Components](#23-lift-state-into-provider-components)
+- [3. Implementation Patterns](#3-implementation-patterns)
+  - [3.1 Create Explicit Component Variants](#31-create-explicit-component-variants)
+  - [3.2 Children vs Render Props](#32-children-vs-render-props)
+- [4. React 19 APIs](#4-react-19-apis)
+  - [4.1 React 19 API Changes](#41-react-19-api-changes)
+
 ---
 
 ## 1. Component Architecture
@@ -103,6 +118,8 @@ Each variant is explicit about what it renders. Share internals without sharing 
 **Impact: HIGH**
 
 Compound components structure complex UI with a shared context. Each subcomponent accesses shared state via context, not props.
+
+Render props and boolean flags force a single component to anticipate every layout variation, leading to a bloated API surface and fragile conditional logic. Compound components invert this — each subcomponent owns its own rendering, and the parent only provides shared context.
 
 **Incorrect: monolithic component with render props**
 
@@ -212,6 +229,8 @@ const Composer = {
 **Impact: MEDIUM**
 
 The provider is the single location that manages state. UI components consume the context interface — agnostic to whether state comes from `useState`, Zustand, or a server sync.
+
+When UI components directly call specific hooks (e.g., `useGlobalChannelState`), they become locked to that one data source. Isolating state in a provider means swapping the entire state backend (local state, Zustand, server sync) without touching any UI code.
 
 **Incorrect: UI coupled to state implementation**
 
@@ -459,6 +478,8 @@ The provider boundary is what matters — not the visual nesting. Components tha
 
 Dedicated provider components hold state management. Sibling components outside the main UI access and modify state without prop drilling.
 
+When state lives inside a UI component, sibling components (e.g., a preview panel or action buttons in a dialog) cannot access it without prop drilling or lifting state ad-hoc. A dedicated provider makes state available to any descendant, regardless of visual nesting.
+
 **Incorrect: state trapped inside component**
 
 ```tsx
@@ -607,7 +628,9 @@ Each variant is explicit about what provider/state it uses, what UI elements it 
 
 `children` provides composition for static structure; `renderX` props are suited for cases where the parent passes data back to the child.
 
-**Incorrect: render props**
+Render props add indirection without benefit when the parent doesn't need to pass data back to the child. The function wrapper obscures the component tree and makes the JSX harder to read. Children composition is simpler, more declarative, and gives consumers full control over ordering and nesting.
+
+**Incorrect: render props for static structure**
 
 ```tsx
 <Composer
