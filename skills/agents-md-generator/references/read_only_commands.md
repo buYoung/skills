@@ -184,3 +184,13 @@ Lock files must NOT be read:
 - **Skip**: Import/require/using sections when analyzing patterns
 - **Infer Stack From**: Package manifests, not import statements — read dependency sections from detected manifests to build technology context before source analysis (see [Dependency Discovery](#dependency-discovery))
 - **Additional Context**: Use paginated file reading to collect more context as needed
+
+### Deep Analysis Strategy
+
+Surface-level pattern scanning (searching for keywords like `try`, `catch`, `log`) is insufficient for Sections 3 and 4. Use these strategies to find deeper patterns:
+
+- **Cross-reference callers**: When you find a utility, service, or shared abstraction, search for its callers to understand how it's actually used across the codebase. The usage pattern often reveals conventions not visible from the definition alone.
+- **Trace flows end-to-end**: When documenting a pattern like error handling, don't stop at "uses AppError". Follow the error from where it's created → how it propagates → how it transforms at boundaries → how it reaches the user. Each layer may add a convention worth documenting.
+- **Sample configuration/registration files**: Plugin manifests, DI configs, route files, and localization bundles often encode structural conventions (grouping order, key hierarchies, feature bundling) that source code analysis alone won't reveal.
+- **Compare multiple implementations of the same role**: If the codebase has 5 dialogs, 5 commands, or 5 hooks, read at least 3 to identify the shared skeleton vs. per-instance variation. The skeleton is the convention.
+- **Check error/failure paths**: Read not just the happy path but how the code handles failures — recovery strategies, fallback behavior, degraded states. These are often the most important patterns to document and the easiest to miss.

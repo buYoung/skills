@@ -23,8 +23,8 @@ For single repositories or individual packages in a monorepo:
 
 - **Overview**: 1-2 sentence project description (abstract, no tool/framework lists)
 - **Folder Structure**: Key directories and their contents
-- **Core Behaviors & Patterns**: Logging, error handling, control flow, module structure patterns observed in code
-- **Conventions**: Naming, comments, code style derived from analysis
+- **Core Behaviors & Patterns**: Cross-cutting patterns traced through full flows — error propagation chains, state lifecycle transitions, cross-boundary wiring mechanisms, resilience/recovery strategies, shared resource management. Discovered via multi-phase analysis: surface idiom detection, then deep tracing across layers.
+- **Conventions**: Naming, code style, API/interface design conventions (callback naming, return value shapes, method responsibility splitting), configuration/registration structure, boundary conventions (error flattening, schema drift absorption, containment rules), component composition patterns.
 - **Working Agreements**: Rules for agent behavior and communication
 
 ### Monorepo Root Document (3 Sections)
