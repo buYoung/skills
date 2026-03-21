@@ -13,6 +13,10 @@ Some skills require external tools to be installed:
 | agents-md-generator | [tokei (required)](https://github.com/XAMPPRocky/tokei), [ripgrep (rg) (preferred)](https://github.com/BurntSushi/ripgrep), [tree](https://mama.indstate.edu/users/ice/tree/) |
 | jetbrains-vmoptions | None |
 | kysely-converter | None |
+| code-review | None |
+| doc-coauthoring | None |
+| typst-creator | None |
+| ui-guide | None |
 
 | code-security-audit | None |
 | ux-design-guide | None |
@@ -39,7 +43,11 @@ These skills are currently under evaluation and will be promoted to **Available 
 | Skill | Description |
 |-------|-------------|
 | [biz-opportunity-scout](skills/biz-opportunity-scout/) | Identify and validate profitable business opportunities by analyzing TAM/SAM/SOM, unit economics, competitive landscape, and PMF indicators with HTML report generation |
+| [code-review](skills/code-review/) | Performs production-ready code reviews on git changes. Supports commit/range/file-scoped analysis, impact assessment, breaking-change detection, confidence-aware finding classification, and risk-weighted verdict generation. |
+| [doc-coauthoring](skills/doc-coauthoring/) | Guide users through a structured 3-stage workflow for co-authoring documentation through Context Gathering, Refinement & Structure, and Reader Testing. |
 | [react-vite-guide](skills/react-vite-guide/) | React 19 + Vite SPA development guidelines. Composition patterns, performance optimization, and web interface best practices for client-side React applications. |
+| [typst-creator](skills/typst-creator/) | Generate Typst source code for documents, reports, papers, and presentations, covering markup, math, scripting, and layout syntax. |
+| [ui-guide](skills/ui-guide/) | Generate, update, and maintain UI style guide documents from actual codebase analysis. Scans project files to extract real color palettes, typography scales, spacing systems, component patterns, and layout approaches. |
 | [veo-prompt-director](skills/veo-prompt-director/) | Generates structured Google Veo 3.1 video prompts by collecting user input for subject, action, style, cinematography, and audio. Guides users through the Universal Prompt Formula to produce camera-ready prompts. |
 | [ux-design-guide](skills/ux-design-guide/) | Reviews existing UI for UX guideline violations and generates implementation guidance based on 99+ rules across Navigation, Layout, Accessibility, Forms, Performance, Typography, and more. Supports Web, Mobile, and Desktop GUI platforms. |
 

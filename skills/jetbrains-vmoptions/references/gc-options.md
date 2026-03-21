@@ -7,7 +7,7 @@ Detailed garbage collector flags for JetBrains IDE VM options.
 1. [IDE Version Compatibility](#ide-version-compatibility)
 2. [GC Selection by IDE Version](#gc-selection-by-ide-version)
 3. [Generational ZGC (JDK 21+)](#generational-zgc-jdk-21)
-4. [ZGC Common Flags](#zgc-common-flags)
+4. [ZGC Non-Generational (JDK 17/21)](#zgc-non-generational-jdk-1721)
 5. [G1GC Flags](#g1gc-flags)
 6. [Shenandoah Flags](#shenandoah-flags)
 7. [Parallel GC Flags](#parallel-gc-flags)
@@ -124,30 +124,29 @@ Usage Notes:
 
 ---
 
-## ZGC Common Flags
+## ZGC Non-Generational (JDK 17/21)
 
-Common ZGC flags (Generational/Non-generational).
+Legacy ZGC mode (non-generational). On JDK 17, this is the only ZGC mode available. On JDK 21, Generational ZGC (above) is preferred.
 
-Behavior: Adjusts ZGC heuristics around allocation spikes, fragmentation, and memory uncommit.
-When it helps: Tail latency tuning, memory footprint control, and allocation spike smoothing.
+Behavior: Concurrent low-pause GC without young/old separation.
+When it helps: JDK 17 users who want low-pause GC, or JDK 21 users who prefer simpler tuning.
+
+### Activation
+
+```
+-XX:+UseZGC
+```
+
+### Tuning Flags
+
+Shares most flags with Generational ZGC above. Key differences:
 
 | Flag | Default | Description |
 |------|---------|-------------|
-| `-XX:ZAllocationSpikeTolerance` | 2.0 | Allocation spike tolerance factor |
-| `-XX:ZFragmentationLimit` | ZGC default: 5.0; XGC default: 25.0 | Maximum heap fragmentation (%) |
-| `-XX:ZMarkStackSpaceLimit` | 8G | Mark stack space limit |
-| `-XX:ZCollectionInterval` | 0 | Force GC interval (seconds) |
-| `-XX:+ZProactive` | true | Proactive GC cycles |
-| `-XX:+ZUncommit` | true | Uncommit unused memory |
-| `-XX:ZUncommitDelay` | 300 | Uncommit delay (seconds) |
+| `-XX:ZCollectionInterval` | 0 | Force GC interval in seconds (replaces Minor/Major split) |
+| `-XX:ZFragmentationLimit` | 25.0 | Maximum heap fragmentation (%) — higher default than Generational (5.0) |
 
-Usage Notes:
-- `-XX:ZAllocationSpikeTolerance`: Increase to dampen short allocation bursts.
-- `-XX:ZFragmentationLimit`: Lower to prefer compaction when fragmentation rises.
-- `-XX:ZMarkStackSpaceLimit`: Raise when mark stack space is insufficient on large heaps.
-- `-XX:ZCollectionInterval`: Forces periodic cycles when needed.
-- `-XX:+ZProactive`: Maintains headroom to avoid sudden pauses.
-- `-XX:+ZUncommit` / `-XX:ZUncommitDelay`: Controls memory return behavior.
+Other flags (`ZAllocationSpikeTolerance`, `ZMarkStackSpaceLimit`, `ZProactive`, `ZUncommit`, `ZUncommitDelay`) behave identically to Generational ZGC.
 
 ---
 
