@@ -1,0 +1,23 @@
+{
+  "skill_name": "doc-coauthoring",
+  "evals": [
+    {
+      "id": 0,
+      "prompt": "우리 팀에서 새로운 인증 시스템으로 마이그레이션하려고 하는데, 기술 스펙 문서를 작성해야 해. JWT에서 OAuth2로 바꾸는 건데, 기존 사용자 세션 유지도 고려해야 하고 보안 요구사항도 있어. 문서 작성을 도와줘.",
+      "expected_output": "3단계 워크플로우를 제안하고, Context Gathering 단계부터 시작하여 문서 유형, 청중, 기술적 맥락에 대한 질문을 해야 함",
+      "files": []
+    },
+    {
+      "id": 1,
+      "prompt": "사내 데이터 파이프라인 아키텍처를 변경하는 decision doc을 써야 해. Kafka에서 Pulsar로 바꾸려고 하는데, CTO한테 보여줄 거야. 구조화된 방식으로 작성하고 싶어.",
+      "expected_output": "워크플로우 수락 후 Context Gathering 시작, decision doc에 맞는 섹션 구조 제안, 청중(CTO)에 맞는 질문",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "RFC를 하나 작성해야 하는데, 마이크로서비스 간 통신을 gRPC에서 REST로 바꾸는 제안이야. 성능 트레이드오프랑 팀 역량 관점에서 정리해야 해. 도와줘.",
+      "expected_output": "RFC 문서 작성 워크플로우 제안, 성능 트레이드오프/팀 역량 관점 포함한 맥락 질문, 적절한 RFC 섹션 구조",
+      "files": []
+    }
+  ]
+}
