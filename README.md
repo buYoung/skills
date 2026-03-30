@@ -51,6 +51,16 @@ These skills are currently under evaluation and will be promoted to **Available 
 | [veo-prompt-director](skills/veo-prompt-director/) | Generates structured Google Veo 3.1 video prompts by collecting user input for subject, action, style, cinematography, and audio. Guides users through the Universal Prompt Formula to produce camera-ready prompts. |
 | [ux-design-guide](skills/ux-design-guide/) | Reviews existing UI for UX guideline violations and generates implementation guidance based on 99+ rules across Navigation, Layout, Accessibility, Forms, Performance, Typography, and more. Supports Web, Mobile, and Desktop GUI platforms. |
 
+## 🔒 Private Skills
+
+Personal-use skills not included in the public marketplace.
+
+| Skill | Description |
+|-------|-------------|
+| [linear-issue-creator](skills/linear-issue-creator/) | Creates structured Linear issues with a main issue + sub-issues, applying project linking, title prefix, and labeling rules. |
+| [linear-issue-worker](skills/linear-issue-worker/) | Executes code tasks from Linear sub-issues. Resolves dependency graphs, transitions statuses, performs code work, and posts completion comments. |
+| [linear-issue-reviewer](skills/linear-issue-reviewer/) | Reviews completed Linear sub-issues by cross-validating Done Criteria, worker completion comments, and actual code changes. Produces Approved / Changes Requested / Clarification Needed verdicts. |
+
 ## 📖 How to Install Skills
 
 ### Claude Code (Marketplace)
