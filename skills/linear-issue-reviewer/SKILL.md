@@ -1,20 +1,8 @@
 ---
 name: linear-issue-reviewer
 description: >
-  Skill for reviewing completed Linear sub-issues that were created by linear-issue-creator and
-  worked by linear-issue-worker. Reads a main issue's sub-issues, identifies Done sub-issues
-  that haven't been reviewed yet, then cross-validates Done Criteria, the worker's completion
-  comment, and actual code changes to produce a review verdict (Approved / Changes Requested /
-  Clarification Needed). When all sub-issues pass review, performs final verification against
-  the main issue's Acceptance Criteria.
-  Use this skill whenever the user asks to "review Linear issues", "check completed sub-issues",
-  "validate the work on PRI-XX", "review done issues", "QA the Linear tasks", "verify sub-issue work",
-  "check if the sub-issues are really done", "review what the worker did", "approve sub-issues",
-  "validate PRI-XX sub-issues", or any request to verify and approve/reject work completed on
-  Linear issues. Also triggers when the user says "are the sub-issues done correctly?",
-  "review the completed work", or references a specific issue identifier and wants a quality review.
-  This skill is the third stage in the Linear pipeline: creator makes issues, worker does them,
-  this skill reviews them.
+  Review completed Linear sub-issues: cross-validate Done Criteria, code changes, and worker comments to approve, request changes, or ask for clarification.
+  Use when asked to review, validate, or QA done Linear issues.
 ---
 
 # Linear Issue Reviewer
@@ -166,76 +154,14 @@ Based on steps 3b–3e, choose one of three verdicts:
 
 ### 3g. Post Review Comment
 
-Write a review comment based on the verdict.
+Write a review comment based on the verdict. Use the templates from `references/comment-templates.md`.
 
-**Approved:**
-
-```
-Linear:save_comment
-  issueId: "<sub-issue-id>"
-  body: |
-    ## 리뷰 결과: ✅ Approved
-
-    ### Done Criteria 검증
-    - [x] Criterion 1 — 확인됨: [근거]
-    - [x] Criterion 2 — 확인됨: [근거]
-
-    ### Target Location 검증
-    - 지정 파일과 변경 파일 일치
-
-    ### 코드 품질
-    - [관찰 사항, 개선 제안 등 — 승인을 막지는 않지만 참고할 점]
-
-    → 상태 유지: Done
-```
-
-**Changes Requested:**
-
-```
-Linear:save_comment
-  issueId: "<sub-issue-id>"
-  body: |
-    ## 리뷰 결과: 🔄 Changes Requested
-
-    ### Done Criteria 검증
-    - [x] 충족 항목 — 확인됨: [근거]
-    - [ ] 미충족 항목 → [미충족 이유 상세 설명]
-
-    ### 수정 필요 사항
-    1. `파일경로:라인번호` — [수정 내용]
-    2. `파일경로:라인번호` — [수정 내용]
-
-    ### 스코프 이슈 (해당 시)
-    - [스코프 크립이 발견된 경우 기술]
-
-    → 상태 변경: Done → In Progress
-```
-
-Then transition the status:
+For `Changes Requested`, also transition the status:
 
 ```
 Linear:save_issue
   id: "<sub-issue-id>"
   state: "started"
-```
-
-**Clarification Needed:**
-
-```
-Linear:save_comment
-  issueId: "<sub-issue-id>"
-  body: |
-    ## 리뷰 결과: ❓ Clarification Needed
-
-    ### Done Criteria 검증
-    - [x] 확인 가능한 항목 — [근거]
-    - [?] 확인 필요 항목 — [의문점]
-
-    ### 확인 사항
-    1. [구현 선택에 대한 질문]
-    2. [의도 확인 필요 사항]
-
-    → 상태 유지: Done (확인 후 판단)
 ```
 
 ### 3h. Move to Next Sub-Issue
@@ -260,117 +186,10 @@ Execute this only when **all** sub-issues have been Approved.
 3. If all items are covered → post final review comment
 4. If gaps exist → identify which criteria are unmet and suggest next steps
 
-### Final Review Comment (All Criteria Met)
-
-```
-Linear:save_comment
-  issueId: "<main-issue-id>"
-  body: |
-    ## 📋 최종 리뷰 완료
-
-    ### 서브이슈 리뷰 결과
-    - ✅ PRI-43 — Approved
-    - ✅ PRI-44 — Approved
-    - ✅ PRI-45 — Approved
-
-    ### Acceptance Criteria 검증
-    - [x] Criterion 1 — PRI-43, PRI-44에서 충족
-    - [x] Criterion 2 — PRI-45에서 충족
-
-    ### 종합 의견
-    [전체 작업에 대한 종합 평가]
-
-    → 모든 Acceptance Criteria 충족. 작업 완료 승인.
-```
-
-### Final Review Comment (Gaps Found)
-
-```
-Linear:save_comment
-  issueId: "<main-issue-id>"
-  body: |
-    ## 📋 최종 리뷰 — 추가 작업 필요
-
-    ### 서브이슈 리뷰 결과
-    - ✅ PRI-43 — Approved
-    - ✅ PRI-44 — Approved
-
-    ### Acceptance Criteria 검증
-    - [x] Criterion 1 — PRI-43에서 충족
-    - [ ] Criterion 2 → 커버하는 서브이슈 없음
-
-    ### 필요 조치
-    1. Criterion 2를 충족하기 위한 추가 서브이슈 필요
-       - 제안: [추가 서브이슈 제목 및 내용 개요]
-
-    → Acceptance Criteria 일부 미충족. 추가 작업 필요.
-```
+Post the final review comment on the main issue using the templates from `references/comment-templates.md` (Final Review sections).
 
 ---
 
-## Exception Handling
+For exception handling (missing comments, scope creep, conflicts, ambiguous criteria, re-review), see `references/exceptions.md`.
 
-**No completion comment from worker:**
-- Review based on code changes only
-- State this in the review comment
-- Request the worker to post a completion comment
-
-**Changes beyond Done Criteria scope:**
-- Flag as scope creep
-- Determine if the extra changes are reasonable (imports, tests, etc.) or problematic
-- Unreasonable scope creep becomes a reason for `Changes Requested`
-
-**Conflicts between sub-issues:**
-- If two sub-issues modify the same part of a file differently, record the conflict in both review comments
-- Issue `Changes Requested` and suggest a resolution approach
-
-**Ambiguous Done Criteria:**
-- Do not judge arbitrarily — state the interpretation used in the review comment
-- Consider using `Clarification Needed` verdict
-
-**Re-review after Changes Requested:**
-- Use only the most recent `## ✅ Work Complete` comment as the review basis
-- Additionally verify that all issues from the previous `## 리뷰 결과: 🔄 Changes Requested` have been addressed
-
----
-
-## Linear API Reference
-
-### State Parameter Values
-
-Values for the `state` field in `Linear:save_issue`:
-
-| Desired Status | `state` Value | Note |
-|---|---|---|
-| In Progress | `"started"` | Do not use `"In Progress"` — use the type value |
-| Done | `"Done"` | Do not use `"completed"` — use the name value |
-| Back to Todo | `"unstarted"` | Type value |
-
-After changing state, verify the transition succeeded by checking the API response. If it fails, try the alternative format (name vs. type).
-
-### Description Parsing
-
-Linear API may return escaped newlines in descriptions (`\n` appearing as `\\n`). When parsing section headers like `## Done Criteria`, account for both `## ` and `\n## ` patterns.
-
-### Comment Identification Rules
-
-| Comment to Find | Search String |
-|---|---|
-| Worker start comment | `## 🚀 Work Started` |
-| Worker completion comment | `## ✅ Work Complete` |
-| Reviewer review comment | `## 리뷰 결과:` |
-
-For re-review detection, check comment **chronological order**: if `## 리뷰 결과: 🔄 Changes Requested` appears before a later `## ✅ Work Complete`, the sub-issue needs re-review.
-
-### Tool Call Summary
-
-| Action | Tool | Key Parameters |
-|---|---|---|
-| Read issue | `Linear:get_issue` | `id`, `includeRelations: true` |
-| List sub-issues | `Linear:list_issues` | `parentId` |
-| Change status | `Linear:save_issue` | `id`, `state` |
-| Post comment | `Linear:save_comment` | `issueId`, `body` |
-
-### Retry Policy
-
-If `Linear:get_issue` or `Linear:list_issues` fails, retry once. If still failing, proceed with available data and report the issue to the user.
+For Linear API details (state values, description parsing, comment identification, tool calls, retry policy), see `references/linear-api.md`.

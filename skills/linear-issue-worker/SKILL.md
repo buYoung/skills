@@ -1,17 +1,8 @@
 ---
 name: linear-issue-worker
 description: >
-  Skill for executing code tasks from Linear issues created by the linear-issue-creator skill.
-  Reads a main issue's sub-issues, resolves the dependency graph (blockedBy), then sequentially
-  works through each actionable sub-issue: transitions status to In Progress, performs the actual
-  code work (file creation/modification), validates against Done Criteria, posts completion comments,
-  and transitions to Done.
-  Use this skill whenever the user asks to "work on a Linear issue", "execute Linear tasks",
-  "implement the sub-issues", "start working on PRI-XX", "process my Linear issues",
-  "do the coding work from Linear", or any request to pick up and implement tasks that already
-  exist as Linear issues. Also triggers when the user says "work on this issue", "implement this",
-  or references a specific issue identifier (e.g., PRI-42) and wants the actual code done.
-  This skill is the counterpart to linear-issue-creator — the creator makes issues, this skill does them.
+  Execute code tasks from Linear sub-issues: resolve dependencies, implement changes, validate Done Criteria, and sync status.
+  Use when asked to work on, implement, or start coding a Linear issue (e.g. PRI-42).
 ---
 
 # Linear Issue Worker
@@ -175,34 +166,7 @@ Re-evaluate the remaining sub-issues. Issues that were blocked by the just-compl
 
 ---
 
-## Exception Handling
-
-**Target Location file doesn't exist:**
-1. Post a comment noting the expected file was not found
-2. Search nearby directories for the most logical placement
-3. If confident, proceed and note the deviation. If unsure, ask the user
-
-**Library / dependency not available:**
-1. Check if it can be installed (`npm install`, `pip install`, etc.)
-2. If reasonable, install and note in the completion comment
-3. If it's a major or unexpected dependency, ask the user
-
-**Done Criteria is ambiguous or impossible:**
-1. Post a comment stating your interpretation
-2. Proceed based on that interpretation
-3. Flag it clearly in the completion comment
-
-**Blocker discovered mid-work:**
-1. Post a comment explaining the blocker
-2. Transition the issue back to Todo using `state: "unstarted"`
-3. Move to the next available sub-issue
-4. If nothing else is available, report to the user and stop
-
-**All remaining sub-issues are blocked (deadlock):**
-1. Report the dependency graph to the user
-2. Suggest which blocker to resolve manually or which dependency to remove
-
----
+For exception handling (missing files, unavailable dependencies, ambiguous criteria, blockers, deadlocks), see `references/exceptions.md`.
 
 ## Completion
 
@@ -237,34 +201,4 @@ Linear:save_comment
 
 ---
 
-## Linear API Reference
-
-### State Parameter Values
-
-The `state` field in `Linear:save_issue` accepts either the state type or state name, but behavior can be inconsistent across statuses. Use these tested, working values:
-
-| Desired Status | `state` value to use | Why |
-|---|---|---|
-| In Progress | `"started"` | Name `"In Progress"` fails; use the type |
-| Done | `"Done"` | Type `"completed"` fails; use the name |
-| Back to Todo | `"unstarted"` | Use the type |
-| Canceled | `"Canceled"` | Use the name |
-
-Always verify the transition succeeded by checking the `status` field in the API response. If the status didn't change, try the alternative form (name vs type).
-
-### Description Parsing
-
-Linear API may return description text with escaped newlines (`\\n` as `\\\\n` in JSON). When parsing section headers like `## Task Description`, account for this escaping — look for both `## ` and `\\n## ` patterns when splitting sections.
-
-### Tool Call Summary
-
-| Action | Tool | Key Parameters |
-|---|---|---|
-| Read issue | `Linear:get_issue` | `id`, `includeRelations: true` |
-| List sub-issues | `Linear:list_issues` | `parentId` |
-| Update status | `Linear:save_issue` | `id`, `state` |
-| Post comment | `Linear:save_comment` | `issueId`, `body` |
-
-### Retry Policy
-
-If `Linear:get_issue` or `Linear:list_issues` fails, retry once before falling back to alternative data sources (e.g., inferring relations from sibling issues' `blocks` field).
+For Linear API details (state values, description parsing, tool calls, retry policy), see `references/linear-api.md`.
