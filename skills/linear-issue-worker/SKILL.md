@@ -100,7 +100,7 @@ Linear:save_issue
   state: "started"
 ```
 
-Post a start comment:
+Post a start comment (write in Korean, Professional tone, no AI patterns — natural and direct):
 ```
 Linear:save_comment
   issueId: "<sub-issue-id>"
@@ -108,7 +108,7 @@ Linear:save_comment
     ## 🚀 Work Started
 
     ### Approach
-    - [Brief description of implementation approach]
+    - [Implementation approach summary — include specific technical decisions]
     - [Key files to modify or create]
     - [Notable decisions or trade-offs]
 ```
@@ -152,6 +152,23 @@ Linear:save_comment
     - [Any deviations, edge cases discovered, etc.]
 ```
 
+**Comment Quality Guide (Content Skill Principles):**
+
+Apply these principles when writing completion comments to improve quality.
+Target audience: Fullstack developers | Language: Korean | Tone: Professional
+
+1. **content-strategy**: Structure comments clearly (maintain Changes → Done Criteria → Notes order. Each section delivers the information the reader needs without gaps).
+2. **content-production**: Write specific, verifiable content.
+   - "Fixed it" → "Added inventory validation logic to POST /api/orders endpoint, returns 409 when out of stock"
+   - "Tests done" → "Added 3 unit tests (normal order, out-of-stock, invalid product ID)"
+3. **content-humanizer**: Remove AI patterns and write in natural Korean.
+   - Avoid repeating the same sentence structure — vary verb endings and phrasing
+   - Remove unnecessary qualifiers ("effectively," "successfully")
+   - Maintain the tone of explaining to a peer developer
+4. **copy-editing**: Focus on Clarity and Specificity.
+   - Verify file paths and change descriptions are concrete with no vague expressions
+   - Verify Done Criteria evidence is code-level verifiable
+
 ### 3f. Transition to Done
 
 ```
@@ -173,7 +190,7 @@ For exception handling (missing files, unavailable dependencies, ambiguous crite
 When all sub-issues are processed:
 
 1. Review the main issue's **Acceptance Criteria**
-2. Post a summary comment on the **main issue**:
+2. Post a summary comment on the **main issue** (write in Korean, Professional tone. Apply content skill principles — specific, no AI patterns, clear):
 
 ```
 Linear:save_comment
@@ -193,7 +210,7 @@ Linear:save_comment
     - [ ] Criterion from main issue — not yet met (reason: ...)
 
     ### Summary
-    [Brief summary of all changes and current state]
+    [Concretely summarize all changes and current state]
 ```
 
 3. If all acceptance criteria are met and all sub-issues are Done, inform the user that the work is complete

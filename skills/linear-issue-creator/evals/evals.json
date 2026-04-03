@@ -1,0 +1,48 @@
+{
+  "skill_name": "linear-issue-creator",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "corral 프로젝트에 실시간 채팅 기능을 추가하려고 해. 사용자 간 1:1 채팅과 그룹 채팅을 지원해야 하고, WebSocket으로 실시간 메시지 전송, 메시지 저장/조회 API, 채팅방 UI가 필요해. 주제만 있고 아직 아무것도 안 만들었어. PRD 수준으로 이슈 만들어줘. Linear에 실제로 생성하지 말고 이슈 설명문만 파일로 저장해줘.",
+      "expected_output": "PRD-quality main issue description + 3-5 sub-issue descriptions written in Korean with Professional tone, following Pattern A pipeline (content-strategy → content-production → content-humanizer → copy-editing). Descriptions should have concrete API specs, data models, measurable acceptance criteria, and no AI patterns.",
+      "files": [],
+      "expectations": [
+        "Main issue description contains a PRD Context section with topic, target audience, language, tone, and pipeline pattern",
+        "Main issue has measurable Acceptance Criteria with specific endpoints or UI conditions",
+        "At least 3 sub-issues are defined with separate frontend and backend tasks",
+        "Sub-issue descriptions include concrete API specs with HTTP methods, paths, and response formats",
+        "Sub-issue Done Criteria are code-level verifiable, not vague",
+        "All descriptions are written in Korean",
+        "No AI pattern repetition (e.g., same sentence structure repeated more than 3 times)",
+        "Dependencies between sub-issues are explicitly defined"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "이미 거의 완성된 이슈 설명이 있어. 다듬기만 해줘 (Pattern C). 프로젝트는 corral이야.\n\n메인 이슈:\n제목: [corral] 사용자 프로필 페이지 구현\n설명: 사용자가 자신의 프로필을 볼수있고 수정할수있는 페이지를 만들어야합니다. 프로필에는 이름, 이메일, 아바타, 자기소개가 포함되어야합니다.\n\n서브이슈 1:\n제목: [corral] 프로필 조회/수정 API\nArea: Back-end, Type: Feature\n설명: GET /api/profile과 PATCH /api/profile API를 만들어야합니다. 프로필 데이터를 조회하고 수정할수있어야합니다.\n\n서브이슈 2:\n제목: [corral] 프로필 페이지 UI\nArea: Front-end, Type: Feature\n설명: 프로필 정보를 보여주는 페이지와 수정 폼을 만들어야합니다.\n\nLinear에 실제로 생성하지 말고 다듬어진 이슈 설명문만 파일로 저장해줘.",
+      "expected_output": "Polished versions of the provided descriptions with copy-editing sweep applied: improved clarity, specificity (concrete API response formats, error codes, component names), consistent Korean tone, and removed vague expressions. Structure should remain the same but quality significantly improved.",
+      "files": [],
+      "expectations": [
+        "Main issue description has been enhanced with measurable Acceptance Criteria",
+        "Sub-issue API descriptions include specific HTTP methods, request/response body formats, and error codes",
+        "Sub-issue UI description includes specific component names or states",
+        "Vague expressions like '만들어야합니다' are replaced with more varied, natural Korean",
+        "Professional tone is consistent throughout all descriptions",
+        "Original structure and intent are preserved (not rewritten from scratch)"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "corral 프로젝트에 다크모드 토글 기능을 추가해줘. Front-end Feature야. 헤더에 토글 버튼 넣고, 사용자 설정에 저장하는 거야. Linear에 실제로 생성하지 말고 이슈 설명문만 파일로 저장해줘.",
+      "expected_output": "Standard Generic workflow issue descriptions (not PRD Pipeline). Main issue with Purpose/Background, Goal, Acceptance Criteria, Scope, Impact Area. Sub-issues with Task Description, Target Location, Technical Details, Done Criteria, Dependencies. The skill should NOT trigger PRD Pipeline for this simple feature request.",
+      "files": [],
+      "expectations": [
+        "Uses Generic workflow, NOT PRD Pipeline (no PRD Context section)",
+        "Main issue follows the standard template with Purpose/Background, Goal, Acceptance Criteria, Scope, Impact Area",
+        "Sub-issues follow standard template with Task Description, Target Location, Technical Details, Done Criteria, Dependencies",
+        "Sub-issues have exactly 2 labels: Front-end + Feature",
+        "All titles start with [corral]"
+      ]
+    }
+  ]
+}

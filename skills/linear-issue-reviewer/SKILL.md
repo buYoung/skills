@@ -156,6 +156,24 @@ Based on steps 3b–3e, choose one of three verdicts:
 
 Write a review comment based on the verdict. Use the templates from `references/comment-templates.md`.
 
+**Review Comment Quality Guide (Content Skill Principles):**
+
+Apply these principles when writing review comments to improve quality.
+Target audience: Fullstack developers | Language: Korean | Tone: Professional
+
+1. **content-strategy**: Structure review comments clearly (verdict summary → per-item verification → specific feedback → next steps).
+2. **content-production**: Include specific evidence and code references.
+   - "There's a problem" → "`notifications.service.ts:42` queries notifications without userId validation. Other users' notifications could be exposed."
+   - "Needs fixing" → "PATCH /notifications/:id/read returns empty body on 404. Should return `{ error: 'NOT_FOUND', message: '...' }` format."
+3. **content-humanizer**: Remove AI patterns and write in the tone of giving feedback to a peer developer.
+   - "Improvement is needed" → "This part would be better as ~"
+   - Remove unnecessary formality ("I would like to inform you of the review results")
+   - Make positive feedback specific too: "Good job" → "The cursor-based pagination implementation is clean"
+4. **copy-editing**: Focus on Clarity, Prove It, and Specificity.
+   - Verify review findings are not vague
+   - Verify change requests include specific resolution direction
+   - Include file paths and line numbers wherever possible
+
 For `Changes Requested`, also transition the status:
 
 ```
@@ -187,6 +205,7 @@ Execute this only when **all** sub-issues have been Approved.
 4. If gaps exist → identify which criteria are unmet and suggest next steps
 
 Post the final review comment on the main issue using the templates from `references/comment-templates.md` (Final Review sections).
+Apply the same **Review Comment Quality Guide** above to the final review comment as well.
 
 ---
 
