@@ -1,0 +1,52 @@
+{
+  "skill_name": "release-it",
+  "evals": [
+    {
+      "id": 0,
+      "prompt": "새 Node.js 프로젝트에 release-it을 설정해줘. GitHub Release를 자동 생성하고, conventional-changelog로 CHANGELOG.md를 관리하고, main 브랜치에서만 릴리스할 수 있게 해줘. CI에서 사용할 GitHub Actions 워크플로우도 만들어줘.",
+      "expected_output": ".release-it.json (or equivalent) with git.requireBranch=main, github.release=true, @release-it/conventional-changelog plugin config, and a GitHub Actions workflow YAML file",
+      "files": [],
+      "assertions": [
+        { "id": "config-file-exists", "text": "A release-it config file exists in outputs" },
+        { "id": "github-release-enabled", "text": "Config has github.release set to true" },
+        { "id": "require-branch-main", "text": "Config has git.requireBranch set to 'main'" },
+        { "id": "conventional-changelog-plugin", "text": "Config includes @release-it/conventional-changelog plugin with preset and infile" },
+        { "id": "github-actions-workflow", "text": "A GitHub Actions workflow YAML file exists with release-it --ci command" },
+        { "id": "workflow-has-tokens", "text": "GitHub Actions workflow references GITHUB_TOKEN and NPM_TOKEN" },
+        { "id": "workflow-fetch-depth", "text": "GitHub Actions checkout uses fetch-depth: 0" },
+        { "id": "json-schema-present", "text": "Config includes $schema URL for IDE autocomplete" }
+      ]
+    },
+    {
+      "id": 1,
+      "prompt": "현재 프로젝트의 .release-it.json을 보고 개선해줘. pre-release (beta) 워크플로우를 추가하고, 릴리스 전에 lint와 테스트를 실행하고, 빌드 후 dist 폴더의 zip 파일을 GitHub release에 첨부하도록 수정해줘.\n\n현재 설정:\n```json\n{\n  \"git\": {\n    \"commitMessage\": \"Release ${version}\"\n  },\n  \"npm\": {\n    \"publish\": true\n  }\n}\n```",
+      "expected_output": "Updated .release-it.json with hooks, github.release with assets, and pre-release instructions",
+      "files": [],
+      "assertions": [
+        { "id": "hooks-before-init", "text": "Config has hooks.before:init with lint and/or test commands" },
+        { "id": "hooks-after-bump", "text": "Config has hooks.after:bump with build command" },
+        { "id": "github-release-enabled", "text": "Config has github.release set to true" },
+        { "id": "github-assets-dist-zip", "text": "Config has github.assets with dist/*.zip or similar glob" },
+        { "id": "prerelease-instructions", "text": "Output includes pre-release instructions with --preRelease=beta" },
+        { "id": "preserves-existing-config", "text": "Improved config preserves original git.commitMessage and npm.publish" },
+        { "id": "valid-json", "text": "The output .release-it.json is valid JSON" }
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "release-it 커스텀 플러그인을 만들어줘. VERSION.txt 파일에서 버전을 읽고 쓰고, 릴리스 후에 Slack webhook으로 알림을 보내는 플러그인이야. npm의 기본 버전 관리는 비활성화해야 해.",
+      "expected_output": "Custom plugin JS file with getLatestVersion(), bump(), release/afterRelease with Slack webhook, disablePlugin(), and sample config",
+      "files": [],
+      "assertions": [
+        { "id": "extends-plugin-class", "text": "Plugin class extends Plugin from release-it" },
+        { "id": "get-latest-version", "text": "Plugin implements getLatestVersion() reading VERSION.txt" },
+        { "id": "bump-method", "text": "Plugin implements bump(version) writing VERSION.txt" },
+        { "id": "slack-webhook", "text": "Plugin implements Slack webhook POST in release() or afterRelease()" },
+        { "id": "disable-npm-plugin", "text": "Plugin has static disablePlugin() returning 'npm' or config uses npm: false" },
+        { "id": "uses-step-method", "text": "Plugin uses this.step() for interactive prompt/spinner" },
+        { "id": "sample-config", "text": "A sample .release-it.json config showing plugin registration exists" },
+        { "id": "esm-module-syntax", "text": "Plugin uses ESM syntax (import/export)" }
+      ]
+    }
+  ]
+}

@@ -17,11 +17,11 @@ Some skills require external tools to be installed:
 | doc-coauthoring | None |
 | typst-creator | None |
 | ui-guide | None |
-
 | code-security-audit | None |
 | ux-design-guide | None |
 | system-prompt-creator | None |
 | veo-prompt-director | None |
+| release-it | None |
 
 ## 🚀 Available Skills
 
@@ -32,9 +32,9 @@ Only skills that have been personally tested and approved by the user are listed
 | [agents-md-generator](skills/agents-md-generator/) | Automatically sets up project structure and generates standardized `AGENTS.md` files. Supports both single-repo and monorepo structures. |
 | [kysely-converter](./skills/kysely-converter/) | Converts database queries and schemas using Kysely |
 | [jetbrains-vmoptions](skills/jetbrains-vmoptions/) | Generates JetBrains IDE VM options based on IDE version. Supports version-specific GC selection (Generational ZGC for 243+, G1GC for 222-242) and memory configuration. |
-
 | [system-prompt-creator](skills/system-prompt-creator/) | Analyzes user requirements to generate production-ready system prompts. It determines whether a single or multi-prompt architecture is needed and requests missing information if requirements are insufficient. |
 | [code-security-audit](skills/code-security-audit/) | Performs OWASP-based code security audits on any codebase. Analyzes source code against ASVS 5.0.0 verification requirements, API Security Top 10 2023 risk patterns, OWASP CheatSheet secure coding practices, and WSTG testing methodologies. |
+| [release-it](skills/release-it/) | release-it configuration, setup, and plugin development. Analyzes project context (package.json, git remote, existing CI) to propose tailored release configs. Covers hooks, CLI workflows, pre-release, npm publishing, GitHub/GitLab releases, official plugins, and custom plugin development. |
 
 ## 🧪 Skills Waiting for Review
 

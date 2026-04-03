@@ -34,6 +34,13 @@
 			"source": "./",
 			"strict": false,
 			"skills": ["./skills/kysely-converter"]
+		},
+		{
+			"name": "devops-skills",
+			"description": "Collection of DevOps and release automation skills including release-it configuration, plugin development, and troubleshooting",
+			"source": "./",
+			"strict": false,
+			"skills": ["./skills/release-it"]
 		}
 	]
 }
