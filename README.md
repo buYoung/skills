@@ -22,6 +22,7 @@ Some skills require external tools to be installed:
 | system-prompt-creator | None |
 | veo-prompt-director | None |
 | release-it | None |
+| task-brief-creator | None |
 
 ## 🚀 Available Skills
 
@@ -50,6 +51,7 @@ These skills are currently under evaluation and will be promoted to **Available 
 | [ui-guide](skills/ui-guide/) | Generate, update, and maintain UI style guide documents from actual codebase analysis. Scans project files to extract real color palettes, typography scales, spacing systems, component patterns, and layout approaches. |
 | [veo-prompt-director](skills/veo-prompt-director/) | Generates structured Google Veo 3.1 video prompts by collecting user input for subject, action, style, cinematography, and audio. Guides users through the Universal Prompt Formula to produce camera-ready prompts. |
 | [ux-design-guide](skills/ux-design-guide/) | Reviews existing UI for UX guideline violations and generates implementation guidance based on 99+ rules across Navigation, Layout, Accessibility, Forms, Performance, Typography, and more. Supports Web, Mobile, and Desktop GUI platforms. |
+| [task-brief-creator](skills/task-brief-creator/) | Generates structured work-brief Markdown at `docs/briefs/` from planning notes or rough task descriptions. Nine sections keyed to Conventional Commits types switch downstream coding-agent behavior (refactor → preserve, fix → reproduce first, perf → measure first). Halts on under-specified input via a four-anchor check and runs structural validation post-save. Manual trigger only. |
 
 ## 🔒 Private Skills
 
