@@ -19,6 +19,15 @@ hour a coding agent spends on the task — routing it to the right files, fixing
 the behavior envelope, and pre-answering the questions that would otherwise
 bounce back to the requester.
 
+**The brief is an executable work instruction — nothing else.** It is not a
+scope-control memo, not a discussion summary, not a planning note, not a
+background briefing, not a rationale document. Every section must answer
+*"what does the coding agent do next?"* — if a section reads like meeting
+minutes, negotiation history, or context prose, rewrite it until it routes
+to files, decisions, or verifiable outcomes. A brief that makes the
+downstream agent re-interview the requester is a **failed brief**, regardless
+of how polished it reads.
+
 ---
 
 ## When This Skill Runs
@@ -336,6 +345,11 @@ actually exist in the repo, whether Acceptance Criteria are measurable.
 
 ## Guardrails
 
+- **Executable, not discursive.** The emitted document is a work instruction,
+  not a memo about the work. If any section reads like a discussion summary,
+  scope-negotiation log, planning note, or rationale essay, rewrite it until
+  it directs concrete action. Prose that explains *why we are thinking about
+  this* belongs in the PR description, not the brief.
 - **Never fabricate file paths or PR numbers.** If the codebase review did
   not surface a path, leave the `Related Files / Entry Points` entry blank
   and add an Open Question instead.
