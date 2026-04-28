@@ -1,0 +1,31 @@
+<!--
+  Action plugin descriptor. Mirrors references/02_runtime_actions.md.
+-->
+<idea-plugin>
+  <id>com.example.actionbasics</id>
+  <name>Action Basics</name>
+  <vendor email="dev@example.com">Example Inc.</vendor>
+  <description><![CDATA[
+    Demonstrates AnAction registration, keymap binding, and a dynamic ActionGroup
+    whose children are computed at runtime.
+  ]]></description>
+
+  <depends>com.intellij.modules.platform</depends>
+
+  <actions>
+    <action id="com.example.actionbasics.HelloAction"
+            class="com.example.actionbasics.HelloAction"
+            text="Say Hello"
+            description="Greets the user and demonstrates AnActionEvent context access">
+      <add-to-group group-id="ToolsMenu" anchor="last"/>
+      <keyboard-shortcut keymap="$default" first-keystroke="control alt H"/>
+    </action>
+
+    <group id="com.example.actionbasics.HelloMenu"
+           class="com.example.actionbasics.DynamicGreetingsGroup"
+           text="Dynamic Greetings"
+           popup="true">
+      <add-to-group group-id="ToolsMenu" anchor="last"/>
+    </group>
+  </actions>
+</idea-plugin>

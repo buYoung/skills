@@ -1,0 +1,24 @@
+<!--
+  Settings + persistent state descriptor. Mirrors references/08_ui_settings_persistent_state.md
+  and references/08_ui_settings_configurable.md.
+  The light service registers itself via @Service; only the Configurable needs an
+  XML registration to appear in Settings.
+-->
+<idea-plugin>
+  <id>com.example.settings</id>
+  <name>Settings Persistence Example</name>
+  <vendor email="dev@example.com">Example Inc.</vendor>
+  <description><![CDATA[
+    Persistent application-level settings exposed through a Configurable in
+    Settings | Tools | My Plugin.
+  ]]></description>
+
+  <depends>com.intellij.modules.platform</depends>
+
+  <extensions defaultExtensionNs="com.intellij">
+    <applicationConfigurable parentId="tools"
+                             id="com.example.settings.MyConfigurable"
+                             displayName="My Plugin"
+                             instance="com.example.settings.MyConfigurable"/>
+  </extensions>
+</idea-plugin>

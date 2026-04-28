@@ -1,0 +1,42 @@
+<!--
+  Custom-language plugin descriptor. Mirrors the registration tables in
+  references/07_language_pipeline.md and the step-specific language references.
+-->
+<idea-plugin>
+  <id>com.example.simplelang</id>
+  <name>Simple Language</name>
+  <vendor email="dev@example.com">Example Inc.</vendor>
+  <description><![CDATA[
+    Reference plugin demonstrating a complete custom-language pipeline:
+    Language + FileType + JFlex lexer + Grammar-Kit parser + syntax highlighter +
+    annotator + completion.
+  ]]></description>
+
+  <depends>com.intellij.modules.platform</depends>
+  <depends>com.intellij.modules.lang</depends>
+
+  <extensions defaultExtensionNs="com.intellij">
+    <fileType name="Simple File"
+              implementationClass="com.example.simplelang.SimpleFileType"
+              fieldName="INSTANCE"
+              language="Simple"
+              extensions="simple"/>
+
+    <lang.parserDefinition language="Simple"
+                           implementationClass="com.example.simplelang.SimpleParserDefinition"/>
+
+    <lang.syntaxHighlighterFactory language="Simple"
+                                   implementationClass="com.example.simplelang.SimpleSyntaxHighlighterFactory"/>
+
+    <annotator language="Simple"
+               implementationClass="com.example.simplelang.SimpleAnnotator"/>
+
+    <completion.contributor language="Simple"
+                            implementationClass="com.example.simplelang.SimpleCompletionContributor"/>
+
+    <lang.commenter language="Simple"
+                    implementationClass="com.example.simplelang.SimpleCommenter"/>
+
+    <colorSettingsPage implementation="com.example.simplelang.SimpleColorSettingsPage"/>
+  </extensions>
+</idea-plugin>

@@ -1,0 +1,20 @@
+<!--
+  Pairs with references/06_code_insight_folding.md.
+  This registers against Java's language id, so a real plugin should keep this
+  registration behind a Java dependency when targeting IDEs without Java support.
+-->
+<idea-plugin>
+  <id>com.example.folding</id>
+  <name>Folding Builder Example</name>
+  <vendor email="dev@example.com">Example Inc.</vendor>
+
+  <depends>com.intellij.modules.platform</depends>
+  <depends>com.intellij.modules.lang</depends>
+  <depends>com.intellij.java</depends>
+
+  <extensions defaultExtensionNs="com.intellij">
+    <lang.foldingBuilder
+        language="JAVA"
+        implementationClass="com.example.folding.ExampleFoldingBuilder"/>
+  </extensions>
+</idea-plugin>

@@ -1,0 +1,18 @@
+<!--
+  Pairs with references/07_language_inline_completion.md.
+  This is a focused descriptor fragment, not a complete Gradle project.
+-->
+<idea-plugin>
+  <id>com.example.inlinecompletion</id>
+  <name>Inline Completion Example</name>
+  <vendor email="dev@example.com">Example Inc.</vendor>
+
+  <depends>com.intellij.modules.platform</depends>
+  <depends>com.intellij.modules.lang</depends>
+
+  <extensions defaultExtensionNs="com.intellij">
+    <inline.completion.provider
+        id="com.example.inlinecompletion.ExampleInlineCompletionProvider"
+        implementation="com.example.inlinecompletion.ExampleInlineCompletionProvider"/>
+  </extensions>
+</idea-plugin>

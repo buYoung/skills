@@ -1,0 +1,35 @@
+// Pairs with references/07_language_grammar_kit_bnf.md.
+// Grammar-Kit BNF source. The plugin generates SimpleParser, SimpleTypes, and the
+// psi/ + psi/impl/ trees from this file; do not edit the generated files — put
+// custom logic in mixin classes referenced by `mixin=`.
+
+{
+  parserClass="com.example.simplelang.parser.SimpleParser"
+  parserUtilClass="com.example.simplelang.parser.SimpleParserUtil"
+  extends="com.intellij.extapi.psi.ASTWrapperPsiElement"
+
+  psiClassPrefix="Simple"
+  psiImplClassSuffix="Impl"
+  psiPackage="com.example.simplelang.psi"
+  psiImplPackage="com.example.simplelang.psi.impl"
+
+  elementTypeHolderClass="com.example.simplelang.psi.SimpleTypes"
+  elementTypeClass="com.example.simplelang.psi.SimpleElementType"
+  tokenTypeClass="com.example.simplelang.psi.SimpleTokenType"
+
+  tokens = [
+    ID      = 'regexp:[A-Za-z_][A-Za-z_0-9]*'
+    EQ      = '='
+    COMMENT = 'regexp:#.*'
+  ]
+}
+
+simpleFile ::= item_*
+
+private item_ ::= property | COMMENT | CRLF
+
+property ::= ID EQ ID? {
+  mixin="com.example.simplelang.psi.impl.SimpleNamedElementImpl"
+  implements="com.example.simplelang.psi.SimpleNamedElement"
+  methods=[ getName setName getNameIdentifier ]
+}
