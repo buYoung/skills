@@ -125,9 +125,33 @@ For richer changelogs, use a plugin like `@release-it/conventional-changelog`, `
 
 ## Push Configuration
 
-### Default push args
+### Default push args and tag-push semantics
 
-`["--follow-tags"]` is the default for `pushArgs`. If you override, re-add manually if needed.
+`["--follow-tags"]` is the default for `pushArgs`. This is intentional: `--follow-tags` pushes **only annotated tags that are reachable from the commits being pushed**. Lightweight tags, tags on unrelated branches, and abandoned local-only tags stay local. release-it always creates the new release tag as annotated, so the tag the user just selected is always included — and unrelated tags are never silently piggy-backed onto the push.
+
+If you override `pushArgs`, you must re-add `--follow-tags` (or use the strict pattern below). Do **not** add `--tags` — that would push *every* local tag, including experimental or abandoned ones, which defeats the safety the default provides.
+
+### Push only the user-selected tag (strict guarantee, recommended)
+
+`--follow-tags` is a good default, but it still pushes any *other* annotated tag that happens to be reachable from the pushed commits (e.g. older release tags that were never pushed, pre-release tags from a parallel branch). When the requirement is "only the tag the user just chose to release goes to the remote — nothing else, ever", disable the built-in push and push the new tag explicitly through a hook:
+
+```json
+{
+  "git": {
+    "push": false
+  },
+  "hooks": {
+    "after:release": "git push ${repo.remote} HEAD && git push ${repo.remote} refs/tags/${tagName}"
+  }
+}
+```
+
+`${tagName}` resolves to the exact tag release-it just created for this release. The push targets that one ref by name, so no other tag can ride along regardless of what exists locally. Pushing `HEAD` first ensures the tag's commit is reachable on the remote before the tag itself is published.
+
+Use this pattern when:
+- Local repos accumulate experimental or CI snapshot tags that must not leak to the remote
+- Compliance/audit requires demonstrating that a release published exactly one tag
+- You want defense-in-depth against someone later adding `--tags` to `pushArgs`
 
 ### Multiple push args
 
@@ -157,7 +181,7 @@ Or use a Git URL: `"pushRepo": "https://github.com/user/repo.git"`
 }
 ```
 
-You can still push manually in a hook:
+You can still push manually in a hook (see the strict pattern above for the recommended single-tag form):
 
 ```json
 {

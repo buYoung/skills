@@ -85,7 +85,7 @@ Only override options that differ from defaults. See [configuration.md](referenc
 
 ## Key Concepts
 
-- **Increment types**: `major`, `minor`, `patch` (semver), `premajor`/`preminor`/`prepatch`/`prerelease` (pre-release)
+- **Increment types** (UX order, most-used first): `patch` → `minor` → `prepatch` (alpha) → `preminor` (beta) → `prerelease` (rc counter) → `major` → `premajor`. semver bumps plus pre-release variants, ordered by typical usage frequency
 - **Dry-run** (`--dry-run`): Shows what would execute without side effects. `$` = read-only (runs), `!` = write (skipped)
 - **CI mode** (`--ci`): Non-interactive, auto-detected in CI environments. No prompts, uses spinners instead
 - **npm dist-tags**: `latest` (default), `next`, `beta`, `alpha` -- controls what `npm install` resolves to
