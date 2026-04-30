@@ -103,7 +103,13 @@ hotspot**.
 > 5. 추가 충돌 영역 있어? (현재는 `src/i18n/messages.ko.json` 하나만 잡음)
 > 6. 공통 제약: 한국어만 1차 대상, 영어 fallback은 이번 set에서 건드리지
 >    않음 — 맞아?
-> 7. 02 자식의 완료 기준에 "마케팅이 보내준 카피와 1:1 일치" 정도가
+> 7. Open Questions 후보 확인:
+>    - parent: 영어 fallback 문자열은 후속 briefset으로 처리할지, EN locale
+>      일정까지 미룰지?
+>    - 01: hardcoded JSX string 금지 ESLint rule은 이번 brief에 포함할지,
+>      후속으로 미룰지?
+>    - 02/03: 별도 Open Question 없이 `- None`으로 둬도 될지?
+> 8. 02 자식의 완료 기준에 "마케팅이 보내준 카피와 1:1 일치" 정도가
 >    들어가도 되나, 아니면 더 구체적으로?
 
 **User answers (summarized):**
@@ -116,7 +122,10 @@ hotspot**.
    anyway.
 5. Add `src/i18n/index.ts` barrel — also touched by all three.
 6. Yes — Korean only this round.
-7. Add criterion: "PM-supplied copy diff 0 — verbatim match against
+7. Keep the English fallback question on the parent. Keep the ESLint
+   rule question in child 01 because it should not block the current
+   i18n rewrite. Child 02 and 03 have no open questions.
+8. Add criterion: "PM-supplied copy diff 0 — verbatim match against
    `docs/marketing/cart-copy-2026-04.md`".
 
 ---

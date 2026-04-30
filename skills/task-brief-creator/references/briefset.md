@@ -5,30 +5,56 @@ Briefset mode is the alternative path: a **parent execution-management
 document** plus N **independently executable child briefs**, used when a
 single task naturally splits into multiple execution contexts.
 
-The trigger is **multiple execution contexts**, not "this work is big".
-Independent completion criteria, distinct entry-point files, mixed work
-types, ordered dependencies, parallelizable waves, or shared conflict
-hotspots that need coordination — those are the signals. If those signals
-are absent, stay in single-brief mode no matter how long the input is.
+The trigger is **coordination across multiple execution contexts**, not
+"this work is big". Independent completion criteria, mixed work types,
+ordered dependencies, parallelizable waves, or shared conflict hotspots
+that need coordination — those are the signals. Distinct entry-point
+files are supporting evidence only unless they map to independent work
+units. If strong coordination signals are absent, stay in single-brief
+mode no matter how long the input is.
 
 ---
 
-## When To Enter Briefset Mode
+## When To Recommend Briefset Mode
 
-Enter briefset mode if **one or more** of the following apply strongly:
+Recommend briefset mode only when the input describes multiple
+independently executable work units, not just many edits. A good quick
+test: can you write two or more natural child-brief titles, each with its
+own acceptance criteria and entry point, without inventing scope? If not,
+stay in single-brief mode.
 
-- Each subtask can carry its own independent completion criteria.
-- Each subtask touches a distinct primary change area or entry-point file.
-- Work types are mixed (e.g., a `refactor` followed by a `feat`).
+Strong recommendation signals:
+
 - A predecessor's output is a precondition for a successor.
+- The user asks for phases, waves, sequential PRs, independently
+  runnable PRs, or explicit parallel work.
 - Parallel-execution capability needs to be tracked explicitly.
-- Multiple subtasks share a common conflict surface — i18n bundles,
-  shared types, schema, route table, top-level config files.
+- Work types are mixed in a way that changes downstream behavior (e.g.,
+  a `refactor` child followed by a `feat` child).
+- Multiple independently executable subtasks share a common conflict
+  surface — i18n bundles, shared types, schema, route table, top-level
+  config files.
 - A single brief would force `Scope`, `Acceptance Criteria`, or
   `Related Files / Entry Points` to fork into unrelated topics.
 
-If none apply, stay single-brief. Long input alone never triggers
-briefset mode — input length is not a proxy for execution-context count.
+Supporting signals, not sufficient alone:
+
+- Many files, many directories, or several related edit points.
+- A large file or large codebase area.
+- Distinct entry-point files that all serve one cohesive goal.
+- Long user input.
+- User phrasing like "split this up" without execution-context evidence.
+
+Default to single-brief mode when the work has one goal, one outcome,
+and one coherent implementation path, even if it touches multiple files.
+Examples: one bug fix across five related files; one refactor that needs
+coordinated updates in several call sites; one feature that naturally
+touches UI, state, and API glue.
+
+When strong signals are present, do not enter briefset mode silently.
+Recommend it and ask the user to choose before Stage 2. If the user
+chooses single-brief despite the recommendation, proceed single-brief and
+record any ordering or PR constraints explicitly.
 
 **User phrasing is not itself a trigger.** Phrases like "다중브리프",
 "briefset", "multi-brief", or "split this into multiple briefs" do not
@@ -140,7 +166,8 @@ Implementation lives in the children.
 - **Global Acceptance Criteria** — set-level "done" criteria, including
   integration-level checks no individual child can verify alone.
 - **Open Questions** — set-level questions only. Per-child questions
-  live in the child's `Open Questions`.
+  live in the child's `Open Questions`, but Stage 4 must still surface
+  them in the single batched interview round.
 
 If a section legitimately has nothing, write `- None` with a one-line
 reason rather than leaving the section empty.
@@ -153,6 +180,9 @@ reason rather than leaving the section empty.
   required H2 sections, same per-section guidance, same writing rules.
 - Children include their own `Acceptance Criteria` (independent),
   `Side Effect Checkpoints`, and `Open Questions`.
+- Child `Open Questions` must come from codebase-review uncertainty,
+  user-provided uncertainty, or unresolved Stage 4 answers. Use `- None`
+  only when the child is genuinely unambiguous.
 - Children **do not** carry status. Status is parent-only.
 - Children **do not** spawn further children. A child cannot become a
   parent. If a child's scope grows mid-flow, escalate by re-planning
@@ -169,9 +199,9 @@ The single-brief stages in `SKILL.md` still apply. The diffs:
 
 ### Stage 1 — Ambiguity Gate
 
-After scoring the four anchors, also check the briefset-mode criteria
+After scoring the four anchors, also check the recommendation criteria
 above. If the input clearly maps onto multiple execution contexts,
-plan for briefset mode and surface that intent before Stage 2. The
+recommend briefset mode and ask the user to choose before Stage 2. The
 anchor halt rule is unchanged — an underspecified briefset request
 halts just like an underspecified single-brief request.
 
@@ -184,10 +214,13 @@ just to keep the set "consistent".
 
 ### Stage 3 — Codebase Review
 
-Run one combined review pass, but tag findings with the specific child
-each finding will land in. Each child's `Related Files / Entry Points`
-should be a distinct slice — if two children point at the same primary
-entry point, they probably collapse into one.
+Run one combined review pass, but tag findings and uncertainties with
+the specific parent or child they will land in. Track uncertainties as
+candidate `Open Questions` during the review; do not silently resolve
+them or drop them just because they are child-specific. Each child's
+`Related Files / Entry Points` should be a distinct slice — if two
+children point at the same primary entry point, they probably collapse
+into one.
 
 ### Stage 4 — Active Interview (one batched round)
 
@@ -200,6 +233,9 @@ Ask once, not per child. The batch should cover:
 - Are the proposed parallel waves correct?
 - Are there conflict hotspots beyond what's listed?
 - Are the shared constraints and shared exclusions correct?
+- Which codebase-review uncertainties should remain open? Present them
+  grouped by parent / child and ask whether each should be answered now,
+  kept in `Open Questions`, or delegated to the downstream agent.
 - For each child whose Acceptance Criteria are not yet concrete, what
   should fill them?
 
@@ -213,6 +249,13 @@ Save in this order:
 
 1. Ensure `docs/briefs/` exists.
 2. Write each child brief first (so the parent can reference them).
+
+   When writing child briefs, populate `Open Questions` from the Stage 3
+   uncertainty register and Stage 4 answers. Do not add new unreviewed
+   questions after the batch just to fill the section. If Stage 4
+   resolves every uncertainty for a child, write `- None` with
+   confidence that the child is genuinely unambiguous.
+
 3. Write the parent brief.
 4. Resolve filename collisions with `-v2`, `-v3`, … on the parent and
    on each child independently.

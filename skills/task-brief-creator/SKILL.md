@@ -41,12 +41,11 @@ This skill operates in one of two modes:
   workflow below covers this case end to end.
 - **Briefset mode** — emits a parent execution-management document plus
   N independently executable child briefs. Used when the input describes
-  **multiple execution contexts** (independent completion criteria,
-  distinct entry-point files, mixed work types, ordered dependencies,
-  parallelizable waves, or shared conflict hotspots that need
-  coordination). Triggered by the criteria in
-  `references/briefset.md`; long input alone never triggers briefset
-  mode.
+  **multiple execution contexts** that need coordination (independent
+  completion criteria, mixed work types, ordered dependencies,
+  parallelizable waves, or shared conflict hotspots). Recommended by the
+  criteria in `references/briefset.md`; long input, many files, or many
+  related edit points alone never trigger briefset mode.
 
 Mode selection happens at Stage 1 alongside the ambiguity gate. In
 briefset mode, follow the workflow below with the per-stage adaptations
@@ -179,13 +178,24 @@ concrete PROBLEM or TARGET still halts. Judge by anchor coverage, not length.
 See `examples/03-halt-ambiguous.md` for a worked halt case.
 
 **Briefset signal check (after CONTINUE):** once anchors clear, also
-evaluate whether the input describes multiple execution contexts (mixed
-work types, ordered dependencies, shared conflict surfaces, distinct
-entry points). If briefset signals are clearly present, plan for
-briefset mode and surface that intent before Stage 2. See
-`references/briefset.md` § "When To Enter Briefset Mode" for the full
-criteria. If unclear, default to single-brief mode and let Stage 4
-surface the question.
+evaluate whether the input describes multiple execution contexts. Do not
+use file count, line count, input length, or several related edit points
+as triggers by themselves. Those are supporting evidence only.
+
+If briefset signals are strong, recommend briefset mode and ask the user
+to choose before Stage 2 instead of switching silently. Use the user's
+chat language and keep the question short. Korean example:
+
+> 다중 브리프로 나누는 것이 권장됩니다. 실행 단위가 독립적이고 순서/병렬
+> 조정이 필요해 보입니다. 어떻게 진행할까요?
+> 1. 다중 브리프로 생성
+> 2. 단일 브리프로 유지
+
+If the user chooses briefset, continue with `references/briefset.md`.
+If the user chooses single-brief, keep one cohesive brief and document
+the requested execution ordering in `Constraints` / `Acceptance
+Criteria` as needed. If the evidence is unclear, default to single-brief
+mode and let Stage 4 surface the question.
 
 ### Stage 2 — Work Type Selection
 
@@ -440,11 +450,12 @@ validator checks and what stays on the human reviewer.
 - **Keep Out-of-Scope specific.** "Don't refactor unrelated code" is filler.
   "Do not change the `PaymentService` interface" is a real guardrail.
 - **One brief per invocation, unless the input has multiple execution
-  contexts.** If it does, switch to briefset mode (see
-  `references/briefset.md`). Briefset mode is the supported way to
-  handle multi-context work — do not stuff multiple unrelated tasks
-  into a single brief, and do not nest briefsets (a child cannot become
-  a parent).
+  contexts.** If it does, recommend briefset mode and ask the user to
+  choose (see `references/briefset.md`). Briefset mode is the supported
+  way to handle multi-context work — do not stuff multiple unrelated
+  tasks into a single brief unless the user explicitly chooses
+  single-brief after the recommendation, and do not nest briefsets (a
+  child cannot become a parent).
 
 ---
 
