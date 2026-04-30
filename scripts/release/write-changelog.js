@@ -166,7 +166,12 @@ function main() {
   }
 
   const previousTag = (latestTagArg || "").trim();
-  const previousTagForGit = previousTag && previousTag !== "0.0.0" ? previousTag : null;
+  const previousTagIsAbsent =
+    !previousTag ||
+    previousTag === "null" ||
+    previousTag === "undefined" ||
+    previousTag === "0.0.0";
+  const previousTagForGit = previousTagIsAbsent ? null : previousTag;
 
   ensureCodexAvailable();
 
