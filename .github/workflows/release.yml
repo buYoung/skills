@@ -1,0 +1,78 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    name: Publish GitHub Release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Resolve tag and version
+        id: meta
+        run: |
+          TAG="${GITHUB_REF#refs/tags/}"
+          VERSION="${TAG#v}"
+          echo "tag=${TAG}" >> "$GITHUB_OUTPUT"
+          echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
+
+      - name: Verify CHANGELOG files contain this version
+        env:
+          VERSION: ${{ steps.meta.outputs.version }}
+        run: |
+          set -e
+          for f in CHANGELOG.md CHANGELOG.ko.md; do
+            if ! grep -qE "^## \[${VERSION}\]" "$f"; then
+              echo "::error file=$f::Section '## [${VERSION}]' not found in $f"
+              exit 1
+            fi
+          done
+
+      - name: Build release notes (en + ko)
+        env:
+          VERSION: ${{ steps.meta.outputs.version }}
+        run: |
+          set -e
+          extract_section() {
+            awk -v v="$VERSION" '
+              $0 ~ "^## \\[" v "\\]" { p = 1; next }
+              p && /^## \[/         { p = 0 }
+              p                     { print }
+            ' "$1"
+          }
+          {
+            echo "## English"
+            echo
+            extract_section CHANGELOG.md
+            echo
+            echo "---"
+            echo
+            echo "## 한국어"
+            echo
+            extract_section CHANGELOG.ko.md
+          } > release-notes.md
+
+          if [ ! -s release-notes.md ]; then
+            echo "::error::Generated release notes are empty"
+            exit 1
+          fi
+
+      - name: Create GitHub Release (draft)
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG: ${{ steps.meta.outputs.tag }}
+        run: |
+          gh release create "$TAG" \
+            --draft \
+            --title "$TAG" \
+            --notes-file release-notes.md

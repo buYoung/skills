@@ -1,0 +1,36 @@
+{
+  "name": "skills",
+  "version": "1.0.0",
+  "private": true,
+  "description": "A collection of AI agent skills for efficient developer–AI collaboration. Each skill provides structured capabilities (SKILL.md + references/) that AI coding assistants can leverage to perform specific tasks.",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "release": "release-it"
+  },
+  "devDependencies": {
+    "release-it": "^20.0.1"
+  },
+  "engines": {
+    "node": "^20.19.0 || ^22.13.0 || >=24.0.0"
+  },
+  "keywords": [
+    "ai",
+    "agent",
+    "skills",
+    "claude",
+    "claude-code",
+    "prompt-engineering",
+    "developer-tools"
+  ],
+  "author": "BuYoungLee <leebu18@gmail.com>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/buYoung/skills.git"
+  },
+  "bugs": {
+    "url": "https://github.com/buYoung/skills/issues"
+  },
+  "homepage": "https://github.com/buYoung/skills#readme",
+  "packageManager": "pnpm@10.11.0"
+}
