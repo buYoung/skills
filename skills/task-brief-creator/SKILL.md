@@ -2,10 +2,10 @@
 name: task-brief-creator
 description: >
   Generate a structured work-brief Markdown at `docs/briefs/` from planning
-  notes or a rough task description. Nine sections keyed to Conventional
-  Commits types so downstream coding agents switch behavior (refactor →
-  preserve, fix → reproduce first, perf → measure first). Halts on vague
-  input. Manual trigger only.
+  notes or a rough task description. Eight required sections plus optional
+  task-specific constraints, keyed to Conventional Commits types so downstream
+  coding agents switch behavior (refactor → preserve, fix → reproduce first,
+  perf → measure first). Halts on vague input. Manual trigger only.
 ---
 
 # Task Brief Creator
@@ -79,12 +79,21 @@ If `docs/briefs/` does not exist, create it. If a file with the same name
 already exists, append `-v2`, `-v3`, … until the path is unique — do not
 overwrite.
 
-The nine required H2 sections are: `Work Type`, `Current State (As-Is)`,
+The eight required H2 sections are: `Work Type`, `Current State (As-Is)`,
 `Desired Outcome (To-Be)`, `Scope` (with `In Scope` / `Out of Scope` H3s),
 `Related Files / Entry Points`, `Side Effect Checkpoints`, `Acceptance
-Criteria`, `Open Questions`. `Constraints (optional)` may appear between
-`Scope` and `Related Files / Entry Points` when task-specific constraints
-exist.
+Criteria`, `Open Questions`. Optional `Constraints` may appear between `Scope`
+and `Related Files / Entry Points` when task-specific constraints exist.
+
+Bullet count is not capped. Large work may need many bullets. The rule is
+cohesion, not brevity:
+
+- Each bullet should describe one coherent unit of context, scope, risk, or
+  verification.
+- Do not merge unrelated concerns into one bullet just to keep the document
+  short.
+- Write as many bullets as the task needs; do not compress larger work into
+  vague combined bullets.
 
 ---
 
@@ -92,7 +101,7 @@ exist.
 
 ### Stage 1 — Ambiguity Gate (HALT or CONTINUE)
 
-Before any codebase work, check whether the input contains enough signal to
+Before full codebase review, check whether the input contains enough signal to
 ground the brief. Use the **four-anchor heuristic**:
 
 | Anchor | What it answers | Maps to |
@@ -103,10 +112,14 @@ ground the brief. Use the **four-anchor heuristic**:
 | **TARGET** | Which part of the system is touched (file, subsystem, layer)? | § Related Files / Entry Points |
 
 Count how many anchors are derivable from the input. Derivable = a reasonable
-engineer could answer the anchor after reading the input + skimming the repo.
+engineer could answer the anchor from the user's input without inventing intent.
 
-- **3 or 4 anchors present** → **CONTINUE** to Stage 2. Missing anchor(s) get
+- **3 or 4 anchors present** → **CONTINUE** to Stage 2. Missing detail gets
   filled in Stage 3 via codebase review or Stage 4 via user questions.
+- **PROBLEM + GOAL + SCOPE present, TARGET missing** → run a narrow target
+  probe before deciding. Use at most a few `rg` / glob queries to find likely
+  files, directories, routes, commands, or modules. If a concrete entry point
+  emerges, **CONTINUE**. If not, **HALT** and ask the user for the target area.
 - **2 or fewer anchors present** → **HALT**. Respond in the user's chat
   language naming exactly which anchors are missing, and ask for more input.
   Do NOT proceed through Stages 2–6 on an underspecified input. Example halt
@@ -139,11 +152,15 @@ Determine the Conventional Commits type. Consult
 `references/work-types.md` for the full list and per-type behavior hints.
 
 - If the input explicitly names a type (e.g., "this is a refactor"), use it
-  but verify the input evidence agrees — if the user says "refactor" but
-  describes a behavior change, confirm with one question.
-- If the type is implicit, infer from the input and **confirm with the user**
-  via a single short question before proceeding. Do not silently classify —
-  the type determines downstream agent behavior.
+  when the input evidence agrees.
+- If the user names a type that conflicts with the described work (e.g.,
+  "refactor" but the work changes behavior), pause and confirm with one
+  question before codebase review.
+- If the type is implicit but high-confidence, assign a provisional type and
+  confirm it in the Stage 4 question batch. Do not add a separate early
+  round-trip just for type confirmation.
+- If the implicit type is low-confidence and changes the likely execution
+  approach, ask one short question before proceeding.
 
 ### Stage 3 — Codebase Review (inline)
 
@@ -165,9 +182,10 @@ Strategy:
    promising ones.
 3. If the input mentions a subsystem (e.g., "auth middleware", "checkout
    flow"), glob for likely directories first.
-4. Capture a short As-Is picture: how the relevant code is shaped today,
-   2–5 bullets max.
-5. Capture 2–6 Related File / entry-point hints with one-line purposes.
+4. Capture an As-Is picture by coherent context units: how each relevant
+   function, module, behavior, integration, or user surface is shaped today.
+5. Capture concrete Related File / entry-point hints with one-line purposes.
+   At least one entry point must be solid before saving the brief.
 
 **Do not:**
 
@@ -186,9 +204,14 @@ Required gaps to close before drafting:
 
 - **Desired Outcome (To-Be)** (always ask if not explicit) — what is true at
   the end.
+- **Work Type** — confirm the provisional type from Stage 2 when it was
+  inferred rather than explicitly provided.
 - **Out of Scope** — the most valuable guardrail for the downstream agent.
   Offer a proposed out-of-scope list based on the input and let the user
   edit.
+- **Related Files / Entry Points** — confirm at least one concrete entry point
+  if the codebase review did not surface one. This section is mandatory because
+  the brief must tell the downstream agent where to start.
 - **Acceptance Criteria** — what makes the task verifiably done.
 - **Side Effect Checkpoints** — what else must be verified if this area is
   touched. Draft a candidate list from the codebase review and ask the user
@@ -289,7 +312,7 @@ commit step stays with the user.
 
 See `references/template.md` for:
 
-- The exact nine-section Markdown template.
+- The exact eight-required-section Markdown template.
 - Per-section writing guidance (what good looks like, what not to write).
 - Worked example of a filled brief.
 
@@ -332,14 +355,15 @@ Exit codes: `0` pass, `1` structural failure, `2` file I/O error.
 Scope of the validator (deliberately structural only):
 
 - Filename pattern, title format, type coherence across filename / title /
-  section value.
+  section value, and slug length.
 - Presence of required H2 sections + `In Scope` / `Out of Scope` H3s.
 - Bullet content in narrative sections; `- [ ]` format in checklist
   sections; populated `Open Questions`.
+- Optional `Constraints` heading shape.
 
 Out of scope (still on the human): concreteness of bullets, whether
-Out-of-Scope entries are real guardrails vs. filler, whether file paths
-actually exist in the repo, whether Acceptance Criteria are measurable.
+Out-of-Scope entries are real guardrails vs. filler, whether entry points are
+legitimate, whether Acceptance Criteria are measurable.
 
 ---
 
@@ -350,9 +374,11 @@ actually exist in the repo, whether Acceptance Criteria are measurable.
   scope-negotiation log, planning note, or rationale essay, rewrite it until
   it directs concrete action. Prose that explains *why we are thinking about
   this* belongs in the PR description, not the brief.
-- **Never fabricate file paths or PR numbers.** If the codebase review did
-  not surface a path, leave the `Related Files / Entry Points` entry blank
-  and add an Open Question instead.
+- **Never fabricate file paths or PR numbers.** `Related Files / Entry Points`
+  is mandatory because it is the downstream agent's starting route. If the
+  codebase review does not surface at least one concrete file, directory,
+  route, command, module, related brief, or confirmed proposed path, ask the
+  user to provide or confirm the entry point before saving the brief.
 - **Never infer Acceptance Criteria from thin air.** Vague criteria poison
   the downstream agent. Ask the user.
 - **Never proceed past the Ambiguity Gate on a hunch.** Halting is the
@@ -379,7 +405,7 @@ cannot see.
 - [ ] `Out of Scope` has at least one specific entry (or an explicit
       "None — self-contained." with rationale).
 - [ ] `Acceptance Criteria` are measurable (checkable, not aspirational).
-- [ ] `Related Files / Entry Points` entries all exist in the repo
-      (verified by the review step) — or are flagged as Open Questions.
-- [ ] `Open Questions` is empty only if the brief is genuinely
-      unambiguous; otherwise populate it (use `- None` if truly none).
+- [ ] `Related Files / Entry Points` entries are existing repo paths,
+      verified references, or confirmed proposed paths.
+- [ ] `Open Questions` uses `- None` only if the brief is genuinely
+      unambiguous; otherwise populate it with real questions.

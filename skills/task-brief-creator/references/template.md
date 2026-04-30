@@ -1,7 +1,8 @@
 # Brief Template
 
-This file holds the canonical nine-section template that the skill emits into
-`docs/briefs/YYYY-MM-DD-<type>-<slug>.md`, plus per-section writing guidance.
+This file holds the canonical template that the skill emits into
+`docs/briefs/YYYY-MM-DD-<type>-<slug>.md`: eight required H2 sections plus an
+optional `Constraints` section, with per-section writing guidance.
 
 The emitted **output artifact is in English** (section headers and body
 content). The **chat interaction language follows the user's input** — Korean
@@ -10,7 +11,7 @@ the chat layer, not the saved document.
 
 ---
 
-## Raw Template (emit verbatim, filled)
+## Raw Template (emit required sections, filled)
 
 ```markdown
 # [<type>] <title>
@@ -32,9 +33,6 @@ the chat layer, not the saved document.
 ### Out of Scope
 - <bullet>
 
-## Constraints (optional)
-- <bullet or delete section>
-
 ## Related Files / Entry Points
 - `<path>` — <one-line purpose>
 - PR #<n> — <one-line purpose>
@@ -49,6 +47,17 @@ the chat layer, not the saved document.
 
 ## Open Questions
 - <question, or "None">
+```
+
+## Optional Constraints Block
+
+Insert this block between `Scope` and `Related Files / Entry Points` only when
+task-specific constraints exist. The emitted heading is `## Constraints`, not
+`## Constraints (optional)`.
+
+```markdown
+## Constraints
+- <task-specific constraint>
 ```
 
 ---
@@ -76,8 +85,8 @@ parse it directly.
 Short factual description of how things are today. This is the baseline the
 `Desired Outcome (To-Be)` will be compared against.
 
-- 2–5 bullets. Longer means the skill is drifting into background exposition —
-  cut it.
+- Use as many bullets as the task needs, but keep each bullet to one coherent
+  unit of current context.
 - Concrete: name the function, the module, the UX behavior.
   - Good: `LoginForm` validates email only `onBlur` — users don't see the error
     until they try to submit.
@@ -92,8 +101,8 @@ Short factual description of how things are today. This is the baseline the
 The state at completion. This is what tells the downstream agent when to
 stop.
 
-- 2–5 bullets, mirror-structured against `Current State (As-Is)` where
-  possible.
+- Use as many bullets as the task needs, mirror-structured against `Current
+  State (As-Is)` where possible.
 - Describe observable end-state, not implementation steps.
   - Good: `LoginForm` email error shows live while the user is typing.
   - Bad: Refactor `LoginForm` to detect email change via `useEffect`.
@@ -105,11 +114,11 @@ Two subsections — **In Scope** and **Out of Scope**. Out of Scope is the
 higher-leverage one: it stops the downstream agent from being helpfully
 wrong.
 
-- **In Scope** — 1–5 bullets, concrete surface area. If `In Scope` and
-  `Desired Outcome (To-Be)` are saying the same thing, drop `In Scope` and
-  keep the `Desired Outcome (To-Be)` bullets as the scope boundary.
-- **Out of Scope** — 1–5 bullets, each a specific thing the agent might
-  otherwise assume is in play.
+- **In Scope** — concrete surface area the agent is allowed to change. If
+  `In Scope` and `Desired Outcome (To-Be)` are saying the same thing, rewrite
+  `In Scope` as the boundary of where the change applies.
+- **Out of Scope** — specific things the agent might otherwise assume are in
+  play.
   - Good: Do not change the `PaymentService` interface — other teams depend
     on it.
   - Bad: Don't touch unrelated code. (too generic — every brief has this)
@@ -117,7 +126,7 @@ wrong.
 If the task is legitimately narrow and there's no realistic adjacent
 overreach, write `- None — self-contained.` Do not pad.
 
-### § Constraints (optional)
+### § Constraints
 
 **Task-specific constraints only.** Repository-global rules (style, linting,
 tone, language conventions) live in CLAUDE.md / AGENTS.md and must not be
@@ -129,39 +138,43 @@ Examples of what belongs:
 - Bundle size increase ≤ 5KB gzipped.
 - Mobile Safari 15+ must still work.
 
-If none, omit the section entirely — do not write `None`.
+This section is optional. If none, omit the section entirely — do not write
+`None`.
 
 ### § Related Files / Entry Points
 
 The most expensive thing a coding agent does on a large codebase is figure
 out where to start. This section eliminates that cost.
 
-Each entry is `` `<path>` — <one-line purpose> ``. Acceptable entry shapes:
+Each entry should tell the agent where to start and why that entry matters.
+Acceptable entry shapes:
 
 - File path: `` `src/auth/LoginForm.tsx` — email validation logic lives here.``
 - Function reference: `` `handleLogin()` in `src/auth/LoginForm.tsx:42` — validation trigger.``
 - PR number: `PR #142 — last year's refactor in the same area — reference approach.`
 - Related brief: `docs/briefs/2026-03-12-refactor-auth.md — prerequisite work.`
+- Proposed new path: `` `src/auth/sessionStore.ts` (proposed) — new module location confirmed by user.``
 
 Rules:
 
-- Paths must exist in the repo as of the codebase review step. Never invent.
-- If the codebase review did not turn up a solid path, leave it out and add
-  an Open Question instead — e.g., "Need to confirm where the session storage
-  entry point lives."
-- 2–6 entries is typical. More than 8 usually means the brief is too broad —
-  consider splitting.
+- Existing paths must exist in the repo as of the codebase review step.
+- Proposed new paths are allowed only when the user confirms them or the target
+  directory / naming pattern is clear from the repo.
+- Never invent PR numbers, existing paths, or prior briefs.
+- If the review does not turn up at least one concrete entry point, ask the
+  user before saving. Do not emit an empty `Related Files / Entry Points`
+  section.
 
 ### § Side Effect Checkpoints
 
-Checklist format (`- [ ]`). Each item is something the downstream agent can
-actually verify in the verification pass.
+Checklist format (`- [ ]`). Each item checks whether the agent's own changes
+affected another behavior, surface, contract, integration, or workflow.
 
 - Good: `- [ ] Login E2E test still passes (cypress/e2e/login.cy.ts).`
 - Good: `- [ ] Existing session cookie format stays compatible — existing users do not need to re-login.`
 - Bad: `- [ ] No effect on other features.` (unverifiable, pure wish)
 
-Aim for 2–5 checkpoints. Derive them from:
+Derive checkpoints from:
 
 1. The codebase review — what modules share code with the target area?
 2. Known integrations — what external services / teams touch this surface?
@@ -178,8 +191,8 @@ Criteria` describe how to verify the end state is reached.
 - Bad: `- [ ] UX feels better.`
 - Bad: `- [ ] All tests pass.` (empty — tests always have to pass)
 
-2–6 criteria. If the user cannot give concrete criteria, push back during
-Stage 4 — do not invent them.
+If the user cannot give concrete criteria, push back during Stage 4 — do not
+invent them.
 
 ### § Open Questions
 
@@ -218,7 +231,7 @@ feat
 - Multi-profile shortcut sets (separate future brief).
 - Conflict detection against OS-default shortcuts (deferred).
 
-## Constraints (optional)
+## Constraints
 - Tauri v2 plugin only — v1 alternatives are not on the table.
 - Windows and macOS must ship together. Linux is best-effort / later.
 

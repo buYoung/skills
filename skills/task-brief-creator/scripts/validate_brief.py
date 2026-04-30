@@ -20,16 +20,16 @@ What this script checks (STRUCTURAL ONLY):
     - Required sections contain at least one content bullet
     - `## Side Effect Checkpoints` and `## Acceptance Criteria` use `- [ ]` checklist format
     - `## Open Questions` is populated (questions or "None")
+    - Optional constraints use `## Constraints`
 
 What this script does NOT check (intentionally — content quality is the user's
-judgment call at Stage 5):
+judgment call at Stage 6):
     - Whether As-Is / To-Be bullets are concrete vs. vague
     - Whether Out-of-Scope entries are real guardrails vs. filler
-    - Whether file paths under `Related Files / Entry Points` actually exist
+    - Whether entry points under `Related Files / Entry Points` are legitimate
     - Whether Acceptance Criteria are measurable
 
-This is a structural smoke test for Stage 6, not a substitute for the Stage 5
-human review.
+This is a structural smoke test for Stage 6, not a substitute for human review.
 """
 
 import re
@@ -40,6 +40,8 @@ VALID_TYPES = [
     "feat", "fix", "refactor", "perf", "chore",
     "docs", "test", "style", "build", "ci",
 ]
+
+SLUG_MAX_LENGTH = 40
 
 FILENAME_RE = re.compile(
     r"^(\d{4}-\d{2}-\d{2})-("
@@ -67,7 +69,8 @@ CHECKLIST_SECTIONS = [
     "Acceptance Criteria",
 ]
 
-OPTIONAL_SECTIONS_PATTERN = re.compile(r"^Constraints( \(optional\))?$")
+OPTIONAL_SECTIONS = {"Constraints"}
+LEGACY_OPTIONAL_SECTIONS = {"Constraints (optional)"}
 
 BULLET_RE = re.compile(r"^\s*-\s+.+")
 CHECKLIST_ITEM_RE = re.compile(r"^\s*-\s+\[[ xX]\]\s+.+")
@@ -165,8 +168,13 @@ def validate_filename(path: Path, report: Report) -> str | None:
             "YYYY-MM-DD-<type>-<slug>.md (with optional -vN suffix)."
         )
         return None
-    _, file_type, _, _ = match.groups()
+    _, file_type, slug, _ = match.groups()
     report.ok(f"Filename format OK (type='{file_type}').")
+    if len(slug) > SLUG_MAX_LENGTH:
+        report.fail(
+            f"Filename slug '{slug}' is {len(slug)} chars; "
+            f"maximum is {SLUG_MAX_LENGTH}."
+        )
     return file_type
 
 
@@ -283,7 +291,13 @@ def validate_sections(
     for section_name in h2.keys():
         if section_name in REQUIRED_SECTIONS:
             continue
-        if OPTIONAL_SECTIONS_PATTERN.match(section_name):
+        if section_name in OPTIONAL_SECTIONS:
+            continue
+        if section_name in LEGACY_OPTIONAL_SECTIONS:
+            report.warn(
+                "Use `## Constraints` instead of "
+                "`## Constraints (optional)` in emitted briefs."
+            )
             continue
         report.warn(
             f"Unexpected section `## {section_name}` — not in the template."

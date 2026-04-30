@@ -103,7 +103,7 @@ feat
 - Modifying any existing `useTheme()` consumer outside the Settings screen.
 - Theming for the mobile app shell — separate epic owned by the mobile team.
 
-## Constraints (optional)
+## Constraints
 - Do not introduce a new theming library — extend the existing `ThemeProvider`.
 - `darkTheme` token names must mirror `lightTheme` 1:1 (no new token names).
 
