@@ -5,7 +5,10 @@ description: >
   notes or a rough task description. Eight required sections plus optional
   task-specific constraints, keyed to Conventional Commits types so downstream
   coding agents switch behavior (refactor → preserve, fix → reproduce first,
-  perf → measure first). Halts on vague input. Manual trigger only.
+  perf → measure first). Briefset mode produces a parent execution-management
+  document plus N child briefs when the input describes multiple execution
+  contexts (mixed types, ordered dependencies, shared conflict surfaces).
+  Halts on vague input. Manual trigger only.
 ---
 
 # Task Brief Creator
@@ -27,6 +30,28 @@ minutes, negotiation history, or context prose, rewrite it until it routes
 to files, decisions, or verifiable outcomes. A brief that makes the
 downstream agent re-interview the requester is a **failed brief**, regardless
 of how polished it reads.
+
+---
+
+## Modes
+
+This skill operates in one of two modes:
+
+- **Single-brief mode** (default) — emits one brief per invocation. The
+  workflow below covers this case end to end.
+- **Briefset mode** — emits a parent execution-management document plus
+  N independently executable child briefs. Used when the input describes
+  **multiple execution contexts** (independent completion criteria,
+  distinct entry-point files, mixed work types, ordered dependencies,
+  parallelizable waves, or shared conflict hotspots that need
+  coordination). Triggered by the criteria in
+  `references/briefset.md`; long input alone never triggers briefset
+  mode.
+
+Mode selection happens at Stage 1 alongside the ambiguity gate. In
+briefset mode, follow the workflow below with the per-stage adaptations
+in `references/briefset.md` (parent template, naming, batched
+decomposition question, dual-validator save).
 
 ---
 
@@ -79,6 +104,11 @@ If `docs/briefs/` does not exist, create it. If a file with the same name
 already exists, append `-v2`, `-v3`, … until the path is unique — do not
 overwrite.
 
+For briefset mode, the parent uses
+`YYYY-MM-DD-briefset-<set-slug>.md` and children use
+`YYYY-MM-DD-<type>-<set-slug>-NN-<child-slug>.md`. See
+`references/briefset.md` for the parent template and naming rules.
+
 The eight required H2 sections are: `Work Type`, `Current State (As-Is)`,
 `Desired Outcome (To-Be)`, `Scope` (with `In Scope` / `Out of Scope` H3s),
 `Related Files / Entry Points`, `Side Effect Checkpoints`, `Acceptance
@@ -122,7 +152,9 @@ engineer could answer the anchor from the user's input without inventing intent.
   emerges, **CONTINUE**. If not, **HALT** and ask the user for the target area.
 - **2 or fewer anchors present** → **HALT**. Respond in the user's chat
   language naming exactly which anchors are missing, and ask for more input.
-  Do NOT proceed through Stages 2–6 on an underspecified input. Example halt
+  Do NOT proceed through Stages 2–6 on an underspecified input. The
+  briefset-mode check below also waits — never split an underspecified
+  input into multiple equally underspecified child briefs. Example halt
   messages:
 
   **English:**
@@ -145,6 +177,15 @@ is not a proxy for the four anchors. A 2,000-word product narrative without a
 concrete PROBLEM or TARGET still halts. Judge by anchor coverage, not length.
 
 See `examples/03-halt-ambiguous.md` for a worked halt case.
+
+**Briefset signal check (after CONTINUE):** once anchors clear, also
+evaluate whether the input describes multiple execution contexts (mixed
+work types, ordered dependencies, shared conflict surfaces, distinct
+entry points). If briefset signals are clearly present, plan for
+briefset mode and surface that intent before Stage 2. See
+`references/briefset.md` § "When To Enter Briefset Mode" for the full
+criteria. If unclear, default to single-brief mode and let Stage 4
+surface the question.
 
 ### Stage 2 — Work Type Selection
 
@@ -365,6 +406,19 @@ Out of scope (still on the human): concreteness of bullets, whether
 Out-of-Scope entries are real guardrails vs. filler, whether entry points are
 legitimate, whether Acceptance Criteria are measurable.
 
+For briefset mode, use `scripts/validate_briefset.py` on the parent file —
+it validates the parent structure and re-runs `validate_brief.py`'s checks
+transitively on every referenced child brief, so one invocation covers
+the whole set:
+
+```bash
+python3 skills/task-brief-creator/scripts/validate_briefset.py \
+  docs/briefs/2026-04-30-briefset-checkout-i18n.md
+```
+
+Same exit codes. See `references/briefset.md` for what the parent
+validator checks and what stays on the human reviewer.
+
 ---
 
 ## Guardrails
@@ -385,9 +439,12 @@ legitimate, whether Acceptance Criteria are measurable.
   correct answer when anchors are missing.
 - **Keep Out-of-Scope specific.** "Don't refactor unrelated code" is filler.
   "Do not change the `PaymentService` interface" is a real guardrail.
-- **One brief per invocation.** If the input describes multiple independent
-  tasks, ask the user which one to brief, or offer to split into multiple
-  briefs.
+- **One brief per invocation, unless the input has multiple execution
+  contexts.** If it does, switch to briefset mode (see
+  `references/briefset.md`). Briefset mode is the supported way to
+  handle multi-context work — do not stuff multiple unrelated tasks
+  into a single brief, and do not nest briefsets (a child cannot become
+  a parent).
 
 ---
 
