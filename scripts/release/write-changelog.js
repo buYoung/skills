@@ -93,7 +93,7 @@ function runCodex(prompt) {
         "exec",
         "--cd", ROOT,
         "--sandbox", "read-only",
-        "--ask-for-approval", "never",
+        "--skip-git-repo-check",
         "--ephemeral",
         "--color", "never",
         "--output-last-message", tmpFile,
