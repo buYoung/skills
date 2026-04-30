@@ -79,3 +79,4 @@ fabric.properties
 
 .windsurf
 .agent
+/node_modules/
