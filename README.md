@@ -34,6 +34,8 @@ Only skills that have been personally tested and approved by the user are listed
 | [kysely-converter](./skills/kysely-converter/) | Converts database queries and schemas using Kysely |
 | [jetbrains-vmoptions](skills/jetbrains-vmoptions/) | Generates JetBrains IDE VM options based on IDE version. Supports version-specific GC selection (Generational ZGC for 243+, G1GC for 222-242) and memory configuration. |
 | [system-prompt-creator](skills/system-prompt-creator/) | Analyzes user requirements to generate production-ready system prompts. It determines whether a single or multi-prompt architecture is needed and requests missing information if requirements are insufficient. |
+| [typst-creator](skills/typst-creator/) | Generate Typst source code for documents, reports, papers, and presentations, covering markup, math, scripting, and layout syntax. |
+| [task-brief-creator](skills/task-brief-creator/) | Generates structured work-brief Markdown at `docs/briefs/` from planning notes or rough task descriptions. Eight required sections plus optional task-specific constraints are keyed to Conventional Commits types, with briefset mode for coordinated multi-brief execution. Halts on vague input. Manual trigger only. |
 | [code-security-audit](skills/code-security-audit/) | Performs OWASP-based code security audits on any codebase. Analyzes source code against ASVS 5.0.0 verification requirements, API Security Top 10 2023 risk patterns, OWASP CheatSheet secure coding practices, and WSTG testing methodologies. |
 | [release-it](skills/release-it/) | release-it configuration, setup, and plugin development. Analyzes project context (package.json, git remote, existing CI) to propose tailored release configs. Covers hooks, CLI workflows, pre-release, npm publishing, GitHub/GitLab releases, official plugins, and custom plugin development. |
 
@@ -47,11 +49,9 @@ These skills are currently under evaluation and will be promoted to **Available 
 | [code-review](skills/code-review/) | Performs production-ready code reviews on git changes. Supports commit/range/file-scoped analysis, impact assessment, breaking-change detection, confidence-aware finding classification, and risk-weighted verdict generation. |
 | [doc-coauthoring](skills/doc-coauthoring/) | Guide users through a structured 3-stage workflow for co-authoring documentation through Context Gathering, Refinement & Structure, and Reader Testing. |
 | [react-vite-guide](skills/react-vite-guide/) | React 19 + Vite SPA development guidelines. Composition patterns, performance optimization, and web interface best practices for client-side React applications. |
-| [typst-creator](skills/typst-creator/) | Generate Typst source code for documents, reports, papers, and presentations, covering markup, math, scripting, and layout syntax. |
 | [ui-guide](skills/ui-guide/) | Generate, update, and maintain UI style guide documents from actual codebase analysis. Scans project files to extract real color palettes, typography scales, spacing systems, component patterns, and layout approaches. |
 | [veo-prompt-director](skills/veo-prompt-director/) | Generates structured Google Veo 3.1 video prompts by collecting user input for subject, action, style, cinematography, and audio. Guides users through the Universal Prompt Formula to produce camera-ready prompts. |
 | [ux-design-guide](skills/ux-design-guide/) | Reviews existing UI for UX guideline violations and generates implementation guidance based on 99+ rules across Navigation, Layout, Accessibility, Forms, Performance, Typography, and more. Supports Web, Mobile, and Desktop GUI platforms. |
-| [task-brief-creator](skills/task-brief-creator/) | Generates structured work-brief Markdown at `docs/briefs/` from planning notes or rough task descriptions. Nine sections keyed to Conventional Commits types switch downstream coding-agent behavior (refactor → preserve, fix → reproduce first, perf → measure first). Halts on under-specified input via a four-anchor check and runs structural validation post-save. Manual trigger only. |
 
 ## 🔒 Private Skills
 
