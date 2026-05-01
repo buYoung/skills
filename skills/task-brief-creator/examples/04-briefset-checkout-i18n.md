@@ -7,6 +7,13 @@ It demonstrates: (a) why the request is a briefset rather than a single
 brief, (b) the Stage 4 batched decomposition question, (c) the parent
 brief, (d) the child briefs, and (e) the validator output.
 
+**What this example produces:** a parent brief that *coordinates* and
+three child briefs that *execute*. A coding agent never picks up the
+parent to write code — the parent tells the orchestrator (or a human
+lead) which child can start now and which has to wait. Each child is a
+standalone work instruction that a coding agent picks up cold, exactly
+the way it would pick up a single-mode brief.
+
 ---
 
 ## Input (Korean, pasted by a tech lead)
@@ -203,6 +210,12 @@ refactor
 - Message-key naming is inconsistent across checkout: `payment.err.*` (dot-separated) coexists with `payment_err_*` (underscore-separated).
 - `src/i18n/messages.ko.json` has both styles, doubling lookup paths and breaking grep-by-key.
 
+## Behavior Contract
+- Locked: every user-visible string already shown in the checkout flow continues to render the same Korean text. No text content change is permitted in this child — only the resolution path moves from inline literal to `t('namespace.key')`.
+- Locked: error-throwing call sites in `src/checkout/PaymentForm.tsx` keep emitting the same logical error categories (no error-code change downstream).
+- Contract artifacts: `src/checkout/__tests__/PaymentForm.test.tsx` (rendered-text assertions) and the existing Cypress `cypress/e2e/checkout.cy.ts` happy-path scenarios.
+- Verification: full unit suite + the checkout Cypress scenarios stay green; manual diff of rendered Korean text on the cart and payment screens shows zero copy change.
+
 ## Desired Outcome (To-Be)
 - All checkout strings resolve through `t('namespace.key')`; no inline English literals remain in the JSX or in error throwers.
 - Single namespacing convention adopted (`payment.err.*`, `cart.*`) and enforced by an ESLint rule (or a TODO if rule cannot land in this brief).
@@ -237,7 +250,50 @@ refactor
 - ESLint rule to forbid hardcoded JSX strings — block this brief or defer to a follow-up?
 ```
 
-(Children 02 and 03 follow the same template; omitted here for brevity.)
+(Children 02 and 03 follow the same template; omitted here for brevity.
+Both contain a populated `Side Effect Checkpoints` and child-scoped
+`Acceptance Criteria`. Child 03, being a `fix`, also carries a populated
+`## Reproduction` section per the type-conditional rule.)
+
+---
+
+## Picked Up Cold — How Coding Agents Map onto Waves
+
+The parent's `Execution Order` translates directly to coding-agent
+scheduling:
+
+- **Wave 1 (sequential).** A single coding agent picks up child 01
+  (`refactor-...01-message-keys`). Its `Behavior Contract` lets the agent
+  verify "no rendered text changed" mechanically (existing tests + manual
+  diff on the cart and payment screens). Wave 1 lands behind a green test
+  suite before Wave 2 starts.
+- **Wave 2 (parallel).** Two coding agents start at the same time:
+  - Agent A picks up child 02 (`feat-...02-cart-copy`) and works only
+    inside the `cart.*` key namespace.
+  - Agent B picks up child 03 (`fix-...03-validation-copy`) and works
+    only inside the `payment.err.*` key namespace.
+  - Both touch `src/i18n/messages.ko.json` and `src/i18n/index.ts` —
+    the parent's `Conflict Hotspots` section tells them to commit
+    small, key-scoped changes and rebase rather than long-lived
+    branches. Neither agent needs to coordinate with the other beyond
+    that rule.
+
+A coding agent picking up child 01 cold should:
+
+1. Open `src/checkout/PaymentForm.tsx` lines 42–78 and confirm the
+   inline English error labels listed in `Current State (As-Is)`.
+2. Open `src/i18n/messages.ko.json`, identify the duplicate
+   `payment_err_*` keys, and plan the collapse to `payment.err.*`.
+3. Add empty placeholder keys for `cart.*` and `payment.err.*` so
+   children 02 and 03 have a stable surface to fill (per child 01's
+   `Acceptance Criteria` #3).
+4. Run the unit + Cypress suites continuously to keep the `Behavior
+   Contract` verifiable.
+
+The agent does **not** edit cart copy text (per `Out of Scope` — that's
+child 02), does not translate Zod validation strings (per `Out of
+Scope` — that's child 03), and does not touch the English locale (per
+`Shared Constraints`).
 
 ---
 

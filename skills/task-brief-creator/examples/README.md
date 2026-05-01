@@ -1,8 +1,24 @@
 # Examples
 
 End-to-end worked scenarios for `task-brief-creator`. Each file contains the
-input, what the skill did at each stage, and the resulting brief (or halt
-response). Use these to see what the contract looks like in practice.
+input, what the skill did at each stage, the resulting brief (or halt
+response), and a `Picked Up Cold` section showing the first actions a
+coding agent takes from the saved brief alone.
+
+**How to read these files.** The saved brief in each example is the *work
+instruction*. The meta sections (input, codebase review notes, interview
+exchange, notes) explain how the skill arrived at that instruction — they
+are commentary, not deliverable. If you only have time to skim one part,
+read the saved-brief code block plus `Picked Up Cold` and you have the
+core contract.
+
+**A note on paths.** Saved-brief code blocks use illustrative paths
+(`src/auth/validation.ts`, `src/i18n/messages.ko.json`, …) that do not
+exist in this repository. They are written from the perspective of a
+hypothetical host repo. If you copy a saved-brief block into a real
+`docs/briefs/` and run `validate_brief.py`, the path-existence check will
+correctly flag those paths as missing. Replace them with paths from your
+own repository.
 
 | File | Input shape | Type | What it shows |
 |---|---|---|---|

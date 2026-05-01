@@ -10,7 +10,7 @@ Defines the standard working agreements to be included in generated `AGENTS.md` 
 
 ## Task Execution Rules
 
-- **Tests & Lint**: Do not create tests or add lint/format tasks unless user explicitly mentions ("test code", "unit test", "jest", "vitest", "lint", "eslint", "prettier", "code format")
+- **Tests & Lint**: Do not introduce new tests, lint configurations, or formatter setups on your own, even when they seem beneficial. Ask the user before adding any of them; only proceed when the user has explicitly requested it
 - **Context Building**: Before editing code, search for other usages of the same function/feature/module; review related flows, shared abstractions, recurring patterns
 - **Simplicity**: Prefer simple solutions matching user's request; do not add extra features or abstraction unless requested
 - **Clarification**: If requirements are ambiguous, ask the user instead of guessing
@@ -18,7 +18,7 @@ Defines the standard working agreements to be included in generated `AGENTS.md` 
 ## Code Change Rules
 
 - **Minimal Changes**: Prefer minimal, focused changes; avoid large refactors unless requested
-- **Type Check After Changes**: During codebase analysis, identify the project's type-check command from build configs, scripts, or tooling (e.g., `tsc --noEmit` from `tsconfig.json`, `mypy`/`pyright` from `pyproject.toml`, `cargo check` from `Cargo.toml`, `go vet`/`go build` from `go.mod`, `javac` from `pom.xml` or `build.gradle`, `gradle compileKotlin` from `build.gradle.kts`). Include the discovered command in this section. After code modifications, run that command to verify type safety before considering the task complete
+- **Type Check After Changes**: During codebase analysis, identify the project's type-check command from build configs, scripts, or tooling (e.g., `tsc --noEmit` from `tsconfig.json`, `mypy`/`pyright` from `pyproject.toml`, `cargo check` from `Cargo.toml`, `go vet`/`go build` from `go.mod`, `javac` from `pom.xml` or `build.gradle`, `gradle compileKotlin` from `build.gradle.kts`). Include the discovered command in this section. After code modifications, run that command to verify type safety before considering the task complete. If the project's stack has no type checker available, omit this bullet from the generated AGENTS.md rather than inventing a placeholder
 - **Public APIs**: Preserve public APIs and behavior unless user asks to change them; call out any behavior changes
 - **New Code**: New functions/modules should be small, single-purpose, and colocated near related code
 - **Dependencies**: Avoid new external dependencies unless necessary; if added, briefly explain why
@@ -41,12 +41,12 @@ Due to the **dynamic character limit** (based on LOC), working agreements in gen
 ## 5. Working Agreements
 
 - Respond in user's preferred language; if unspecified, infer from codebase (keep tech terms in English, never translate code blocks)
-- Create tests/lint only when explicitly requested
+- Ask the user before introducing tests, lint, or formatter setups; add them only on explicit request
 - Build context by reviewing related usages and patterns before editing
 - Prefer simple solutions; avoid unnecessary abstraction
 - Ask for clarification when requirements are ambiguous
 - Minimal changes; preserve public APIs
-- Run type-check after code changes (include discovered command, e.g., `tsc --noEmit`, `cargo check`, `go vet`, `javac`, `gradle compileKotlin`)
+- Run type-check after code changes (include the discovered command, e.g., `tsc --noEmit`, `cargo check`, `go vet`, `javac`, `gradle compileKotlin`); omit this bullet if no type checker is configured
 - New functions: single-purpose, colocated with related code
 - External dependencies: only when necessary, explain why
 ```

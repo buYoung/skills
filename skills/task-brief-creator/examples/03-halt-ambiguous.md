@@ -3,6 +3,12 @@
 The four-anchor check rejects the input. Skill responds with a halt
 message instead of producing a brief.
 
+**What this example shows:** the most expensive failure mode of a brief
+generator is producing a *confident-looking* work instruction from
+underspecified input. A coding agent that picks up such a brief commits to
+the wrong problem framing and burns the entire implementation cycle. The
+halt is what protects the agent from that outcome.
+
 ---
 
 ## Input (typed by user)
@@ -86,3 +92,57 @@ The skill replies in the user's chat language. Both versions follow.
   codebase review on the chance that reading `src/auth/*` will surface
   a likely intent. That would be the agent picking a problem for the
   user, which is exactly what the gate prevents.
+
+---
+
+## What the Halt Prevented — Sketch of a Fabricated Brief
+
+If the skill had pushed past the gate, the most plausible (and most
+dangerous) output would have looked something like this — a brief that
+*reads* like a competent work instruction but commits to a problem the
+user did not state:
+
+```markdown
+# [refactor] Tidy auth module structure
+
+## Work Type
+refactor
+
+## Current State (As-Is)
+- `src/auth/` has accumulated overlapping helpers across login, session, OAuth, and password reset.
+- Some files exceed 400 lines.
+
+## Behavior Contract
+- Locked: public exports of `src/auth/index.ts`.
+- Contract artifacts: existing `src/auth/__tests__/*` suite.
+- Verification: full suite green.
+
+## Desired Outcome (To-Be)
+- Auth modules are smaller and follow consistent naming.
+
+## Scope
+### In Scope
+- Restructure files inside `src/auth/`.
+### Out of Scope
+- Behavior changes.
+
+## Related Files / Entry Points
+- `src/auth/` — entire directory.
+
+## Side Effect Checkpoints
+- [ ] Full test suite passes.
+
+## Acceptance Criteria
+- [ ] Files are smaller.
+- [ ] Naming is consistent.
+
+## Open Questions
+- None
+```
+
+A coding agent picking this up would happily restructure `src/auth/`,
+land a 1500-line PR, and discover at review that the user actually
+wanted **session tokens moved out of localStorage for security** — a
+totally different problem, in different files, possibly a `feat`
+rather than a `refactor`. The cost is the entire restructuring cycle
+plus the rework. That is the asymmetry the halt protects against.

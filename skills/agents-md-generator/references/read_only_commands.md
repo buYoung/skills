@@ -5,6 +5,7 @@ Defines the allowed commands for repository analysis during AGENTS.md generation
 ## Table of Contents
 
 - [Allowed Command Categories](#allowed-command-categories)
+- [Symbol-Level Analysis (Optional, requires Serena MCP)](#symbol-level-analysis-optional-requires-serena-mcp)
 - [ripgrep (`rg`) Usage Patterns](#ripgrep-rg-usage-patterns)
 - [Dependency Discovery](#dependency-discovery)
 - [tree Command Usage](#tree-command-usage)
@@ -64,6 +65,28 @@ When additional context is needed beyond initial search results, read files in i
 - When extending, read in additional 400-line increments and re-evaluate after each increment
 - **Hard cap: 1600 lines** per file — never read beyond this limit regardless of context needs
 - Collect only the context required for analysis; avoid excessive context collection that may degrade output quality
+
+## Symbol-Level Analysis (Optional, requires Serena MCP)
+
+When Serena MCP is available, prefer these tools over `rg` / `grep` / `find` for Section 3 (Core Behaviors & Patterns) and Section 4 (Conventions) deep analysis. Symbolic queries return precise definitions and references without re-parsing files line by line, which is more accurate for cross-layer tracing.
+
+### Read-Only Tools
+
+- **`find_symbol`**: Locate symbol definitions (functions, classes, methods) by `name_path` and optional `relative_path`
+- **`find_referencing_symbols`**: Cross-reference callers — required for tracing flows end-to-end (e.g., error propagation, wiring chains)
+- **`find_referencing_code_snippets`**: Inspect actual usage contexts surrounding a symbol
+- **`get_symbols_overview`**: Top-level symbol map of a file — use to compare multiple implementations of the same role (e.g., 5 dialogs, 5 commands)
+- **`search_for_pattern`**: Regex search across the codebase (alternative to `rg`)
+- **`list_dir` / `find_file` / `read_file`**: File navigation and reading alternatives
+
+### Constraints
+
+- Use **only the read-only tools above**. Do **NOT** invoke write/edit tools (`replace_symbol_body`, `insert_after_symbol`, `insert_before_symbol`, `rename_symbol`, `safe_delete_symbol`, `create_text_file`, `edit_memory`, etc.) or `execute_shell_command` during AGENTS.md generation — generation is a read-only analysis task.
+- Memory tools (`write_memory`, `read_memory`, `list_memories`, `delete_memory`, `rename_memory`) are out of scope for this skill.
+
+### Fallback
+
+If Serena MCP is not available, fall back to `rg` + `sed -n` (Linux/macOS) or `Select-String` + `Get-Content` (Windows) per the patterns in [ripgrep (`rg`) Usage Patterns](#ripgrep-rg-usage-patterns) and [Paginated File Reading](#paginated-file-reading).
 
 ## ripgrep (`rg`) Usage Patterns
 

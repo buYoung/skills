@@ -16,18 +16,26 @@ What this script checks (STRUCTURAL ONLY):
     - Type is one of the 10 Conventional Commits types
     - Title-prefix type matches the `## Work Type` value
     - All required H2 sections present
+    - Type-conditional sections present and populated:
+        fix      → `## Reproduction`
+        perf     → `## Baseline Measurement`
+        refactor → `## Behavior Contract`
     - `## Scope` has `### In Scope` and `### Out of Scope` H3s
     - Required sections contain at least one content bullet
     - `## Side Effect Checkpoints` and `## Acceptance Criteria` use `- [ ]` checklist format
     - `## Open Questions` is populated (questions or "None")
+    - Inline-code paths in `## Related Files / Entry Points` exist on disk
+        (skipped when the bullet carries a `(proposed)` marker)
     - Optional constraints use `## Constraints`
 
 What this script does NOT check (intentionally — content quality is the user's
 judgment call at Stage 6):
     - Whether As-Is / To-Be bullets are concrete vs. vague
     - Whether Out-of-Scope entries are real guardrails vs. filler
-    - Whether entry points under `Related Files / Entry Points` are legitimate
+    - Whether `Related Files / Entry Points` choices are *good* entry points
+        (the path-existence check only catches fabricated paths, not poor ones)
     - Whether Acceptance Criteria are measurable
+    - Whether the type-conditional section's content is sufficient
 
 This is a structural smoke test for Stage 6, not a substitute for human review.
 """
@@ -72,8 +80,20 @@ CHECKLIST_SECTIONS = [
 OPTIONAL_SECTIONS = {"Constraints"}
 LEGACY_OPTIONAL_SECTIONS = {"Constraints (optional)"}
 
+# Type-conditional sections required between As-Is and To-Be.
+TYPE_REQUIRED_SECTION = {
+    "fix": "Reproduction",
+    "perf": "Baseline Measurement",
+    "refactor": "Behavior Contract",
+}
+TYPE_CONDITIONAL_SECTIONS = set(TYPE_REQUIRED_SECTION.values())
+
 BULLET_RE = re.compile(r"^\s*-\s+.+")
 CHECKLIST_ITEM_RE = re.compile(r"^\s*-\s+\[[ xX]\]\s+.+")
+INLINE_CODE_RE = re.compile(r"`([^`]+)`")
+PROPOSED_RE = re.compile(r"\(proposed\)", re.IGNORECASE)
+LINE_NUM_SUFFIX_RE = re.compile(r":\d+(?:-\d+)?$")
+BARE_NA_RE = re.compile(r"^\s*-\s+N/A\s*$", re.IGNORECASE)
 
 
 class Report:
@@ -287,20 +307,128 @@ def validate_sections(
         else:
             report.ok("`## Open Questions` populated.")
 
-    # 7. Optional section sanity (warn only).
+    # 7. Type-conditional section (fix → Reproduction, perf → Baseline
+    #    Measurement, refactor → Behavior Contract). Required for the
+    #    matching type, and the section's body must be non-empty. The
+    #    explicit escape hatch is `- N/A — <reason>`; a bare `- N/A`
+    #    without reason is rejected.
+    expected_conditional = TYPE_REQUIRED_SECTION.get(title_type)
+    if expected_conditional is not None:
+        if expected_conditional not in h2:
+            report.fail(
+                f"Type `{title_type}` requires `## {expected_conditional}` "
+                "section between `Current State (As-Is)` and "
+                "`Desired Outcome (To-Be)`."
+            )
+        else:
+            body = h2[expected_conditional]
+            non_empty = [line for line in body if line.strip()]
+            if not non_empty:
+                report.fail(
+                    f"`## {expected_conditional}` is empty — populate it, or "
+                    "write `- N/A — <reason>` if genuinely none."
+                )
+            else:
+                bullets = [line for line in body if BULLET_RE.match(line)]
+                bare_na = [line for line in bullets if BARE_NA_RE.match(line)]
+                if bare_na:
+                    report.fail(
+                        f"`## {expected_conditional}` uses bare `- N/A` — "
+                        "the escape hatch is `- N/A — <reason>` (em dash + reason)."
+                    )
+                else:
+                    report.ok(
+                        f"Section `## {expected_conditional}` present and populated."
+                    )
+
+    # 8. Optional section sanity (warn only).
     for section_name in h2.keys():
         if section_name in REQUIRED_SECTIONS:
             continue
         if section_name in OPTIONAL_SECTIONS:
             continue
+        if section_name == expected_conditional:
+            continue  # validated above
         if section_name in LEGACY_OPTIONAL_SECTIONS:
             report.warn(
                 "Use `## Constraints` instead of "
                 "`## Constraints (optional)` in emitted briefs."
             )
             continue
+        if section_name in TYPE_CONDITIONAL_SECTIONS:
+            report.warn(
+                f"Section `## {section_name}` is the conditional section for "
+                f"a different work type — current type is `{title_type}`."
+            )
+            continue
         report.warn(
             f"Unexpected section `## {section_name}` — not in the template."
+        )
+
+
+def infer_repo_root(brief_path: Path) -> Path:
+    """Best-effort guess at the repo root.
+
+    If the brief sits at <root>/docs/briefs/<file>.md, return <root>.
+    Otherwise fall back to cwd. Path-existence checks are best-effort
+    and skipped silently if the root cannot be located.
+    """
+    abs_brief = brief_path.resolve()
+    parent = abs_brief.parent
+    if parent.name == "briefs" and parent.parent.name == "docs":
+        return parent.parent.parent
+    return Path.cwd()
+
+
+def looks_like_path(s: str) -> bool:
+    """Treat inline-code as a path candidate only when it contains '/'.
+
+    This deliberately skips bare filenames like `package.json` and
+    namespaced identifiers like `flag.darkMode`. Paths with at least one
+    slash are the high-value, high-risk-of-fabrication case.
+    """
+    return "/" in s
+
+
+def validate_entry_paths(
+    h2: dict[str, list[str]],
+    brief_path: Path,
+    report: Report,
+) -> None:
+    """Verify inline-code paths under `Related Files / Entry Points` exist.
+
+    Skips bullets that carry a `(proposed)` marker. PRs, URLs, and
+    bare identifiers (no slash) are not checked.
+    """
+    if "Related Files / Entry Points" not in h2:
+        return
+    repo_root = infer_repo_root(brief_path)
+    seen = 0
+    missing = 0
+    for line in h2["Related Files / Entry Points"]:
+        if not BULLET_RE.match(line):
+            continue
+        if PROPOSED_RE.search(line):
+            continue
+        for match in INLINE_CODE_RE.finditer(line):
+            raw = match.group(1).strip()
+            if not looks_like_path(raw):
+                continue
+            cleaned = LINE_NUM_SUFFIX_RE.sub("", raw)
+            target = repo_root / cleaned
+            seen += 1
+            if not target.exists():
+                missing += 1
+                report.fail(
+                    f"`## Related Files / Entry Points` references "
+                    f"`{raw}`, but '{cleaned}' does not exist under "
+                    f"{repo_root}. Mark the bullet `(proposed)` if the path "
+                    "is intended to be created by this work."
+                )
+    if seen > 0 and missing == 0:
+        report.ok(
+            f"All {seen} inline-code path(s) in "
+            "`Related Files / Entry Points` exist on disk."
         )
 
 
@@ -326,6 +454,7 @@ def main(argv: list[str]) -> int:
     title_type, _ = validate_title(lines[0] if lines else "", file_type, report)
     h2, h3 = parse_sections(text)
     validate_sections(h2, h3, title_type, report)
+    validate_entry_paths(h2, path, report)
 
     print(report.render())
     return 1 if report.failures else 0

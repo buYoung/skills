@@ -60,6 +60,35 @@ task-specific constraints exist. The emitted heading is `## Constraints`, not
 - <task-specific constraint>
 ```
 
+## Type-Conditional Sections
+
+Three of the ten work types require an **additional H2 section** between
+`Current State (As-Is)` and `Desired Outcome (To-Be)`. The section captures
+the type-specific input the downstream agent needs to honor that type's
+behavior profile (see `work-types.md`).
+
+| Work Type | Required Section | What it captures |
+|---|---|---|
+| `fix` | `## Reproduction` | Steps to reproduce, environment, frequency, observed vs expected behavior |
+| `perf` | `## Baseline Measurement` | Current measurement, method, environment, target improvement |
+| `refactor` | `## Behavior Contract` | Which tests / specs / observable behaviors lock the existing behavior; how preservation is verified |
+
+The other seven types (`feat`, `chore`, `docs`, `test`, `style`, `build`,
+`ci`) use the eight required sections only.
+
+If the section legitimately has nothing concrete to capture (e.g., a visual
+regression `fix` whose entire repro is "open the page"), write a single
+bullet:
+
+```markdown
+## Reproduction
+- N/A — single-step visual regression; reproduce by opening Settings → Appearance.
+```
+
+Do not omit the section — `validate_brief.py` checks for its presence. The
+`- N/A — <reason>` form is the explicit escape hatch; a bare `- N/A` without
+reason is rejected.
+
 ---
 
 ## Section-by-Section Guide
@@ -95,6 +124,81 @@ Short factual description of how things are today. This is the baseline the
   thing being fixed. Say what is, not what you feel about it.
 - If a background context line is essential, the first bullet may carry it —
   do not create a separate "Background" section.
+
+### § Reproduction (`fix` only)
+
+A pinned reproduction is the most expensive thing a `fix` agent has to
+recover if it isn't in the brief. Capture it explicitly so the agent can
+write a failing test before patching.
+
+Cover, at minimum:
+
+- **Steps** — minimal sequence that triggers the bug.
+- **Environment** — browser/OS/runtime version, build, branch, data
+  fixture, anything that matters for the repro.
+- **Frequency** — always / intermittent (with conditions) / once seen.
+- **Observed vs expected** — what actually happens, what should happen.
+
+Examples:
+
+- Good: `Steps: load /login on iOS Safari 17, type password "foo@bar", submit. Result: "invalid credentials" toast. Expected: successful login.`
+- Good: `Frequency: intermittent — repros ~30% on cold session, never after a successful login in the same browser.`
+- Bad: `Sometimes login fails.` (no steps, no environment, not actionable)
+
+If the bug is a visual regression where the entire repro is one navigation
+step, the `- N/A — <reason>` escape hatch is acceptable.
+
+### § Baseline Measurement (`perf` only)
+
+A `perf` brief without a baseline is wishful thinking. The downstream agent
+cannot measure improvement against an unstated starting point, and "felt
+faster" is not a verification path.
+
+Cover:
+
+- **Current measurement** — concrete number with units (`p95 = 420ms`,
+  `bundle = 312KB gzipped`, `cold start = 1.8s`).
+- **Method** — how the number was obtained (tool, scenario, sample size).
+- **Environment** — hardware / network / build target / dataset.
+- **Target improvement** — desired delta or absolute target. State both
+  the metric and the threshold.
+
+Examples:
+
+- Good: `Current: TTFB p95 = 420ms over 1000 requests, measured locally with k6 on M1 Pro, dev build. Target: p95 ≤ 250ms on the same setup.`
+- Good: `Current: production bundle = 312KB gzipped (rollup-plugin-visualizer, main branch HEAD). Target: ≤ 280KB gzipped without removing public exports.`
+- Bad: `It's slow.` (not measurable)
+- Bad: `Improve performance significantly.` (no baseline, no target)
+
+If the user cannot give a baseline, push back during Stage 4. Do not invent
+a number.
+
+### § Behavior Contract (`refactor` only)
+
+A refactor preserves behavior by definition. The contract section names the
+behavior that must stay invariant and the artifacts that lock it — so the
+downstream agent has something concrete to verify against, not a vibe.
+
+Cover:
+
+- **Locked behavior** — what externally observable behavior must not
+  change (public API shape, return values, side-effect order, performance
+  envelope, error semantics).
+- **Contract artifacts** — the tests / specs / type signatures / golden
+  files that serve as the regression net.
+- **Verification method** — how preservation is checked (test suite to
+  run, snapshot to diff, manual scenario).
+
+Examples:
+
+- Good: `Locked: public methods of UserService (signature, return shape, thrown errors). Contract: src/user/__tests__/UserService.test.ts must pass unchanged. Verification: full suite plus three manual scenarios in docs/qa/user-service.md.`
+- Good: `Locked: rendered DOM of <Cart /> for the three fixture carts. Contract: existing Storybook snapshots. Verification: chromatic diff = 0.`
+- Bad: `Don't break anything.` (not a contract)
+- Bad: `Tests still pass.` (which tests? what do they actually pin?)
+
+If existing tests do not cover the behavior the refactor must preserve,
+that gap belongs in `Open Questions` — and may push back into expanding
+test coverage before the refactor proceeds.
 
 ### § Desired Outcome (To-Be)
 

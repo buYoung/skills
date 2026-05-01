@@ -4,6 +4,12 @@ Single-line typed input. Skill clears the four-anchor gate (PROBLEM,
 GOAL implicit, SCOPE narrow, TARGET findable), then leans on the `fix`
 behavior profile to shape Acceptance Criteria around reproduction.
 
+**What this example produces:** a saved brief with a pinned `Reproduction`
+that lets a coding agent commit a failing test *before* touching code —
+the load-bearing discipline of `fix`-type work. Treat the saved brief as
+the work instruction; the meta sections show how a one-line input got
+ground enough to support it.
+
 ---
 
 ## Input (typed by user)
@@ -57,9 +63,15 @@ Skill batched four questions:
 fix
 
 ## Current State (As-Is)
-- On iOS Safari 17, submitting the login form with a password containing `@` returns "invalid credentials" even when the password is correct.
-- Desktop Safari, Chrome, and Firefox accept the same password and login succeeds.
+- The login flow rejects valid credentials on iOS Safari when the password contains `@`; the same credentials succeed in every other tested browser.
 - `validatePassword()` in `src/auth/validation.ts` calls `decodeURIComponent` on the raw input — likely interaction site (per Stage 3 review).
+
+## Reproduction
+- Steps: open `/login` on iOS Safari 17, enter a known-valid account whose password contains `@` (test account `qa+iossafari@example.com` / `foo@bar`), tap "Log in".
+- Observed: form returns "invalid credentials" toast; no network error in dev tools.
+- Expected: same credentials succeed (verified working on desktop Safari 17, Chrome 124, Firefox 125 against the same backend).
+- Environment: iOS Safari 17 on iPhone 14 (BrowserStack); reproduces against `main` branch dev build and the current production build.
+- Frequency: always — 5/5 attempts on a fresh session.
 
 ## Desired Outcome (To-Be)
 - Login succeeds on iOS Safari 17 with passwords containing `@`, matching desktop browser behavior.
@@ -95,6 +107,31 @@ fix
 ## Open Questions
 - Is the `decodeURIComponent` step in PR #211 still needed for any input it actually defends against, or can it be removed entirely instead of patched? Defer to PR review if unclear.
 ```
+
+---
+
+## Picked Up Cold — Coding Agent's First Actions
+
+A coding agent receiving only the saved brief should reach a red test in
+under 30 minutes. From the brief alone:
+
+1. Spin up the documented repro environment (BrowserStack, iOS Safari 17,
+   account `qa+iossafari@example.com` / `foo@bar` per `Reproduction`).
+   Confirm the failure on `main` to verify the repro is real.
+2. Add a Cypress case in `cypress/e2e/login.cy.ts` (named in `Related
+   Files / Entry Points` and required by `Acceptance Criteria` #1) that
+   exercises the failing input. **Commit it red.**
+3. Open `src/auth/validation.ts:34` (named in `Related Files / Entry
+   Points` with the suspected interaction site already noted) and read
+   PR #211's motivation before patching, per the open question.
+4. Patch the offending step. The new Cypress case must flip green; full
+   suite stays green (per `Acceptance Criteria` and `Side Effect
+   Checkpoints`).
+
+The agent does **not** restructure the validation chain (per `Out of
+Scope`), does not change the `/api/login` contract (per `Out of Scope`),
+and does not need to ask the user for the repro account — the brief
+ships it.
 
 ---
 

@@ -29,6 +29,31 @@ cost.
 
 ---
 
+## Required Additional Section per Type
+
+The work type changes downstream agent behavior. The brief makes that change
+*possible* by carrying type-specific input the agent needs. Three types
+require an extra H2 section between `Current State (As-Is)` and `Desired
+Outcome (To-Be)`:
+
+| Type | Required Section | Why this section, for this type |
+|---|---|---|
+| `fix` | `## Reproduction` | The reproduction-first profile needs the repro pinned (steps, environment, frequency, observed vs expected) — not buried in As-Is. The agent writes a failing test against this section. |
+| `perf` | `## Baseline Measurement` | The measurement-first profile needs the baseline number stated explicitly (current measurement, method, environment, target). Without it, "improvement" is unverifiable. |
+| `refactor` | `## Behavior Contract` | The behavior-preservation profile needs the contract named: which observable behaviors must stay invariant, which tests / specs / artifacts lock them, how preservation is verified. |
+
+The other seven types (`feat`, `chore`, `docs`, `test`, `style`, `build`,
+`ci`) use the eight required sections only.
+
+When the section legitimately has nothing concrete to capture (e.g., a
+visual-regression `fix` whose entire repro is "open the page"), the brief
+may use a single bullet: `- N/A — <one-line reason>`. The section itself
+must still be present; `validate_brief.py` checks for it.
+
+See `template.md` for the per-section writing guidance and examples.
+
+---
+
 ## Classification Tips
 
 ### When the user says "refactor" but describes behavior change

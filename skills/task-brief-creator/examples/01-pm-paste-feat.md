@@ -4,6 +4,12 @@ Long-form input from a PM. Skill runs Stage 3 codebase review to refine
 `Current State (As-Is)`, then Stage 4 interview to lock down `Out of Scope`
 and `Acceptance Criteria`.
 
+**What this example produces:** a saved brief that a coding agent can pick up
+without re-reading the PM spec, without asking which `ThemeProvider` to extend,
+and without guessing the flag name. Read the saved brief at the bottom as the
+*work instruction* — every other section here is meta, explaining how the
+skill arrived at it.
+
 ---
 
 ## Input (pasted by user)
@@ -127,6 +133,29 @@ feat
 ## Open Questions
 - Should the per-platform OS-theme listener be torn down when the pref leaves System, or always-on? (Cheap to keep on; defer to reviewer.)
 ```
+
+---
+
+## Picked Up Cold — Coding Agent's First Actions
+
+A coding agent receiving only the saved brief above should be able to act
+without further questions. From the brief alone:
+
+1. Open `src/theme/ThemeProvider.tsx` (named in `Related Files / Entry Points`)
+   and add `darkTheme` next to the existing `lightTheme`, mirroring its token
+   names 1:1 (per `Constraints`).
+2. Add `flag.darkMode` to `src/feature-flags/flags.ts`, default `false` in
+   production (per `Desired Outcome (To-Be)`).
+3. Add the Theme row in `src/settings/SettingsScreen.tsx`'s Appearance
+   section, gated behind `flag.darkMode`, offering System / Light / Dark
+   (per `In Scope` and `Desired Outcome (To-Be)`).
+4. Wire persistence through `useUserPref` in `src/storage/userPrefs.ts`
+   (per `Related Files / Entry Points`).
+
+The agent does **not** touch other `useTheme()` consumers (per `Out of
+Scope`), does not introduce a new theming library (per `Constraints`), and
+does not need to re-interview the PM about the third "system" option — the
+brief locked it down.
 
 ---
 

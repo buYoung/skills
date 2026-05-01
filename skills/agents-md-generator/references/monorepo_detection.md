@@ -13,6 +13,7 @@ A repository is considered a monorepo if **any** of the following marker files o
 - **`nx.json`**: Nx
 - **`turbo.json`**: Turborepo
 - **`rush.json`**: Rush
+- **`.moon/workspace.yml`**: moonrepo
 - **`package.json`** with `workspaces` field: npm/Yarn workspaces
 
 ### JVM Ecosystem (Gradle / Maven)
@@ -36,6 +37,7 @@ A repository is considered a monorepo if **any** of the following marker files o
 ### Build Systems (Language-Agnostic)
 
 - **`WORKSPACE`** or **`WORKSPACE.bazel`** or **`MODULE.bazel`**: Bazel
+- **`.buckconfig`**: Buck2
 - **`pants.toml`** or **`pants.ini`**: Pants
 
 ## Workspace Package Discovery
@@ -48,6 +50,7 @@ After identifying a monorepo, discover packages from the relevant configuration:
 - **`package.json`**: `workspaces` field
 - **`lerna.json`**: `packages` field
 - **`nx.json`**: `projects` field or scan directories
+- **`.moon/workspace.yml`**: `projects` field (glob list, object map, or array)
 
 ### JVM (Gradle / Maven)
 
@@ -65,6 +68,7 @@ After identifying a monorepo, discover packages from the relevant configuration:
 ### Build Systems
 
 - **Bazel**: Scan directories containing `BUILD` or `BUILD.bazel` files
+- **Buck2**: Scan directories containing `BUCK` files
 - **Pants**: Scan directories containing `BUILD` files
 
 ## Fallback Discovery

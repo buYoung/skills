@@ -114,6 +114,20 @@ The eight required H2 sections are: `Work Type`, `Current State (As-Is)`,
 Criteria`, `Open Questions`. Optional `Constraints` may appear between `Scope`
 and `Related Files / Entry Points` when task-specific constraints exist.
 
+Three work types require an **additional H2 section** between `Current State
+(As-Is)` and `Desired Outcome (To-Be)`:
+
+- `fix` → `## Reproduction`
+- `perf` → `## Baseline Measurement`
+- `refactor` → `## Behavior Contract`
+
+These exist because the work type changes the downstream agent's behavior
+(reproduction-first, measurement-first, behavior-preservation), and the
+brief must carry the type-specific input that behavior depends on. The
+escape hatch when the section legitimately has nothing concrete to capture
+is a single bullet `- N/A — <reason>`. See `references/template.md` and
+`references/work-types.md` for the per-section guidance.
+
 Bullet count is not capped. Large work may need many bullets. The rule is
 cohesion, not brevity:
 
@@ -213,38 +227,45 @@ Determine the Conventional Commits type. Consult
 - If the implicit type is low-confidence and changes the likely execution
   approach, ask one short question before proceeding.
 
-### Stage 3 — Codebase Review (inline)
+### Stage 3 — Codebase Review
 
-Use **inline Grep / Read / Glob** — do *not* spawn subagents for this step.
-The goal is enough context to fill `Current State (As-Is)` and `Related Files
-/ Entry Points`, not exhaustive exploration.
+The goal is enough context to fill `Current State (As-Is)` and `Related
+Files / Entry Points`, not exhaustive exploration. Use whatever code
+search / read / symbol tooling fits the host environment — default
+`Grep` / `Read` / `Glob`, semantic tools where available (Serena MCP,
+ast-grep, language servers), or a short-lived subagent (e.g. `Explore`)
+when parallel lookups or main-context isolation is worth it. Tool
+choice is the runtime's call; this stage only fixes the *purpose* and
+*budget* of the review.
 
 Review budget (soft limits):
 
 - At most ~15 file reads
-- At most ~10 Grep queries
+- At most ~10 search queries
 - Stop as soon as you can confidently name the entry points
 
 Strategy:
 
-1. Start wide with `rg` on keywords from the input — feature names, function
-   names, error strings, routes, type names.
-2. Narrow with `rg -l` to list candidate files, then Read the 2–4 most
+1. Start wide with keyword search on terms from the input — feature
+   names, function names, error strings, routes, type names.
+2. Narrow to a list of candidate files, then read the 2–4 most
    promising ones.
-3. If the input mentions a subsystem (e.g., "auth middleware", "checkout
-   flow"), glob for likely directories first.
-4. Capture an As-Is picture by coherent context units: how each relevant
-   function, module, behavior, integration, or user surface is shaped today.
-5. Capture concrete Related File / entry-point hints with one-line purposes.
-   At least one entry point must be solid before saving the brief.
+3. If the input mentions a subsystem (e.g., "auth middleware",
+   "checkout flow"), look at likely directories first.
+4. Capture an As-Is picture by coherent context units: how each
+   relevant function, module, behavior, integration, or user surface
+   is shaped today.
+5. Capture concrete Related File / entry-point hints with one-line
+   purposes. At least one entry point must be solid before saving the
+   brief.
 
 **Do not:**
 
-- Read entire large files when symbolic reads (or targeted ranges) suffice.
+- Read entire large files when symbolic / targeted-range reads suffice.
 - Chase tangential code just to pad the brief. If it does not tighten
   `Current State (As-Is)` or `Related Files / Entry Points`, skip it.
-- Make architectural claims the code does not support. If uncertain, flag
-  it in `Open Questions` instead.
+- Make architectural claims the code does not support. If uncertain,
+  flag it in `Open Questions` instead.
 
 ### Stage 4 — Active Interview
 
@@ -408,13 +429,19 @@ Scope of the validator (deliberately structural only):
 - Filename pattern, title format, type coherence across filename / title /
   section value, and slug length.
 - Presence of required H2 sections + `In Scope` / `Out of Scope` H3s.
+- Type-conditional section (`Reproduction` / `Baseline Measurement` /
+  `Behavior Contract`) present and populated for the matching type.
 - Bullet content in narrative sections; `- [ ]` format in checklist
   sections; populated `Open Questions`.
+- Inline-code paths under `Related Files / Entry Points` resolve on disk
+  (skipped when the bullet carries a `(proposed)` marker).
 - Optional `Constraints` heading shape.
 
 Out of scope (still on the human): concreteness of bullets, whether
 Out-of-Scope entries are real guardrails vs. filler, whether entry points are
-legitimate, whether Acceptance Criteria are measurable.
+*good* (the path-existence check only catches fabricated paths, not
+poorly-chosen ones), whether Acceptance Criteria are measurable, whether the
+type-conditional section's content is sufficient.
 
 For briefset mode, use `scripts/validate_briefset.py` on the parent file —
 it validates the parent structure and re-runs `validate_brief.py`'s checks
@@ -470,10 +497,15 @@ cannot see.
 - [ ] Title on line 1 starts with `[<type>]`.
 - [ ] `Current State (As-Is)` and `Desired Outcome (To-Be)` are both
       populated and distinguishable.
+- [ ] If type is `fix` / `perf` / `refactor`, the type-conditional section
+      (`Reproduction` / `Baseline Measurement` / `Behavior Contract`) is
+      present and populated — `- N/A — <reason>` if genuinely none.
 - [ ] `Out of Scope` has at least one specific entry (or an explicit
       "None — self-contained." with rationale).
 - [ ] `Acceptance Criteria` are measurable (checkable, not aspirational).
 - [ ] `Related Files / Entry Points` entries are existing repo paths,
-      verified references, or confirmed proposed paths.
+      verified references, or confirmed proposed paths. Paths under
+      inline-code that are not yet created carry a `(proposed)` marker
+      so the structural validator does not flag them as fabricated.
 - [ ] `Open Questions` uses `- None` only if the brief is genuinely
       unambiguous; otherwise populate it with real questions.

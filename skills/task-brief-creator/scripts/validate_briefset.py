@@ -48,6 +48,7 @@ from validate_brief import (  # noqa: E402
     CHECKLIST_ITEM_RE,
     Report,
     parse_sections,
+    validate_entry_paths as validate_child_entry_paths,
     validate_filename as validate_child_filename,
     validate_sections as validate_child_sections,
     validate_title as validate_child_title,
@@ -282,6 +283,7 @@ def validate_child_brief(child_path: Path, report: Report) -> None:
     title_type, _ = validate_child_title(lines[0], file_type, sub)
     h2, h3 = parse_sections(text)
     validate_child_sections(h2, h3, title_type, sub)
+    validate_child_entry_paths(h2, child_path, sub)
 
     for msg in sub.failures:
         report.fail(f"{label}: {msg}")
