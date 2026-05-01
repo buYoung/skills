@@ -6,6 +6,36 @@
 
 ## [Unreleased]
 
+## [1.1.0] - 2026-05-01
+
+### 추가
+
+- 추가했습니다: Codex와 Claude Code 설치 가이드로 시작 과정을 더 쉽게 따라갈 수 있습니다.
+- 추가했습니다: `code-review`에서 commit hash 기준 리뷰를 사용할 수 있습니다.
+- 추가했습니다: `biz-opportunity-scout`, `typst`, `system-prompt-creator`, `code-security-audit`, `veo-prompt-director` 스킬을 사용할 수 있습니다.
+- 추가했습니다: `doc-coauthoring`, `release-it`, `jetbrains-plugin-development`, `task-brief-creator` 스킬을 사용할 수 있습니다.
+- 추가했습니다: `linear-issue-creator`, `linear-issue-worker`, `linear-issue-reviewer`로 Linear 작업 흐름을 다룰 수 있습니다.
+- 추가했습니다: `task-brief-creator`에서 여러 실행 문서를 나누어 만드는 briefset 모드를 사용할 수 있습니다.
+
+### 개선
+
+- 개선했습니다: `agents-md-generator`가 monorepo 구조를 더 잘 감지하고 `AGENTS.md` 갱신 흐름을 더 명확히 안내합니다.
+- 개선했습니다: `task-brief-creator`가 작업 유형별 필수 섹션과 첫 실행 지침을 더 구체적으로 작성합니다.
+- 개선했습니다: `jetbrains-vmoptions`가 JetBrains IDE VM 옵션과 UI 가이드 관련 판단을 더 잘 지원합니다.
+- 개선했습니다: `react-vite-guide`, `typst`, `release-it`, `skill-creator` 안내를 최신 사용 방식에 맞게 다듬었습니다.
+
+### 수정
+
+- 수정했습니다: Claude Code 설치 가이드의 잘못된 안내를 바로잡았습니다.
+
+### 변경
+
+- 변경했습니다: `skill-creator`를 `skill-maker`로 정리한 뒤, 더 효과적인 Claude `skill-creator`를 쓰도록 기존 스킬을 제거했습니다.
+
+### 내부
+
+- 정리했습니다: README, `SKILL_GUIDELINES.md`, `.gitignore`, release-it 설정, changelog 생성 흐름을 정비했습니다.
+
 ## [1.0.0] - 2026-04-30
 
 ### 초기화
