@@ -10,35 +10,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Added
 
-- Added Codex and Claude Code installation guidance for setting up the skills.
-- Added `code-review` support for reviewing a specific commit hash.
-- Added `biz-opportunity-scout`, `typst-creator`, `system-prompt-creator`, `doc-coauthoring`, and `release-it` skills.
-- Added `linear-issue-creator`, `linear-issue-worker`, and `linear-issue-reviewer` for structured Linear issue workflows.
-- Added `task-brief-creator` for turning rough work notes into scoped implementation briefs.
-- Added briefset mode to `task-brief-creator` for creating multiple related work briefs.
-- Added `jetbrains-vmoptions` and `jetbrains-plugin-development` skills for JetBrains workflows.
-- Added `code-security-audit`, `ux-design-guide`, `ui-guide`, and `veo-prompt-director` skills.
+- Added `agents-md-generator` helper scripts `loc_to_limit.py`, `detect_monorepo.py`, and `parse_sections.py` for character budgets, monorepo detection, and update-mode section parsing.
 
 ### Improved
 
-- Improved `agents-md-generator` with monorepo support, update mode, and clearer execution guidance.
-- Improved `task-brief-creator` with stricter brief contracts, ambiguity checks, and type-specific sections.
-- Improved `release-it` guidance for release configuration and workflows.
-- Improved `react-vite-guide`, `typst-creator`, and private Linear skills with updated guidance.
-
-### Fixed
-
-- Fixed issues in the Claude Code installation guide.
-- Fixed generated `agents-md-generator` patch output after an earlier model error.
-
-### Removed
-
-- Removed `skill-maker` after replacing it with a more effective `skill-creator` workflow.
-- Removed outdated code review references.
-
-### Internal
-
-- Added release automation, changelog templates, GitHub Actions release flow, and `package.json` release metadata.
+- Improved `task-brief-creator` with type-conditional sections (Reproduction, Baseline Measurement, Behavior Contract) for fix, perf, and refactor briefs.
+- Improved `task-brief-creator` validation to check type-conditional section bodies and verify Entry Points paths point at real files.
+- Improved `task-brief-creator` Stage 3 codebase review to allow Serena, ast-grep, and short-lived subagents instead of inline tools only.
+- Improved `task-brief-creator` examples with a "Picked Up Cold — Coding Agent's First Actions" block and clarified that saved briefs are work instructions.
+- Improved `agents-md-generator` with a 6-step Execution Workflow and a "Single-Context Execution (No Subagents)" scope boundary.
+- Improved `agents-md-generator` monorepo detection by adding moonrepo and Buck2 markers.
+- Improved `agents-md-generator` to prefer Serena MCP symbol tools for read-only exploration, with rg, grep, and find as fallback.
+- Improved `agents-md-generator` working agreements so tests and lint guidance only appears when the user asks for it.
 
 ## [1.0.0] - 2026-04-30
 

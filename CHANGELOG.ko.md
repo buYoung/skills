@@ -10,31 +10,18 @@
 
 ### 추가
 
-- 추가했습니다: Codex와 Claude Code 설치 가이드로 시작 과정을 더 쉽게 따라갈 수 있습니다.
-- 추가했습니다: `code-review`에서 commit hash 기준 리뷰를 사용할 수 있습니다.
-- 추가했습니다: `biz-opportunity-scout`, `typst`, `system-prompt-creator`, `code-security-audit`, `veo-prompt-director` 스킬을 사용할 수 있습니다.
-- 추가했습니다: `doc-coauthoring`, `release-it`, `jetbrains-plugin-development`, `task-brief-creator` 스킬을 사용할 수 있습니다.
-- 추가했습니다: `linear-issue-creator`, `linear-issue-worker`, `linear-issue-reviewer`로 Linear 작업 흐름을 다룰 수 있습니다.
-- 추가했습니다: `task-brief-creator`에서 여러 실행 문서를 나누어 만드는 briefset 모드를 사용할 수 있습니다.
+- `agents-md-generator`에 character budget 계산용 `loc_to_limit.py`, monorepo 마커 탐지용 `detect_monorepo.py`, update 모드 섹션 파싱용 `parse_sections.py` 헬퍼 스크립트 추가
 
 ### 개선
 
-- 개선했습니다: `agents-md-generator`가 monorepo 구조를 더 잘 감지하고 `AGENTS.md` 갱신 흐름을 더 명확히 안내합니다.
-- 개선했습니다: `task-brief-creator`가 작업 유형별 필수 섹션과 첫 실행 지침을 더 구체적으로 작성합니다.
-- 개선했습니다: `jetbrains-vmoptions`가 JetBrains IDE VM 옵션과 UI 가이드 관련 판단을 더 잘 지원합니다.
-- 개선했습니다: `react-vite-guide`, `typst`, `release-it`, `skill-creator` 안내를 최신 사용 방식에 맞게 다듬었습니다.
-
-### 수정
-
-- 수정했습니다: Claude Code 설치 가이드의 잘못된 안내를 바로잡았습니다.
-
-### 변경
-
-- 변경했습니다: `skill-creator`를 `skill-maker`로 정리한 뒤, 더 효과적인 Claude `skill-creator`를 쓰도록 기존 스킬을 제거했습니다.
-
-### 내부
-
-- 정리했습니다: README, `SKILL_GUIDELINES.md`, `.gitignore`, release-it 설정, changelog 생성 흐름을 정비했습니다.
+- `task-brief-creator` fix·perf·refactor 브리프에 Reproduction, Baseline Measurement, Behavior Contract 같은 타입 조건부 섹션을 두도록 개선
+- `task-brief-creator validate_brief.py`가 타입 조건부 섹션 본문과 Entry Points 경로 실존 여부까지 검증하도록 개선
+- `task-brief-creator` Stage 3 코드베이스 리뷰를 inline 도구 강제에서 Serena·ast-grep·짧은 subagent 허용으로 개선
+- `task-brief-creator` 예제에 "Picked Up Cold — Coding Agent's First Actions" 블록을 추가하고 saved brief가 작업 지시서임을 README에 명시하도록 개선
+- `agents-md-generator` SKILL.md에 6단계 Execution Workflow와 "Single-Context Execution (No Subagents)" scope 경계를 명문화하도록 개선
+- `agents-md-generator` monorepo 감지에 moonrepo·Buck2 마커가 추가되도록 개선
+- `agents-md-generator` 읽기 전용 탐색이 Serena MCP 심볼 도구를 우선하고 rg·grep·find을 fallback으로 쓰도록 개선
+- `agents-md-generator` working agreements에서 테스트·린트 안내가 사용자 명시적 요청 시에만 노출되도록 개선
 
 ## [1.0.0] - 2026-04-30
 

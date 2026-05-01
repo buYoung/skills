@@ -8,7 +8,7 @@ You are writing a release-notes section that the people who actually use this pr
 ## Structure (content-production)
 - Output Markdown only. Do not wrap the response in code fences. Do not add any prose, greeting, or trailing summary outside the changelog body.
 - Use `###` for section headers. Use `-` bulleted lists. No nested bullets.
-- Each bullet is one self-contained sentence, verb-first ("Added X", "Improved Y", "Fixed Z"), under ~140 characters.
+- Bullet style depends on `OUTPUT_LANGUAGE` (see below). Either way, each bullet is one change, under ~140 characters.
 - Combine related work into one bullet when it reads better as a single change. Do not split one change into multiple bullets.
 - Do not include the version header line (e.g. `## [1.2.0] - 2026-04-30`). The script adds it.
 
@@ -23,7 +23,7 @@ You are writing a release-notes section that the people who actually use this pr
 - Preserve identifiers exactly as they appear: package names, file paths, function names, flag names, env vars, version strings, issue numbers (`#123`), PR numbers (`#456`), commit shas, error messages.
 - Sentence case for headers and bullets. ("Added new export option", not "Added New Export Option".)
 - One term per concept. Do not switch between synonyms across bullets.
-- No trailing period in section headers. Period at the end of full-sentence bullets.
+- No trailing period in section headers.
 - No emoji. No exclamation marks.
 
 ## Hard rules
@@ -37,7 +37,14 @@ You are writing a release-notes section that the people who actually use this pr
 `OUTPUT_LANGUAGE=${LANGUAGE}`
 
 - If `en`: write in English.
-- If `ko`: write in natural Korean (한국어). Keep these in their original form, untranslated: package names, file paths, function names, flag names, env var names, command names, version strings (`v1.2.0`), issue/PR numbers (`#123`), commit shas. Use friendly developer-release-notes tone — not overly formal, not translated-sounding.
+  - Bullets are verb-first sentences ("Added X", "Improved Y", "Fixed Z"). End each bullet with a period.
+- If `ko`: write in natural Korean (한국어). Keep these in their original form, untranslated: package names, file paths, function names, flag names, env var names, command names, version strings (`v1.2.0`), issue/PR numbers (`#123`), commit shas. Use a terse developer-release-notes tone — not translated-sounding, not blog-style.
+  - Bullets are **noun-final**, ending in a bare verb stem that matches the section. No `~했습니다`, `~합니다`, `~됩니다`, `~었어요`, `~예요`. No trailing period.
+  - Section → ending verb stem: `### 추가` → `… 추가`, `### 개선` → `… 개선`, `### 수정` → `… 수정`, `### 변경` → `… 변경`, `### 제거` → `… 제거`, `### 지원 중단` → `… 지원 중단`, `### 보안` → `… 보안 강화` 또는 `… 보안 수정`, `### 내부` → `… 정리` / `… 도입` / `… 갱신` 등 적절한 명사형.
+  - Lead with the affected target (skill, file, area), then describe what changed, ending with the section verb stem. Examples (do not copy content):
+    - `task-brief-creator validate_brief.py에 type-conditional 섹션 본문 검증 추가`
+    - `agents-md-generator 읽기 전용 탐색을 Serena MCP 우선으로 정리, rg·grep·find은 fallback으로 강등`
+    - `Claude Code 설치 가이드 잘못된 경로 수정`
 - Section header names also follow the language: in Korean use `### 추가`, `### 개선`, `### 수정`, `### 변경`, `### 제거`, `### 지원 중단`, `### 보안`, `### 내부`.
 
 ## Inputs
