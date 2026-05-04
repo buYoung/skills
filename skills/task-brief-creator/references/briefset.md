@@ -167,7 +167,7 @@ Implementation lives in the children.
   integration-level checks no individual child can verify alone.
 - **Open Questions** — set-level questions only. Per-child questions
   live in the child's `Open Questions`, but Stage 4 must still surface
-  them in the single batched interview round.
+  them during the per-child residuals step of the interview walk.
 
 If a section legitimately has nothing, write `- None` with a one-line
 reason rather than leaving the section empty.
@@ -222,26 +222,50 @@ them or drop them just because they are child-specific. Each child's
 children point at the same primary entry point, they probably collapse
 into one.
 
-### Stage 4 — Active Interview (one batched round)
+### Stage 4 — Active Interview (branch walk)
 
-Ask once, not per child. The batch should cover:
+Stage 4 in briefset mode follows the same branch-walking interview
+described in `stage-4-interview.md`. The tree is rooted at decomposition
+validity — that is the highest-leverage parent decision in a
+briefset, and locking it first prunes most downstream branches. Walk
+in this order:
 
-- Is the proposed decomposition correct? (list children with one-line
-  purposes)
-- Any missing children? Any children that should merge?
-- Is the execution order correct?
-- Are the proposed parallel waves correct?
-- Are there conflict hotspots beyond what's listed?
-- Are the shared constraints and shared exclusions correct?
-- Which codebase-review uncertainties should remain open? Present them
-  grouped by parent / child and ask whether each should be answered now,
-  kept in `Open Questions`, or delegated to the downstream agent.
-- For each child whose Acceptance Criteria are not yet concrete, what
-  should fill them?
+1. **Decomposition** — confirm or revise the child list, each entry
+   carrying a recommended *exists because* clause. **Walk one child
+   at a time when the decomposition boundary is in play** — i.e., a
+   plausible alternative would collapse two children, split one
+   into two, or add/drop a child. **A single batched confirmation
+   (table or bulleted list with one recommendation block) is allowed
+   only when the input maps 1:1 to the proposed children and the
+   per-child decisions are independent** (no child's identity
+   depends on another's). If a child collapses or a missing child
+   surfaces, re-prune the rest of the tree before continuing.
+2. **Per-child work types** — confirm the provisional type per
+   surviving child. Ask only when the type changes downstream
+   behavior (e.g., `refactor` vs `feat`); otherwise carry the
+   provisional type forward. The same independence rule from step 1
+   applies: when per-child types are independent, a single table
+   confirmation with one `(Recommended)` block is allowed; when one
+   child's type would shift another's execution order or scope, walk
+   them separately.
+3. **Execution order and parallelization** — wave-by-wave
+   confirmation, with codebase-precedence applied to each "can these
+   two run in parallel?" question (probe shared imports / shared
+   files before asking).
+4. **Conflict hotspots** — present each candidate hotspot as a
+   recommended yes/no with the supporting path; do not enumerate them
+   speculatively.
+5. **Per-child residuals** — only after the topology is locked, walk
+   each child's `Acceptance Criteria`, `Out of Scope`, and unresolved
+   `Open Questions` in turn. Codebase-review uncertainties tagged in
+   Stage 3 are surfaced here, grouped by parent or child, and routed
+   to *answer now*, *keep in Open Questions*, or *delegate to
+   downstream agent*.
 
-Use `AskUserQuestion` if available; otherwise present a numbered list
-in chat. Do not drip questions one by one across multiple rounds — the
-batch exists so the user can revise the decomposition as a whole.
+Briefset Stage 4 still respects the carry-over codebase budget. A
+parent-level branch probe (e.g., "does `i18n/messages.ko.json` import
+from any other child's entry point?") counts against the same budget
+as Stage 3.
 
 ### Stage 5 — Save + Validate
 
@@ -252,9 +276,9 @@ Save in this order:
 
    When writing child briefs, populate `Open Questions` from the Stage 3
    uncertainty register and Stage 4 answers. Do not add new unreviewed
-   questions after the batch just to fill the section. If Stage 4
-   resolves every uncertainty for a child, write `- None` with
-   confidence that the child is genuinely unambiguous.
+   questions after the Stage 4 walk closes just to fill the section.
+   If Stage 4 resolves every uncertainty for a child, write `- None`
+   with confidence that the child is genuinely unambiguous.
 
 3. Write the parent brief.
 4. Resolve filename collisions with `-v2`, `-v3`, … on the parent and

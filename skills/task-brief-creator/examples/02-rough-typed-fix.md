@@ -38,19 +38,133 @@ Inline `rg` / `Read`, ~5 reads / 6 greps:
 
 ---
 
-## Interview Exchange (Stage 4)
+## Stage 4 Walk (one question per round)
 
-Skill batched four questions:
+The skill walks the decision tree. Stage 3 already pinned the
+suspected interaction site; the walk's job is to lock the
+reproduction-first discipline that `fix`-type briefs demand.
 
-1. **Type confirmation** — proposed `fix`. User confirmed.
-2. **Reproduction status** — asked whether the user has a steady repro.
-   → User has it: iOS Safari 17, password `foo@bar`, form returns
-   "invalid credentials" silently. Desktop Safari and Chrome work fine.
-3. **Out of Scope** — proposed: do not refactor the validation chain,
-   do not change the API contract. → User accepted.
-4. **Acceptance Criteria** — drafted around reproduction-first: a
-   failing test that captures the bug must exist before the patch, and
-   pass after.
+Tree:
+
+```
+Work Type (provisional: fix)
+└─ Reproduction (mandatory for fix)
+   └─ In Scope / Out of Scope boundary
+      ├─ Validation chain refactor (touch or freeze?)
+      └─ /api/login contract (touch or freeze?)
+Acceptance Criteria (reproduction-first ordering)
+Side Effect Checkpoints
+Open Questions (PR #211 motivation — defer to reviewer)
+```
+
+### Round 1 — Work Type confirmation
+
+> One-line input names a defect: login rejecting valid credentials on
+> iOS Safari. That's `fix`. Confirm?
+>
+> 1. **`fix` (Recommended)** — defect with a defined repro.
+> 2. `refactor` — restructure validation chain instead.
+> 3. `chore` — small cleanup, no behavior claim.
+>
+> *I'd go with 1; "breaks" is defect language, not a planned restructure.*
+
+User: **1**.
+
+### Round 2 — Reproduction (mandatory for `fix`)
+
+The `fix` profile mandates a populated `Reproduction` section. No
+codebase probe can answer this — it's environment knowledge.
+
+> Do you have a steady repro? `fix` briefs need one — without it the
+> downstream agent can ship a "fix" that doesn't actually cover the
+> failure mode. If you have one, I'll pin it; if not, the brief blocks
+> here.
+>
+> 1. **Yes, share repro steps (Recommended)** — pin in `Reproduction`
+> 2. No, only the description — block the brief until repro is captured
+> 3. Reach for QA / a tester before continuing
+
+User: **1** — iOS Safari 17, password `foo@bar` against the QA test
+account `qa+iossafari@example.com`, "invalid credentials" toast every
+time. Desktop Safari and Chrome are fine on the same backend. 5/5
+attempts on a fresh session.
+
+### Round 3 — Out of Scope boundary
+
+Stage 3 surfaced two adjacent risks: refactoring the validation chain
+and changing the `/api/login` contract. Both are tempting from the
+fix site but would balloon the diff.
+
+> Two adjacent surfaces I'd lock down in Out of Scope:
+>
+> 1. The validation chain itself — fix only the offending step.
+> 2. The `/api/login` request/response contract.
+>
+> Without these guardrails a downstream agent may "tidy up while
+> they're in there" and the diff doubles in size for no defect-fix
+> reason.
+>
+> 1. **Lock both (Recommended)**
+> 2. Lock validation chain only — let API contract be touched if needed
+> 3. Lock API contract only — let validation chain be restructured
+> 4. Lock neither
+
+User: **1**.
+
+### Round 4 — Acceptance Criteria draft (reproduction-first)
+
+> Acceptance Criteria with reproduction-first ordering — first
+> criterion is a red Cypress case, then the fix flips it green. That
+> way the bug can never silently return.
+>
+> - [ ] A new Cypress case in `cypress/e2e/login.cy.ts` reproduces the
+>       failure on the unfixed code (commit it red first, then fix).
+> - [ ] The new case passes after the fix on the same iOS Safari target.
+> - [ ] Manual verification on iOS Safari 17 with password `foo@bar`
+>       results in successful login.
+> - [ ] Full Cypress suite stays green.
+>
+> The "commit it red first" framing is the load-bearing one — it makes
+> the regression-impossibility check structural, not a polite request.
+>
+> 1. **All four as drafted (Recommended)**
+> 2. Drop the "commit red first" requirement — too prescriptive
+> 3. Different framing — propose a replacement
+
+User: **1**.
+
+### Round 5 — Side Effect Checkpoints
+
+> Side Effect Checkpoints — passwords with other URL-significant
+> characters (`%`, `+`, `&`) sit at the same risk profile as `@`
+> because `decodeURIComponent` is the suspected interaction site.
+>
+> - [ ] Existing `valid login` Cypress case still passes (no
+>       regression on the happy path).
+> - [ ] Passwords containing other URL-significant characters
+>       (`%`, `+`, `&`) still validate correctly on all browsers.
+> - [ ] The original motivation for the `decodeURIComponent` step
+>       (per PR #211) remains addressed, or is explicitly noted as
+>       obsolete.
+>
+> Add or change?
+
+User: 👍 looks right.
+
+### Round 6 — Open Question carry-forward
+
+> The "remove vs. patch" call on PR #211 is a real one I don't have
+> authority to make from the brief alone. I'd carry it as an Open
+> Question for the PR reviewer rather than push for a decision here.
+> Sound right?
+
+User: 👍 yes, defer.
+
+### Termination
+
+All mandatory nodes decided, `Reproduction` section pinned (the
+`fix`-type load-bearing input), user answers consistent, one residual
+question explicitly carried forward. Stage 5 follows.
 
 ---
 

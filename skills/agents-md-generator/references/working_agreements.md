@@ -11,9 +11,9 @@ Defines the standard working agreements to be included in generated `AGENTS.md` 
 ## Task Execution Rules
 
 - **Tests & Lint**: Do not introduce new tests, lint configurations, or formatter setups on your own, even when they seem beneficial. Ask the user before adding any of them; only proceed when the user has explicitly requested it
-- **Context Building**: Before editing code, search for other usages of the same function/feature/module; review related flows, shared abstractions, recurring patterns
-- **Simplicity**: Prefer simple solutions matching user's request; do not add extra features or abstraction unless requested
-- **Clarification**: If requirements are ambiguous, ask the user instead of guessing
+- **Context Building**: Before editing code, search for other usages of the same function/feature/module; review related flows, shared abstractions, recurring patterns, and likely impact
+- **Simplicity**: Solve the user's underlying request with the smallest focused change that fits the broader context; use discovered side effects to guide scope and implementation, and report relevant impact to the user
+- **Clarification**: When user decisions are needed for scope, behavior, or tradeoffs, ask actively instead of guessing
 
 ## Code Change Rules
 
@@ -42,12 +42,11 @@ Due to the **dynamic character limit** (based on LOC), working agreements in gen
 
 - Respond in user's preferred language; if unspecified, infer from codebase (keep tech terms in English, never translate code blocks)
 - Ask the user before introducing tests, lint, or formatter setups; add them only on explicit request
-- Build context by reviewing related usages and patterns before editing
-- Prefer simple solutions; avoid unnecessary abstraction
-- Ask for clarification when requirements are ambiguous
+- Build context by reviewing related usages, flows, patterns, and likely impact before editing
+- Solve the user's underlying request with the smallest focused change; use side-effect findings to guide scope/implementation and report relevant impact
+- Ask actively when user decisions are needed for scope, behavior, or tradeoffs
 - Minimal changes; preserve public APIs
 - Run type-check after code changes (include the discovered command, e.g., `tsc --noEmit`, `cargo check`, `go vet`, `javac`, `gradle compileKotlin`); omit this bullet if no type checker is configured
 - New functions: single-purpose, colocated with related code
 - External dependencies: only when necessary, explain why
 ```
-

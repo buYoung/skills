@@ -26,8 +26,14 @@ own repository.
 | [02-rough-typed-fix.md](02-rough-typed-fix.md) | One-line typed task | `fix` | Short-input case; how `fix`-type behavior profile shapes Acceptance Criteria and Side Effect Checkpoints (reproduce-first). |
 | [03-halt-ambiguous.md](03-halt-ambiguous.md) | Vague one-liner | — | Halt case; what the four-anchor check rejects and what additional input would flip it to CONTINUE. |
 | [04-briefset-checkout-i18n.md](04-briefset-checkout-i18n.md) | Tech-lead Korean note | briefset (`refactor`+`feat`+`fix`) | Briefset mode; how mixed types, ordered dependencies, and a shared i18n conflict hotspot drive the parent + 3 children decomposition. |
+| [05-stage-4-walkthrough.md](05-stage-4-walkthrough.md) | Korean refactor note | `refactor` | Default Stage 4 interview on a multi-node tree; how the decision tree is walked one question at a time, with codebase-precedence probes pruning two nodes before they reach the user. |
 
-The brief outputs in `01` and `02` pass `scripts/validate_brief.py`. The
-parent + children in `04` pass `scripts/validate_briefset.py` (and each
-child also passes `validate_brief.py`). Treat all of them as the
-structural reference shape for their respective modes.
+Every example walks Stage 4 the same way — one question per round with
+a recommended answer, codebase-resolvable nodes probed before the user
+is asked. Use `01` / `02` / `04` for type-specific shape (`feat` /
+`fix` / briefset), and `05` for a deeper multi-node walk. See
+`references/stage-4-interview.md` for the full walk policy.
+
+The brief outputs in `01`, `02`, and `05` pass `scripts/validate_brief.py`.
+The parent + children in `04` pass `scripts/validate_briefset.py` (and
+each child also passes `validate_brief.py`).

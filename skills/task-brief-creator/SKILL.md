@@ -2,13 +2,11 @@
 name: task-brief-creator
 description: >
   Generate a structured work-brief Markdown at `docs/briefs/` from planning
-  notes or a rough task description. Eight required sections plus optional
-  task-specific constraints, keyed to Conventional Commits types so downstream
-  coding agents switch behavior (refactor → preserve, fix → reproduce first,
-  perf → measure first). Briefset mode produces a parent execution-management
-  document plus N child briefs when the input describes multiple execution
-  contexts (mixed types, ordered dependencies, shared conflict surfaces).
-  Halts on vague input. Manual trigger only.
+  notes or a rough task description. Eight required sections keyed to
+  Conventional Commits types so downstream coding agents switch behavior
+  (refactor → preserve, fix → reproduce first, perf → measure first).
+  Briefset mode emits a parent execution-management document plus N child
+  briefs when the input describes multiple execution contexts.
 ---
 
 # Task Brief Creator
@@ -35,7 +33,7 @@ of how polished it reads.
 
 ## Modes
 
-This skill operates in one of two modes:
+This skill operates in one of two **output modes**:
 
 - **Single-brief mode** (default) — emits one brief per invocation. The
   workflow below covers this case end to end.
@@ -47,10 +45,25 @@ This skill operates in one of two modes:
   criteria in `references/briefset.md`; long input, many files, or many
   related edit points alone never trigger briefset mode.
 
-Mode selection happens at Stage 1 alongside the ambiguity gate. In
-briefset mode, follow the workflow below with the per-stage adaptations
-in `references/briefset.md` (parent template, naming, batched
-decomposition question, dual-validator save).
+Output-mode selection happens at Stage 1 alongside the ambiguity gate.
+In briefset mode, follow the workflow below with the per-stage
+adaptations in `references/briefset.md` (parent template, naming,
+decomposition walk, dual-validator save).
+
+**Stage 4 always runs as a branch-walking interview** — one question
+at a time on dependent decision nodes, walking the residual decision
+tree, with a recommended answer attached to every question.
+Codebase-resolvable nodes are probed instead of asked, so the user
+is asked only what the codebase cannot answer. Sequential walking is
+mandatory whenever one decision's answer reshapes another's
+relevance; verification check-ins on completed list-shaped drafts
+and briefset's independence-confirmed per-child confirmations are
+the only carve-outs (see `references/stage-4-interview.md` and
+`references/briefset.md`). The interview style is adapted from the
+standalone `grill-me` skill — here it is the default Stage 4
+behavior, not a separate mode. See `references/stage-4-interview.md`
+for the full tree-construction, codebase-precedence, and termination
+rules.
 
 ---
 
@@ -63,7 +76,7 @@ decomposition question, dual-validator save).
   - **Rough task notes** typed into chat (one or two lines).
   - **Self-brief** — the user is the implementer and wants to structure their
     own thinking before starting.
-  - **Tech-lead handoff** — a lead drafts the brief to hand off to a teammate
+  - **Tech-lead handoff** — a lead drafts the brief to hand off to a teammate/cop
     or downstream agent.
   - **Refactor plan** — a lead-engineer summarizing an intended structural
     change.
@@ -222,10 +235,14 @@ Determine the Conventional Commits type. Consult
   "refactor" but the work changes behavior), pause and confirm with one
   question before codebase review.
 - If the type is implicit but high-confidence, assign a provisional type and
-  confirm it in the Stage 4 question batch. Do not add a separate early
-  round-trip just for type confirmation.
+  confirm it as the first node of the Stage 4 walk. Do not add a separate
+  early round-trip just for type confirmation.
 - If the implicit type is low-confidence and changes the likely execution
   approach, ask one short question before proceeding.
+
+See `references/work-types.md` for the full type-confirmation routing
+table (explicit-agree / explicit-conflict / high-confidence implicit /
+low-confidence implicit).
 
 ### Stage 3 — Codebase Review
 
@@ -267,10 +284,14 @@ Strategy:
 - Make architectural claims the code does not support. If uncertain,
   flag it in `Open Questions` instead.
 
-### Stage 4 — Active Interview
+### Stage 4 — Active Interview (branch-walking)
 
-Fill remaining gaps by asking the user. Batch questions — never drip them
-one by one.
+Fill remaining gaps by walking a decision tree built from Stage 3
+findings and residual input gaps. The walk is the **default and only**
+Stage 4 behavior; there is no separate batched mode toggle. Even
+shallow trees are walked sequentially — two residual nodes become two
+sequential rounds, one node becomes one round. The walk never collapses
+into a batched prompt.
 
 Required gaps to close before drafting:
 
@@ -291,9 +312,17 @@ Required gaps to close before drafting:
 - **Open Questions** — explicitly surface anything the codebase review
   raised that the user should answer or delegate to the downstream agent.
 
-Batch 3–6 questions per round. Prefer concrete yes/no or pick-from-list
-framings over open-ended prompts. Use the `AskUserQuestion` tool where
-available for structured multi-question rounds.
+**Branch walk.** Build the decision tree, walk top-down, ask **one
+question at a time** with a recommended answer marked `(Recommended)`.
+Before each user question, run the codebase-precedence check: if a
+narrow probe inside the carry-over budget can answer the node, run the
+probe and either skip the question or downgrade it to a one-line
+confirmation. After each answer, re-prune the tree — downstream branches
+that the answer makes irrelevant disappear. The walk applies uniformly
+regardless of how many residual nodes remain: 1 node = 1 round, 2 nodes =
+2 sequential rounds, never bundled into one prompt. Full tree-construction,
+codebase-precedence, budget, and termination rules live in
+`references/stage-4-interview.md`.
 
 ### Stage 5 — Save + Validate
 
@@ -483,6 +512,12 @@ validator checks and what stays on the human reviewer.
   tasks into a single brief unless the user explicitly chooses
   single-brief after the recommendation, and do not nest briefsets (a
   child cannot become a parent).
+- **Branch walk does not bypass the ambiguity gate.** Halt-eligible
+  inputs still halt at Stage 1. Do not try to reconstruct missing
+  PROBLEM / GOAL / SCOPE / TARGET through 30 single questions in the
+  walk — the gate exists precisely to prevent that failure mode. See
+  `references/stage-4-interview.md` for the walk rules and termination
+  conditions.
 
 ---
 

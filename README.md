@@ -35,7 +35,7 @@ Only skills that have been personally tested and approved by the user are listed
 | [jetbrains-vmoptions](skills/jetbrains-vmoptions/) | Generates JetBrains IDE VM options based on IDE version. Supports version-specific GC selection (Generational ZGC for 243+, G1GC for 222-242) and memory configuration. |
 | [system-prompt-creator](skills/system-prompt-creator/) | Analyzes user requirements to generate production-ready system prompts. It determines whether a single or multi-prompt architecture is needed and requests missing information if requirements are insufficient. |
 | [typst-creator](skills/typst-creator/) | Generate Typst source code for documents, reports, papers, and presentations, covering markup, math, scripting, and layout syntax. |
-| [task-brief-creator](skills/task-brief-creator/) | Generates structured work-brief Markdown at `docs/briefs/` from planning notes or rough task descriptions. Eight required sections plus optional task-specific constraints are keyed to Conventional Commits types, with briefset mode for coordinated multi-brief execution. Halts on vague input. Manual trigger only. |
+| [task-brief-creator](skills/task-brief-creator/) | Generates structured work-brief Markdown at `docs/briefs/` from planning notes or rough task descriptions. Eight required sections plus optional task-specific constraints are keyed to Conventional Commits types. Stage 4 runs as a branch-walking decision-tree interview by default — one question at a time with a recommended answer, codebase probes preferred over user questions, uniformly sequential regardless of tree size. Briefset mode supports coordinated multi-brief execution. Halts on vague input. Manual trigger only. |
 | [code-security-audit](skills/code-security-audit/) | Performs OWASP-based code security audits on any codebase. Analyzes source code against ASVS 5.0.0 verification requirements, API Security Top 10 2023 risk patterns, OWASP CheatSheet secure coding practices, and WSTG testing methodologies. |
 | [release-it](skills/release-it/) | release-it configuration, setup, and plugin development. Analyzes project context (package.json, git remote, existing CI) to propose tailored release configs. Covers hooks, CLI workflows, pre-release, npm publishing, GitHub/GitLab releases, official plugins, and custom plugin development. |
 
@@ -147,6 +147,7 @@ Claude will interactively collect the necessary information (purpose, scope, dom
 
 - [system-prompt-creator](skills/system-prompt-creator/): The [Data Format Selection Guide](skills/system-prompt-creator/references/data_format_selection.md) was developed referencing the analysis table from [Improving Agents](https://www.improvingagents.com).
 - [ux-design-guide](skills/ux-design-guide/): UX guidelines were developed referencing the 99 UX rules from [ui-ux-pro-max-skill](https://github.com/nextlevelbuilder/ui-ux-pro-max-skill).
+- [task-brief-creator](skills/task-brief-creator/): The branch-walking decision-tree interview pattern incorporates the [grill-me](https://github.com/mattpocock/skills/tree/main/skills/grill-me) skill from [mattpocock/skills](https://github.com/mattpocock/skills).
 
 ## 🤝 Contributing
 
