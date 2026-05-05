@@ -6,6 +6,22 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [1.2.0] - 2026-05-05
+
+### Added
+
+- Added the `grill-me` skill for `task-brief-creator`.
+- Added the `task-brief-creator-caveman` skill.
+
+### Removed
+
+- Removed an unusable skill from the catalog.
+
+### Internal
+
+- Updated release automation to include the Claude plugin version.
+- Cleaned up miscellaneous project maintenance.
+
 ## [1.1.0] - 2026-05-01
 
 ### Added

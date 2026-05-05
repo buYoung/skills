@@ -6,6 +6,22 @@
 
 ## [Unreleased]
 
+## [1.2.0] - 2026-05-05
+
+### 추가
+
+- `task-brief-creator`용 `grill-me` skill 추가
+- `task-brief-creator-caveman`용 caveman skill 추가
+
+### 제거
+
+- 사용할 수 없는 skill 제거
+
+### 내부
+
+- `release-it`에서 `claude plugin` 버전도 함께 갱신하도록 정리
+- 기타 관리 항목 정리
+
 ## [1.1.0] - 2026-05-01
 
 ### 추가
