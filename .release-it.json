@@ -1,7 +1,10 @@
 {
   "$schema": "https://unpkg.com/release-it@20/schema/release-it.json",
   "hooks": {
-    "after:bump": "node scripts/release/write-changelog.js ${latestTag} ${version}"
+    "after:bump": [
+      "node scripts/release/bump-marketplace.js ${version}",
+      "node scripts/release/write-changelog.js ${latestTag} ${version}"
+    ]
   },
   "git": {
     "commitMessage": "chore: release v${version}",
