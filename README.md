@@ -16,13 +16,13 @@ Some skills require external tools to be installed:
 | code-review | None |
 | doc-coauthoring | None |
 | typst-creator | None |
-| ui-guide | None |
 | code-security-audit | None |
 | ux-design-guide | None |
 | system-prompt-creator | None |
 | veo-prompt-director | None |
 | release-it | None |
 | task-brief-creator | None |
+| task-brief-creator-caveman | None |
 
 ## 🚀 Available Skills
 
@@ -49,9 +49,9 @@ These skills are currently under evaluation and will be promoted to **Available 
 | [code-review](skills/code-review/) | Performs production-ready code reviews on git changes. Supports commit/range/file-scoped analysis, impact assessment, breaking-change detection, confidence-aware finding classification, and risk-weighted verdict generation. |
 | [doc-coauthoring](skills/doc-coauthoring/) | Guide users through a structured 3-stage workflow for co-authoring documentation through Context Gathering, Refinement & Structure, and Reader Testing. |
 | [react-vite-guide](skills/react-vite-guide/) | React 19 + Vite SPA development guidelines. Composition patterns, performance optimization, and web interface best practices for client-side React applications. |
-| [ui-guide](skills/ui-guide/) | Generate, update, and maintain UI style guide documents from actual codebase analysis. Scans project files to extract real color palettes, typography scales, spacing systems, component patterns, and layout approaches. |
 | [veo-prompt-director](skills/veo-prompt-director/) | Generates structured Google Veo 3.1 video prompts by collecting user input for subject, action, style, cinematography, and audio. Guides users through the Universal Prompt Formula to produce camera-ready prompts. |
 | [ux-design-guide](skills/ux-design-guide/) | Reviews existing UI for UX guideline violations and generates implementation guidance based on 99+ rules across Navigation, Layout, Accessibility, Forms, Performance, Typography, and more. Supports Web, Mobile, and Desktop GUI platforms. |
+| [task-brief-creator-caveman](skills/task-brief-creator-caveman/) | Caveman-output variant of `task-brief-creator`. Same six-stage workflow, halt rules, briefset support, and validators — saved brief body is written in caveman full mode (~75% prose compression) for downstream coding-agent consumption while chat / interview / status surfaces stay in normal prose. `## Open Questions` stays in normal prose so questions remain unambiguous for the human reviewer or downstream agent. |
 
 ## 🔒 Private Skills
 
@@ -146,8 +146,8 @@ Claude will interactively collect the necessary information (purpose, scope, dom
 ## 📚 References
 
 - [system-prompt-creator](skills/system-prompt-creator/): The [Data Format Selection Guide](skills/system-prompt-creator/references/data_format_selection.md) was developed referencing the analysis table from [Improving Agents](https://www.improvingagents.com).
-- [ux-design-guide](skills/ux-design-guide/): UX guidelines were developed referencing the 99 UX rules from [ui-ux-pro-max-skill](https://github.com/nextlevelbuilder/ui-ux-pro-max-skill).
 - [task-brief-creator](skills/task-brief-creator/): The branch-walking decision-tree interview pattern incorporates the [grill-me](https://github.com/mattpocock/skills/tree/main/skills/grill-me) skill from [mattpocock/skills](https://github.com/mattpocock/skills).
+- [task-brief-creator-caveman](skills/task-brief-creator-caveman/): The caveman full-mode prose-compression rules (article/filler removal, fragment-friendly patterns, Auto-Clarity carve-outs) were adapted from the [caveman](https://github.com/juliusbrussee/caveman) skill by [juliusbrussee](https://github.com/juliusbrussee).
 
 ## 🤝 Contributing
 

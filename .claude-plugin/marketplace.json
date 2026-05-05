@@ -19,7 +19,8 @@
 				"./skills/jetbrains-vmoptions",
 				"./skills/system-prompt-creator",
 				"./skills/typst-creator",
-				"./skills/task-brief-creator"
+				"./skills/task-brief-creator",
+				"./skills/task-brief-creator-caveman"
 			]
 		},
 		{
