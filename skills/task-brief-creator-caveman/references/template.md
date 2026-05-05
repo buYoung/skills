@@ -383,8 +383,8 @@ feat
 - [ ] Release build: hotkey registration complete ≤ 100ms of app launch.
 
 ## Open Questions
-- 5 default key combo finalized by product, or propose draft?
-- Linux unsupported: hide Settings section, or show disabled?
+- Are the 5 default key combos finalized by product, or should the implementer propose a draft?
+- Linux is unsupported — should the Settings section be hidden, or rendered disabled with an explanation?
 ```
 
 **Note:** the title line `# [feat] Introduce global hotkey system`

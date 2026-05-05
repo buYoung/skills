@@ -59,9 +59,9 @@ mandatory whenever one decision's answer reshapes another's
 relevance; verification check-ins on completed list-shaped drafts
 and briefset's independence-confirmed per-child confirmations are
 the only carve-outs (see `references/stage-4-interview.md` and
-`references/briefset.md`). The interview style is adapted from the
-standalone `grill-me` skill — here it is the default Stage 4
-behavior, not a separate mode. See `references/stage-4-interview.md`
+`references/briefset.md`). The branch-walking interview is the
+default Stage 4 behavior, not a separate mode. See
+`references/stage-4-interview.md`
 for the full tree-construction, codebase-precedence, and termination
 rules.
 

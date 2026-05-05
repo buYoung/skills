@@ -1,6 +1,11 @@
 MIT License
 
 Copyright (c) 2026 BuYoungLee
+Portions adapted from the `grill-me` skill in mattpocock/skills:
+  Copyright (c) 2026 Matt Pocock
+  https://github.com/mattpocock/skills
+
+See THIRD_PARTY_NOTICES.md in this directory for upstream license texts.
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

@@ -155,4 +155,8 @@ This project is open source. Bug reports, feature suggestions, and PRs are alway
 
 ## 📝 License
 
-MIT License
+MIT License — see [`LICENSE`](./LICENSE).
+
+This repository incorporates material from third-party MIT-licensed projects.
+See [`THIRD_PARTY_NOTICES.md`](./THIRD_PARTY_NOTICES.md) for upstream
+attributions and license texts.

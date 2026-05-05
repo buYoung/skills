@@ -1,14 +1,26 @@
+# Third-Party Notices — task-brief-creator
+
+This skill incorporates material from the open-source project listed below.
+The original copyright notice and license text are reproduced here in
+compliance with the upstream license terms.
+
+---
+
+## grill-me (from `mattpocock/skills`)
+
+- **Upstream project:** [`mattpocock/skills`](https://github.com/mattpocock/skills)
+- **Specific component:** [`skills/grill-me`](https://github.com/mattpocock/skills/tree/main/skills/grill-me)
+- **Author:** Matt Pocock
+- **License:** MIT
+- **Adapted in:** the branch-walking decision-tree interview pattern in
+  Stage 4 (`references/stage-4-interview.md`).
+
+### License text
+
+```
 MIT License
 
-Copyright (c) 2026 BuYoungLee
-Portions adapted from the `grill-me` skill in mattpocock/skills:
-  Copyright (c) 2026 Matt Pocock
-  https://github.com/mattpocock/skills
-Portions adapted from the `caveman` skill by juliusbrussee:
-  Copyright (c) 2026 Julius Brussee
-  https://github.com/juliusbrussee/caveman
-
-See THIRD_PARTY_NOTICES.md in this directory for upstream license texts.
+Copyright (c) 2026 Matt Pocock
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -27,3 +39,4 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+```
