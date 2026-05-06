@@ -12,14 +12,13 @@ Defines the standard working agreements to be included in generated `AGENTS.md` 
 
 - **Tests & Lint**: Do not introduce new tests, lint configurations, or formatter setups on your own, even when they seem beneficial. Ask the user before adding any of them; only proceed when the user has explicitly requested it
 - **Context Building**: Before editing code, search for other usages of the same function/feature/module; review related flows, shared abstractions, recurring patterns, and likely impact
-- **Simplicity**: Solve the user's underlying request with the smallest focused change that fits the broader context; use discovered side effects to guide scope and implementation, and report relevant impact to the user
+- **Root Cause Focus**: Solve the underlying cause, not only the visible symptom. Inspect neighboring flows, shared abstractions, and affected callers; choose the narrowest complete change that resolves the root issue in the broader context
 - **Clarification**: When user decisions are needed for scope, behavior, or tradeoffs, ask actively instead of guessing
 
 ## Code Change Rules
 
-- **Minimal Changes**: Prefer minimal, focused changes; avoid large refactors unless requested
+- **Impact Reporting**: Check likely side effects across related flows, behavior boundaries, and public APIs. Report relevant impact, behavior changes, and API compatibility risks to the user
 - **Type Check After Changes**: During codebase analysis, identify the project's type-check command from build configs, scripts, or tooling (e.g., `tsc --noEmit` from `tsconfig.json`, `mypy`/`pyright` from `pyproject.toml`, `cargo check` from `Cargo.toml`, `go vet`/`go build` from `go.mod`, `javac` from `pom.xml` or `build.gradle`, `gradle compileKotlin` from `build.gradle.kts`). Include the discovered command in this section. After code modifications, run that command to verify type safety before considering the task complete. If the project's stack has no type checker available, omit this bullet from the generated AGENTS.md rather than inventing a placeholder
-- **Public APIs**: Preserve public APIs and behavior unless user asks to change them; call out any behavior changes
 - **New Code**: New functions/modules should be small, single-purpose, and colocated near related code
 - **Dependencies**: Avoid new external dependencies unless necessary; if added, briefly explain why
 
@@ -43,9 +42,9 @@ Due to the **dynamic character limit** (based on LOC), working agreements in gen
 - Respond in user's preferred language; if unspecified, infer from codebase (keep tech terms in English, never translate code blocks)
 - Ask the user before introducing tests, lint, or formatter setups; add them only on explicit request
 - Build context by reviewing related usages, flows, patterns, and likely impact before editing
-- Solve the user's underlying request with the smallest focused change; use side-effect findings to guide scope/implementation and report relevant impact
+- Fix the underlying cause, not only the visible symptom; inspect affected flows and apply the narrowest complete change that resolves the root issue
+- Check side effects across callers, shared abstractions, and behavior/API boundaries; report relevant impact and compatibility risks
 - Ask actively when user decisions are needed for scope, behavior, or tradeoffs
-- Minimal changes; preserve public APIs
 - Run type-check after code changes (include the discovered command, e.g., `tsc --noEmit`, `cargo check`, `go vet`, `javac`, `gradle compileKotlin`); omit this bullet if no type checker is configured
 - New functions: single-purpose, colocated with related code
 - External dependencies: only when necessary, explain why
