@@ -11,13 +11,13 @@ Some skills require external tools to be installed:
 | Skill | Required Tools |
 |-------|----------------|
 | agents-md-generator | [tokei (required)](https://github.com/XAMPPRocky/tokei), [ripgrep (rg) (preferred)](https://github.com/BurntSushi/ripgrep), [tree](https://mama.indstate.edu/users/ice/tree/) |
+| jetbrains-plugin-development | None |
 | jetbrains-vmoptions | None |
 | kysely-converter | None |
 | code-review | None |
 | doc-coauthoring | None |
 | typst-creator | None |
 | code-security-audit | None |
-| ux-design-guide | None |
 | system-prompt-creator | None |
 | veo-prompt-director | None |
 | release-it | None |
@@ -32,6 +32,7 @@ Only skills that have been personally tested and approved by the user are listed
 |-------|-------------|
 | [agents-md-generator](skills/agents-md-generator/) | Automatically sets up project structure and generates standardized `AGENTS.md` files. Supports both single-repo and monorepo structures. |
 | [kysely-converter](./skills/kysely-converter/) | Converts database queries and schemas using Kysely |
+| [jetbrains-plugin-development](skills/jetbrains-plugin-development/) | IntelliJ Platform plugin development for JetBrains IDEs. Covers `plugin.xml`, services, actions, PSI/VFS/Document, EDT/BGT threading, Kotlin coroutines, custom languages (Grammar-Kit/JFlex), code insight, Kotlin UI DSL v2, IntelliJ Platform Gradle Plugin 2.x, Plugin Verifier, signing, and Marketplace publishing. |
 | [jetbrains-vmoptions](skills/jetbrains-vmoptions/) | Generates JetBrains IDE VM options based on IDE version. Supports version-specific GC selection (Generational ZGC for 243+, G1GC for 222-242) and memory configuration. |
 | [system-prompt-creator](skills/system-prompt-creator/) | Analyzes user requirements to generate production-ready system prompts. It determines whether a single or multi-prompt architecture is needed and requests missing information if requirements are insufficient. |
 | [typst-creator](skills/typst-creator/) | Generate Typst source code for documents, reports, papers, and presentations, covering markup, math, scripting, and layout syntax. |
@@ -50,7 +51,6 @@ These skills are currently under evaluation and will be promoted to **Available 
 | [doc-coauthoring](skills/doc-coauthoring/) | Guide users through a structured 3-stage workflow for co-authoring documentation through Context Gathering, Refinement & Structure, and Reader Testing. |
 | [react-vite-guide](skills/react-vite-guide/) | React 19 + Vite SPA development guidelines. Composition patterns, performance optimization, and web interface best practices for client-side React applications. |
 | [veo-prompt-director](skills/veo-prompt-director/) | Generates structured Google Veo 3.1 video prompts by collecting user input for subject, action, style, cinematography, and audio. Guides users through the Universal Prompt Formula to produce camera-ready prompts. |
-| [ux-design-guide](skills/ux-design-guide/) | Reviews existing UI for UX guideline violations and generates implementation guidance based on 99+ rules across Navigation, Layout, Accessibility, Forms, Performance, Typography, and more. Supports Web, Mobile, and Desktop GUI platforms. |
 | [task-brief-creator-caveman](skills/task-brief-creator-caveman/) | Caveman-output variant of `task-brief-creator`. Same six-stage workflow, halt rules, briefset support, and validators — saved brief body is written in caveman full mode (~75% prose compression) for downstream coding-agent consumption while chat / interview / status surfaces stay in normal prose. `## Open Questions` stays in normal prose so questions remain unambiguous for the human reviewer or downstream agent. |
 
 ## 🔒 Private Skills
@@ -75,13 +75,15 @@ Personal-use skills not included in the public marketplace.
 2. Install the skills plugin:
    - Select `Browse and install plugins`
    - Select `buyoung-agent-skills`
-   - Select `document-skills` or `backend-skills`
+   - Select `document-skills`, `analysis-skills`, `backend-skills`, or `devops-skills`
    - Select `Install now`
 
    Or directly install via:
    ```
    /plugin install document-skills@buyoung-agent-skills
+   /plugin install analysis-skills@buyoung-agent-skills
    /plugin install backend-skills@buyoung-agent-skills
+   /plugin install devops-skills@buyoung-agent-skills
    ```
 
 3. Use skills by mentioning them in your prompts (e.g., "Use agents-md-generator to create an AGENTS.md file")
