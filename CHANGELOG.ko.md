@@ -6,6 +6,22 @@
 
 ## [Unreleased]
 
+## [1.3.0] - 2026-05-07
+
+### 추가
+
+- 설치 안내에 `analysis-skills`·`devops-skills` 플러그인 번들 추가
+
+### 개선
+
+- README에서 `jetbrains-plugin-development`는 Available Skills로 승격, `ux-design-guide`는 Under Evaluation으로 환원하도록 카탈로그 개선
+- `agents-md-generator`: `AGENTS.md` 갱신 흐름과 Working Agreements 규칙을 정비하고 사용자 추가 내용은 `## Custom Instructions`에 보존하도록 개선
+
+### 내부
+
+- 저장소 구조와 일치하도록 프로젝트 자체 `AGENTS.md` 정리
+- `agents-md-generator/updates/`에 `2026-05-07-json-query-explanation-review` 리뷰 폴더 도입
+
 ## [1.2.0] - 2026-05-05
 
 ### 추가

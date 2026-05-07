@@ -6,6 +6,22 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [1.3.0] - 2026-05-07
+
+### Added
+
+- Added `analysis-skills` and `devops-skills` plugin bundles to the install instructions.
+
+### Improved
+
+- Listed `jetbrains-plugin-development` as Available and moved `ux-design-guide` back to Under Evaluation in the README.
+- `agents-md-generator`: Cleaner `AGENTS.md` updates with refreshed Working Agreements; user content stays preserved under `## Custom Instructions`.
+
+### Internal
+
+- Refreshed the project's own `AGENTS.md` to match the current repository layout.
+- Added the `2026-05-07-json-query-explanation-review` review folder under `agents-md-generator/updates/`.
+
 ## [1.2.0] - 2026-05-05
 
 ### Added
