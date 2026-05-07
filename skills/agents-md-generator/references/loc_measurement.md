@@ -100,4 +100,4 @@ Use the **Total** lines value from tokei output:
 ===============================================================================
 ```
 
-In this example: Total Lines = 50,000 → Small-Medium → 10,000 chars limit
+In this example: Total Lines = 50,000 → Small-Medium → 12,000 chars limit

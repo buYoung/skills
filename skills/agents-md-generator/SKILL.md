@@ -109,6 +109,8 @@ Before writing, confirm:
 
 - Total length is within `character_limit`; no section exceeds its budget.
 - None of the [Anti-Patterns](./references/agents_md_template.md#anti-patterns-excluded-content) appear (no Common Commands, run/test/build/deploy instructions, IDE/tooling settings, etc.).
+- For Update mode: every standard section body was rebuilt from its managed source, not reused because the old wording appeared acceptable.
+- For Update mode: scan only managed standard sections for stale standing work-agreement wording. Fail verification if managed content still contains `Keep edits minimal`, `Minimal changes`, `preserve public APIs`, `existing plugin behavior`, or `avoid unnecessary abstraction`; custom sections may keep any user-owned wording.
 - For Update mode: every preserved custom section is byte-for-byte identical to the original.
 
 Then write with the Edit/Write tool. For Monorepo with mode = **All**, repeat Steps 2–6 per target package after handling the root.

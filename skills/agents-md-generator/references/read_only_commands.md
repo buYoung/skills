@@ -193,7 +193,12 @@ Lock files must NOT be read:
 - `.editorconfig`
 - `.eslintrc*`, `eslint.config.*`
 - `.prettierrc*`
-- `pyproject.toml`, `ruff.toml`, `mypy.ini`
+- `tsconfig*.json`, `jsconfig*.json`
+- `pyproject.toml`, `ruff.toml`, `mypy.ini`, `pytest.ini`, `tox.ini`
+- Build configs such as `vite.config.*`, `webpack.config.*`, `rollup.config.*`, `build.gradle*`, `pom.xml`, `Makefile`, `Dockerfile`
+- Test configs such as `vitest.config.*`, `jest.config.*`, `playwright.config.*`, `cypress.config.*`
+- Workspace configs such as `pnpm-workspace.yaml`, `turbo.json`, `nx.json`, `lerna.json`, `rush.json`, `.moon/workspace.yml`
+- CI workflow files such as `.github/workflows/*`, `.gitlab-ci.yml`, `azure-pipelines.yml`, `circle.yml`
 
 ### Package Manifests
 
@@ -201,6 +206,8 @@ Lock files must NOT be read:
 - `pyproject.toml`
 - `go.mod`
 - `Cargo.toml`
+
+Readable command and configuration files are inputs for analysis only. Use them to infer stack, verification placement, conventions, and boundaries; do not copy their contents into generated `AGENTS.md` as command catalogs or add a "Common Commands" section.
 
 ## Source File Analysis Rules
 

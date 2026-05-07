@@ -128,6 +128,7 @@ Surface-level scanning (e.g., "this codebase uses error handling") is not enough
 - **Phase 3 — Validation**:
   - Note **implicit rules** not captured in linter configs (e.g., "all async operations go through a central queue", "state mutations only via specific helpers")
   - Verify each discovered pattern appears in 3+ locations — but patterns that span multiple layers (e.g., a persistence flow touching store, service, and UI) count as cross-cutting even if the exact code shape differs at each layer
+  - Prefer patterns observed in 3+ locations, but also document a single critical boundary when it defines safe agent work (e.g., the only public write path, the only generated-file boundary, or the only external side-effect entry point)
 
 **Pattern Categories** (include only those actually observed):
 
@@ -166,6 +167,7 @@ Surface-level scanning (e.g., "this codebase uses error handling") is not enough
 - Listing individual functions or classes instead of cross-cutting patterns
 - Describing what a single file does rather than what the codebase does consistently
 - Including patterns that appear only once (not truly cross-cutting)
+- Omitting a single critical boundary that defines safe agent work just because it has only one entry point
 - One-line summaries that name a pattern without explaining how it works (e.g., "Uses repository pattern" without describing the actual convention)
 - Staying at the surface: saying "has error handling" without explaining the propagation flow, or "uses events" without describing the event protocol and wiring mechanism
 
