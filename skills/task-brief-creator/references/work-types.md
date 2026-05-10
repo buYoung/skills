@@ -106,7 +106,7 @@ trailing commas, semicolons. Renaming a variable is **not** `style`; it's
 ## Confirmation Question Pattern
 
 Type-confirmation routing depends on confidence — most cases defer to the
-Stage 4 walk's first node and do not need a separate Stage 2 round-trip.
+Stage 4 decision table and do not need a separate Stage 2 round-trip.
 
 - **Explicit type from user, evidence agrees** → use it; no question.
 - **Explicit type from user, evidence conflicts** (e.g. user says
@@ -114,8 +114,8 @@ Stage 4 walk's first node and do not need a separate Stage 2 round-trip.
   before codebase review. The conflict has to resolve before Stage 3,
   otherwise the review targets the wrong artifacts.
 - **Implicit type, high-confidence** → assign a provisional type and
-  confirm it as the **first node of the Stage 4 walk**. Do not add an
-  early Stage 2 round-trip — the walk's first question already covers it.
+  include it in the **Stage 4 decision table** only when user
+  confirmation is still useful. Do not add an early Stage 2 round-trip.
 - **Implicit type, low-confidence AND the inferred type changes the
   likely execution approach** → ask one short question in Stage 2 before
   proceeding. Catching it here is cheaper than letting Stage 3 explore

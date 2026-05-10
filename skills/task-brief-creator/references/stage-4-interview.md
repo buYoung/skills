@@ -1,37 +1,35 @@
-# Stage 4 Interview
+# Stage 4 User Decision Table
 
-`task-brief-creator` closes every residual gap through a single
-interview policy: build a decision tree from Stage 3 findings and
-residual input gaps, walk top-down asking one question at a time,
-attach a recommended answer to every question, and prefer a narrow
-codebase probe over a user question whenever the node is
-codebase-resolvable.
+`task-brief-creator` closes residual ambiguity through one policy:
+first gather enough codebase context in Stage 3, then present every
+remaining user-owned decision in a Markdown decision table. The user
+reviews concrete recommended changes, not vague questions.
 
-This is the only Stage 4 path. There is no separate "batched mode" toggle.
+This is the only Stage 4 path. Do not run a pre-review guessing
+interview. Do not hide decisions in prose. If the codebase can answer
+a technical fact, resolve it before asking. If the decision is about
+product intent, scope, acceptance threshold, risk tolerance, sequencing,
+or ownership, ask the user with the table format below.
 
-The shape exists because brief-quality failure modes cluster at
-**dependency-tangled decisions**. Out of Scope can only be drawn after
-In Scope is decided. Behavior Contract only matters once the type is
-locked. A briefset's per-child Acceptance Criteria are meaningless
-before decomposition is settled. Walking the tree top-down resolves
-each layer before the next layer's questions exist, so the user is
-never asked to answer "what should be true at completion?" before
-"what is the work type, actually?".
+For user-decision questions, use this exact table shape:
 
-The interview style — one question at a time, recommended answer
-attached, codebase explored before the user is asked — is adapted
-from the standalone `grill-me` skill. In `task-brief-creator` the
-policy is the default Stage 4 behavior, not an opt-in mode. Even
-when only one or two nodes remain, they are walked sequentially;
-the interview never collapses into a single batched prompt.
+```markdown
+| 순번 | 내용 | 수정 추천안 | 근거 |
+|---|---|---|---|
+| 1 | <decision the user must make> | <recommended change to apply to the brief> | <input/codebase evidence and risk> |
+```
+
+Keep these four headers exactly as written, even when the surrounding
+conversation is not Korean. They are the stable decision-table contract:
+number, decision content, recommended change, and rationale.
 
 ---
 
-## Decision Tree Construction
+## Decision Collection
 
-Before asking the first question, build a decision tree from Stage 3
-review notes plus residual gaps in the input. The tree drives the
-interview order.
+Before presenting the table, build a decision register from Stage 3
+review notes plus residual input gaps. The register drives what goes
+into the table.
 
 Standard single-brief root layout:
 
@@ -65,35 +63,40 @@ Decomposition validity (which children, why each exists)
 
 Tree-construction rules:
 
-- A child branch is only worth walking if its parent answer leaves it
-  ambiguous. If the parent answer **prunes** the child, skip the
-  child entirely — do not ask the user about something already
-  decided.
-- Each node maps to exactly one section in the brief (or one row in
-  the briefset parent). If a node maps to "general background", drop
-  it — Stage 4 is not a context-gathering interview.
+- A row is only worth asking if the user must decide something. If a
+  node maps to "general background", drop it — Stage 4 is not a
+  context-gathering interview.
+- Each row maps to a concrete brief change: add, remove, narrow,
+  broaden, split, defer, keep as `Open Questions`, or delegate to the
+  downstream agent.
+- If one decision changes whether another is relevant, state the
+  dependency in `근거` and order the rows parent-before-child. After
+  the user answers, prune irrelevant rows before applying changes.
 - If a node can be answered by reading the codebase, mark it
-  *codebase-resolvable* before walking. Codebase precedence (below)
-  applies before any user question.
+  *codebase-resolvable* and resolve it before the table. Technical
+  facts do not become user questions.
+- Product intent, business rules, future scope, acceptance thresholds,
+  sequencing preferences, and ownership decisions are **not**
+  codebase-resolvable. Code findings can support the recommendation,
+  but the user still decides.
 
 ---
 
 ## Codebase Precedence Flow
 
-Stage 4 honors the explore-first rule. For each tree node, run this
-check before asking the user:
+Stage 4 honors the explore-first rule. For each candidate decision,
+run this check before adding a row:
 
 ```
 Can a narrow codebase probe answer this node?
 ├─ YES → run the probe within the carry-over budget.
 │        ├─ Probe resolves the node →
-│        │  Skip the user question OR ask a short
-│        │  confirmation: "I checked X and it looks like
-│        │  Y — does that match your intent?"
+│        │  Do not ask. Carry the result into the brief or into
+│        │  the `근거` for a related user-owned decision.
 │        └─ Probe inconclusive →
-│           Fall through to the user question with
-│           the partial finding stated as context.
-└─ NO  → Ask the user question with a recommended answer.
+│           Add a table row if the user can decide; otherwise keep
+│           the uncertainty in `Open Questions`.
+└─ NO  → Add a table row when the node is user-owned.
 ```
 
 ### Carry-over budget
@@ -112,74 +115,51 @@ need a deep dive, that is a signal the question belongs to the user,
 not the codebase.
 
 When the carry-over budget is exhausted, stop running probes and ask
-the user for the rest. Do not silently continue exploring.
+the user only for user-owned decisions. Technical unknowns that neither
+the current budget nor the user can answer belong in `Open Questions`.
+Do not silently continue exploring.
 
 ---
 
-## One-at-a-Time Question Rules
+## Decision Table Rules
 
-Walk questions go through `AskUserQuestion` (or its host equivalent).
-Each question follows this contract:
+User-facing Stage 4 questions go through a Markdown table. Use the
+host's structured user-input tool when available; otherwise send the
+table in chat and explicitly ask the user to approve, edit, or answer
+by row number.
 
-- **One question per round.** No batching, no follow-up packed into
-  the same prompt. The next question fires only after the previous
-  answer arrives. This holds regardless of how few residual nodes
-  remain — a single-node tree fires one round, a two-node tree fires
-  two sequential rounds.
-- **Recommended answer first.** Always include a tentative answer
-  marked `(Recommended)`. Phrase it as *"I think it's X because of
-  the As-Is shape"*, never as *"what do you want?"*. The user revises
-  or accepts; they do not author from scratch.
-- **2–4 concrete options.** Prefer pick-from-list or yes/no framings
-  over open prompts. If the answer space is genuinely open, write the
-  recommendation plus 1–2 alternates and accept free-text override.
-- **Verification check-in carve-out.** Two situations let the round
-  close without numbered `(Recommended)` options, because the
-  recommendation is already on screen and the user is reacting to it
-  rather than authoring:
-  - **List-shaped draft.** A complete multi-bullet draft of a
-    list-shaped section (`Acceptance Criteria`, `Side Effect
-    Checkpoints`, candidate `Open Questions`, draft `Constraints`)
-    is itself the recommended answer. Closing with `Add or
-    change?` / `추가/수정?` is allowed — the user accepts
-    verbatim, marks up specific bullets, or replaces items inline.
-  - **Prose-stated recommendation on a yes/no node.** When a single
-    binary node has its recommendation explicitly stated in the
-    surrounding prose ("I'd carry this forward as an Open
-    Question…"), closing with `Sound right?` / `이대로 갈까?` is
-    allowed. The prose carries the `(Recommended)` weight even
-    without a numbered list.
+Each row follows this contract:
 
-  Both forms still satisfy "recommended answer first" — the user
-  reviews a concrete proposal, never authors from scratch. The
-  carve-out does **not** extend to multi-option branching decisions
-  (work type, scope boundary, decomposition validity, execution
-  order, conflict-hotspot inclusion, pick-from-list cases). Those
-  still require explicit `(Recommended)`-marked options because the
-  user needs to see the alternates to evaluate the recommendation.
-- **State the upstream answer.** When a question depends on a
-  previous answer, restate it: *"You picked `refactor`, so the
-  Behavior Contract has to lock the existing test suite — which
-  suite?"*. The user should not need to recall the chain.
-- **Explain the codebase finding when the question is a
-  confirmation.** If a probe pre-resolved the node, the question is
-  no longer a real branch — it is verification. Keep it under one
-  sentence: *"`PaymentService.charge` only writes to the local
-  ledger; treating that as a hard boundary, agreed?"*.
+- **`순번`** — stable row number. The user can answer "1 OK, 2 change
+  to..." without quoting the whole table.
+- **`내용`** — the actual decision the user must make. Phrase it as a
+  decision question, not as background.
+- **`수정 추천안`** — the concrete change you recommend applying to
+  the brief. This can be "include in scope", "exclude from scope",
+  "split into a child brief", "keep as Open Questions", or "delegate
+  to downstream agent".
+- **`근거`** — concise evidence from the input, codebase review,
+  existing patterns, or risk. Mention paths or symbols when they are
+  the reason for the recommendation.
 
-Order of walking:
+Rules:
 
-1. Walk top-down: parent before child. A child question is dead until
-   its parent is decided.
-2. Walk siblings in dependency order. If sibling A's answer changes
-   sibling B's relevance, ask A first.
-3. Re-prune the tree after every answer. If the answer eliminates
-   later branches, drop them. The walk continues sequentially through
-   whatever remains, even if pruning leaves only one or two nodes.
-4. Surface residual `Open Questions` last. They are the leftovers
-   the brief explicitly carries forward to the downstream agent — do
-   not exhaust the user's patience trying to resolve everything in
-   the interview.
+- Do not use a generic `추가/수정?` prompt as the only question when
+  any user-owned decision remains.
+- Do not collapse multiple unrelated decisions into one row.
+- If a list-shaped section (`Acceptance Criteria`, `Side Effect
+  Checkpoints`, `Constraints`, candidate `Open Questions`) contains
+  multiple user-owned tradeoffs, make one row per tradeoff.
+- If the list is already fully determined by the input and codebase,
+  no table row is needed; write it directly into the brief.
+- If the table has many rows, group them by section in the `내용`
+  text, but keep the four-column table shape.
+- After the user answers, apply the decision to the draft brief plan.
+  If an answer invalidates later rows, drop or revise those rows before
+  continuing.
+- If a saved single brief or briefset contains `Open Questions` that
+  require user decisions, present those items after save using the same
+  four-column table and patch the saved file after the user answers.
 
 ---
 
@@ -187,7 +167,8 @@ Order of walking:
 
 Stop the Stage 4 loop when **any** of these is true:
 
-- Every mandatory tree node is decided (the brief can be drafted).
+- Every mandatory user-owned decision is decided (the brief can be
+  drafted).
 - The user explicitly stops (`stop`, `enough`, `그만`, `충분해`,
   `done`).
 - Carry-over codebase budget is exhausted **and** every remaining
@@ -198,15 +179,16 @@ Stop the Stage 4 loop when **any** of these is true:
   Record the dependency in `Open Questions`, mark the brief as
   blocked on that input, and continue.
 
-After termination, proceed to Stage 5 exactly as documented in
+After termination, proceed to Stage 5 (save + structural validate)
+and Stage 5.5 (content-level self-check) exactly as documented in
 `SKILL.md`. Stage 4 does not change the saved-brief structure.
 
 ---
 
 ## Output Identity
 
-The walk is a **behavior variant of the brief-authoring pipeline**, not
-an output variant. The saved brief still follows
+The decision table is a **behavior variant of the brief-authoring
+pipeline**, not an output variant. The saved brief still follows
 `references/template.md` exactly:
 
 - Eight required H2 sections (`Work Type`, `Current State (As-Is)`,
@@ -226,23 +208,20 @@ reasons regardless of which Stage 4 path produced it.
 
 ## Briefset Interaction
 
-Briefset mode and the branch walk compose naturally — decomposition
-is itself the highest-value branch to walk one question at a time.
-When briefset mode engages, expect the walk to dominate Stage 4: the
-parent topology alone usually contributes 3+ unresolved nodes
-(decomposition validity, ordering, conflict hotspots), and per-child
-residuals add more on top.
+Briefset mode uses the same decision-table policy. Decomposition is
+usually the highest-value user decision, and parent topology often
+contributes several table rows: decomposition validity, ordering,
+parallelization, conflict hotspots, and per-child residual decisions.
 
 Workflow notes:
 
-- Replace any "one batched round" wording in older briefset
-  documentation with the walk: decomposition → per-child work types →
-  execution order → parallelization → conflict hotspots →
-  per-child residuals.
-- Per-child `Acceptance Criteria` and `Out of Scope` walk *after* the
-  parent topology is locked. Walking them earlier produces guardrails
-  for children that may not survive the decomposition decision.
-- Children inherit walk-style interview output but are still saved as
+- Put briefset decisions in the same four-column table. Use `내용` to
+  identify whether the row belongs to the parent or to a child.
+- Per-child `Acceptance Criteria` and `Out of Scope` decisions come
+  after the parent topology is locked. Asking them earlier produces
+  guardrails for children that may not survive the decomposition
+  decision.
+- Children inherit decision-table question output but are still saved as
   standard child briefs (`validate_briefset.py` covers them
   transitively).
 
@@ -252,68 +231,37 @@ Workflow notes:
 
 Do not:
 
-- **Walk on a halt-eligible input.** Two missing anchors do not
-  become four answered anchors through 30 single questions; they
+- **Use the decision table on a halt-eligible input.** Two missing
+  anchors do not become four answered anchors through a long table; they
   become a confidently wrong brief. Halt at Stage 1 first.
 - **Skip codebase precedence to "save round-trips".** The whole point
   is asking only the questions that need asking. If a probe could
   answer it, run the probe.
-- **Batch two or more *dependent* decisions into one prompt because
-  "the tree is shallow" or "they're related".** When one decision's
-  answer reshapes another's relevance, sequential walking is
-  mandatory — a two-node tree of dependent decisions fires two
-  rounds, not one combined round. Latency savings here reintroduce
-  the dependency-tangle failure mode the walk exists to prevent.
-  (Independent per-child confirmations under the briefset carve-out
-  in `briefset.md` are *not* this anti-pattern — independence is
-  the precondition that lets them share a prompt.)
+- **Hide dependent decisions inside one vague row.** When one decision's
+  answer reshapes another's relevance, make the dependency explicit in
+  `근거` and be ready to prune or revise later rows after the user
+  answers.
 - **Ask the same question twice with different framings.** If the
   user gave a clear answer, accept it and move on. Repeated asks
   signal the agent did not believe the user, which is corrosive.
-- **Drop the recommended answer.** A naked "what do you want?" is
-  not a branch walk — it is offloading the design problem to the
-  user.
+- **Drop `수정 추천안`.** A naked "what do you want?" offloads the
+  design problem to the user.
 - **Loop forever.** Honor the termination conditions. Residual
-  ambiguity belongs in `Open Questions`, not in a 17th interview
-  round.
+  ambiguity that is not user-owned belongs in `Open Questions`, not in
+  another table round.
 
 ---
 
 ## Why This Shape
 
-Sequential walking optimizes for **dependency resolution** — when
-the wrong answer to question 2 makes question 7 meaningless, batching
-all seven at once burns the user's effort and produces a
-correspondingly muddled brief. Walking the tree node by node, with a
-recommended answer at each step, moves the cognitive load back to the
-agent (where it belongs) and lets the user act as a reviewer instead
-of an author. Codebase precedence means the user is asked only when
-the agent genuinely cannot find out for itself.
+The decision table optimizes for **visible decision ownership**. The
+agent does the codebase work first, then shows the user only the
+decisions the user actually owns, with a concrete recommended change
+and evidence. This prevents two failure modes: asking speculative
+questions before understanding the code, and silently burying decisions
+inside `Open Questions` or generic "add/change?" prompts.
 
-The walk is **uniformly sequential for dependent decisions** — there
-is no "shallow tree" escape hatch that re-enables batching just
-because the tree feels small. The reason is twofold. First, the
-requirement (`grill-me`-style "ask one at a time") does not have a
-small-tree carve-out for dependent nodes, and adding one quietly
-drifts the behavior back toward the batched interview the walk was
-meant to replace. Second, the per-round latency saved by batching
-two trivial-looking dependent nodes is small compared to the cost
-of a single misclassified pair that turns out to share a hidden
-edge. The asymmetry favors sequential walking even when the
-marginal round feels redundant.
-
-The narrow exception is the briefset *independence-confirmed*
-carve-out (see `briefset.md`): when the input maps 1:1 to children
-and per-child decisions are demonstrably independent, decomposition
-and per-child work types may be confirmed in a single batched
-prompt. That carve-out is justified specifically because
-independence is the precondition — not a small-tree heuristic —
-and removing it would force the agent to invent ceremonial single
-rounds for cases where there is no decision to walk.
-
-If a walk feels like it is dragging — many sequential yes-or-no
-confirmations, no real branch points — that is a signal that codebase
-precedence under-fired (probes that could have resolved nodes were
-not attempted) or that nodes were carried into Stage 4 that Stage 3
-should have settled. Tighten the codebase pass next time, not the
-walk policy.
+The four-column table also makes post-save `Open Questions` actionable.
+If a single brief or a briefset still contains user-decision questions,
+the user sees the same shape after save and the agent patches the saved
+file after the answers land.

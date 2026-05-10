@@ -59,128 +59,29 @@ Inline `rg` / `Read`, ~6 reads / 4 greps:
 
 ---
 
-## Stage 4 Walk (one question per round)
+## Stage 4 — User Decision Table
 
-The skill walks the decision tree built from Stage 3 findings plus
-residual gaps in the PM input. For each node it first runs the
-codebase-precedence check; if a probe resolves the node, the user
-question is skipped or downgraded to a one-line confirmation.
+The skill first uses the Stage 3 codebase review to resolve technical
+facts. It asks the user only for decisions that remain user-owned:
+product intent, scope boundaries, acceptance thresholds, and risk
+tolerance.
 
-Tree:
+| 순번 | 내용 | 수정 추천안 | 근거 |
+|---|---|---|---|
+| 1 | Work type to write into the brief | Keep `feat`. | The PM input adds a new Settings row and a user-visible dark-mode capability. This is not only styling or internal plumbing. |
+| 2 | Theme selector shape | Use System / Light / Dark, default = System. | The input says default should follow the OS theme, and the open question asks whether System should be explicit. An explicit System option prevents hidden behavior. |
+| 3 | Scope boundary for existing theme consumers | Add an Out of Scope line: do not modify existing `useTheme()` consumers outside Settings. | Probe found 17 `useTheme()` consumers outside Settings and no dark-aware variants. Without this guardrail, a downstream agent may widen the diff into unrelated screens. |
+| 4 | Acceptance criterion for first paint | Include "when pref = System, active theme matches OS preference on first paint." | Stage 3 found no OS-theme detection currently wired. The first-paint case is the likely regression point for the new System default. |
+| 5 | Side effect checkpoints | Keep checkpoints for Compact mode, disabled flag state, and OS theme switching while pref = System. | Those are the adjacent behaviors most likely to regress based on `SettingsScreen.tsx`, `flags.ts`, and the missing OS-listener path. |
 
-```
-Work Type (provisional: feat)
-└─ Desired Outcome (To-Be)
-   ├─ Toggle UX (PM open question — System option vs. Light/Dark only)
-   ├─ In Scope / Out of Scope boundary
-   │  └─ `useTheme()` consumer guardrail (codebase-resolvable)
-   ├─ Acceptance Criteria
-   │  └─ Flash-of-light edge case (derived from OS-detection gap in Stage 3)
-   └─ Side Effect Checkpoints
-      ├─ Existing Compact mode toggle
-      └─ flag.darkMode default state
-Open Questions (only those a probe cannot answer)
-```
-
-### Round 1 — Work Type confirmation
-
-> Reading the PM input as `feat` — new theme + a new Settings row
-> that didn't exist before. Right call?
->
-> 1. **`feat` (Recommended)** — user-visible capability that didn't exist.
-> 2. `chore` — mostly plumbing under existing UI.
-> 3. `style` — purely visual.
->
-> *I'd go with 1; the new Settings row is the load-bearing surface
-> change even though most of the work is plumbing.*
-
-User: **1**.
-
-### Round 2 — Toggle UX (PM open question)
-
-PM left this open and no codebase probe applies — pure design call.
-
-> Third "system" option vs. light/dark only. Three options is the
-> safer default — explicit override for users who want a fixed theme
-> regardless of OS, and matches your "default = follow OS" line.
->
-> 1. **System / Light / Dark, default = System (Recommended)**
-> 2. Light / Dark only, follow OS implicitly (no UI for "follow OS")
-> 3. System / Light / Dark, default = Light (don't auto-darken on first launch)
->
-> *I'd go with 1.*
-
-User: **1**.
-
-### Round 3 — `useTheme()` consumer guardrail (codebase-resolved)
-
-Codebase-precedence probe: `rg "useTheme\(" -t tsx src/` → 17 consumer
-sites outside Settings. Spot-read of two confirmed none have a dark
-variant. Probe outcome: a downstream agent that helpfully
-cascade-restyles those sites would blow the scope. Worth pinning Out
-of Scope explicitly.
-
-> Probe found 17 `useTheme()` consumer sites outside Settings, none
-> dark-aware. To keep this brief scoped to Settings only, I'd add an
-> Out of Scope line: "do not modify any existing `useTheme()`
-> consumer outside the Settings screen". Otherwise a downstream agent
-> may cascade.
->
-> 1. **Add the guardrail (Recommended)**
-> 2. Skip — trust the agent to stay narrow
-> 3. Expand scope — pull in 1–2 other surfaces (which?)
->
-> *Answer 3 only if you actually want to widen this brief.*
-
-User: **1**.
-
-### Round 4 — Acceptance Criteria draft
-
-> Acceptance Criteria draft, three from the PM bullets plus one from
-> the OS-detection gap surfaced in Stage 3:
->
-> - [ ] Theme row in Settings → Appearance offers System / Light / Dark
->       and the choice persists across reload.
-> - [ ] Toggling between Light and Dark updates the Settings screen
->       within one render frame (no full-screen reload).
-> - [ ] In production builds with `flag.darkMode = false`, no
->       dark-mode code paths are reachable from the UI.
-> - [ ] When pref = System, the active theme matches the OS preference
->       on first paint (no flash of light theme).
->
-> Stage 3 found no OS-theme detection wired anywhere — that means a
-> fresh load with pref = System will probably flash light before
-> resolving the OS preference. The fourth criterion pins that.
->
-> 1. **All four (Recommended)** — flash-of-light is a silent
->    regression class downstream agents miss.
-> 2. First three only — flash acceptable for v1.
-> 3. Different framing for #4.
-
-User: **1**.
-
-### Round 5 — Side Effect Checkpoints
-
-> Side Effect Checkpoints from review:
->
-> - [ ] Existing `Compact mode` toggle in Settings → Appearance still
->       toggles and persists.
-> - [ ] With `flag.darkMode = false`, Settings UI is identical to
->       before this change (no Theme row visible).
-> - [ ] Switching OS theme while pref = System repaints the Settings
->       screen without a reload.
->
-> Add or change?
-
-User: 👍 — looks good as-is.
+User: approve rows 1-5.
 
 ### Termination
 
-All mandatory nodes decided, user answers consistent, codebase probe
-resolved one node before it became a real question (consumer reach
-in Round 3). One residual question carries forward to `Open
-Questions` (per-platform OS-theme listener teardown — a real tradeoff
-with no clear right answer from the brief alone). Stage 5 follows.
+All user-owned decisions are decided. Technical facts resolved by the
+codebase review are not re-asked. One residual implementation tradeoff
+still carries forward to `Open Questions`: per-platform OS-theme listener
+teardown.
 
 ---
 

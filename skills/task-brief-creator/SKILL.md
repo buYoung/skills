@@ -29,6 +29,16 @@ to files, decisions, or verifiable outcomes. A brief that makes the
 downstream agent re-interview the requester is a **failed brief**, regardless
 of how polished it reads.
 
+**"Executable, not discursive" is a *prose style* rule, not a *content
+reduction* rule.** It tells you how each bullet should read — direct,
+action-routing, no rationale prose. It does not tell you to *drop*
+distinct concerns, *merge* unrelated bullets, or *summarize* the input
+down to its highlights. A brief that omits a concern from the input is
+also a failed brief, because the downstream agent will silently miss
+it. Tight prose, full enumeration: short bullets are fine and
+encouraged, but every distinct concern from the input and the codebase
+review must land somewhere in the brief.
+
 ---
 
 ## Modes
@@ -47,22 +57,18 @@ This skill operates in one of two **output modes**:
 
 Output-mode selection happens at Stage 1 alongside the ambiguity gate.
 In briefset mode, follow the workflow below with the per-stage
-adaptations in `references/briefset.md` (parent template, naming,
-decomposition walk, dual-validator save).
+  adaptations in `references/briefset.md` (parent template, naming,
+  decomposition decision table, dual-validator save).
 
-**Stage 4 always runs as a branch-walking interview** — one question
-at a time on dependent decision nodes, walking the residual decision
-tree, with a recommended answer attached to every question.
-Codebase-resolvable nodes are probed instead of asked, so the user
-is asked only what the codebase cannot answer. Sequential walking is
-mandatory whenever one decision's answer reshapes another's
-relevance; verification check-ins on completed list-shaped drafts
-and briefset's independence-confirmed per-child confirmations are
-the only carve-outs (see `references/stage-4-interview.md` and
-`references/briefset.md`). The branch-walking interview is the
-default Stage 4 behavior, not a separate mode. See
+**Stage 4 always runs as a user decision table** — after codebase
+review, gather ambiguous or user-owned decisions and present them in a
+Markdown table with `순번`, `내용`, `수정 추천안`, and `근거`.
+Codebase-resolvable technical facts are probed instead of asked, while
+product intent, scope, acceptance thresholds, sequencing, and ownership
+decisions are tabled for the user. The decision table is the default
+Stage 4 behavior, not a separate mode. See
 `references/stage-4-interview.md`
-for the full tree-construction, codebase-precedence, and termination
+for the full decision classification, codebase-precedence, and termination
 rules.
 
 ---
@@ -141,15 +147,22 @@ escape hatch when the section legitimately has nothing concrete to capture
 is a single bullet `- N/A — <reason>`. See `references/template.md` and
 `references/work-types.md` for the per-section guidance.
 
-Bullet count is not capped. Large work may need many bullets. The rule is
-cohesion, not brevity:
+Bullet count is not capped. The rule is cohesion plus completeness, not
+brevity:
 
 - Each bullet should describe one coherent unit of context, scope, risk, or
   verification.
+- **Enumerate every distinct concern.** If the input or the Stage 3
+  codebase review surfaces N distinct concerns that map to a section,
+  the section gets ≥ N bullets. Sections expand to fit the work; they
+  are not capped. A section reduced to one bullet when the input
+  contained multiple concerns for it is the failure mode this rule
+  exists to prevent.
 - Do not merge unrelated concerns into one bullet just to keep the document
   short.
 - Write as many bullets as the task needs; do not compress larger work into
-  vague combined bullets.
+  vague combined bullets. Short prose per bullet is fine and encouraged
+  — short *count* is the failure.
 
 ---
 
@@ -235,8 +248,9 @@ Determine the Conventional Commits type. Consult
   "refactor" but the work changes behavior), pause and confirm with one
   question before codebase review.
 - If the type is implicit but high-confidence, assign a provisional type and
-  confirm it as the first node of the Stage 4 walk. Do not add a separate
-  early round-trip just for type confirmation.
+  include it in the Stage 4 decision table only when user confirmation is
+  still useful. Do not add a separate early round-trip just for type
+  confirmation.
 - If the implicit type is low-confidence and changes the likely execution
   approach, ask one short question before proceeding.
 
@@ -259,7 +273,12 @@ Review budget (soft limits):
 
 - At most ~15 file reads
 - At most ~10 search queries
-- Stop as soon as you can confidently name the entry points
+- Stop when you can confidently enumerate the **primary** entry points
+  and major affected areas implied by the input — not just the first
+  file or symbol that grounds the brief. If likely input-implied
+  surfaces remain unverified within the review budget, surface them in
+  `Open Questions` so the downstream agent inherits them rather than
+  having them silently dropped.
 
 Strategy:
 
@@ -284,44 +303,53 @@ Strategy:
 - Make architectural claims the code does not support. If uncertain,
   flag it in `Open Questions` instead.
 
-### Stage 4 — Active Interview (branch-walking)
+### Stage 4 — User Decision Table
 
-Fill remaining gaps by walking a decision tree built from Stage 3
-findings and residual input gaps. The walk is the **default and only**
-Stage 4 behavior; there is no separate batched mode toggle. Even
-shallow trees are walked sequentially — two residual nodes become two
-sequential rounds, one node becomes one round. The walk never collapses
-into a batched prompt.
+After Stage 3 has gathered enough codebase context, collect the
+remaining ambiguous or user-owned decisions into a Markdown decision
+table. Stage 4 is not a pre-review guessing interview: ask only after
+the codebase has been checked enough to state the uncertainty, the
+recommended change, and the evidence behind it.
+
+Use this exact table shape for user-decision questions:
+
+```markdown
+| 순번 | 내용 | 수정 추천안 | 근거 |
+|---|---|---|---|
+| 1 | <decision the user must make> | <recommended change to apply to the brief> | <codebase/input evidence and risk> |
+```
+
+Keep these four headers exactly as written, even when the surrounding
+conversation is not Korean. They are the stable decision-table contract:
+number, decision content, recommended change, and rationale.
 
 Required gaps to close before drafting:
 
-- **Desired Outcome (To-Be)** (always ask if not explicit) — what is true at
-  the end.
+- **Desired Outcome (To-Be)** — confirm when absent, ambiguous, or when
+  the codebase review suggests more than one plausible interpretation.
 - **Work Type** — confirm the provisional type from Stage 2 when it was
   inferred rather than explicitly provided.
 - **Out of Scope** — the most valuable guardrail for the downstream agent.
-  Offer a proposed out-of-scope list based on the input and let the user
-  edit.
+  Put unclear or high-risk scope boundaries in the decision table with a
+  recommended exclusion/inclusion.
 - **Related Files / Entry Points** — confirm at least one concrete entry point
   if the codebase review did not surface one. This section is mandatory because
   the brief must tell the downstream agent where to start.
 - **Acceptance Criteria** — what makes the task verifiably done.
 - **Side Effect Checkpoints** — what else must be verified if this area is
-  touched. Draft a candidate list from the codebase review and ask the user
-  to confirm / extend.
+  touched. If the list has user-owned tradeoffs, present those tradeoffs
+  in the decision table instead of hiding them in a generic "add/change?"
+  prompt.
 - **Open Questions** — explicitly surface anything the codebase review
-  raised that the user should answer or delegate to the downstream agent.
+  raised that the user should answer, keep in the brief, or delegate to
+  the downstream agent.
 
-**Branch walk.** Build the decision tree, walk top-down, ask **one
-question at a time** with a recommended answer marked `(Recommended)`.
-Before each user question, run the codebase-precedence check: if a
-narrow probe inside the carry-over budget can answer the node, run the
-probe and either skip the question or downgrade it to a one-line
-confirmation. After each answer, re-prune the tree — downstream branches
-that the answer makes irrelevant disappear. The walk applies uniformly
-regardless of how many residual nodes remain: 1 node = 1 round, 2 nodes =
-2 sequential rounds, never bundled into one prompt. Full tree-construction,
-codebase-precedence, budget, and termination rules live in
+**Decision-table rule.** Each row must be a real decision, not a vague
+status note. `내용` states what the user must decide. `수정 추천안`
+states the concrete brief change you recommend. `근거` cites the input,
+codebase finding, existing pattern, or risk. After the user answers,
+patch the draft plan in memory before composing the brief. Full
+decision classification, table rules, and termination rules live in
 `references/stage-4-interview.md`.
 
 ### Stage 5 — Save + Validate
@@ -353,25 +381,79 @@ and diff tooling are available.
 
    The validator only checks **structural** conformity (section presence,
    checklist format, filename pattern, type coherence). It does *not*
-   judge content quality — that's what the human review in Stage 6 is
-   for. Passing validator ≠ good brief; failing validator = malformed
-   brief.
+   judge content quality — that's what the Stage 5.5 self-check and the
+   human review in Stage 6 are for. Passing validator ≠ good brief;
+   failing validator = malformed brief.
+
+### Stage 5.5 — Content-Level Self-Check
+
+The structural validator confirms the file has the required sections.
+It does not confirm the file is a *complete* work instruction. Before
+handing off in Stage 6, re-read the saved brief from disk and run a
+content-coverage self-check against the original input plus Stage 3 /
+Stage 4 findings.
+
+The brief is a work instruction, not a summary. Any concern that
+existed in the input must survive into the brief — possibly reshaped
+into the right section, never silently dropped. Run this checklist:
+
+- [ ] **Input coverage:** every distinct concern named in the input
+      maps to at least one bullet somewhere in the brief (In Scope,
+      Related Files, Constraints, Side Effect Checkpoints, Acceptance
+      Criteria, or Open Questions, depending on the concern's shape).
+      Two unrelated concerns are never merged into one bullet.
+- [ ] **Stage 3 coverage:** every primary entry point or major affected
+      area surfaced during the codebase review appears in `Related Files
+      / Entry Points`, and every uncertainty raised by the review either
+      appears in `Open Questions` or was explicitly resolved during
+      Stage 4.
+- [ ] **Section depth:** no section was reduced to a single bullet
+      when the input or Stage 3 findings contain multiple distinct
+      concerns for it. Sections expand to fit the work; they are not
+      capped.
+- [ ] **No content compression:** no bullet was shortened by dropping
+      qualifiers (`only on cold start`, `≤ 5KB gzipped`, `iOS Safari
+      17+`). "Executable, not discursive" is a *prose* rule, not a
+      *content* rule.
+- [ ] **Cold-pickup test:** a downstream coding agent reading only the
+      brief can act on the first 30 minutes of the task without
+      re-interviewing the requester. If a re-interview would be
+      needed, identify the thin section and patch it.
+
+If any check fails, fix the brief in place with `Edit`, then re-run
+`scripts/validate_brief.py` to confirm structural conformity still
+holds. Loop the self-check until every item passes.
+
+The self-check outcome is a separate signal from the structural
+validator — both are reported in Stage 6. A brief can pass structural
+validation and still fail this self-check; in that case the file is
+incomplete even though it is well-formed.
+
+For briefset mode, run the self-check on the parent and on every
+child independently. The parent's coverage check asks whether every
+input-implied execution context maps to a child; each child's
+coverage check uses the same five items above.
 
 ### Stage 6 — Review + Iterate
 
 The brief is on disk. Hand off to the user for review.
 
-1. Report the path, a one-line summary (work type + title), and the
-   validator result. Use the user's chat language.
+1. Report the path, a one-line summary (work type + title), the
+   structural validator result, **and the Stage 5.5 self-check
+   result**. Use the user's chat language. Both signals are reported
+   together so the user can see whether the file is well-formed *and*
+   complete.
 
-   **English (validator passed):**
+   **English (validator + self-check passed):**
    > Saved — `docs/briefs/2026-04-23-feat-dark-mode-settings.md`
-   > (`feat`: Dark mode toggle in Settings; structural validation passed).
+   > (`feat`: Dark mode toggle in Settings; structural validation
+   > passed; content self-check passed — N input concerns covered).
    > Open it and let me know if anything needs editing.
 
-   **Korean (validator passed):**
+   **Korean (validator + self-check passed):**
    > 저장 완료 — `docs/briefs/2026-04-23-feat-dark-mode-settings.md`
-   > (`feat`: Dark mode toggle in Settings; 구조 검증 통과).
+   > (`feat`: Dark mode toggle in Settings; 구조 검증 통과; 내용
+   > 자체 검증 통과 — 입력 항목 N개 모두 매핑됨).
    > 파일 열어보고 고칠 부분 있으면 알려줘.
 
    **English (validator failed):**
@@ -389,12 +471,33 @@ The brief is on disk. Hand off to the user for review.
    >   ✗ <두 번째 실패 메시지 그대로>
    > 파일은 디스크에 있음. 내가 패치할까, 직접 고칠래?
 
+   If the structural validator passed but the Stage 5.5 self-check
+   surfaced gaps that you fixed in place, mention what you patched so
+   the user knows the brief was tightened before handoff (e.g.,
+   "self-check found 2 input concerns missing from In Scope; added
+   them, re-validated").
+
 2. If the user requests changes, apply them with `Edit` against the
    on-disk file. Do **not** re-render the full brief into chat — that
    defeats the point of save-then-review. Re-run the validator after
    each edit pass and report the delta.
 
-3. The user owns "done." Do not stage or commit the file. Loop on
+3. If the saved single brief contains `Open Questions` that require a
+   user decision, present them immediately after the save report using
+   the same four-column decision table from Stage 4:
+
+   ```markdown
+   | 순번 | 내용 | 수정 추천안 | 근거 |
+   |---|---|---|---|
+   | 1 | <Open Question requiring user decision> | <recommended patch to apply to the brief> | <why this cannot be delegated safely> |
+   ```
+
+   After the user answers, patch the saved brief in place, move resolved
+   questions into the appropriate sections, leave only genuinely
+   unresolved or delegated questions in `Open Questions`, and re-run the
+   validator plus Stage 5.5 self-check.
+
+4. The user owns "done." Do not stage or commit the file. Loop on
    Stage 6 until they explicitly stop.
 
 **Why save-then-review:** an earlier iteration rendered the full brief
@@ -512,11 +615,11 @@ validator checks and what stays on the human reviewer.
   tasks into a single brief unless the user explicitly chooses
   single-brief after the recommendation, and do not nest briefsets (a
   child cannot become a parent).
-- **Branch walk does not bypass the ambiguity gate.** Halt-eligible
+- **Decision table does not bypass the ambiguity gate.** Halt-eligible
   inputs still halt at Stage 1. Do not try to reconstruct missing
-  PROBLEM / GOAL / SCOPE / TARGET through 30 single questions in the
-  walk — the gate exists precisely to prevent that failure mode. See
-  `references/stage-4-interview.md` for the walk rules and termination
+  PROBLEM / GOAL / SCOPE / TARGET through a large decision table — the
+  gate exists precisely to prevent that failure mode. See
+  `references/stage-4-interview.md` for the table rules and termination
   conditions.
 
 ---

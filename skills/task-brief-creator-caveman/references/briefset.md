@@ -186,7 +186,8 @@ markers stay verbatim. See example 04 for a converted parent.
   integration-level checks no individual child can verify alone.
 - **Open Questions** — set-level questions only. Per-child questions
   live in the child's `Open Questions`, but Stage 4 must still surface
-  them during the per-child residuals step of the interview walk.
+  user-owned ones during the per-child residuals step of the decision
+  table.
 
 If a section legitimately has nothing, write `- None` with a one-line
 reason rather than leaving the section empty.
@@ -244,45 +245,33 @@ them or drop them just because they are child-specific. Each child's
 children point at the same primary entry point, they probably collapse
 into one.
 
-### Stage 4 — Active Interview (branch walk)
+### Stage 4 — User Decision Table
 
-Stage 4 in briefset mode follows the same branch-walking interview
-described in `stage-4-interview.md`. The tree is rooted at decomposition
-validity — that is the highest-leverage parent decision in a
-briefset, and locking it first prunes most downstream branches. Walk
-in this order:
+Stage 4 in briefset mode follows the same decision-table policy
+described in `stage-4-interview.md`. The table is rooted at
+decomposition validity — that is the highest-leverage parent decision
+in a briefset, and locking it first prunes most downstream rows. Put
+user-owned decisions into the four-column table (`순번`, `내용`,
+`수정 추천안`, `근거`) in this order:
 
 1. **Decomposition** — confirm or revise the child list, each entry
-   carrying a recommended *exists because* clause. **Walk one child
-   at a time when the decomposition boundary is in play** — i.e., a
-   plausible alternative would collapse two children, split one
-   into two, or add/drop a child. **A single batched confirmation
-   (table or bulleted list with one recommendation block) is allowed
-   only when the input maps 1:1 to the proposed children and the
-   per-child decisions are independent** (no child's identity
-   depends on another's). If a child collapses or a missing child
-   surfaces, re-prune the rest of the tree before continuing.
+   carrying a recommended *exists because* clause. If a plausible
+   alternative would collapse two children, split one into two, or
+   add/drop a child, give that decision its own row.
 2. **Per-child work types** — confirm the provisional type per
-   surviving child. Ask only when the type changes downstream
-   behavior (e.g., `refactor` vs `feat`); otherwise carry the
-   provisional type forward. The same independence rule from step 1
-   applies: when per-child types are independent, a single table
-   confirmation with one `(Recommended)` block is allowed; when one
-   child's type would shift another's execution order or scope, walk
-   them separately.
-3. **Execution order and parallelization** — wave-by-wave
-   confirmation, with codebase-precedence applied to each "can these
-   two run in parallel?" question (probe shared imports / shared
-   files before asking).
-4. **Conflict hotspots** — present each candidate hotspot as a
-   recommended yes/no with the supporting path; do not enumerate them
-   speculatively.
-5. **Per-child residuals** — only after the topology is locked, walk
-   each child's `Acceptance Criteria`, `Out of Scope`, and unresolved
-   `Open Questions` in turn. Codebase-review uncertainties tagged in
-   Stage 3 are surfaced here, grouped by parent or child, and routed
-   to *answer now*, *keep in Open Questions*, or *delegate to
-   downstream agent*.
+   surviving child when the type changes downstream behavior (e.g.,
+   `refactor` vs `feat`). If the type is obvious and does not change
+   execution behavior, carry it forward without asking.
+3. **Execution order and parallelization** — add rows for wave order or
+   parallelization choices the user owns. Probe shared imports / shared
+   files first, then cite the result in `근거`.
+4. **Conflict hotspots** — add rows for candidate hotspots that require
+   a coordination decision. Do not enumerate speculative hotspots.
+5. **Per-child residuals** — only after the topology is locked, table
+   each child's user-owned `Acceptance Criteria`, `Out of Scope`, and
+   unresolved `Open Questions`. Codebase-review uncertainties tagged in
+   Stage 3 are surfaced here and routed to *answer now*, *keep in Open
+   Questions*, or *delegate to downstream agent*.
 
 Briefset Stage 4 still respects the carry-over codebase budget. A
 parent-level branch probe (e.g., "does `i18n/messages.ko.json` import
@@ -298,7 +287,7 @@ Save in this order:
 
    When writing child briefs, populate `Open Questions` from the Stage 3
    uncertainty register and Stage 4 answers. Do not add new unreviewed
-   questions after the Stage 4 walk closes just to fill the section.
+   questions after the Stage 4 decision table closes just to fill the section.
    If Stage 4 resolves every uncertainty for a child, write `- None`
    with confidence that the child is genuinely unambiguous.
 
@@ -320,11 +309,51 @@ Treat structural failure the same way single-brief mode does: leave
 the file in place, surface the failure in Stage 6, let the user
 decide how to fix. Do not delete or silently rewrite.
 
+### Stage 5.5 — Content-Level Self-Check (briefset)
+
+Run the self-check from `SKILL.md` Stage 5.5 on the **parent** and on
+**every child** independently. Briefset mode adds one parent-specific
+coverage rule:
+
+- **Parent decomposition coverage:** every input-implied execution
+  context maps to a child brief. If the input describes 4 work units
+  and the parent lists 3 children, the missing unit must either become
+  a 4th child or be explicitly justified as folded into an existing
+  child (with the *exists because* clause updated).
+
+Each child runs the standard 6-item self-check (the 5 normal-mode
+items plus the caveman-parity item). If any child fails the
+input-coverage, section-depth, or caveman-parity item, fix the child
+in place, re-run the briefset structural validator, and re-run the
+child's self-check. Do not skip the child self-check on the
+assumption "the parent covers it" — children are independently
+executable, so they are independently completeness-checked. The
+caveman-parity check applies to children but not to the parent's
+execution-management sections (the parent is allowed to be
+short-prose by nature).
+
 ### Stage 6 — Review + Iterate
 
-Report the parent path, the child paths, and the validator outcome
-(parent + per-child). Iterate on disk via `Edit`; do not re-render the
-briefs into chat.
+Report the parent path, the child paths, the structural validator
+outcome (parent + per-child), and the Stage 5.5 self-check outcome
+(parent + per-child).
+
+If the parent or any child contains `Open Questions` that require a
+user decision, present a combined decision table immediately after the
+save report:
+
+```markdown
+| 순번 | 내용 | 수정 추천안 | 근거 |
+|---|---|---|---|
+| 1 | <parent or child path + Open Question requiring user decision> | <recommended patch to apply> | <why this cannot be delegated safely> |
+```
+
+After the user answers, patch the affected parent or child files in
+place, move resolved questions into the appropriate sections, leave only
+genuinely unresolved or delegated questions in `Open Questions`, and
+re-run `validate_briefset.py` plus the Stage 5.5 self-check. Iterate on
+disk via `Edit`; do not re-render the briefs into chat. Chat stays
+normal prose; saved child brief body prose keeps caveman full mode.
 
 ---
 

@@ -43,29 +43,16 @@ needed.
 
 Three concrete entry points → save threshold met.
 
-## Stage 4 — Interview (chat is normal prose, never caveman)
+## Stage 4 — User Decision Table (chat is normal prose, never caveman)
 
-> **Assistant:** I have the four anchors and three entry points. A
-> couple of items need confirmation before I save the brief.
->
-> First — for the 5 default shortcut combinations (capture / cancel /
-> next / prev / open settings): are these finalized by product, or
-> should the brief flag them as a draft to confirm?
-> *(Recommended)* Flag as a draft in Open Questions; default combos
-> proposed by the implementer, product confirms before merge.
+| 순번 | 내용 | 수정 추천안 | 근거 |
+|---|---|---|---|
+| 1 | Default shortcut combinations finality | Flag the five default combinations as draft in `Open Questions`; implementer may propose defaults, product confirms before merge. | Input names five shortcut actions but does not provide concrete key combinations. Codebase review cannot decide product defaults. |
+| 2 | Linux behavior for unavailable global-hotkey support | Show the shortcut-editing section as disabled with an explanatory tooltip. | Linux is out of scope for shipping, but Settings may still render in shared UI paths. Disabled state makes the missing capability explicit. |
 
-> **User:** Flag as draft, sounds right.
+User: approve rows 1-2.
 
-> **Assistant:** Got it. One more — on Linux, if the global-hotkey
-> plugin is unavailable on the user's distro, should the Settings
-> shortcut-editing section be hidden, or shown as disabled with an
-> explanatory tooltip?
-> *(Recommended)* Show disabled with tooltip; hiding makes the missing
-> feature feel like a bug, disabled state is self-explaining.
-
-> **User:** Disabled with tooltip.
-
-Tree closed. Move to Stage 5.
+Decision table closed. Move to Stage 5.
 
 ---
 

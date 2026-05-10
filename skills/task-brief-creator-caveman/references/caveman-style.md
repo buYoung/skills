@@ -11,6 +11,16 @@ artifact rather than conversational replies. Where caveman's defaults
 would risk technical ambiguity in a brief, this document tightens the
 rule.
 
+**Caveman is a register transform, not a content reduction.** Every
+rule below applies to *how* prose is written (articles, fillers,
+phrasing, sentence shape). None of them apply to *what* the brief
+contains. Bullet count, enumerate depth, the number of distinct
+concerns surfaced per section, and the coverage of input items are
+identical to a normal-mode brief written from the same input. If a
+caveman rule below would force you to drop a fact, a bullet, or a
+distinct concern to satisfy a register goal, the rule yields —
+correctness and completeness always beat compression.
+
 ---
 
 ## Two Hard Rules
@@ -27,6 +37,11 @@ Both rules are absolute. There is no situation in which they invert.
 
 ## Full-Mode Conversion Rules (apply to brief body)
 
+The rules below operate on **register only**. They never reduce bullet
+count, never merge two distinct concerns into one bullet, and never
+drop facts. If applying a rule would change *what is said*, skip the
+rule for that bullet.
+
 Drop:
 
 - Articles: `a`, `an`, `the`.
@@ -37,14 +52,31 @@ Drop:
 - Throat-clearing intros: `In order to …`, `It is worth noting that …`,
   `One thing to consider is …`.
 
-Compress:
+Compress (register-only — never collapse meaning):
 
-- Multi-word verb phrases → single verb. `implement a solution for` →
-  `fix`. `make use of` → `use`. `take into account` → `consider`.
-- Adjectival pile-ups → one adjective. `large extensive comprehensive
-  refactor` → `big refactor`.
-- Long synonyms → short synonyms. `extensive` → `big`, `utilize` →
-  `use`, `subsequently` → `then`, `prior to` → `before`.
+- **Truly-redundant phrasal verbs → single verb.** Allowed only when
+  the long form adds no information beyond the short form. Whitelist
+  examples: `make use of` → `use`, `take into account` → `consider`,
+  `give consideration to` → `consider`, `carry out` → `do`.
+- **Adjectival pile-ups → one adjective**, but only when the extras
+  are synonymous. `large extensive comprehensive refactor` → `big
+  refactor`. **Not** `large urgent customer-facing refactor` → `big
+  refactor` (urgency and surface area are distinct facts).
+- **Long synonyms → short synonyms.** `extensive` → `big`, `utilize`
+  → `use`, `subsequently` → `then`, `prior to` → `before`.
+
+**Forbidden (these are content compression, not register compression):**
+
+- Replacing a verb that names a specific action with a generic one
+  that drops the action's nature. `implement a solution for the cache
+  invalidation race` → `fix race` is a content drop ("implement a
+  solution for" is doing real work — saying *what* the work is). Keep
+  the specific verb; only drop the truly redundant phrasal scaffolding
+  around it.
+- Merging two bullets that describe two distinct concerns. Caveman
+  shortens each bullet, never combines them.
+- Dropping qualifiers that pin scope, threshold, or condition (`only
+  on cold start`, `≤ 5KB gzipped`, `iOS Safari 17+`).
 
 Allow:
 

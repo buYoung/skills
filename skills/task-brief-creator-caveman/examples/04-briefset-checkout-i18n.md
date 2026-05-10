@@ -97,162 +97,31 @@ hotspot**.
 
 ---
 
-## Stage 4 — Briefset 분기 순회 (Korean)
+## Stage 4 — Briefset User Decision Table (Korean)
 
-분해 검토 → 자식별 work type → 실행 순서 → 병렬화 → 충돌 영역 →
-공통 제약 → 자식별 잔여(완료 기준 + Open Questions) 순으로 한 번에
-한 질문씩 진행한다. 코드베이스가 답할 수 있는 노드는 사용자에게
-묻기 전에 탐색을 먼저 돌린다.
+코드베이스가 답할 수 있는 노드는 먼저 확인한다. 그 다음 분해,
+자식별 작업 유형, 실행 순서, 충돌 영역, 자식별 잔여 결정처럼
+사용자 소유 판단만 표로 묻는다.
 
-트리:
+| 순번 | 내용 | 수정 추천안 | 근거 |
+|---|---|---|---|
+| 1 | briefset 분해안 | `01-message-keys`, `02-cart-copy`, `03-validation-copy` 셋으로 분해한다. | 입력의 세 줄이 서로 다른 entry point와 완료 기준을 가진다. 하나로 합치면 작업 유형 규율이 섞인다. |
+| 2 | 자식별 work type | `01=refactor`, `02=feat`, `03=fix`로 둔다. | 01은 구조 정리와 behavior 보존, 02는 새 마케팅 카피라는 사용자 가시 변경, 03은 잘못된 언어 노출 결함 수정이다. |
+| 3 | 실행 순서 | Wave 1: 01, Wave 2: 02 + 03. | 01의 키 네임스페이스가 먼저 자리잡아야 02와 03이 안정적으로 키를 채울 수 있다. |
+| 4 | 병렬화 여부 | 02와 03은 같은 wave에서 병렬 가능하되 충돌 영역을 parent에 표기한다. | 코드베이스 프로브에서 `cart.*`와 `payment.err.*` 키 영역은 겹치지 않았다. 다만 둘 다 `messages.ko.json`을 편집한다. |
+| 5 | 충돌 영역 | `src/i18n/messages.ko.json`과 `src/i18n/index.ts`를 parent의 conflict hotspot으로 둔다. | checkout import가 barrel을 통해 들어오며, 자식 셋 모두 새 키 추가로 두 파일을 만질 가능성이 있다. |
+| 6 | 공통 제약 | 한국어(`ko`) 로케일만 대상, 영어 fallback은 Out of Scope, 새 i18n 도구 도입 없음. | 입력이 "결제 화면에서 영어 텍스트가 한 글자도 안 남아야 함"과 기존 메시지 파일 유지 방향을 명시했다. |
+| 7 | 자식 02 완료 기준 | `docs/marketing/cart-copy-2026-04.md`와 cart copy diff가 0이어야 한다는 기준을 추가한다. | 마케팅 카피 적용은 해석보다 원문 일치가 검증 가능한 완료 기준이다. |
+| 8 | 사용자 결정이 필요한 Open Questions | Parent에는 영어 fallback 처리 일정을 남기고, 01에는 hardcoded JSX string 금지 ESLint rule을 후속 권장으로 남긴다. 02와 03은 `- None`으로 둔다. | fallback 일정과 lint rule 도입은 코드베이스만으로 결정할 수 없는 범위/일정 판단이다. |
 
-```
-Decomposition validity (3 children: message-keys / cart-copy / validation-copy)
-└─ Per-child work types (refactor / feat / fix)
-   └─ Execution order
-      ├─ Parallelization (codebase-resolvable: 키 네임스페이스 분리?)
-      ├─ Conflict hotspots (codebase-resolvable: messages.ko.json + barrel)
-      ├─ Shared constraints (Korean only — input에서 명시)
-      └─ Per-child residuals
-         ├─ child 02 Acceptance Criteria (PM copy diff)
-         └─ Open Questions (parent: 영어 fallback / 01: ESLint rule)
-```
-
-### Round 1 — 분해안
-
-Stage 1에서 briefset 모드 합의는 끝난 상태. 분해안 정합성만 확인.
-
-> 자식 셋으로 나누는 게 자연스러워 보여. 입력의 세 줄이 그대로
-> 자식 단위가 돼.
->
-> 1. **셋으로 분해 (Recommended)**
->    - `01-message-keys` — 메시지 키 정리, 영어 하드코딩 제거
->    - `02-cart-copy` — 마케팅 카트 카피 적용
->    - `03-validation-copy` — 결제 검증 에러 메시지 한국어 교체
-> 2. 합쳐서 둘로 — 어떻게 묶을지 알려줘
-> 3. 추가 자식 필요 — 빠진 부분이 있어?
->
-> *내가 보기엔 1번. 자식별 entry point도 다 다르고 완료 기준도
-> 분리되네.*
-
-User: **1**.
-
-### Round 2 — 자식별 work type
-
-> Stage 2에서 잡은 work type 그대로 가도 될지 확인:
->
-> | # | Slug | Type | 이유 |
-> |---|---|---|---|
-> | 01 | `message-keys` | `refactor` | 구조 정리, behavior 보존 |
-> | 02 | `cart-copy` | `feat` | 새 마케팅 카피 — 사용자 가시 콘텐츠 변경 |
-> | 03 | `validation-copy` | `fix` | 잘못된 언어 노출 — UX 결함 |
->
-> 1. **이대로 (Recommended)**
-> 2. 일부 다르게 — 어느 자식?
->
-> *섞이는 게 정상이야. 평탄화하면 `refactor`의 behavior-preservation
-> 규율과 `fix`의 reproduction-first 프레임이 사라져.*
-
-User: **1**.
-
-### Round 3 — 실행 순서
-
-> 01의 키 네임스페이스가 자리잡아야 02·03이 키를 채울 수 있어서:
->
-> 1. **Wave 1: 01 → Wave 2: 02 + 03 (Recommended)**
-> 2. 순차 단일 — 01 → 02 → 03
-> 3. 다른 순서 — 어떻게?
->
-> *내가 보기엔 1번. 02·03 사이에는 기능적 의존성 없음.*
-
-User: **1**.
-
-### Round 4 — 병렬화 (코드베이스 우선)
-
-코드베이스 프로브: `rg "^\\s*\"cart\\." src/i18n/messages.ko.json` /
-`rg "^\\s*\"payment\\.err\\." src/i18n/messages.ko.json` → 키 영역
-겹치지 않음 확인.
-
-> 02·03의 키 네임스페이스 (`cart.*` vs `payment.err.*`) — 프로브로
-> 확인했고 겹치지 않아. 같은 wave에서 병렬 가능. 다만 둘 다
-> `messages.ko.json`을 만지니까 충돌 영역으로는 별도 표기 필요.
->
-> 1. **병렬 OK, 충돌 영역으로 표기 (Recommended)**
-> 2. 안전하게 순차 — 병렬 포기
->
-> *프로브 결과 기반이라 1번이 맞아 보여.*
-
-User: **1**.
-
-### Round 5 — 충돌 영역 (코드베이스 우선)
-
-코드베이스 프로브: `rg -l "from '@/i18n'" src/checkout` →
-`src/i18n/index.ts` barrel을 통해 import 중. barrel도 자식 셋이 모두
-새 키 추가로 건드리게 됨.
-
-> 충돌 영역으로 두 곳 잡았어:
->
-> - `src/i18n/messages.ko.json` — 자식 셋 다 편집
-> - `src/i18n/index.ts` — barrel re-export, 자식 셋 다 새 키 추가
->
-> 두 번째는 프로브로 발견한 거 — checkout이 barrel을 통해 import해서
-> 자식 셋이 다 만지게 돼.
->
-> 1. **두 곳 다 표기 (Recommended)**
-> 2. messages.ko.json만 — barrel은 작아서 무시
-> 3. 추가 충돌 영역 — 떠오르는 게 있어?
-
-User: **1**.
-
-### Round 6 — 공통 제약
-
-> 입력에서 "결제 화면에서 영어 텍스트가 한 글자도 안 남아야 함"이라
-> 했고, 메시지 파일은 `messages.ko.json` 한 곳으로 모은다고 했어.
-> 그래서:
->
-> - 한국어(`ko`) 로케일만 이번 set 대상
-> - 영어 fallback 문자열은 OOS
-> - 새 i18n 도구 도입 없음 — 기존 `react-i18next` 유지
->
-> 추가 제약?
-
-User: 좋아, 그대로.
-
-### Round 7 — 자식 02 완료 기준
-
-> 자식 02는 마케팅이 보내준 카피를 가져다 쓰는 거니까, 완료 기준에
-> "PM 카피와 1:1 일치"가 들어가야 verifiable해. 구체적으로:
->
-> - [ ] Cart copy diff against `docs/marketing/cart-copy-2026-04.md`
->       is 0 (verbatim match).
->
-> 이대로?
->
-> 1. **그대로 (Recommended)**
-> 2. 다른 기준 — 어떻게?
-
-User: **1**.
-
-### Round 8 — Open Questions 정리
-
-> Open Questions 후보:
->
-> - **Parent**: 영어 fallback 문자열은 후속 briefset으로 처리할지,
->   EN locale 일정까지 미룰지?
-> - **01**: hardcoded JSX string 금지 ESLint rule은 이번 brief에
->   포함할지 후속으로 미룰지? (지금 i18n 재작성을 막을 위험이 있어
->   후속 권장)
-> - **02·03**: 별도 open question 없음 — `- None` 처리
->
-> 이대로 가져갈까?
-
-User: 👍 그대로.
+User: approve rows 1-8.
 
 ### Termination
 
-모든 mandatory 노드 결정 완료. 코드베이스 프로브가 두 노드
-(병렬화·충돌 영역)를 사용자 질문 전에 해결, 잔여 open question은
-명시적으로 carry-forward. Stage 5로 이동.
+모든 사용자 소유 결정이 확정됐다. 코드베이스 프로브는 병렬화와
+충돌 영역의 기술적 사실을 먼저 해결했고, 남은 사용자 결정은
+parent와 child `Open Questions`에 명시적으로 배치된다. Stage 5로
+이동.
 
 ---
 

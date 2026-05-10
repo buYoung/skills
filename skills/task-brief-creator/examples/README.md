@@ -22,17 +22,18 @@ own repository.
 
 | File | Input shape | Type | What it shows |
 |---|---|---|---|
-| [01-pm-paste-feat.md](01-pm-paste-feat.md) | Pasted PM spec, ~10 lines | `feat` | Long-input case; how Stage 3 codebase review trims As-Is and how Out-of-Scope guards a downstream agent. |
+| [01-pm-paste-feat.md](01-pm-paste-feat.md) | Pasted PM spec, ~10 lines | `feat` | Long-input case; how Stage 3 codebase review *grounds* As-Is in concrete files (without dropping concerns from the input) and how Out-of-Scope guards a downstream agent. |
 | [02-rough-typed-fix.md](02-rough-typed-fix.md) | One-line typed task | `fix` | Short-input case; how `fix`-type behavior profile shapes Acceptance Criteria and Side Effect Checkpoints (reproduce-first). |
 | [03-halt-ambiguous.md](03-halt-ambiguous.md) | Vague one-liner | — | Halt case; what the four-anchor check rejects and what additional input would flip it to CONTINUE. |
 | [04-briefset-checkout-i18n.md](04-briefset-checkout-i18n.md) | Tech-lead Korean note | briefset (`refactor`+`feat`+`fix`) | Briefset mode; how mixed types, ordered dependencies, and a shared i18n conflict hotspot drive the parent + 3 children decomposition. |
-| [05-stage-4-walkthrough.md](05-stage-4-walkthrough.md) | Korean refactor note | `refactor` | Default Stage 4 interview on a multi-node tree; how the decision tree is walked one question at a time, with codebase-precedence probes pruning two nodes before they reach the user. |
+| [05-stage-4-walkthrough.md](05-stage-4-walkthrough.md) | Korean refactor note | `refactor` | Focused Stage 4 example; how codebase probes remove technical questions and the remaining scope decisions become a user decision table. |
 
-Every example walks Stage 4 the same way — one question per round with
-a recommended answer, codebase-resolvable nodes probed before the user
-is asked. Use `01` / `02` / `04` for type-specific shape (`feat` /
-`fix` / briefset), and `05` for a deeper multi-node walk. See
-`references/stage-4-interview.md` for the full walk policy.
+Current Stage 4 uses a Markdown decision table with `순번`, `내용`,
+`수정 추천안`, and `근거` after codebase-resolvable nodes are probed.
+Use `01` / `02` / `04` for type-specific output shape (`feat` /
+`fix` / briefset), and use `05` for the most focused Stage 4
+decision-table walkthrough. See `references/stage-4-interview.md` for
+the current decision-table policy.
 
 The brief outputs in `01`, `02`, and `05` pass `scripts/validate_brief.py`.
 The parent + children in `04` pass `scripts/validate_briefset.py` (and

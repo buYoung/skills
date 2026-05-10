@@ -12,8 +12,8 @@ compliance with the upstream license terms.
 - **Specific component:** [`skills/grill-me`](https://github.com/mattpocock/skills/tree/main/skills/grill-me)
 - **Author:** Matt Pocock
 - **License:** MIT
-- **Adapted in:** the branch-walking decision-tree interview pattern in
-  Stage 4 (`references/stage-4-interview.md`).
+- **Adapted in:** the Stage 4 user decision workflow in
+  `references/stage-4-interview.md`.
 
 ### License text
 
