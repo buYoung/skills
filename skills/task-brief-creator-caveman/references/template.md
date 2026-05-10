@@ -59,7 +59,7 @@ shows the same contract emitted in caveman full mode.
 - [ ] <measurable criterion>
 
 ## Open Questions
-- <question, or "None">
+- <question, or "None — <reason>">
 ```
 
 ## Optional Constraints Block
@@ -138,6 +138,12 @@ Short factual description of how things are today. This is the baseline the
   thing being fixed. Say what is, not what you feel about it.
 - If a background context line is essential, the first bullet may carry it —
   do not create a separate "Background" section.
+- Preserve structural facts that change the coding route. If the input or a
+  referenced spec names architecture layers, data models, function/API groups,
+  settings, event flows, or platform boundaries that affect edit locations,
+  call order, responsibility boundaries, or verification, give each distinct
+  implementation obligation its own bullet instead of abstracting it into
+  "related logic" or "platform work".
 
 ### § Reproduction (`fix` only)
 
@@ -234,6 +240,10 @@ stop.
   - Bad: Refactor `LoginForm` to detect email change via `useEffect`.
   - Caveman OK: `` `LoginForm` show email error live as user type. ``
 - Steps belong to the downstream agent's plan, not the brief.
+- Preserve structural target facts that direct implementation. If completion
+  depends on a specific layer split, data shape, API list, setting, event
+  sequence, or platform behavior, state that end-state as its own bullet or
+  move exact constraints into `## Constraints`.
 
 ### § Scope
 
@@ -250,6 +260,12 @@ wrong.
     on it.
   - Bad: Don't touch unrelated code. (too generic — every brief has this)
   - Caveman OK: `` Do not change `PaymentService` interface — other team depend on it. ``
+- Prefix out-of-scope bullets when the distinction matters:
+  - `[hard]` means the agent must not touch this in this brief.
+  - `[deferred]` means valid follow-up work, intentionally excluded now.
+- Do not put implementation judgment in `Out of Scope`. If the agent may choose
+  between valid implementation approaches, put that bounded choice in
+  `Constraints`. If the user must decide, put it in `Open Questions`.
 
 If the task is legitimately narrow and there's no realistic adjacent
 overreach, write `- None — self-contained.` Do not pad.
@@ -265,6 +281,8 @@ Examples of what belongs:
 - Must not break the existing public API of `UserProfile.serialize()`.
 - Bundle size increase ≤ 5KB gzipped.
 - Mobile Safari 15+ must still work.
+- Agent may choose between two implementation paths only when both satisfy the
+  listed constraints; name the required behavior, risk, and verification.
 
 This section is optional. If none, omit the section entirely — do not write
 `None`.
@@ -274,11 +292,13 @@ This section is optional. If none, omit the section entirely — do not write
 The most expensive thing a coding agent does on a large codebase is figure
 out where to start. This section eliminates that cost.
 
-Each entry should tell the agent where to start and why that entry matters.
+Each entry should tell the agent where to start, what action starts there, and
+why that entry matters. A useful entry routes the first edit or first read; a
+weak entry only says the file is "related".
 Acceptable entry shapes:
 
-- File path: `` `src/auth/LoginForm.tsx` — email validation logic lives here.``
-- Function reference: `` `handleLogin()` in `src/auth/LoginForm.tsx:42` — validation trigger.``
+- File path: `` `src/auth/LoginForm.tsx` — start at email validation branch before changing submit gating.``
+- Function reference: `` `handleLogin()` in `src/auth/LoginForm.tsx:42` — start here to route validation trigger changes.``
 - PR number: `PR #142 — last year's refactor in the same area — reference approach.`
 - Related brief: `docs/briefs/2026-03-12-refactor-auth.md — prerequisite work.`
 - Proposed new path: `` `src/auth/sessionStore.ts` (proposed) — new module location confirmed by user.``
@@ -330,7 +350,8 @@ the downstream agent from silently guessing.
 - Surface every uncertainty caught during codebase review here (e.g., "Two
   parallel implementations exist — which one should we extend?").
 - Write as questions, not statements.
-- If there genuinely are none, write `- None`.
+- If there genuinely are none, write `- None — <reason>`, e.g.
+  `- None — no user-owned decisions remain; implementation choices are bounded in Constraints.`
 
 ---
 

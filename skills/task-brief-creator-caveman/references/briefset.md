@@ -158,7 +158,7 @@ markers stay verbatim. See example 04 for a converted parent.
 - [ ] <integration-level criterion>
 
 ## Open Questions
-- <question, or "None">
+- <question, or "None — <reason>">
 ```
 
 ### Section guidance
@@ -189,7 +189,7 @@ markers stay verbatim. See example 04 for a converted parent.
   user-owned ones during the per-child residuals step of the decision
   table.
 
-If a section legitimately has nothing, write `- None` with a one-line
+If a section legitimately has nothing, write `- None — <reason>` with a one-line
 reason rather than leaving the section empty.
 
 ---
@@ -204,8 +204,8 @@ reason rather than leaving the section empty.
 - Children include their own `Acceptance Criteria` (independent),
   `Side Effect Checkpoints`, and `Open Questions`.
 - Child `Open Questions` must come from codebase-review uncertainty,
-  user-provided uncertainty, or unresolved Stage 4 answers. Use `- None`
-  only when the child is genuinely unambiguous.
+  user-provided uncertainty, or unresolved Stage 4 answers. Use
+  `- None — <reason>` only when the child is genuinely unambiguous.
 - Children **do not** carry status. Status is parent-only.
 - Children **do not** spawn further children. A child cannot become a
   parent. If a child's scope grows mid-flow, escalate by re-planning
@@ -288,8 +288,9 @@ Save in this order:
    When writing child briefs, populate `Open Questions` from the Stage 3
    uncertainty register and Stage 4 answers. Do not add new unreviewed
    questions after the Stage 4 decision table closes just to fill the section.
-   If Stage 4 resolves every uncertainty for a child, write `- None`
-   with confidence that the child is genuinely unambiguous.
+   If Stage 4 resolves every uncertainty for a child, write
+   `- None — <reason>` with confidence that the child is genuinely
+   unambiguous.
 
 3. Write the parent brief.
 4. Resolve filename collisions with `-v2`, `-v3`, … on the parent and
@@ -366,7 +367,7 @@ normal prose; saved child brief body prose keeps caveman full mode.
 - `Child Briefs` and `Global Acceptance Criteria` use `- [ ]` format.
 - `Execution Order`, `Parallelization`, `Open Questions`, `Purpose`,
   `Conflict Hotspots`, `Shared Constraints` are populated (write
-  `- None` if genuinely none).
+  `- None — <reason>` if genuinely none).
 - Each referenced child path exists on disk.
 - No referenced child is itself a briefset parent (no recursion).
 - Inline-code paths in `Dependencies` reference children listed in

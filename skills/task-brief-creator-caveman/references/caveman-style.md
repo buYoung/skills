@@ -98,6 +98,7 @@ Inside the brief, these substrings are **never** caveman-rewritten:
 | Function names, identifiers, type names, env var names | Verbatim referents. |
 | PR numbers (`PR #128`), issue numbers, commit hashes, URLs | Verbatim referents. |
 | Error strings (quoted) | Must match logs / search verbatim. |
+| Quantitative expressions (numbers, units, thresholds, versions, environment conditions) | They define acceptance and compatibility; `30Hz`, `≤ 5KB gzipped`, `iOS 17+`, and `only on cold start` must survive intact. |
 | `# [<type>] <title>` line | Title format is contract. |
 | `## ` and `### ` section headers | Validator parses these. |
 | `## Work Type` value (`feat`, `refactor`, …) | Validator parses this. |
@@ -122,6 +123,9 @@ compression would obscure the order:
   Criteria.
 - `## Constraints` API-shape / contract / version-pin constraints —
   these are legal-style statements; preserve precision.
+- Any bullet carrying a numeric threshold, unit, version, frequency,
+  platform version, or environment condition — keep the exact
+  expression and the qualifier that scopes it.
 - Any bullet describing an **irreversible** or **destructive** action
   (data deletion, schema migration, force-push, rate-limit raise)
   drops back to normal prose, mirroring caveman's standard

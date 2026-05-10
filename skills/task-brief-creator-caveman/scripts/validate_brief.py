@@ -23,7 +23,7 @@ What this script checks (STRUCTURAL ONLY):
     - `## Scope` has `### In Scope` and `### Out of Scope` H3s
     - Required sections contain at least one content bullet
     - `## Side Effect Checkpoints` and `## Acceptance Criteria` use `- [ ]` checklist format
-    - `## Open Questions` is populated (questions or "None")
+    - `## Open Questions` is populated (questions or `None — <reason>`)
     - Inline-code paths in `## Related Files / Entry Points` exist on disk
         (skipped when the bullet carries a `(proposed)` marker)
     - Optional constraints use `## Constraints`
@@ -94,6 +94,9 @@ INLINE_CODE_RE = re.compile(r"`([^`]+)`")
 PROPOSED_RE = re.compile(r"\(proposed\)", re.IGNORECASE)
 LINE_NUM_SUFFIX_RE = re.compile(r":\d+(?:-\d+)?$")
 BARE_NA_RE = re.compile(r"^\s*-\s+N/A\s*$", re.IGNORECASE)
+BARE_NONE_RE = re.compile(r"^\s*-\s+None\s*$", re.IGNORECASE)
+NONE_WITH_REASON_RE = re.compile(r"^\s*-\s+None\s+—\s+\S+", re.IGNORECASE)
+OUT_OF_SCOPE_PREFIX_RE = re.compile(r"^\s*-\s+\[(hard|deferred)\]\s+.+", re.IGNORECASE)
 
 
 class Report:
@@ -278,6 +281,24 @@ def validate_sections(
                 report.fail(f"`### {sub_name}` under `## Scope` has no bullets.")
             else:
                 report.ok(f"`### {sub_name}` has content bullets.")
+        out_of_scope_bullets = [
+            line.strip()
+            for line in subs.get("Out of Scope", [])
+            if BULLET_RE.match(line)
+        ]
+        prefix_candidates = [
+            line
+            for line in out_of_scope_bullets
+            if not line.lower().startswith("- none")
+        ]
+        if prefix_candidates and not any(
+            OUT_OF_SCOPE_PREFIX_RE.match(line) for line in prefix_candidates
+        ):
+            report.warn(
+                "`### Out of Scope` has no `[hard]` or `[deferred]` "
+                "classified bullet. This is allowed, but classified guardrails "
+                "make exclusions clearer for downstream coding agents."
+            )
 
     # 5. Checklist sections must use `- [ ]` format.
     for name in CHECKLIST_SECTIONS:
@@ -302,7 +323,20 @@ def validate_sections(
         body = [line.strip() for line in h2["Open Questions"] if line.strip()]
         if not body:
             report.fail(
-                "`## Open Questions` is empty — write `- None` if genuinely none."
+                "`## Open Questions` is empty — write `- None — <reason>` if genuinely none."
+            )
+        elif any(BARE_NONE_RE.match(line) for line in body):
+            report.fail(
+                "`## Open Questions` uses bare `- None` — write "
+                "`- None — <reason>` so the absence of questions is explicit."
+            )
+        elif any(
+            line.lower().startswith("- none") and not NONE_WITH_REASON_RE.match(line)
+            for line in body
+        ):
+            report.fail(
+                "`## Open Questions` uses `None` without an em dash reason — "
+                "write `- None — <reason>`."
             )
         else:
             report.ok("`## Open Questions` populated.")

@@ -23,6 +23,7 @@ What this script checks (STRUCTURAL ONLY):
     - `## Global Acceptance Criteria` uses `- [ ]` / `- [x]` checklist format
     - Populated: Purpose, Execution Order, Parallelization,
         Conflict Hotspots, Shared Constraints, Open Questions
+        (`- None — <reason>` if genuinely none)
     - Each referenced child path exists on disk
     - No referenced child is itself a briefset parent (no recursion)
     - Inline-code paths in `## Dependencies` only reference children
@@ -44,8 +45,10 @@ from pathlib import Path
 # Reuse the single-brief validator's primitives.
 sys.path.insert(0, str(Path(__file__).parent))
 from validate_brief import (  # noqa: E402
+    BARE_NONE_RE,
     BULLET_RE,
     CHECKLIST_ITEM_RE,
+    NONE_WITH_REASON_RE,
     Report,
     parse_sections,
     validate_entry_paths as validate_child_entry_paths,
@@ -154,13 +157,27 @@ def validate_parent_sections(h2: dict[str, list[str]], report: Report) -> None:
         else:
             report.ok(f"`## {name}` uses `- [ ]` checklist format.")
 
-    # 3. Populated sections must contain content (write `- None` if truly empty).
+    # 3. Populated sections must contain content (write `- None — <reason>`
+    #    if truly empty).
     for name in POPULATED_PARENT_SECTIONS:
         if name not in h2:
             continue
-        if not any(line.strip() for line in h2[name]):
+        body = [line.strip() for line in h2[name] if line.strip()]
+        if not body:
             report.fail(
-                f"`## {name}` is empty — write `- None` if genuinely none."
+                f"`## {name}` is empty — write `- None — <reason>` if genuinely none."
+            )
+        elif any(BARE_NONE_RE.match(line) for line in body):
+            report.fail(
+                f"`## {name}` uses bare `- None` — write `- None — <reason>`."
+            )
+        elif any(
+            line.lower().startswith("- none") and not NONE_WITH_REASON_RE.match(line)
+            for line in body
+        ):
+            report.fail(
+                f"`## {name}` uses `None` without an em dash reason — "
+                "write `- None — <reason>`."
             )
 
     # 4. Warn on unexpected sections.

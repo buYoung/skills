@@ -397,11 +397,16 @@ The brief is a work instruction, not a summary. Any concern that
 existed in the input must survive into the brief — possibly reshaped
 into the right section, never silently dropped. Run this checklist:
 
-- [ ] **Input coverage:** every distinct concern named in the input
-      maps to at least one bullet somewhere in the brief (In Scope,
-      Related Files, Constraints, Side Effect Checkpoints, Acceptance
-      Criteria, or Open Questions, depending on the concern's shape).
-      Two unrelated concerns are never merged into one bullet.
+- [ ] **Input coverage:** every distinct concern named in the input,
+      including referenced spec section headings that change the coding
+      route, maps to at least one bullet somewhere in the brief (In
+      Scope, Out of Scope, Related Files, Constraints, Side Effect
+      Checkpoints, Acceptance Criteria, or Open Questions, depending on
+      the concern's shape). If a spec section is intentionally not
+      implemented now, it appears in `Out of Scope` as `[hard]` or
+      `[deferred]`, or in `Open Questions` when the user must decide.
+      Two unrelated implementation or verification obligations are
+      never merged into one bullet.
 - [ ] **Stage 3 coverage:** every primary entry point or major affected
       area surfaced during the codebase review appears in `Related Files
       / Entry Points`, and every uncertainty raised by the review either
@@ -412,9 +417,10 @@ into the right section, never silently dropped. Run this checklist:
       concerns for it. Sections expand to fit the work; they are not
       capped.
 - [ ] **No content compression:** no bullet was shortened by dropping
-      qualifiers (`only on cold start`, `≤ 5KB gzipped`, `iOS Safari
-      17+`). "Executable, not discursive" is a *prose* rule, not a
-      *content* rule.
+      qualifiers, quantities, units, thresholds, versions, environment
+      conditions, or ordering words (`only on cold start`, `≤ 5KB
+      gzipped`, `iOS Safari 17+`, `after move end`). "Executable, not
+      discursive" is a *prose* rule, not a *content* rule.
 - [ ] **Cold-pickup test:** a downstream coding agent reading only the
       brief can act on the first 30 minutes of the task without
       re-interviewing the requester. If a re-interview would be
@@ -564,10 +570,14 @@ Scope of the validator (deliberately structural only):
 - Type-conditional section (`Reproduction` / `Baseline Measurement` /
   `Behavior Contract`) present and populated for the matching type.
 - Bullet content in narrative sections; `- [ ]` format in checklist
-  sections; populated `Open Questions`.
+  sections; populated `Open Questions` with `- None — <reason>` when
+  no questions remain.
 - Inline-code paths under `Related Files / Entry Points` resolve on disk
   (skipped when the bullet carries a `(proposed)` marker).
 - Optional `Constraints` heading shape.
+- Warning only: `Out of Scope` bullets without `[hard]` or `[deferred]`
+  classification. The validator does not judge whether the classification
+  is semantically correct.
 
 Out of scope (still on the human): concreteness of bullets, whether
 Out-of-Scope entries are real guardrails vs. filler, whether entry points are
@@ -608,6 +618,10 @@ validator checks and what stays on the human reviewer.
   correct answer when anchors are missing.
 - **Keep Out-of-Scope specific.** "Don't refactor unrelated code" is filler.
   "Do not change the `PaymentService` interface" is a real guardrail.
+- **Keep implementation judgment out of Out-of-Scope.** `Out of Scope`
+  tells the downstream coding agent what not to do. Put bounded
+  implementation choices in `Constraints`, and user-owned unresolved
+  choices in `Open Questions`.
 - **One brief per invocation, unless the input has multiple execution
   contexts.** If it does, recommend briefset mode and ask the user to
   choose (see `references/briefset.md`). Briefset mode is the supported
@@ -639,11 +653,15 @@ cannot see.
       (`Reproduction` / `Baseline Measurement` / `Behavior Contract`) is
       present and populated — `- N/A — <reason>` if genuinely none.
 - [ ] `Out of Scope` has at least one specific entry (or an explicit
-      "None — self-contained." with rationale).
+      "None — self-contained." with rationale). Use `[hard]` for
+      must-not-touch guardrails and `[deferred]` for follow-up work when
+      the distinction matters.
 - [ ] `Acceptance Criteria` are measurable (checkable, not aspirational).
 - [ ] `Related Files / Entry Points` entries are existing repo paths,
       verified references, or confirmed proposed paths. Paths under
       inline-code that are not yet created carry a `(proposed)` marker
-      so the structural validator does not flag them as fabricated.
-- [ ] `Open Questions` uses `- None` only if the brief is genuinely
-      unambiguous; otherwise populate it with real questions.
+      so the structural validator does not flag them as fabricated. Each
+      entry routes the agent's first read or first edit, not just "related
+      file" context.
+- [ ] `Open Questions` uses `- None — <reason>` only if the brief is
+      genuinely unambiguous; otherwise populate it with real questions.
