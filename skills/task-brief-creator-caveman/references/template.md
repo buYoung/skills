@@ -1,26 +1,16 @@
 # Brief Template
 
-This file holds the canonical template that the skill emits into
-`docs/briefs/YYYY-MM-DD-<type>-<slug>.md`: eight required H2 sections plus an
-optional `Constraints` section, with per-section writing guidance.
+This file holds the canonical template that the skill emits into `docs/briefs/YYYY-MM-DD-<type>-<slug>.md`: eight required H2 sections plus an optional `Constraints` section, with per-section writing guidance.
 
-The emitted **output artifact is in English, written in caveman full
-mode** (body prose only). Caveman compression applies to body prose —
-section headers, the title `# [<type>] <title>`, the `## Work Type`
-value, code blocks, paths, identifiers, error strings, the
-`- [ ]` checklist marker, and the `- N/A — <reason>` escape token all
-stay verbatim. See `caveman-style.md` for the full list of
-Auto-Clarity carve-outs and conversion rules.
+The emitted **output artifact is in English, written in caveman full mode** (body prose only).
+Caveman compression applies to body prose — section headers, the title `# [<type>] <title>`, the `## Work Type` value, code blocks, paths, identifiers, error strings, the `- [ ]` checklist marker, and the `- N/A — <reason>` escape token all stay verbatim.
+See `caveman-style.md` for the full list of Auto-Clarity carve-outs and conversion rules.
 
-The **chat interaction language follows the user's input** — Korean
-input gets a Korean reply, English input gets an English reply — but
-that is the chat layer, not the saved document. **Chat is always
-normal prose, never caveman.**
+The **chat interaction language follows the user's input** — Korean input gets a Korean reply, English input gets an English reply — but that is the chat layer, not the saved document.
+**Chat is always normal prose, never caveman.**
 
-Per-section "Good" / "Bad" examples below describe the *technical
-contract* (specificity, measurability, concreteness) — those are what
-survive caveman conversion. The "Caveman OK" line under each example
-shows the same contract emitted in caveman full mode.
+Per-section "Good" / "Bad" examples below describe the *technical contract* (specificity, measurability, concreteness) — those are what survive caveman conversion.
+The "Caveman OK" line under each example shows the same contract emitted in caveman full mode.
 
 ---
 
@@ -64,9 +54,8 @@ shows the same contract emitted in caveman full mode.
 
 ## Optional Constraints Block
 
-Insert this block between `Scope` and `Related Files / Entry Points` only when
-task-specific constraints exist. The emitted heading is `## Constraints`, not
-`## Constraints (optional)`.
+Insert this block between `Scope` and `Related Files / Entry Points` only when task-specific constraints exist.
+The emitted heading is `## Constraints`, not `## Constraints (optional)`.
 
 ```markdown
 ## Constraints
@@ -75,10 +64,8 @@ task-specific constraints exist. The emitted heading is `## Constraints`, not
 
 ## Type-Conditional Sections
 
-Three of the ten work types require an **additional H2 section** between
-`Current State (As-Is)` and `Desired Outcome (To-Be)`. The section captures
-the type-specific input the downstream agent needs to honor that type's
-behavior profile (see `work-types.md`).
+Three of the ten work types require an **additional H2 section** between `Current State (As-Is)` and `Desired Outcome (To-Be)`.
+The section captures the type-specific input the downstream agent needs to honor that type's behavior profile (see `work-types.md`).
 
 | Work Type | Required Section | What it captures |
 |---|---|---|
@@ -86,21 +73,17 @@ behavior profile (see `work-types.md`).
 | `perf` | `## Baseline Measurement` | Current measurement, method, environment, target improvement |
 | `refactor` | `## Behavior Contract` | Which tests / specs / observable behaviors lock the existing behavior; how preservation is verified |
 
-The other seven types (`feat`, `chore`, `docs`, `test`, `style`, `build`,
-`ci`) use the eight required sections only.
+The other seven types (`feat`, `chore`, `docs`, `test`, `style`, `build`, `ci`) use the eight required sections only.
 
-If the section legitimately has nothing concrete to capture (e.g., a visual
-regression `fix` whose entire repro is "open the page"), write a single
-bullet:
+If the section legitimately has nothing concrete to capture (e.g., a visual regression `fix` whose entire repro is "open the page"), write a single bullet:
 
 ```markdown
 ## Reproduction
 - N/A — single-step visual regression; reproduce by opening Settings → Appearance.
 ```
 
-Do not omit the section — `validate_brief.py` checks for its presence. The
-`- N/A — <reason>` form is the explicit escape hatch; a bare `- N/A` without
-reason is rejected.
+Do not omit the section — `validate_brief.py` checks for its presence.
+The `- N/A — <reason>` form is the explicit escape hatch; a bare `- N/A` without reason is rejected.
 
 ---
 
@@ -108,54 +91,42 @@ reason is rejected.
 
 ### Title line — `# [<type>] <title>`
 
-- `<type>` is one of the ten Conventional Commits types
-  (see `work-types.md`).
-- `<title>` is a single concrete sentence fragment — not a restatement of the
-  type.
+- `<type>` is one of the ten Conventional Commits types (see `work-types.md`).
+- `<title>` is a single concrete sentence fragment — not a restatement of the type.
   - Good: `[feat] Introduce global hotkey system`
   - Bad: `[feat] Feature addition` (too generic — says nothing)
 - Keep under ~60 chars so it fits in editor tabs and PR titles.
 
 ### § Work Type
 
-Just the bare type token: `refactor`, `feat`, etc. No prose. This exists as
-a separate section (not just the title tag) because downstream tooling may
-parse it directly.
+Just the bare type token: `refactor`, `feat`, etc. No prose.
+This exists as a separate section (not just the title tag) because downstream tooling may parse it directly.
 
 ### § Current State (As-Is)
 
-Short factual description of how things are today. This is the baseline the
-`Desired Outcome (To-Be)` will be compared against.
+Short factual description of how things are today.
+This is the baseline the `Desired Outcome (To-Be)` will be compared against.
 
-- Use as many bullets as the task needs, but keep each bullet to one coherent
-  unit of current context.
+- Use as many bullets as the task needs, but keep each bullet to one coherent unit of current context.
 - Concrete: name the function, the module, the UX behavior.
-  - Good: `LoginForm` validates email only `onBlur` — users don't see the error
-    until they try to submit.
+  - Good: `LoginForm` validates email only `onBlur` — users don't see the error until they try to submit.
   - Bad: Login UX is not great.
   - Caveman OK: `` `LoginForm` validate email on blur only. User no see error till submit attempt. ``
-- No judgment language ("bad", "ugly", "messy") unless it's literally the
-  thing being fixed. Say what is, not what you feel about it.
-- If a background context line is essential, the first bullet may carry it —
-  do not create a separate "Background" section.
-- Preserve structural facts that change the coding route. If the input or a
-  referenced spec names architecture layers, data models, function/API groups,
-  settings, event flows, or platform boundaries that affect edit locations,
-  call order, responsibility boundaries, or verification, give each distinct
-  implementation obligation its own bullet instead of abstracting it into
-  "related logic" or "platform work".
+- No judgment language ("bad", "ugly", "messy") unless it's literally the thing being fixed.
+  Say what is, not what you feel about it.
+- If a background context line is essential, the first bullet may carry it — do not create a separate "Background" section.
+- Preserve structural facts that change the coding route.
+  If the input or a referenced spec names architecture layers, data models, function/API groups, settings, event flows, or platform boundaries that affect edit locations, call order, responsibility boundaries, or verification, give each distinct implementation obligation its own bullet instead of abstracting it into "related logic" or "platform work".
 
 ### § Reproduction (`fix` only)
 
-A pinned reproduction is the most expensive thing a `fix` agent has to
-recover if it isn't in the brief. Capture it explicitly so the agent can
-write a failing test before patching.
+A pinned reproduction is the most expensive thing a `fix` agent has to recover if it isn't in the brief.
+Capture it explicitly so the agent can write a failing test before patching.
 
 Cover, at minimum:
 
 - **Steps** — minimal sequence that triggers the bug.
-- **Environment** — browser/OS/runtime version, build, branch, data
-  fixture, anything that matters for the repro.
+- **Environment** — browser/OS/runtime version, build, branch, data fixture, anything that matters for the repro.
 - **Frequency** — always / intermittent (with conditions) / once seen.
 - **Observed vs expected** — what actually happens, what should happen.
 
@@ -167,27 +138,23 @@ Examples:
 - Caveman OK (order kept): `Steps: load /login on iOS Safari 17, type password "foo@bar", then submit. Result: "invalid credentials" toast. Expected: success.`
 - Caveman OK (frequency): `Frequency: intermittent — ~30% on cold session, never after success in same browser.`
 
-If the bug is a visual regression where the entire repro is one navigation
-step, the `- N/A — <reason>` escape hatch is acceptable.
+If the bug is a visual regression where the entire repro is one navigation step, the `- N/A — <reason>` escape hatch is acceptable.
 
-**Step-order note:** caveman compression here keeps `then` / `next` /
-`before` / `after` whenever step order matters. Do not collapse three
-steps into a single conjunction-less fragment.
+**Step-order note:** caveman compression here keeps `then` / `next` / `before` / `after` whenever step order matters.
+Do not collapse three steps into a single conjunction-less fragment.
 
 ### § Baseline Measurement (`perf` only)
 
-A `perf` brief without a baseline is wishful thinking. The downstream agent
-cannot measure improvement against an unstated starting point, and "felt
-faster" is not a verification path.
+A `perf` brief without a baseline is wishful thinking.
+The downstream agent cannot measure improvement against an unstated starting point, and "felt faster" is not a verification path.
 
 Cover:
 
-- **Current measurement** — concrete number with units (`p95 = 420ms`,
-  `bundle = 312KB gzipped`, `cold start = 1.8s`).
+- **Current measurement** — concrete number with units (`p95 = 420ms`, `bundle = 312KB gzipped`, `cold start = 1.8s`).
 - **Method** — how the number was obtained (tool, scenario, sample size).
 - **Environment** — hardware / network / build target / dataset.
-- **Target improvement** — desired delta or absolute target. State both
-  the metric and the threshold.
+- **Target improvement** — desired delta or absolute target.
+  State both the metric and the threshold.
 
 Examples:
 
@@ -197,24 +164,19 @@ Examples:
 - Bad: `Improve performance significantly.` (no baseline, no target)
 - Caveman OK: `Current: TTFB p95 = 420ms over 1000 req, k6 local on M1 Pro, dev build. Target: p95 ≤ 250ms same setup.`
 
-If the user cannot give a baseline, push back during Stage 4. Do not invent
-a number.
+If the user cannot give a baseline, push back during Stage 4.
+Do not invent a number.
 
 ### § Behavior Contract (`refactor` only)
 
-A refactor preserves behavior by definition. The contract section names the
-behavior that must stay invariant and the artifacts that lock it — so the
-downstream agent has something concrete to verify against, not a vibe.
+A refactor preserves behavior by definition.
+The contract section names the behavior that must stay invariant and the artifacts that lock it — so the downstream agent has something concrete to verify against, not a vibe.
 
 Cover:
 
-- **Locked behavior** — what externally observable behavior must not
-  change (public API shape, return values, side-effect order, performance
-  envelope, error semantics).
-- **Contract artifacts** — the tests / specs / type signatures / golden
-  files that serve as the regression net.
-- **Verification method** — how preservation is checked (test suite to
-  run, snapshot to diff, manual scenario).
+- **Locked behavior** — what externally observable behavior must not change (public API shape, return values, side-effect order, performance envelope, error semantics).
+- **Contract artifacts** — the tests / specs / type signatures / golden files that serve as the regression net.
+- **Verification method** — how preservation is checked (test suite to run, snapshot to diff, manual scenario).
 
 Examples:
 
@@ -224,77 +186,64 @@ Examples:
 - Bad: `Tests still pass.` (which tests? what do they actually pin?)
 - Caveman OK: `` Locked: public methods of `UserService` (signature, return shape, thrown errors). Contract: `src/user/__tests__/UserService.test.ts` pass unchanged. Verification: full suite + 3 manual scenarios in `docs/qa/user-service.md`. ``
 
-If existing tests do not cover the behavior the refactor must preserve,
-that gap belongs in `Open Questions` — and may push back into expanding
-test coverage before the refactor proceeds.
+If existing tests do not cover the behavior the refactor must preserve, that gap belongs in `Open Questions` — and may push back into expanding test coverage before the refactor proceeds.
 
 ### § Desired Outcome (To-Be)
 
-The state at completion. This is what tells the downstream agent when to
-stop.
+The state at completion.
+This is what tells the downstream agent when to stop.
 
-- Use as many bullets as the task needs, mirror-structured against `Current
-  State (As-Is)` where possible.
+- Use as many bullets as the task needs, mirror-structured against `Current State (As-Is)` where possible.
 - Describe observable end-state, not implementation steps.
   - Good: `LoginForm` email error shows live while the user is typing.
   - Bad: Refactor `LoginForm` to detect email change via `useEffect`.
   - Caveman OK: `` `LoginForm` show email error live as user type. ``
 - Steps belong to the downstream agent's plan, not the brief.
-- Preserve structural target facts that direct implementation. If completion
-  depends on a specific layer split, data shape, API list, setting, event
-  sequence, or platform behavior, state that end-state as its own bullet or
-  move exact constraints into `## Constraints`.
+- Preserve structural target facts that direct implementation.
+  If completion depends on a specific layer split, data shape, API list, setting, event sequence, or platform behavior, state that end-state as its own bullet or move exact constraints into `## Constraints`.
 
 ### § Scope
 
-Two subsections — **In Scope** and **Out of Scope**. Out of Scope is the
-higher-leverage one: it stops the downstream agent from being helpfully
-wrong.
+Two subsections — **In Scope** and **Out of Scope**.
+Out of Scope is the higher-leverage one: it stops the downstream agent from being helpfully wrong.
 
-- **In Scope** — concrete surface area the agent is allowed to change. If
-  `In Scope` and `Desired Outcome (To-Be)` are saying the same thing, rewrite
-  `In Scope` as the boundary of where the change applies.
-- **Out of Scope** — specific things the agent might otherwise assume are in
-  play.
-  - Good: Do not change the `PaymentService` interface — other teams depend
-    on it.
-  - Bad: Don't touch unrelated code. (too generic — every brief has this)
+- **In Scope** — concrete surface area the agent is allowed to change.
+  If `In Scope` and `Desired Outcome (To-Be)` are saying the same thing, rewrite `In Scope` as the boundary of where the change applies.
+- **Out of Scope** — specific things the agent might otherwise assume are in play.
+  - Good: Do not change the `PaymentService` interface — other teams depend on it.
+  - Bad: Don't touch unrelated code.
+    (too generic — every brief has this)
   - Caveman OK: `` Do not change `PaymentService` interface — other team depend on it. ``
 - Prefix out-of-scope bullets when the distinction matters:
   - `[hard]` means the agent must not touch this in this brief.
   - `[deferred]` means valid follow-up work, intentionally excluded now.
-- Do not put implementation judgment in `Out of Scope`. If the agent may choose
-  between valid implementation approaches, put that bounded choice in
-  `Constraints`. If the user must decide, put it in `Open Questions`.
+- Do not put implementation judgment in `Out of Scope`.
+  If the agent may choose between valid implementation approaches, put that bounded choice in `Constraints`.
+  If the user must decide, put it in `Open Questions`.
 
-If the task is legitimately narrow and there's no realistic adjacent
-overreach, write `- None — self-contained.` Do not pad.
+If the task is legitimately narrow and there's no realistic adjacent overreach, write `- None — self-contained.` Do not pad.
 
 ### § Constraints
 
-**Task-specific constraints only.** Repository-global rules (style, linting,
-tone, language conventions) live in CLAUDE.md / AGENTS.md and must not be
-duplicated here.
+**Task-specific constraints only.** Repository-global rules (style, linting, tone, language conventions) live in CLAUDE.md / AGENTS.md and must not be duplicated here.
 
 Examples of what belongs:
 
 - Must not break the existing public API of `UserProfile.serialize()`.
 - Bundle size increase ≤ 5KB gzipped.
 - Mobile Safari 15+ must still work.
-- Agent may choose between two implementation paths only when both satisfy the
-  listed constraints; name the required behavior, risk, and verification.
+- Agent may choose between two implementation paths only when both satisfy the listed constraints; name the required behavior, risk, and verification.
 
-This section is optional. If none, omit the section entirely — do not write
-`None`.
+This section is optional.
+If none, omit the section entirely — do not write `None`.
 
 ### § Related Files / Entry Points
 
-The most expensive thing a coding agent does on a large codebase is figure
-out where to start. This section eliminates that cost.
+The most expensive thing a coding agent does on a large codebase is figure out where to start.
+This section eliminates that cost.
 
-Each entry should tell the agent where to start, what action starts there, and
-why that entry matters. A useful entry routes the first edit or first read; a
-weak entry only says the file is "related".
+Each entry should tell the agent where to start, what action starts there, and why that entry matters.
+A useful entry routes the first edit or first read; a weak entry only says the file is "related".
 Acceptable entry shapes:
 
 - File path: `` `src/auth/LoginForm.tsx` — start at email validation branch before changing submit gating.``
@@ -306,17 +255,15 @@ Acceptable entry shapes:
 Rules:
 
 - Existing paths must exist in the repo as of the codebase review step.
-- Proposed new paths are allowed only when the user confirms them or the target
-  directory / naming pattern is clear from the repo.
+- Proposed new paths are allowed only when the user confirms them or the target directory / naming pattern is clear from the repo.
 - Never invent PR numbers, existing paths, or prior briefs.
-- If the review does not turn up at least one concrete entry point, ask the
-  user before saving. Do not emit an empty `Related Files / Entry Points`
-  section.
+- If the review does not turn up at least one concrete entry point, ask the user before saving.
+  Do not emit an empty `Related Files / Entry Points` section.
 
 ### § Side Effect Checkpoints
 
-Checklist format (`- [ ]`). Each item checks whether the agent's own changes
-affected another behavior, surface, contract, integration, or workflow.
+Checklist format (`- [ ]`).
+Each item checks whether the agent's own changes affected another behavior, surface, contract, integration, or workflow.
 
 - Good: `- [ ] Login E2E test still passes (cypress/e2e/login.cy.ts).`
 - Good: `- [ ] Existing session cookie format stays compatible — existing users do not need to re-login.`
@@ -330,36 +277,32 @@ Derive checkpoints from:
 
 ### § Acceptance Criteria
 
-Measurable completion criteria. Checklist format. Distinct from `Desired
-Outcome (To-Be)`: `Desired Outcome` describes the end state; `Acceptance
-Criteria` describe how to verify the end state is reached.
+Measurable completion criteria.
+Checklist format.
+Distinct from `Desired Outcome (To-Be)`: `Desired Outcome` describes the end state; `Acceptance Criteria` describe how to verify the end state is reached.
 
 - Good: `- [ ] Error message appears after 500ms debounce while the user is typing the email.`
 - Good: `- [ ] Lighthouse Performance score ≥ 90 (mobile).`
 - Bad: `- [ ] UX feels better.`
 - Bad: `- [ ] All tests pass.` (empty — tests always have to pass)
 
-If the user cannot give concrete criteria, push back during Stage 4 — do not
-invent them.
+If the user cannot give concrete criteria, push back during Stage 4 — do not invent them.
 
 ### § Open Questions
 
-Things that are not yet decided. This is the safety valve that prevents
-the downstream agent from silently guessing.
+Things that are not yet decided.
+This is the safety valve that prevents the downstream agent from silently guessing.
 
-- Surface every uncertainty caught during codebase review here (e.g., "Two
-  parallel implementations exist — which one should we extend?").
+- Surface every uncertainty caught during codebase review here (e.g., "Two parallel implementations exist — which one should we extend?").
 - Write as questions, not statements.
-- If there genuinely are none, write `- None — <reason>`, e.g.
-  `- None — no user-owned decisions remain; implementation choices are bounded in Constraints.`
+- If there genuinely are none, write `- None — <reason>`, e.g. `- None — no user-owned decisions remain; implementation choices are bounded in Constraints.`
 
 ---
 
 ## Worked Example
 
-The example below is emitted in caveman full mode. Headers, paths,
-identifiers, PR numbers, error strings, and the title-line format
-stay verbatim; body prose is compressed.
+The example below is emitted in caveman full mode.
+Headers, paths, identifiers, PR numbers, error strings, and the title-line format stay verbatim; body prose is compressed.
 
 ```markdown
 # [feat] Introduce global hotkey system
@@ -408,7 +351,5 @@ feat
 - Linux is unsupported — should the Settings section be hidden, or rendered disabled with an explanation?
 ```
 
-**Note:** the title line `# [feat] Introduce global hotkey system`
-keeps normal capitalization and articles because the title format is
-contract (validator parses `# [<type>] <title>`). Title text is the
-one prose region in the brief that is *not* caveman-rewritten.
+**Note:** the title line `# [feat] Introduce global hotkey system` keeps normal capitalization and articles because the title format is contract (validator parses `# [<type>] <title>`).
+Title text is the one prose region in the brief that is *not* caveman-rewritten.

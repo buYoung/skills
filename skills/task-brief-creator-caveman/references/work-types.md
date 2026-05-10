@@ -1,14 +1,13 @@
 # Work Types (Conventional Commits)
 
-The work type is the single most load-bearing field in the brief. It changes
-how the downstream coding agent approaches the task — not just how the commit
-is labeled.
+The work type is the single most load-bearing field in the brief.
+It changes how the downstream coding agent approaches the task — not just how the commit is labeled.
 
-A `refactor` agent obsesses over behavior preservation and writes a before/after
-diff. A `fix` agent starts by reproducing the bug. A `perf` agent measures
-first and second-guesses micro-optimizations. One token flips the behavior
-profile. Classifying correctly is worth the one clarifying question it may
-cost.
+A `refactor` agent obsesses over behavior preservation and writes a before/after diff.
+A `fix` agent starts by reproducing the bug.
+A `perf` agent measures first and second-guesses micro-optimizations.
+One token flips the behavior profile.
+Classifying correctly is worth the one clarifying question it may cost.
 
 ---
 
@@ -31,10 +30,9 @@ cost.
 
 ## Required Additional Section per Type
 
-The work type changes downstream agent behavior. The brief makes that change
-*possible* by carrying type-specific input the agent needs. Three types
-require an extra H2 section between `Current State (As-Is)` and `Desired
-Outcome (To-Be)`:
+The work type changes downstream agent behavior.
+The brief makes that change *possible* by carrying type-specific input the agent needs.
+Three types require an extra H2 section between `Current State (As-Is)` and `Desired Outcome (To-Be)`:
 
 | Type | Required Section | Why this section, for this type |
 |---|---|---|
@@ -42,13 +40,10 @@ Outcome (To-Be)`:
 | `perf` | `## Baseline Measurement` | The measurement-first profile needs the baseline number stated explicitly (current measurement, method, environment, target). Without it, "improvement" is unverifiable. |
 | `refactor` | `## Behavior Contract` | The behavior-preservation profile needs the contract named: which observable behaviors must stay invariant, which tests / specs / artifacts lock them, how preservation is verified. |
 
-The other seven types (`feat`, `chore`, `docs`, `test`, `style`, `build`,
-`ci`) use the eight required sections only.
+The other seven types (`feat`, `chore`, `docs`, `test`, `style`, `build`, `ci`) use the eight required sections only.
 
-When the section legitimately has nothing concrete to capture (e.g., a
-visual-regression `fix` whose entire repro is "open the page"), the brief
-may use a single bullet: `- N/A — <one-line reason>`. The section itself
-must still be present; `validate_brief.py` checks for it.
+When the section legitimately has nothing concrete to capture (e.g., a visual-regression `fix` whose entire repro is "open the page"), the brief may use a single bullet: `- N/A — <one-line reason>`.
+The section itself must still be present; `validate_brief.py` checks for it.
 
 See `template.md` for the per-section writing guidance and examples.
 
@@ -58,84 +53,69 @@ See `template.md` for the per-section writing guidance and examples.
 
 ### When the user says "refactor" but describes behavior change
 
-Push back. A refactor *by definition* preserves behavior. If the user says
-"refactor the auth middleware to also log failed attempts", the logging is a
-`feat`. Options to surface:
+Push back.
+A refactor *by definition* preserves behavior.
+If the user says "refactor the auth middleware to also log failed attempts", the logging is a `feat`.
+Options to surface:
 
 - Split into two briefs: a pure `refactor` followed by a `feat`.
-- Reclassify the whole thing as `feat` and note the refactor as an
-  implementation detail.
+- Reclassify the whole thing as `feat` and note the refactor as an implementation detail.
 
 ### `feat` vs `fix` — when behavior "should have worked"
 
-If the user says "login should support SSO but doesn't" — that's `feat`, not
-`fix`. `fix` is reserved for behavior that *was previously working* or that
-the spec explicitly promised and the code broke. A never-implemented
-capability is `feat`.
+If the user says "login should support SSO but doesn't" — that's `feat`, not `fix`.
+`fix` is reserved for behavior that *was previously working* or that the spec explicitly promised and the code broke.
+A never-implemented capability is `feat`.
 
-Gray zone: if a prior release implicitly promised a capability (e.g., the
-marketing page claimed it), the user may reasonably want `fix`. Confirm.
+Gray zone: if a prior release implicitly promised a capability (e.g., the marketing page claimed it), the user may reasonably want `fix`.
+Confirm.
 
 ### `chore` vs `build` vs `ci`
 
-- `build` = anything that changes how artifacts are produced (webpack
-  config, `Cargo.toml` dependencies, Dockerfile for the shipped image).
-- `ci` = anything that changes how CI runs (GitHub Actions workflows,
-  deploy pipelines, test orchestration in CI only).
-- `chore` = everything else that's maintenance (dependency bumps that
-  don't change build config, gitignore updates, editor config).
+- `build` = anything that changes how artifacts are produced (webpack config, `Cargo.toml` dependencies, Dockerfile for the shipped image).
+- `ci` = anything that changes how CI runs (GitHub Actions workflows, deploy pipelines, test orchestration in CI only).
+- `chore` = everything else that's maintenance (dependency bumps that don't change build config, gitignore updates, editor config).
 
-When in doubt, pick the more specific of the three — `build` and `ci`
-trigger more focused verification behaviors than `chore`.
+When in doubt, pick the more specific of the three — `build` and `ci` trigger more focused verification behaviors than `chore`.
 
 ### `perf` vs `refactor`
 
-If the change is motivated by speed/memory but happens to also reorganize
-code, it's `perf`. The performance framing pulls in measurement discipline
-that `refactor` does not demand. Only use `refactor` when speed is genuinely
-not the goal.
+If the change is motivated by speed/memory but happens to also reorganize code, it's `perf`.
+The performance framing pulls in measurement discipline that `refactor` does not demand.
+Only use `refactor` when speed is genuinely not the goal.
 
 ### `style` is narrower than it sounds
 
-`style` is for changes a formatter would make — whitespace, quote style,
-trailing commas, semicolons. Renaming a variable is **not** `style`; it's
-`refactor` (structural change without behavior change).
+`style` is for changes a formatter would make — whitespace, quote style, trailing commas, semicolons.
+Renaming a variable is **not** `style`; it's `refactor` (structural change without behavior change).
 
 ---
 
 ## Confirmation Question Pattern
 
-Type-confirmation routing depends on confidence — most cases defer to the
-Stage 4 decision table and do not need a separate Stage 2 round-trip.
+Type-confirmation routing depends on confidence — most cases defer to the Stage 4 decision table and do not need a separate Stage 2 round-trip.
 
 - **Explicit type from user, evidence agrees** → use it; no question.
-- **Explicit type from user, evidence conflicts** (e.g. user says
-  "refactor" but the work changes behavior) → ask one question in Stage 2
-  before codebase review. The conflict has to resolve before Stage 3,
-  otherwise the review targets the wrong artifacts.
-- **Implicit type, high-confidence** → assign a provisional type and
-  include it in the **Stage 4 decision table** only when user
-  confirmation is still useful. Do not add an early Stage 2 round-trip.
-- **Implicit type, low-confidence AND the inferred type changes the
-  likely execution approach** → ask one short question in Stage 2 before
-  proceeding. Catching it here is cheaper than letting Stage 3 explore
-  the wrong subsystem.
+- **Explicit type from user, evidence conflicts** (e.g. user says "refactor" but the work changes behavior) → ask one question in Stage 2 before codebase review.
+  The conflict has to resolve before Stage 3, otherwise the review targets the wrong artifacts.
+- **Implicit type, high-confidence** → assign a provisional type and include it in the **Stage 4 decision table** only when user confirmation is still useful.
+  Do not add an early Stage 2 round-trip.
+- **Implicit type, low-confidence AND the inferred type changes the likely execution approach** → ask one short question in Stage 2 before proceeding.
+  Catching it here is cheaper than letting Stage 3 explore the wrong subsystem.
 
-When a question fires (in Stage 2 or as the first Stage 4 node), use the
-user's chat language and the template below.
+When a question fires (in Stage 2 or as the first Stage 4 node), use the user's chat language and the template below.
 
 **English:**
 
-> I'd like to classify this as `<inferred>` — does that match? The type
-> changes how the downstream agent works — e.g. `refactor` focuses on
-> behavior preservation, `fix` starts from a reproduction. Tell me if a
-> different type fits better.
+> I'd like to classify this as `<inferred>` — does that match?
+> The type changes how the downstream agent works — e.g. `refactor` focuses on behavior preservation, `fix` starts from a reproduction.
+> Tell me if a different type fits better.
 
 **Korean:**
 
-> 작업 유형을 `<inferred>`로 잡을 생각인데 맞아? 유형에 따라 에이전트
-> 접근 방식이 달라져서 — 예를 들어 `refactor`면 동작 보존에 집중하고
-> `fix`면 재현부터 시작해. 다른 유형이 더 적절하면 말해줘.
+> 작업 유형을 `<inferred>`로 잡을 생각인데 맞아?
+> 유형에 따라 에이전트 접근 방식이 달라져서 — 예를 들어 `refactor`면 동작 보존에 집중하고 `fix`면 재현부터 시작해.
+> 다른 유형이 더 적절하면 말해줘.
 
-Offer 2–3 alternatives if the classification was close. Do not list all ten
-— that's noise.
+Offer 2–3 alternatives if the classification was close.
+Do not list all ten — that's noise.
