@@ -6,6 +6,21 @@
 
 ## [Unreleased]
 
+## [1.4.0] - 2026-05-10
+
+### 추가
+
+- `task-brief-creator`에 사용자 의사결정 표와 콘텐츠 커버리지 셀프체크 추가
+
+### 개선
+
+- `task-brief-creator` Stage 4 분기형 질문 흐름을 사용자 의사결정 표 중심으로 개선
+- `task-brief-creator` briefset 안내와 예시를 새 작업 흐름에 맞게 개선
+
+### 변경
+
+- `task-brief-creator-caveman` caveman 모드를 콘텐츠 압축이 아닌 문체 전용 모드로 설명 변경
+
 ## [1.3.0] - 2026-05-07
 
 ### 추가

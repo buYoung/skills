@@ -6,6 +6,22 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [1.4.0] - 2026-05-10
+
+### Added
+
+- Added decision tables to `task-brief-creator` for capturing user choices before brief handoff.
+- Added content coverage self-checks before `task-brief-creator` hands off a brief.
+
+### Improved
+
+- Improved briefset guidance and examples for the new decision-table workflow.
+
+### Changed
+
+- Replaced Stage 4 branch-walking interviews with user decision tables.
+- Clarified caveman mode as a writing register, not a content compression step.
+
 ## [1.3.0] - 2026-05-07
 
 ### Added
