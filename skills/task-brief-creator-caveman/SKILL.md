@@ -52,6 +52,24 @@ See `references/stage-4-interview.md` for the full decision classification, code
 
 ---
 
+## Code Agent Operating Path
+
+Load references only when their decision point arrives:
+
+1. Use this file for the stage order, output contract, save flow, caveman constraints, and guardrails.
+2. Read `references/caveman-style.md` before composing or patching saved brief prose.
+3. Read `references/work-types.md` during Stage 2 when the work type is not obvious or when the type changes downstream behavior.
+4. Read `references/briefset.md` during Stage 1 when multiple execution contexts are plausible.
+5. Read `references/bloat-decomposition.md` only after a candidate child brief is independently executable but still looks oversized or mixed.
+6. Read `references/stage-4-interview.md` before presenting user-owned decisions.
+7. Read `references/template.md` while composing the saved Markdown.
+
+Do not re-open every reference by habit.
+The goal is to keep the live context focused on the next decision the coding agent must make.
+Caveman style applies to saved brief prose only, not to planning, validation, or chat.
+
+---
+
 ## When This Skill Runs
 
 - **Manual trigger only.** The user invokes this skill explicitly (via slash command, `/task-brief-creator-caveman`, or similar).
@@ -376,21 +394,67 @@ A brief can pass structural validation and still fail this self-check; in that c
 For briefset mode, run the self-check on the parent and on every child independently.
 The parent's coverage check asks whether every input-implied execution context maps to a child; each child's coverage check uses the same six items above.
 
+### Stage 5.6 — Cold-Pickup Sub-Agent Verification
+
+The Stage 5.5 self-check is self-evaluated — the same agent that wrote the brief grades it for cold-pickup readiness.
+That is biased.
+An untouched sub-agent reading **only the original input and the saved brief** is the truthful version of the cold-pickup test.
+
+Stage 5.6 is **default ON**.
+The user can skip it with an explicit opt-out — see the `## Cold-Pickup Verification (Stage 5.6)` section below for the trigger words.
+
+Mechanism:
+
+1. Spawn an `Explore` or `general-purpose` sub-agent.
+2. Hand it **only the original user input or planning notes plus the brief path** — no Stage 3 uncertainty register, no Stage 4 decisions, no suspected gaps, no decomposition rationale, and no Stage 5.5 result.
+   Do not include hints such as what to inspect, what might be missing, or which split you expect the sub-agent to prefer.
+   For briefset mode, hand the parent and every child path one at a time; each file runs its own cold-pickup pass.
+3. Ask the sub-agent to report exactly five things (the caveman variant adds one terseness check on top of the four standard items):
+   1. **First 3 concrete actions** — the file it would open, the search it would run, the hypothesis it would test before writing any code.
+   2. **Ask-back items** — anything it would ask the requester back before starting.
+   3. **Missing or under-specified concerns** — concerns it suspects are missing or specified too thinly to act on.
+   4. **Confidence (1–5)** that it can complete the task without re-interviewing.
+   5. **Over-terseness flags** — are any bullets so terse they hide intent?
+      Caveman is a register transform; if compression made a bullet ambiguous, flag the bullet so it can be rewritten in normal prose (Auto-Clarity carve-out).
+4. Diff the sub-agent's report against the original input + Stage 3 uncertainty register + Stage 4 decisions.
+
+**Drift handling.** When the sub-agent surfaces drift — an ask-back the brief should have answered, a concern the brief omitted, a confidence < 4, or a bullet flagged as over-terse — `Edit` the saved brief in place to close the gap, re-run `validate_brief.py`, and re-run cold-pickup **at most once more**.
+Two cold-pickup passes is the hard cap; do not loop further.
+
+**Pass conditions:**
+
+- Confidence ≥ 4, **and**
+- No ask-back maps to a concern that was already present in the input or resolved during Stage 4, **and**
+- No bullet is flagged as over-terse.
+
+Over-terseness flags are caveman-register findings; they never match a Stage 4 row `내용`, so they are always treated as drift (patch in place under the Auto-Clarity carve-out), never as disagreement.
+
+**Disagreement vs drift.** The sub-agent sees the original input and the brief but not the Stage 3 register or Stage 4 decisions, so it cannot know which items the user locked.
+The main agent classifies each ask-back before deciding to patch:
+
+- If the ask-back's subject matches the `내용` of a row in the Stage 4 decision table that the user answered, treat it as **disagreement** — chat-only comment, no patch.
+- Otherwise treat it as **drift** — patch in place per the drift-handling rule above.
+
+Cold-pickup never overrides user decisions, never invents Acceptance Criteria, never silently rewrites Open Questions.
+
+**Reporting.** The cold-pickup outcome integrates into the Stage 6 save banner alongside the structural validator and the Stage 5.5 self-check.
+For briefset mode, the banner uses the collapsed `parent + K/N children` format defined under `## Cold-Pickup Verification (Stage 5.6)` below — one summary line plus details only on flagged children, not one line per child.
+
 ### Stage 6 — Review + Iterate
 
 The brief is on disk.
 Hand off to the user for review.
 
-1. Report the path, a one-line summary (work type + title), the structural validator result, **and the Stage 5.5 self-check result**.
+1. Report the path, a one-line summary (work type + title), the structural validator result, the Stage 5.5 self-check result, **and the Stage 5.6 cold-pickup result**.
    Use the user's chat language.
-   Both signals are reported together so the user can see whether the file is well-formed *and* complete.
+   All three signals are reported together so the user can see whether the file is well-formed, complete, *and* cold-pickup-ready.
 
-   **English (validator + self-check passed):**
-   > Saved — `docs/briefs/2026-04-23-feat-dark-mode-settings.md` (`feat`: Dark mode toggle in Settings; structural validation passed; content self-check passed — N input concerns covered, caveman parity OK).
+   **English (validator + self-check + cold-pickup passed):**
+   > Saved — `docs/briefs/2026-04-23-feat-dark-mode-settings.md` (`feat`: Dark mode toggle in Settings; structural validation passed; content self-check passed — N input concerns covered, caveman parity OK; cold-pickup passed (confidence 5/5; no ask-backs; no over-terseness flags)).
    > Open it and let me know if anything needs editing.
 
-   **Korean (validator + self-check passed):**
-   > 저장 완료 — `docs/briefs/2026-04-23-feat-dark-mode-settings.md` (`feat`: Dark mode toggle in Settings; 구조 검증 통과; 내용 자체 검증 통과 — 입력 항목 N개 모두 매핑, 문체 변환 동등성 확인).
+   **Korean (validator + self-check + cold-pickup passed):**
+   > 저장 완료 — `docs/briefs/2026-04-23-feat-dark-mode-settings.md` (`feat`: Dark mode toggle in Settings; 구조 검증 통과; 내용 자체 검증 통과 — 입력 항목 N개 모두 매핑, 문체 변환 동등성 확인; cold-pickup 통과 (confidence 5/5; ask-back 없음; 과압축 지적 없음)).
    > 파일 열어보고 고칠 부분 있으면 알려줘.
 
    **English (validator failed):**
@@ -401,7 +465,12 @@ Hand off to the user for review.
    > 저장 완료 — `docs/briefs/2026-04-23-feat-dark-mode-settings.md`, 다만 구조 검증에서 2건 지적: ✗ <첫 번째 실패 메시지 그대로> ✗ <두 번째 실패 메시지 그대로> 파일은 디스크에 있음.
    > 내가 패치할까, 직접 고칠래?
 
+   When the structural validator fails, Stage 5.5 and Stage 5.6 are **skipped** — the brief is not yet well-formed enough to run content or cold-pickup checks against.
+   The banner stays as shown; do not append `self-check skipped` / `cold-pickup skipped` lines in this case.
+
    If the structural validator passed but the Stage 5.5 self-check surfaced gaps that you fixed in place, mention what you patched so the user knows the brief was tightened before handoff (e.g., "self-check found 2 input concerns missing from In Scope and one bullet that had been merged for caveman compression; restored them, re-validated").
+   If Stage 5.6 patched the brief after cold-pickup drift, report it the same way (e.g., `cold-pickup flagged 2 gap(s) and 1 over-terse bullet; patched in place`).
+   If the user opted out, report `cold-pickup skipped per user request`.
 
 2. If the user requests changes, apply them with `Edit` against the on-disk file.
    Do **not** re-render the full brief into chat — that defeats the point of save-then-review.
@@ -495,6 +564,41 @@ See `references/briefset.md` for what the parent validator checks and what stays
 
 ---
 
+## Cold-Pickup Verification (Stage 5.6)
+
+Stage 5.6 spawns an `Explore` or `general-purpose` sub-agent that reads only the original user input or planning notes plus the saved brief, then reports its first 3 actions, ask-back items, missing concerns, confidence (1–5), and (caveman-specific) over-terseness flags.
+The main agent diffs that report against the original input + Stage 3 register + Stage 4 decisions, patches the brief in place if drift is found, and re-runs the structural validator.
+
+**Default behavior: ON.** Cold-pickup runs automatically after Stage 5.5 passes.
+
+**Opt-out.** The user can skip Stage 5.6 with any of:
+
+- An explicit phrase in the input — `skip cold-pickup`, `cold-pickup off`, `no cold-pickup`, `콜드픽업 건너뛰기`, `콜드픽업 끄기`, `cold-pickup 생략`.
+- A flag-style hint — `--no-cold-pickup` or equivalent.
+- Any other phrase that unambiguously opts out of cold-pickup verification — when in doubt, confirm with one short question before skipping.
+
+When the user opts out, Stage 5.6 is bypassed cleanly and the Stage 6 save banner reports `cold-pickup skipped per user request`.
+
+**Loop cap.** A maximum of two cold-pickup passes per brief.
+If drift remains after the second pass, surface the residual gaps in Stage 6 as comments for the user rather than continuing to patch.
+
+**Briefset cost note.** In briefset mode the total spawn count is `parent + N children`, multiplied by up to `2×` when drift triggers a retry.
+For a wide briefset (≥ 5 children) this becomes the most expensive Stage 5.6 case — recommend the user opt out for that briefset, or run Stage 5.6 only on the parent and a sample of children, when cost matters.
+
+**Briefset reporting (Stage 6 banner).** Per-child cold-pickup status is collapsed to one summary line plus details only on flagged children, not one line per child:
+
+- Pass-everything case: `cold-pickup: 1/1 parent + N/N children passed (avg confidence X/5; no ask-backs; no over-terseness flags)`.
+- Mixed case: `cold-pickup: 1/1 parent passed, K/N children passed, M flagged — see chat for details`, then list the flagged child paths and the specific drift items below.
+
+**Caveman extension.** The sub-agent prompt adds one item to the standard four — *are any bullets so terse they hide intent?*.
+Caveman is a register transform; if compression made a bullet ambiguous, the sub-agent flags it and the bullet is rewritten in normal prose under the Auto-Clarity carve-out before the brief passes Stage 5.6.
+
+**What cold-pickup never does:**
+
+- Override a Stage 4 decision the user already locked.
+- Invent Acceptance Criteria, Side Effect Checkpoints, or Out-of-Scope guardrails the input did not imply.
+- Silently rewrite `Open Questions` — drift fixes either resolve a question into another section or leave the question intact for the user.
+
 ## Guardrails
 
 - **Executable, not discursive.** The emitted document is a work instruction, not a memo about the work.
@@ -539,6 +643,7 @@ The structural validator catches format errors after the fact; this list catches
   Paths under inline-code that are not yet created carry a `(proposed)` marker so the structural validator does not flag them as fabricated.
   Each entry routes the agent's first read or first edit, not just "related file" context.
 - [ ] `Open Questions` uses `- None — <reason>` only if the brief is genuinely unambiguous; otherwise populate it with real questions.
+- [ ] Cold-pickup verification ran (or user opted out).
 - [ ] Body prose **outside `## Open Questions`** is in caveman full mode (articles/filler/pleasantries dropped, fragments OK, short synonyms).
 - [ ] `## Open Questions` bullets stayed in normal prose — each question is complete, naturally phrased, and unambiguous.
 - [ ] Auto-Clarity carve-outs stayed in normal prose (code, paths, identifiers, error strings, quantitative expressions, ordered repro steps, behavior contracts, constraints with semantic risk).

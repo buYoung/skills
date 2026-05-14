@@ -40,6 +40,16 @@ When strong signals are present, do not enter briefset mode silently.
 Recommend it and ask the user to choose before Stage 2.
 If the user chooses single-brief despite the recommendation, proceed single-brief and record any ordering or PR constraints explicitly.
 
+### Secondary decomposition (when bloated)
+
+The criteria above answer *"can this work split at all?"*.
+They do not answer *"once it can, where exactly do we cut?"*.
+That second question is the **Bloat Decomposition Rules (BDR)** layer in `references/bloat-decomposition.md`.
+
+Run BDR only after the primary filter has produced a candidate child list.
+If any candidate child triggers ≥ 2 bloat signals from BDR (mixed work types, multiple acceptance-criteria clusters, multiple unrelated entry points, multiple distinct failure modes, or blocks more than one wave), apply BDR's split rules (S1–S5) and keep-together rules (K1–K2) before locking the decomposition.
+Primary filter answers *"can this split at all?"*; BDR answers *"where exactly to cut."*
+
 **User phrasing is not itself a trigger.** Phrases like "다중브리프", "briefset", "multi-brief", or "split this into multiple briefs" do not by themselves engage briefset mode.
 If the user explicitly requests briefset mode but none of the criteria above apply, halt at Stage 1 and ask one short question — e.g. *"I see only one execution context here; what makes you want to split?
 If it's just file count, single-brief is the supported answer."* — before drafting.
@@ -189,6 +199,10 @@ Put user-owned decisions into the four-column table (`순번`, `내용`, `수정
 
 1. **Decomposition** — confirm or revise the child list, each entry carrying a recommended *exists because* clause.
    If a plausible alternative would collapse two children, split one into two, or add/drop a child, give that decision its own row.
+   If the candidate child list shows ≥ 2 bloat signals from `bloat-decomposition.md`, apply BDR before tabling decomposition decisions.
+   Apply K1 (atomic change unit) **before** generating cuts — K1 short-circuits, so atomic candidates never split.
+   Then run S1–S5 on the surviving candidates and apply K2 (shared failure-path cohesion) to prune the resulting cuts.
+   See `bloat-decomposition.md` Application Order for the authoritative sequence.
 2. **Per-child work types** — confirm the provisional type per surviving child when the type changes downstream behavior (e.g., `refactor` vs `feat`).
    If the type is obvious and does not change execution behavior, carry it forward without asking.
 3. **Execution order and parallelization** — add rows for wave order or parallelization choices the user owns.
@@ -233,6 +247,8 @@ Briefset mode adds one parent-specific coverage rule:
 
 - **Parent decomposition coverage:** every input-implied execution context maps to a child brief.
   If the input describes 4 work units and the parent lists 3 children, the missing unit must either become a 4th child or be explicitly justified as folded into an existing child (with the *exists because* clause updated).
+  Each child also survives a BDR pass from `bloat-decomposition.md` — no child triggers ≥ 2 bloat signals, and no atomic-change-unit (K1) was split.
+  If either fails, re-decompose before saving.
 
 Each child runs the standard 5-item self-check from `SKILL.md` Stage 5.5.
 If any child fails the input-coverage or section-depth items, fix the child in place, re-run the briefset structural validator, and re-run the child's self-check.
