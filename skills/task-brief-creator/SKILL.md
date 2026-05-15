@@ -349,26 +349,53 @@ Mechanism:
 2. Hand it **only the original user input or planning notes plus the brief path** — no Stage 3 uncertainty register, no Stage 4 decisions, no suspected gaps, no decomposition rationale, and no Stage 5.5 result.
    Do not include hints such as what to inspect, what might be missing, or which split you expect the sub-agent to prefer.
    For briefset mode, hand the parent and every child path one at a time; each file runs its own cold-pickup pass.
-3. Ask the sub-agent to report exactly four things:
-   1. **First 3 concrete actions** — the file it would open, the search it would run, the hypothesis it would test before writing any code.
-   2. **Ask-back items** — anything it would ask the requester back before starting.
-   3. **Missing or under-specified concerns** — concerns it suspects are missing or specified too thinly to act on.
-   4. **Confidence (1–5)** that it can complete the task without re-interviewing.
-4. Diff the sub-agent's report against the original input + Stage 3 uncertainty register + Stage 4 decisions.
+3. Ask the sub-agent to return the YAML report below.
+   Free-form prose is not accepted — the report is parsed deterministically.
 
-**Drift handling.** When the sub-agent surfaces drift — an ask-back the brief should have answered, a concern the brief omitted, or a confidence < 4 — `Edit` the saved brief in place to close the gap, re-run `validate_brief.py`, and re-run cold-pickup **at most once more**.
+   ```yaml
+   verdict: clean | needs_changes | blocked
+   first_actions:
+     - <file to open, search to run, or hypothesis to test — one bullet each>
+   ask_backs:
+     - id: a1
+       question: <what it would ask the requester before starting>
+       evidence: "<direct quote from the brief or the original input>"
+       source_of_uncertainty: user_input_ambiguity | unverifiable_fact | minor_default
+       affects_direction: true | false
+   missing_concerns:
+     - id: m1
+       description: <concern absent or specified too thinly>
+       evidence: "<direct quote from the original input>"
+   ```
+
+   Rules enforced on the sub-agent:
+   - Every `ask_backs[*]` and `missing_concerns[*]` **must include a direct-quote `evidence`**. Paraphrases are not accepted; if no quote applies, drop the item.
+   - Every `ask_backs[*]` must classify `source_of_uncertainty`:
+     - `user_input_ambiguity` — the input is ambiguous; the brief picked one interpretation but others are equally reasonable.
+     - `unverifiable_fact` — an external fact (API behavior, library version, data shape) the sub-agent cannot confirm from the two inputs alone.
+     - `minor_default` — a reasonable default for something the user did not specify; alternative values would not change the brief's direction.
+   - `verdict: clean` is only valid when `ask_backs` and `missing_concerns` are both empty.
+   - Do **not** emit a numeric confidence score, similarity ratio, or any other LLM-rated number. Self-rated numbers are unreliable in this context — use the qualitative verdict only.
+
+4. Diff the YAML report against the original input + Stage 3 uncertainty register + Stage 4 decisions.
+
+**Drift handling.** When the report's `verdict` is `needs_changes` or `blocked`, or when any unrejected `ask_backs` / `missing_concerns` survive routing — `Edit` the saved brief in place to close the gap, re-run `validate_brief.py`, and re-run cold-pickup **at most once more**.
 Two cold-pickup passes is the hard cap; do not loop further.
 
-**Pass conditions:**
+**Pass condition:** `verdict: clean` (empty `ask_backs` and `missing_concerns`), with no findings re-introduced by re-classification.
 
-- Confidence ≥ 4, **and**
-- No ask-back maps to a concern that was already present in the input or resolved during Stage 4.
+**Routing `ask_backs`.** Classify before deciding to patch:
+
+| `source_of_uncertainty` | `affects_direction` | Action |
+|---|---|---|
+| `user_input_ambiguity` | `true` | Surface in `Open Questions` for the user — chat-only while the brief is in flight, decision-table row when already saved. Never invent the answer in `Edit`. |
+| `user_input_ambiguity` | `false` | State the default assumption in the relevant section; patch in place. |
+| `unverifiable_fact` | (any) | Main verifies directly (codebase check, doc read) or rewrites the bullet as a hedge. **Never ask the user** — this is the main agent's job. |
+| `minor_default` | (any) | Patch in place with the assumption stated. |
 
 **Disagreement vs drift.** The sub-agent sees the original input and the brief but not the Stage 3 register or Stage 4 decisions, so it cannot know which items the user locked.
-The main agent classifies each ask-back before deciding to patch:
-
-- If the ask-back's subject matches the `내용` of a row in the Stage 4 decision table that the user answered, treat it as **disagreement** — chat-only comment, no patch.
-- Otherwise treat it as **drift** — patch in place per the drift-handling rule above.
+Before applying the routing table above, if an ask-back's subject matches the `내용` of a row in the Stage 4 decision table the user already answered, treat it as **disagreement** — chat-only comment, no patch.
+Otherwise route per the table.
 
 Cold-pickup never overrides user decisions, never invents Acceptance Criteria, never silently rewrites Open Questions.
 
@@ -385,11 +412,11 @@ Hand off to the user for review.
    All three signals are reported together so the user can see whether the file is well-formed, complete, *and* cold-pickup-ready.
 
    **English (validator + self-check + cold-pickup passed):**
-   > Saved — `docs/briefs/2026-04-23-feat-dark-mode-settings.md` (`feat`: Dark mode toggle in Settings; structural validation passed; content self-check passed — N input concerns covered; cold-pickup passed (confidence 5/5; no ask-backs)).
+   > Saved — `docs/briefs/2026-04-23-feat-dark-mode-settings.md` (`feat`: Dark mode toggle in Settings; structural validation passed; content self-check passed — N input concerns covered; cold-pickup `verdict: clean` (no ask-backs, no missing concerns)).
    > Open it and let me know if anything needs editing.
 
    **Korean (validator + self-check + cold-pickup passed):**
-   > 저장 완료 — `docs/briefs/2026-04-23-feat-dark-mode-settings.md` (`feat`: Dark mode toggle in Settings; 구조 검증 통과; 내용 자체 검증 통과 — 입력 항목 N개 모두 매핑됨; cold-pickup 통과 (confidence 5/5; ask-back 없음)).
+   > 저장 완료 — `docs/briefs/2026-04-23-feat-dark-mode-settings.md` (`feat`: Dark mode toggle in Settings; 구조 검증 통과; 내용 자체 검증 통과 — 입력 항목 N개 모두 매핑됨; cold-pickup `verdict: clean` (ask-back 없음, missing 없음)).
    > 파일 열어보고 고칠 부분 있으면 알려줘.
 
    **English (validator failed):**
@@ -500,8 +527,9 @@ See `references/briefset.md` for what the parent validator checks and what stays
 
 ## Cold-Pickup Verification (Stage 5.6)
 
-Stage 5.6 spawns an `Explore` or `general-purpose` sub-agent that reads only the original user input or planning notes plus the saved brief, then reports its first 3 actions, ask-back items, missing concerns, and confidence (1–5).
-The main agent diffs that report against the original input + Stage 3 register + Stage 4 decisions, patches the brief in place if drift is found, and re-runs the structural validator.
+Stage 5.6 spawns an `Explore` or `general-purpose` sub-agent that reads only the original user input or planning notes plus the saved brief, then returns the YAML report defined in Stage 5.6 (`verdict`, `first_actions`, `ask_backs` with evidence + `source_of_uncertainty` + `affects_direction`, `missing_concerns` with evidence).
+The main agent classifies and routes each `ask_backs[*]` per the routing table in Stage 5.6, patches the brief in place if drift survives routing, and re-runs the structural validator.
+No numeric confidence score is used — `verdict: clean` (with empty `ask_backs` and `missing_concerns`) is the pass condition.
 
 **Default behavior: ON.** Cold-pickup runs automatically after Stage 5.5 passes.
 
@@ -521,8 +549,8 @@ For a wide briefset (≥ 5 children) this becomes the most expensive Stage 5.6 c
 
 **Briefset reporting (Stage 6 banner).** Per-child cold-pickup status is collapsed to one summary line plus details only on flagged children, not one line per child:
 
-- Pass-everything case: `cold-pickup: 1/1 parent + N/N children passed (avg confidence X/5; no ask-backs)`.
-- Mixed case: `cold-pickup: 1/1 parent passed, K/N children passed, M flagged — see chat for details`, then list the flagged child paths and the specific drift items below.
+- Pass-everything case: `cold-pickup: 1/1 parent + N/N children verdict:clean (no ask-backs, no missing concerns)`.
+- Mixed case: `cold-pickup: 1/1 parent clean, K/N children clean, M flagged — see chat for details`, then list the flagged child paths and the specific drift items below.
 
 **What cold-pickup never does:**
 
