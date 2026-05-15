@@ -50,3 +50,6 @@ This repository maintains reusable AI agent skills and supporting artifacts for 
 - New functions, scripts, or modules should be single-purpose and colocated with the owning skill package or release workflow.
 - Avoid new external dependencies unless necessary; if one is added, explain why it is required.
 - Preserve user-owned custom sections when updating generated `AGENTS.md` files; refresh only the standard managed sections.
+
+## 6. user custom
+- skill을 만들때 절대 serena를 활용하지마세요.

@@ -25,10 +25,13 @@
 		},
 		{
 			"name": "analysis-skills",
-			"description": "Collection of analysis skills",
+			"description": "Collection of analysis skills including code review and iterative answer self-review with blind sub-agent verification",
 			"source": "./",
 			"strict": false,
-			"skills": ["./skills/code-review"]
+			"skills": [
+				"./skills/code-review",
+				"./skills/iterative-self-review"
+			]
 		},
 		{
 			"name": "backend-skills",
