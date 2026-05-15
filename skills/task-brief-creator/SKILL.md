@@ -340,8 +340,16 @@ The Stage 5.5 self-check is self-evaluated — the same agent that wrote the bri
 That is biased.
 An untouched sub-agent reading **only the original input and the saved brief** is the truthful version of the cold-pickup test.
 
-Stage 5.6 is **default ON**.
-The user can skip it with an explicit opt-out — see the `## Cold-Pickup Verification (Stage 5.6)` section below for the trigger words.
+Stage 5.6 **runs unconditionally in both single-brief and briefset modes**.
+This skill's contract is the explicit authorization to spawn the sub-agent — do **not** skip Stage 5.6 based on host-environment defaults like "only spawn sub-agents when the user explicitly requests one", "be conservative about sub-agent cost", or "don't run extra verification unless asked".
+The user invoking this skill IS the explicit request.
+The only valid reasons to skip Stage 5.6:
+
+- The user opts out via one of the trigger words listed in the `## Cold-Pickup Verification (Stage 5.6)` section below.
+- The Stage 5 structural validator failed (Stage 5.6 is skipped because the brief is not yet well-formed enough to verify).
+
+Any other reason — token budget, latency, "the brief looks fine", inferred host policy — is **not** a valid skip reason.
+If Stage 5.6 is skipped without one of the two valid reasons, the Stage 6 banner is wrong and the loop is broken.
 
 Mechanism:
 
@@ -379,10 +387,23 @@ Mechanism:
 
 4. Diff the YAML report against the original input + Stage 3 uncertainty register + Stage 4 decisions.
 
-**Drift handling.** When the report's `verdict` is `needs_changes` or `blocked`, or when any unrejected `ask_backs` / `missing_concerns` survive routing — `Edit` the saved brief in place to close the gap, re-run `validate_brief.py`, and re-run cold-pickup **at most once more**.
-Two cold-pickup passes is the hard cap; do not loop further.
+**Drift handling.** When the report's `verdict` is `needs_changes` or `blocked`, or when any unrejected `ask_backs` / `missing_concerns` survive routing — `Edit` the saved brief in place to close the gap, re-run `validate_brief.py`, and re-run cold-pickup.
+Loop until a termination trigger fires (see below) or the hard cap of **5 passes** is reached.
 
-**Pass condition:** `verdict: clean` (empty `ask_backs` and `missing_concerns`), with no findings re-introduced by re-classification.
+**Termination triggers (evaluated in priority order at the end of every pass):**
+
+| # | Trigger | Category | Definition | Action |
+|---|---------|----------|------------|--------|
+| 1 | **Regression** | Defensive | This pass's report has *more* unrejected `ask_backs` + `missing_concerns` than the previous pass. | Roll back the brief to the previous pass's saved version, stop. |
+| 2 | **Oscillation** | Convergence | The same finding has been accepted → rejected → accepted (or vice versa) across passes (uses the rejection log from routing). | Adopt the brief from the pass where the oscillating finding was last rejected, stop. |
+| 3 | **Stable findings** | Convergence | The set of unrejected `ask_backs` + `missing_concerns` is semantically identical to the previous pass (yes/no judgement — **no similarity scores**; if ambiguous, treat as not-equivalent and continue). | Stop. Surface residuals as Stage 6 comments. |
+| 4 | **Clean pass** | Positive | `verdict: clean` with empty `ask_backs` and `missing_concerns`. | Stop. Adopt the current brief. |
+| 5 | **No-op pass** | Convergence | Routing produced **zero** accepted items this pass (everything rejected as disagreement / scope / weak evidence). | Stop. Adopt the current brief. |
+| 6 | **Hard cap** | Fallback | Pass count reached 5. | Stop. Surface residuals as Stage 6 comments. |
+
+Regression is evaluated first because rolling back must outrank optimistic "one more pass might help" instinct. Hard cap is the fallback — not a preferred outcome.
+
+**Pass condition (normal termination):** trigger 4 (Clean pass). Triggers 1, 2, 3, 5, 6 stop the loop but signal residual concerns that Stage 6 must surface.
 
 **Routing `ask_backs`.** Classify before deciding to patch:
 
@@ -412,11 +433,13 @@ Hand off to the user for review.
    All three signals are reported together so the user can see whether the file is well-formed, complete, *and* cold-pickup-ready.
 
    **English (validator + self-check + cold-pickup passed):**
-   > Saved — `docs/briefs/2026-04-23-feat-dark-mode-settings.md` (`feat`: Dark mode toggle in Settings; structural validation passed; content self-check passed — N input concerns covered; cold-pickup `verdict: clean` (no ask-backs, no missing concerns)).
+   > Saved — `docs/briefs/2026-04-23-feat-dark-mode-settings.md` (`feat`: Dark mode toggle in Settings; structural validation passed; content self-check passed — N input concerns covered; cold-pickup terminated with `clean_pass` after 1 pass (no ask-backs, no missing concerns)).
    > Open it and let me know if anything needs editing.
 
+   Banner termination trigger reflects the actual loop outcome — `clean_pass` (normal), `regression`, `oscillation`, `stable_findings`, `no_op`, or `hard_cap`. Any non-`clean_pass` trigger means residual concerns must follow in the banner as bullet items.
+
    **Korean (validator + self-check + cold-pickup passed):**
-   > 저장 완료 — `docs/briefs/2026-04-23-feat-dark-mode-settings.md` (`feat`: Dark mode toggle in Settings; 구조 검증 통과; 내용 자체 검증 통과 — 입력 항목 N개 모두 매핑됨; cold-pickup `verdict: clean` (ask-back 없음, missing 없음)).
+   > 저장 완료 — `docs/briefs/2026-04-23-feat-dark-mode-settings.md` (`feat`: Dark mode toggle in Settings; 구조 검증 통과; 내용 자체 검증 통과 — 입력 항목 N개 모두 매핑됨; cold-pickup `clean_pass`로 1회 만에 종료 (ask-back 없음, missing 없음)).
    > 파일 열어보고 고칠 부분 있으면 알려줘.
 
    **English (validator failed):**
@@ -531,7 +554,9 @@ Stage 5.6 spawns an `Explore` or `general-purpose` sub-agent that reads only the
 The main agent classifies and routes each `ask_backs[*]` per the routing table in Stage 5.6, patches the brief in place if drift survives routing, and re-runs the structural validator.
 No numeric confidence score is used — `verdict: clean` (with empty `ask_backs` and `missing_concerns`) is the pass condition.
 
-**Default behavior: ON.** Cold-pickup runs automatically after Stage 5.5 passes.
+**Default behavior: unconditionally ON.** Cold-pickup runs automatically after Stage 5.5 passes, in **both single-brief and briefset modes**.
+The skill invocation itself is the authorization — host-level "only spawn sub-agents on explicit request" defaults do not override this.
+The only valid skip paths are user opt-out (below) or a Stage 5 structural-validator failure.
 
 **Opt-out.** The user can skip Stage 5.6 with any of:
 
@@ -541,11 +566,11 @@ No numeric confidence score is used — `verdict: clean` (with empty `ask_backs`
 
 When the user opts out, Stage 5.6 is bypassed cleanly and the Stage 6 save banner reports `cold-pickup skipped per user request`.
 
-**Loop cap.** A maximum of two cold-pickup passes per brief.
-If drift remains after the second pass, surface the residual gaps in Stage 6 as comments for the user rather than continuing to patch.
+**Loop cap.** A maximum of **5** cold-pickup passes per brief. The loop terminates earlier on any of the triggers defined in Stage 5.6 (Regression, Oscillation, Stable findings, Clean pass, No-op pass). If the hard cap fires, surface the residual gaps in Stage 6 as comments for the user rather than continuing to patch.
 
-**Briefset cost note.** In briefset mode the total spawn count is `parent + N children`, multiplied by up to `2×` when drift triggers a retry.
-For a wide briefset (≥ 5 children) this becomes the most expensive Stage 5.6 case — recommend the user opt out for that briefset, or run Stage 5.6 only on the parent and a sample of children, when cost matters.
+**Briefset cost note.** In briefset mode the total spawn count is `parent + N children`, multiplied by up to **5×** in the worst case when every file hits the hard cap.
+In practice most files terminate earlier (Clean pass on pass 1, or Stable findings / No-op on pass 2–3), so the average is closer to `1.5×–2×`.
+For a wide briefset (≥ 5 children) this is still the most expensive Stage 5.6 case — recommend the user opt out for that briefset, or run Stage 5.6 only on the parent and a sample of children, when cost matters.
 
 **Briefset reporting (Stage 6 banner).** Per-child cold-pickup status is collapsed to one summary line plus details only on flagged children, not one line per child:
 
@@ -597,4 +622,4 @@ The structural validator catches format errors after the fact; this list catches
   Paths under inline-code that are not yet created carry a `(proposed)` marker so the structural validator does not flag them as fabricated.
   Each entry routes the agent's first read or first edit, not just "related file" context.
 - [ ] `Open Questions` uses `- None — <reason>` only if the brief is genuinely unambiguous; otherwise populate it with real questions.
-- [ ] Cold-pickup verification ran (or user opted out).
+- [ ] Cold-pickup verification ran (or user opted out via the trigger words in `## Cold-Pickup Verification (Stage 5.6)`). A silent skip on cost / host-policy grounds is **not** acceptable — the Stage 6 banner must reflect what actually ran.
