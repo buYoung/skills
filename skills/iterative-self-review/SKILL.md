@@ -1,6 +1,6 @@
 ---
 name: iterative-self-review
-description: Use this skill when the user explicitly asks for iterative answer refinement, blind sub-agent verification, independent validation, hallucination reduction, or repeated critique-and-revise cycles before finalizing a response or artifact. The main agent drafts the answer, a sub-agent reviews it blindly (only `user input + current answer`, no hints or history), reports back to the main agent only, and the loop stops on a combination of positive (clean verdict), convergence (stable findings, oscillation), defensive (regression), and user-clarification triggers.
+description: Use this skill when the user explicitly asks for iterative answer refinement, blind sub-agent verification, independent validation, hallucination reduction, or repeated critique-and-revise cycles before finalizing a response or artifact. The main agent drafts the answer, a sub-agent reviews it blindly (only `user input + current answer`, no hints or history), reports back to the main agent only, and the loop stops on a combination of positive (clean verdict), convergence (stable findings, oscillation), defensive (regression, invalid verifier report), and user-clarification triggers.
 ---
 
 # Iterative Self-Review
@@ -25,11 +25,13 @@ Do not use this skill just because a task is difficult. If the user did not ask 
 
 ## Core principles
 
-1. **Blind input contract.** The sub-agent receives exactly two things: the user's original input and the current draft. No prior findings, no main-agent reasoning, no evaluation-criteria summaries beyond what is inlined in the sub-agent prompt itself.
-2. **No numeric confidence.** LLM-rated confidence scores, similarity ratios, and thresholds are unreliable. Use qualitative signals and deterministic counts only.
-3. **Evidence-mandatory findings.** Every issue, missing item, and unverified assertion must include a direct quote. Findings without evidence are downgraded.
-4. **User clarification is a main-agent decision.** The sub-agent flags ambiguity; the main agent decides whether to ask.
-5. **Sub-agent reports to the main agent only.** It never speaks to the user, never composes the final answer, never asks for additional context.
+1. **Independent context contract.** The sub-agent receives exactly two textual inputs: the user's original input and the current draft. Blocked: prior findings, the main agent's reasoning, planning, routing intent, evaluation-criteria summaries. Not blocked: reality — read-only access to the repository (Read, Glob, Grep; WebFetch for cited URLs only) is required so cited artifacts can be verified. "No other context" means no main-agent context, not "no tools".
+2. **Sub-agent tool scope.** Allowed: Read, Glob, Grep (Serena search tools when available); WebFetch **only** for URLs cited in the draft. Forbidden: Edit, Write, shell execution (tests/builds), user dialog, asking for more context, calling other agents, WebSearch, arbitrary browsing. Scope is bounded by **claim-linkage**: trace dependencies as far as needed to verify a specific claim, stop the moment the trace no longer maps to a claim. Full wrapper-vs-reality rules live in `sub_agent_prompt_template.md`.
+3. **Inspection manifest is mandatory.** Every cited artifact must have an `artifact_inspections` record. A `clean` verdict without complete manifest coverage is invalid. Schema and enforcement live in `report_format.md`.
+4. **No numeric confidence.** LLM-rated confidence scores, similarity ratios, and thresholds are unreliable. Use qualitative signals and deterministic counts only.
+5. **Evidence-mandatory findings.** Every issue, missing item, and unverified assertion must include a direct quote. Findings without evidence are downgraded.
+6. **User clarification is a main-agent decision.** The sub-agent flags ambiguity; the main agent decides whether to ask.
+7. **Sub-agent reports to the main agent only.** It never speaks to the user, never composes the final answer, never asks for additional context.
 
 ## Role split
 
@@ -49,13 +51,10 @@ Invoke the sub-agent with the prompt body from [sub_agent_prompt_template.md](re
 The six review axes are inlined in the prompt. Their intent and scope guards live in [verification_criteria.md](references/verification_criteria.md).
 
 ### Step 3 — Parse the report
-The sub-agent emits the YAML schema in [report_format.md](references/report_format.md). Validate on the spot:
-
-- Any issue/missing without an `evidence` direct quote → downgrade per the report-format rules.
-- Any `unverified_assertions[*]` missing `source_of_uncertainty` or `affects_direction` → ignore that item or re-call the sub-agent.
+The sub-agent emits the YAML schema in [report_format.md](references/report_format.md). Validate per that file's enforcement rules; re-call the sub-agent when the report is invalid. After two consecutive invalid reports the `verifier_invalid_report` defensive trigger fires (see `termination_triggers.md`).
 
 ### Step 4 — Route findings
-Route each item to *accept*, *reject*, or *ask user* per [routing_rules.md](references/routing_rules.md). Key branches:
+Route each item per [routing_rules.md](references/routing_rules.md). Key branches:
 
 - Regular issues: accept or reject. **Always log the reason for rejection** — required for stable-findings and oscillation detection.
 - `unverified_assertions`:
@@ -67,38 +66,26 @@ Route each item to *accept*, *reject*, or *ask user* per [routing_rules.md](refe
 - If routing produced a user-clarification item, pause the loop, ask the user (batch multiple questions into one turn), and resume from Step 1 once they answer. Do not reset the iteration counter.
 - Otherwise, integrate accepted changes into a new `current_response`.
 
+### Step 5.5 — Routing-completion gate
+Per the canonical definition in [routing_rules.md](references/routing_rules.md). Positive triggers cannot fire while routed items remain unresolved.
+
 ### Step 6 — Evaluate termination
-At the end of every iteration, evaluate the nine triggers in priority order from [termination_triggers.md](references/termination_triggers.md). The first trigger that fires ends the loop.
+At the end of every iteration, evaluate the eight triggers in the priority order defined in [termination_triggers.md](references/termination_triggers.md). The first trigger that fires ends the loop.
 
-Priority groups:
+For trigger #4 (Stable findings), invoke the **equivalence-judge sub-agent** as defined in `termination_triggers.md` — a separate single-shot sub-agent that takes only the two issue sets and answers yes/no. This is distinct from the verification sub-agent and exists to keep equivalence judgments independent of the main agent's self-bias.
 
-| Priority | Trigger | Category |
-|----------|---------|----------|
-| 1 | Regression | Defensive |
-| 2 | Oscillation | Convergence |
-| 3 | Stable findings | Convergence |
-| 4 | Clean pass | Positive |
-| 5 | Severity floor | Positive |
-| 6 | No-op iteration | Convergence |
-| 7 | Diminishing returns | Convergence |
-| 8 | User clarification needed | User-clarification |
-| 9 | Hard cap (default: 8) | Fallback |
-
-Category mapping to the original three-class spec (positive / convergence / defensive): Positive = `clean_pass`, `severity_floor`. Convergence = `oscillation`, `stable_findings`, `no_op`, `diminishing_returns`. Defensive = `regression`. The `user_clarification` and `hard_cap` triggers are safety branches outside the three-class loop end logic.
-
-Regression is evaluated first because rollback must outrank any optimistic "one more pass might help" instinct. Convergence triggers come next because a non-progressing loop cannot be salvaged by continuing.
+User clarification is **not** a termination trigger — it is a routing branch (pause → ask → resume from Step 1 without resetting the iteration counter).
 
 ### Step 7 — Continue or finalize
 If no trigger fires, loop to Step 2. Otherwise, go to Step 8.
 
 ### Step 8 — Final response with termination metadata
-Append the termination block defined in [termination_triggers.md](references/termination_triggers.md). Schema:
+Append the termination block defined in [termination_triggers.md](references/termination_triggers.md):
 
 ```yaml
 termination:
-  trigger: clean_pass | severity_floor | user_clarified | regression | oscillation | stable_findings | no_op | diminishing_returns | hard_cap
+  trigger: clean_pass | severity_floor | regression | verifier_invalid_report | oscillation | stable_findings | no_op | hard_cap
   iterations: <count>
-  classification: normal | defensive | hard_cap
   residual_issues:
     - severity: minor
       problem: <one-line description>
@@ -110,26 +97,20 @@ termination:
       answer: <user's answer>
 ```
 
-`classification: normal` only for `clean_pass`, `severity_floor`, `user_clarified`. `defensive` and `hard_cap` mean "automatic improvement has stalled" — surface this to the user; do not hide it. Use empty arrays for unused fields.
-
-## Continue conditions
-
-All of these must be true to run another iteration:
-
-- No termination trigger fired (in particular, no Regression — Regression always ends the loop with rollback).
-- The issues set changed semantically since the prior iteration (no Stable findings).
-- The routing produced at least one accepted item (no No-op).
-- Iteration count < hard cap.
+Only `clean_pass` and `severity_floor` represent successful termination. Surface every other trigger to the user — do not hide them behind a normal-looking response.
 
 ## Design checklist
 
 - [ ] Sub-agent prompt contains only `{{USER_INPUT}}` and `{{MAIN_RESPONSE}}` — no other variables.
 - [ ] No prior iteration data passed to the sub-agent.
+- [ ] Sub-agent has read-only tool access (Read, Glob, Grep; WebFetch only for cited URLs) and is bound by claim-linkage scope.
+- [ ] Sub-agent report includes `artifact_inspections` for every cited artifact, or an explicit failed inspection record.
 - [ ] Every issue/missing has an `evidence` direct quote (otherwise downgraded).
 - [ ] Every `unverified_assertions` item has `source_of_uncertainty` and `affects_direction`.
 - [ ] No confidence scores, thresholds, or similarity ratios used anywhere.
-- [ ] Stable-findings comparison uses a yes/no LLM judge — never a numeric score.
+- [ ] Stable-findings equivalence uses the dedicated yes/no equivalence-judge sub-agent — never a numeric score.
 - [ ] Termination triggers evaluated in the documented priority order.
+- [ ] Step 5.5 routing-completion gate passed before any Positive trigger is allowed to fire.
 - [ ] `user_input_ambiguity` + `affects_direction=true` routes to a user question.
 - [ ] Final response includes the termination metadata block.
 
@@ -137,8 +118,8 @@ All of these must be true to run another iteration:
 
 | File | When to read |
 |------|--------------|
-| [sub_agent_prompt_template.md](references/sub_agent_prompt_template.md) | Step 2 — exact prompt body to paste into the sub-agent call |
+| [sub_agent_prompt_template.md](references/sub_agent_prompt_template.md) | Step 2 — exact prompt body to paste into the sub-agent call (canonical wrapper-vs-reality rules) |
 | [verification_criteria.md](references/verification_criteria.md) | Step 2 — six review axes and their scope guards |
-| [report_format.md](references/report_format.md) | Step 3 — YAML schema and evidence/uncertainty enforcement |
-| [routing_rules.md](references/routing_rules.md) | Step 4 — accept/reject and `unverified_assertions` routing |
-| [termination_triggers.md](references/termination_triggers.md) | Step 6 — nine triggers, priority order, metadata schema |
+| [report_format.md](references/report_format.md) | Step 3 — YAML schema, evidence/uncertainty enforcement, manifest enforcement (canonical) |
+| [routing_rules.md](references/routing_rules.md) | Step 4 / Step 5.5 — accept/reject routing, `unverified_assertions` routing, routing-completion gate (canonical) |
+| [termination_triggers.md](references/termination_triggers.md) | Step 6 — eight triggers, priority order, equivalence-judge call, metadata schema |

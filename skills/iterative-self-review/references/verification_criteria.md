@@ -7,8 +7,11 @@ The sub-agent reviews the main response only along these six axes. Each axis def
 - **Do not catch**: "Nice-to-have" items the user did not request — that is scope creep.
 
 ## 2. Factual correctness
-- **Catch**: Assertions in the response that contradict the user's input or widely known facts.
-- **Do not catch**: Domain claims the sub-agent cannot directly verify — those go under `unverified_assertions` instead.
+- **Catch**: Assertions in the response that contradict the user's input, widely known facts, **or what the sub-agent can confirm with read-only tools** (Read, Glob, Grep; WebFetch only for URLs the response itself cites).
+- **Tool-use expectation**: For any claim about a file, symbol, identifier, command, or cited URL, the sub-agent must actually inspect the artifact before classifying. Failure to inspect when inspection is possible is a process error.
+- **Reporting**: Inspection-manifest enforcement (every inspected/attempted artifact appears in `artifact_inspections`; clean verdict invalid without complete manifest) is defined canonically in `report_format.md`.
+- **Do not catch as `issues`**: Claims that even read-only inspection cannot resolve — runtime behavior, private API responses, secret values, network/external-system state, future-tense statements. These go under `unverified_assertions`.
+- **Wrapper vs. underlying reality**: Reading a cited wrapper (doc/index/README) does not satisfy verification of the claims the wrapper makes about its subject. Full rules — including enumerated-assertion handling and absolute-path scope — live canonically in `sub_agent_prompt_template.md`.
 
 ## 3. Internal consistency
 - **Catch**: Assertions, numbers, or conclusions within the response that contradict each other.
@@ -25,6 +28,26 @@ The sub-agent reviews the main response only along these six axes. Each axis def
 ## 6. Evidence for assertions
 - **Catch**: The response states something as fact without support in either the response or the user's input.
 - Main-agent handling: hedge the wording or verify directly. **Note**: user-input ambiguity is a separate channel (`user_input_ambiguity`), not this axis.
+
+---
+
+## Verification duty for cited artifacts
+
+When the response specifically names file paths, symbol names, identifiers, commands/scripts, or quoted URLs, the sub-agent must inspect them with read-only tools before classifying. The detailed rules (wrapper-vs-reality, enumerated-assertion handling, absolute-path scope, `unverifiable_fact` boundary) are defined canonically in `sub_agent_prompt_template.md` — the sub-agent reads that prompt and executes against it.
+
+After inspection: matches reality → no report item; contradicts reality → `issues`; real but behavior unconfirmable without runtime/external context → `unverified_assertions` with `unverifiable_fact`.
+
+### Allowed dependency tracing (claim-linkage scope)
+
+Following imports, callers/callees, type definitions, or files referenced from a cited file is allowed and encouraged **as far as the trace remains tied to a specific claim in the response**. Scope is bounded by claim-linkage, not by file count.
+
+### Scope-creep boundary
+
+Stop tracing the moment "which claim in the response does this verify?" has no clear answer. The sub-agent must not:
+
+- Surface new requirements the response does not address.
+- Suggest refactors or improvements outside the response's scope.
+- Hunt for defects in regions the response does not touch.
 
 ---
 

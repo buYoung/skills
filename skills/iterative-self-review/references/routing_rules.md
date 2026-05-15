@@ -1,6 +1,6 @@
 # Routing Rules
 
-The main agent routes each item in the sub-agent report using the rules below.
+The main agent routes each item in the sub-agent report using the rules below. This file is the **canonical** location for the Step 5.5 routing-completion gate and the rejection log schema; other files reference it.
 
 ## 4-1. Regular `issues` / `missing` routing
 
@@ -25,9 +25,27 @@ Branch by `source_of_uncertainty` × `affects_direction`:
 |-----------------------|-------------------|----------|
 | `user_input_ambiguity` | true | **Ask user** (pause loop) |
 | `user_input_ambiguity` | false | Use default, state the assumption |
-| `unverifiable_fact` | true | Main verifies directly (tools / search) or rewrites as a hedge. **Never ask the user.** |
+| `unverifiable_fact` | true | Main resolves before termination (see procedure below). **Never ask the user.** |
 | `unverifiable_fact` | false | Rewrite as a hedge |
 | `minor_default` | (any) | State the assumption, leave as is |
+
+### `unverifiable_fact` + `affects_direction=true` resolution procedure
+
+Each item must be driven to one of two terminal states before Step 5.5 (routing-completion gate) passes:
+
+1. **Direct verification path** — Main agent uses read-only tools (Read, Glob, Grep; WebFetch for response-cited URLs only) or, where allowed, runs verification commands. Reflect the verified fact in the new draft (correct, confirm, or remove the assertion).
+2. **Hedge path** — If direct verification is impossible in this environment, rewrite the assertion in the draft so it no longer asserts the unverified fact (hedge wording, narrow the claim, or remove it).
+
+Mark the item with a resolution tag in the routing log:
+
+```yaml
+unverifiable_fact_resolution:
+  - assertion_id: u1
+    state: verified_reflected | hedged
+    iteration: <n>
+```
+
+The Step 5.5 gate requires zero items in any other state. Positive termination triggers (`clean_pass`, `severity_floor`) cannot fire while unresolved items remain — see `termination_triggers.md`.
 
 ### User-question format
 
@@ -49,6 +67,17 @@ This log feeds:
 - **Oscillation detection** — has the same issue alternated between accept and reject?
 - **Stable findings detection** — does the same issue keep reappearing?
 - **Final metadata** — the `rejected_findings[]` array in the termination block.
+
+## Step 5.5 — Routing-completion gate (canonical definition)
+
+Before evaluating termination (Step 6), confirm every routed item is in a terminal state. A handled item is one of:
+
+- `issues[*]` / `missing[*]`: accepted (integrated into the new draft) or rejected (with reason logged in the rejection log).
+- `unverified_assertions[*]` with `affects_direction=true` and `source_of_uncertainty=unverifiable_fact`: marked `verified_reflected` or `hedged` in `unverifiable_fact_resolution` above.
+- `unverified_assertions[*]` with `source_of_uncertainty=user_input_ambiguity` and `affects_direction=true`: branched out via the user-question path.
+- All other `unverified_assertions[*]`: handled per section 4-2 (hedge or stated assumption).
+
+If any item remains unresolved, return to Step 5 and resolve it before Step 6. **Positive termination triggers (`clean_pass`, `severity_floor`) cannot fire while unresolved items exist.**
 
 ## After routing
 
