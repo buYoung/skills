@@ -1,9 +1,9 @@
-# Verification Criteria (six axes for the sub-agent)
+# Verification Criteria (seven axes for the sub-agent)
 
-The sub-agent reviews the main response only along these six axes. Each axis defines what it *catches* and what it *does not catch* — to stop the verifier's subjective preferences from expanding scope.
+The sub-agent reviews the main response only along these seven axes. Each axis defines what it *catches* and what it *does not catch* — to stop the verifier's subjective preferences from expanding scope.
 
 ## 1. Coverage (does the response satisfy the request?)
-- **Catch**: Items explicitly required by the user's input that the response omits.
+- **Catch**: Items explicitly required by the applicable user's input or narrowed verification scope that the response omits.
 - **Do not catch**: "Nice-to-have" items the user did not request — that is scope creep.
 
 ## 2. Factual correctness
@@ -22,12 +22,17 @@ The sub-agent reviews the main response only along these six axes. Each axis def
 - **Do not catch**: A preference for a "more elegant" reasoning style. Style preferences are not issues.
 
 ## 5. Constraints and edge cases
-- **Catch**: Boundary conditions implied by the user's input or by the response itself that go unhandled.
+- **Catch**: Boundary conditions implied by the applicable user's input, narrowed verification scope, or the response itself that go unhandled.
 - **Do not catch**: Edge cases the verifier invents without any cue in the user's input. Inventing edge cases is scope creep.
 
 ## 6. Evidence for assertions
 - **Catch**: The response states something as fact without support in either the response or the user's input.
 - Main-agent handling: hedge the wording or verify directly. **Note**: user-input ambiguity is a separate channel (`user_input_ambiguity`), not this axis.
+
+## 7. Scope creep
+- **Catch**: The response adds work, requirements, structural changes, recommendations, conclusions, or claims beyond the applicable user request or explicitly narrowed verification scope.
+- **Do not catch**: Information needed to answer the user's request, verify a cited claim, or state a necessary assumption. Do not turn personal preference into scope creep.
+- **Main-agent handling**: do not silently keep or remove the overreach. Route it to the user-decision phase unless it also creates a separate factual, coverage, or correctness issue.
 
 ---
 
@@ -48,6 +53,7 @@ Stop tracing the moment "which claim in the response does this verify?" has no c
 - Surface new requirements the response does not address.
 - Suggest refactors or improvements outside the response's scope.
 - Hunt for defects in regions the response does not touch.
+- Evaluate conversation or response areas that the user explicitly excluded from the verification scope.
 
 ---
 
