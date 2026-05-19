@@ -5,7 +5,7 @@ description: "Always use this skill before sending any user-facing main-agent re
 
 # Iterative Self-Review
 
-A controlled loop where the main agent owns the answer and a clean-context sub-agent performs blind verification before the response is surfaced to the user. The sub-agent never edits the artifact, never writes the final response, and never receives anything beyond the applicable user input and the current main-agent response.
+A controlled loop where the main agent owns the answer and, when the user explicitly asks for verification or review, a clean-context sub-agent performs blind verification before the response is surfaced to the user. The sub-agent never edits the artifact, never writes the final response, and never receives anything beyond the applicable user input and the current main-agent response.
 
 The loop guards against two failure modes:
 
@@ -14,7 +14,9 @@ The loop guards against two failure modes:
 
 ## When to use
 
-Use this skill for every user-facing main-agent response as the integrated quality gate. Treat all of the following as `current_response` artifacts:
+Use this skill only when the user explicitly asks for verification, review, re-checking, proof, cross-checking, or another second-pass quality gate. Do not run this skill automatically for ordinary conversation or routine task completion.
+
+When invoked, treat all of the following as `current_response` artifacts:
 
 - Code work and file-change reports.
 - Documents, design proposals, specifications, and plans.
