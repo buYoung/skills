@@ -2,7 +2,11 @@
 
 The exact prompt the main agent passes to the sub-agent. It accepts only two variables:
 
-- `{{USER_INPUT}}` — the user's original request, verbatim. No edits, no trimming.
+- `{{USER_INPUT}}` — **the user's substantive task request** (the reference point for verification). This is NOT "the user's single most recent message". It is the **collection of verbatim user utterances** in which the user has actually stated requirements, constraints, or deliverable definitions across the conversation.
+  - "Verbatim" means "the exact text the user typed — no editing, no summarizing, no interpretation." It does NOT mean "copy only the last message."
+  - If the most recent user message is a skill re-invocation / repeat trigger (e.g., "한번 더", "다시", "again", "/iterative-self-review", "do another review pass") or carries no task information (empty message, greeting, plain acknowledgement like "ok", "go", "yes"), the main agent MUST reconstruct the slot by quoting the user's earlier utterances — those that actually stated requirements, constraints, or deliverable definitions — in chronological order.
+  - The main agent's summaries, interpretations, paraphrases, or rewrites are **forbidden** here. Only original user utterances appear in this slot.
+  - When combining multiple messages, lay each excerpt out in chronological order using `> ` blockquotes or `--- (user message N) ---` separators.
 - `{{MAIN_RESPONSE}}` — the current main response, verbatim. No edits, no trimming.
 
 No other variables. Do **not** include prior iteration results, evaluation-criteria summaries, the main agent's reasoning, or routing intent.
@@ -153,6 +157,8 @@ Rules:
 
 ### (1) User's original request
 
+This block may contain a single user message or multiple user utterances quoted in time order (with `> ` blockquotes or `--- (user message N) ---` separators). Treat the entire block as the **cumulative set of user-stated requirements** and evaluate `Coverage` and `Constraints` against all of it. Every quote in this block is a user utterance — the main agent is forbidden from inserting its own summary, interpretation, or paraphrase here, so do not treat any content as main-agent-produced.
+
 {{USER_INPUT}}
 
 ### (2) Assistant's current response
@@ -167,3 +173,23 @@ Rules:
 - Substitute `{{USER_INPUT}}` and `{{MAIN_RESPONSE}}` **literally**. No markdown escaping, no trimming, no summarization.
 - Keep the two variables inside the clear `### (1)` / `### (2)` delimiters above so the sub-agent does not confuse them.
 - Do not append extra instructions to this call. The sub-agent's behavior must be determined by the prompt body alone.
+
+### `{{USER_INPUT}}` construction rules (meta-trigger reconstruction)
+
+If the most recent user message falls into any of the categories below, treat it as a **meta-trigger** and do NOT drop it verbatim into `{{USER_INPUT}}`. Reconstruct the substantive request from earlier conversation instead.
+
+- Pure skill/command invocations (e.g., `/iterative-self-review`, "run iterative self review", "kick off the skill", "이 스킬 돌려줘").
+- Repeat / re-run triggers (e.g., "한번 더", "다시", "again", "재검증", "do another cycle", "review again").
+- Messages with no task information (empty message, greeting, plain acknowledgement — "ok", "go", "yes", "ㅇㅋ").
+
+Reconstruction procedure:
+
+1. Walk back through the conversation in chronological order and locate the user utterances that actually stated task instructions, requirements, constraints, or deliverable definitions.
+2. Place those utterances **verbatim**, in chronological order, into the `{{USER_INPUT}}` slot using `> ` blockquotes or `--- (user message N) ---` separators.
+3. Never include main-agent summaries, interpretations, or consolidations — only the user's own quoted utterances.
+4. If reconstruction yields nothing (no substantive request exists anywhere in the prior conversation), **do not call the sub-agent**; ask the user a clarifying question instead.
+
+Operational notes:
+
+- The reconstructed `{{USER_INPUT}}` is the sub-agent's sole reference point for `Coverage` and `Constraints`. If it is missing or reduced to a meta-trigger one-liner, the verification itself is meaningless.
+- When the most recent user message is NOT a meta-trigger (i.e., it itself contains the task instructions), use that message verbatim. Do not force-merge earlier messages on top of it.

@@ -48,6 +48,8 @@ Write the best current response. This is iteration 0's `current_response`.
 ### Step 2 — Blind sub-agent call
 Invoke the sub-agent with the prompt body from [sub_agent_prompt_template.md](references/sub_agent_prompt_template.md). The template takes exactly two variables: `{{USER_INPUT}}` and `{{MAIN_RESPONSE}}`. Add nothing else.
 
+`{{USER_INPUT}}` is **not "the user's last message"** — it is **the full substantive task request that serves as the reference point for verification**. When the most recent user message is a meta-trigger (skill re-invocation, "한번 더", "again", greetings, plain acknowledgements, or any message with no task information), reconstruct the slot by chronologically excerpting only the user's own utterances from earlier in the conversation. The reconstructed block must consist solely of verbatim user quotes — no main-agent summaries or interpretations. The canonical definition of the reconstruction rules and procedure lives in the Call-site notes of `sub_agent_prompt_template.md`.
+
 The six review axes are inlined in the prompt. Their intent and scope guards live in [verification_criteria.md](references/verification_criteria.md).
 
 ### Step 3 — Parse the report
@@ -102,6 +104,8 @@ Only `clean_pass` and `severity_floor` represent successful termination. Surface
 ## Design checklist
 
 - [ ] Sub-agent prompt contains only `{{USER_INPUT}}` and `{{MAIN_RESPONSE}}` — no other variables.
+- [ ] `{{USER_INPUT}}` is not filled with only a meta-trigger one-liner (e.g., "한번 더", "/iterative-self-review"); it contains the substantive request reconstructed from the user's own utterances.
+- [ ] The reconstructed `{{USER_INPUT}}` consists solely of verbatim user-utterance quotes — no main-agent summaries or interpretations.
 - [ ] No prior iteration data passed to the sub-agent.
 - [ ] Sub-agent has read-only tool access (Read, Glob, Grep; WebFetch only for cited URLs) and is bound by claim-linkage scope.
 - [ ] Sub-agent report includes `artifact_inspections` for every cited artifact, or an explicit failed inspection record.
