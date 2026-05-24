@@ -340,16 +340,29 @@ The Stage 5.5 self-check is self-evaluated — the same agent that wrote the bri
 That is biased.
 An untouched sub-agent reading **only the original input and the saved brief** is the truthful version of the cold-pickup test.
 
-Stage 5.6 **runs unconditionally in both single-brief and briefset modes**.
-This skill's contract is the explicit authorization to spawn the sub-agent — do **not** skip Stage 5.6 based on host-environment defaults like "only spawn sub-agents when the user explicitly requests one", "be conservative about sub-agent cost", or "don't run extra verification unless asked".
-The user invoking this skill IS the explicit request.
-The only valid reasons to skip Stage 5.6:
+Stage 5.6 runs **signal-gated** by default — automatically ON only when the brief's workflow signals indicate non-trivial verification value.
+This avoids spawning sub-agents for trivial briefs while keeping the safety net for complex ones.
+This skill's contract authorizes the sub-agent spawn when the gate fires; do not skip a *gated-ON* run based on host defaults like "be conservative about sub-agent cost" or "don't run extra verification unless asked".
 
-- The user opts out via one of the trigger words listed in the `## Cold-Pickup Verification (Stage 5.6)` section below.
-- The Stage 5 structural validator failed (Stage 5.6 is skipped because the brief is not yet well-formed enough to verify).
+**Auto-ON triggers (any one fires Stage 5.6):**
 
-Any other reason — token budget, latency, "the brief looks fine", inferred host policy — is **not** a valid skip reason.
-If Stage 5.6 is skipped without one of the two valid reasons, the Stage 6 banner is wrong and the loop is broken.
+- Briefset mode — parent and every child run cold-pickup unconditionally; per-child signal gating is intentionally disabled because coordination drift between siblings is the main risk briefset cold-pickup catches. Use Force OFF on the briefset to skip wholesale.
+- Stage 4 produced **≥ 1 user-decision row** in the decision table (input had real interpretive ambiguity).
+- `Open Questions` section is non-empty — i.e. it does not consist solely of `- None — <reason>` (Stage 3 surfaced unresolved uncertainty that survived Stage 4).
+- Work type is `fix`, `perf`, or `refactor` — fires *regardless of input simplicity*. The type-conditional section (`Reproduction` / `Baseline Measurement` / `Behavior Contract`) amplifies drift risk on these types, so cold-pickup pays off even for short inputs. Use Force OFF if you want to skip a one-line fix.
+
+**Auto-OFF (trivial signals).** When none of the auto-ON triggers fire, Stage 5.6 is skipped automatically.
+The Stage 6 banner reports the skip with the signal snapshot — `cold-pickup skipped: trivial signals (single-brief, stage-4-rows=0, open-questions=none, type=<type>)` — so the user can see exactly which gates evaluated to false.
+
+**User override.**
+
+- **Force ON** — user can force Stage 5.6 to run even on trivial signals via the trigger words listed in the `## Cold-Pickup Verification (Stage 5.6)` section below (e.g. `run cold-pickup`, `force cold-pickup`, `콜드픽업 강제`, `--cold-pickup`).
+- **Force OFF** — user can skip Stage 5.6 even when auto-ON triggers fire via the existing opt-out triggers (e.g. `skip cold-pickup`, `콜드픽업 끄기`).
+
+**Skip on validator failure.** Stage 5.6 is also skipped when the Stage 5 structural validator failed — the brief is not yet well-formed enough to verify.
+
+Reasons that are **not** valid skips when a gate has fired: token budget, latency, inferred host policy, "the brief looks fine".
+If a gate fires and Stage 5.6 is skipped anyway, the Stage 6 banner is wrong and the loop is broken.
 
 Mechanism:
 
@@ -442,6 +455,14 @@ Hand off to the user for review.
    > 저장 완료 — `docs/briefs/2026-04-23-feat-dark-mode-settings.md` (`feat`: Dark mode toggle in Settings; 구조 검증 통과; 내용 자체 검증 통과 — 입력 항목 N개 모두 매핑됨; cold-pickup `clean_pass`로 1회 만에 종료 (ask-back 없음, missing 없음)).
    > 파일 열어보고 고칠 부분 있으면 알려줘.
 
+   **English (validator + self-check passed, cold-pickup auto-skipped on trivial signals):**
+   > Saved — `docs/briefs/2026-04-23-feat-dark-mode-settings.md` (`feat`: Dark mode toggle in Settings; structural validation passed; content self-check passed — N input concerns covered; cold-pickup skipped: trivial signals (single-brief, stage-4-rows=0, open-questions=none, type=feat)).
+   > Tell me `run cold-pickup` or `--cold-pickup` if you want the sub-agent verification anyway.
+
+   **Korean (validator + self-check passed, cold-pickup auto-skipped on trivial signals):**
+   > 저장 완료 — `docs/briefs/2026-04-23-feat-dark-mode-settings.md` (`feat`: Dark mode toggle in Settings; 구조 검증 통과; 내용 자체 검증 통과 — 입력 항목 N개 모두 매핑됨; cold-pickup 자동 생략: trivial signals (single-brief, stage-4-rows=0, open-questions=none, type=feat)).
+   > sub-agent 검증을 강제로 돌리고 싶으면 `콜드픽업 강제` 또는 `--cold-pickup`로 알려줘.
+
    **English (validator failed):**
    > Saved — `docs/briefs/2026-04-23-feat-dark-mode-settings.md`, but the structural validator flagged 2 issue(s): ✗ <first failure verbatim> ✗ <second failure verbatim> The file is on disk.
    > Want me to patch these, or will you edit directly?
@@ -455,13 +476,14 @@ Hand off to the user for review.
 
    If the structural validator passed but the Stage 5.5 self-check surfaced gaps that you fixed in place, mention what you patched so the user knows the brief was tightened before handoff (e.g., "self-check found 2 input concerns missing from In Scope; added them, re-validated").
    If Stage 5.6 patched the brief after cold-pickup drift, report it the same way (e.g., `cold-pickup flagged 2 gap(s); patched in place`).
-   If the user opted out, report `cold-pickup skipped per user request`.
+   If the user used Force OFF triggers, report `cold-pickup skipped per user request`.
+   If Stage 5.6 was auto-skipped because no auto-ON trigger fired, report `cold-pickup skipped: trivial signals (...)` with the signal snapshot shown in the banner case above.
 
 2. If the user requests changes, apply them with `Edit` against the on-disk file.
    Do **not** re-render the full brief into chat — that defeats the point of save-then-review.
    Re-run the validator after each edit pass and report the delta.
 
-3. If the saved single brief contains `Open Questions` that require a user decision, present them immediately after the save report using the same four-column decision table from Stage 4:
+3. If the saved single brief contains `Open Questions` that require a user decision (after any Stage 5.6 patches have landed), present them immediately after the save report using the same four-column decision table from Stage 4:
 
    ```markdown
    | 순번 | 내용 | 수정 추천안 | 근거 |
@@ -554,17 +576,32 @@ Stage 5.6 spawns an `Explore` or `general-purpose` sub-agent that reads only the
 The main agent classifies and routes each `ask_backs[*]` per the routing table in Stage 5.6, patches the brief in place if drift survives routing, and re-runs the structural validator.
 No numeric confidence score is used — `verdict: clean` (with empty `ask_backs` and `missing_concerns`) is the pass condition.
 
-**Default behavior: unconditionally ON.** Cold-pickup runs automatically after Stage 5.5 passes, in **both single-brief and briefset modes**.
-The skill invocation itself is the authorization — host-level "only spawn sub-agents on explicit request" defaults do not override this.
-The only valid skip paths are user opt-out (below) or a Stage 5 structural-validator failure.
+**Default behavior: signal-gated.** Cold-pickup runs automatically after Stage 5.5 passes **only when at least one auto-ON trigger fires**: briefset mode, Stage 4 decision-table rows ≥ 1, non-empty `Open Questions` (i.e. not solely `- None — <reason>`), or work type in `{fix, perf, refactor}`.
+When none of those signals fire, Stage 5.6 is auto-skipped with a `trivial signals` notation on the Stage 6 banner.
+When any signal fires, Stage 5.6 runs; host-level "only spawn sub-agents on explicit request" defaults do not override the gate.
 
-**Opt-out.** The user can skip Stage 5.6 with any of:
+**Force ON (run despite trivial signals).** The user can force Stage 5.6 to run even when no auto-ON trigger fires:
+
+- An explicit phrase — `run cold-pickup`, `force cold-pickup`, `cold-pickup on`, `콜드픽업 강제`, `콜드픽업 실행`.
+- A flag-style hint — `--cold-pickup` or equivalent.
+- Any other phrase that unambiguously opts into cold-pickup verification — when in doubt, confirm with one short question before running.
+
+**Force OFF (skip despite firing signals).** The user can skip Stage 5.6 even when auto-ON triggers fire:
 
 - An explicit phrase in the input — `skip cold-pickup`, `cold-pickup off`, `no cold-pickup`, `콜드픽업 건너뛰기`, `콜드픽업 끄기`, `cold-pickup 생략`.
 - A flag-style hint — `--no-cold-pickup` or equivalent.
 - Any other phrase that unambiguously opts out of cold-pickup verification — when in doubt, confirm with one short question before skipping.
 
-When the user opts out, Stage 5.6 is bypassed cleanly and the Stage 6 save banner reports `cold-pickup skipped per user request`.
+**Conflict resolution.** If the same input contains both Force ON and Force OFF triggers (e.g. `run cold-pickup` together with `--no-cold-pickup`), do not silently pick one — ask one short question in the user's chat language to disambiguate before deciding: e.g. `Got both Force ON and Force OFF — which one wins?` / `Force ON과 Force OFF가 모두 들어왔어. 어느 쪽으로 갈까?`.
+
+Banner phrasing on the Stage 6 save report:
+
+- Auto-skip (no auto-ON trigger fired) — `cold-pickup skipped: trivial signals (single-brief, stage-4-rows=0, open-questions=none, type=<type>)`.
+- Force OFF (user opt-out) — `cold-pickup skipped per user request`.
+- Force ON (user override on trivial signals) — `cold-pickup forced by user over trivial signals (single-brief, stage-4-rows=0, open-questions=none, type=<type>); <termination trigger> after <N> pass(es)`.
+- Default gated run (auto-ON fired) — `cold-pickup <termination trigger> after <N> pass(es)` (no extra prefix — same shape as before).
+
+**Snapshot semantics.** Stage 4 always runs as a user decision table (see `## Modes`), so `stage-4-rows=0` in the auto-skip snapshot always means *Stage 4 ran and produced no user-decision rows*, never "Stage 4 was skipped". Likewise `open-questions=none` means the `Open Questions` section consists solely of `- None — <reason>`. And `type=<type>` in an auto-skip snapshot is always a type *outside* `{fix, perf, refactor}` — if it were inside, trigger #4 would have fired and the run would not have been skipped.
 
 **Loop cap.** A maximum of **5** cold-pickup passes per brief. The loop terminates earlier on any of the triggers defined in Stage 5.6 (Regression, Oscillation, Stable findings, Clean pass, No-op pass). If the hard cap fires, surface the residual gaps in Stage 6 as comments for the user rather than continuing to patch.
 
@@ -622,4 +659,7 @@ The structural validator catches format errors after the fact; this list catches
   Paths under inline-code that are not yet created carry a `(proposed)` marker so the structural validator does not flag them as fabricated.
   Each entry routes the agent's first read or first edit, not just "related file" context.
 - [ ] `Open Questions` uses `- None — <reason>` only if the brief is genuinely unambiguous; otherwise populate it with real questions.
-- [ ] Cold-pickup verification ran (or user opted out via the trigger words in `## Cold-Pickup Verification (Stage 5.6)`). A silent skip on cost / host-policy grounds is **not** acceptable — the Stage 6 banner must reflect what actually ran.
+- [ ] Cold-pickup ran when any auto-ON trigger fired (briefset / stage-4-rows ≥ 1 / non-empty `Open Questions` / type ∈ `{fix, perf, refactor}`) OR the user used Force ON triggers.
+- [ ] Cold-pickup auto-skipped with `trivial signals (...)` snapshot when no auto-ON trigger fired and no Force ON was used.
+- [ ] Cold-pickup skipped per user request (`cold-pickup skipped per user request`) when Force OFF was used, even if auto-ON triggers would have fired.
+- [ ] Stage 6 banner reflects what actually ran — a silent skip on a fired gate is **not** acceptable.
