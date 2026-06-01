@@ -69,8 +69,12 @@ For multi-prompt design, refer to [multi_prompt_architecture.md](multi_prompt_ar
 
 ```yaml
 - method: Enforce Structured Format (JSON, YAML)
-  effect: Reduces hallucinations, ensures consistency
+  effect: Improves consistency of machine-readable output
   when: During programming integration
+- method: Use API-level schema enforcement (Structured Outputs / strict function calling)
+  effect: Guarantees valid structure, enums, and required keys more reliably than asking for
+    JSON in the prompt
+  when: Production integrations that must parse the output programmatically
 - method: Provide Schema
   effect: Strictly enforces output structure
   when: When outputting complex structures
@@ -81,3 +85,7 @@ For multi-prompt design, refer to [multi_prompt_architecture.md](multi_prompt_ar
   effect: Prevents unnecessarily long responses
   when: Always recommended
 ```
+
+> A generated prompt is only "production-ready" once it has been measured against a test set,
+> not when the checklist above passes. See [evaluation.md](evaluation.md) for the success
+> criteria, dataset, grading, baseline, and regression loop.

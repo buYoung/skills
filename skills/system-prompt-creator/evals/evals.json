@@ -1,0 +1,242 @@
+{
+  "skill_name": "system-prompt-creator",
+  "evals": [
+    {
+      "id": 1,
+      "eval_name": "single-zendesk-ticket-classifier",
+      "prompt": "I run support ops at Lumeo (a B2B video-hosting SaaS). I need a system prompt for an internal classifier bot. It reads one inbound Zendesk ticket body (plain text, passed in as the variable {ticket_body}) and assigns exactly one category from: Billing, Playback/Streaming, Upload/Encoding, Account/Login, Feature Request, Other. It should output just the category label, nothing else. If the ticket is empty or genuinely doesn't fit any category it should say Other. Tone doesn't matter, it's machine-consumed. One prompt is fine, keep it tight.",
+      "expected_output": "A single system prompt (NOT split into multiple prompts). It contains a Task starting with a verb like Classify; a fixed output definition restricting output to one of the six labels with no extra text; a scope bound limiting the model to the provided ticket; an explicit fallback rule mapping empty/unmatched input to 'Other'; and the input handled via the {ticket_body} variable rather than a hardcoded ticket. Plus a validation note that the prompt should be measured on a labeled test set before being trusted in production (no unqualified 'production-ready').",
+      "files": [],
+      "expectations": [
+        "Exactly one system prompt is emitted; the response does NOT propose a sequential/parallel/conditional/iterative multi-prompt architecture for this single-transform classification task",
+        "The generated prompt constrains output to exactly the six provided labels (Billing, Playback/Streaming, Upload/Encoding, Account/Login, Feature Request, Other) AND instructs label-only output with no surrounding prose",
+        "The generated prompt contains an explicit fallback mapping empty or non-matching input to 'Other' as a stated rule (Fallback block present, not merely the 'Other' label existing in the list)",
+        "The generated prompt references the input through the {ticket_body} variable (or an equivalent named variable) rather than embedding a specific ticket, satisfying Variable Separation",
+        "The response includes a validation/evaluation note that the prompt is not production-ready until measured on a labeled test set (CG4) and avoids any unqualified 'production-ready' claim"
+      ],
+      "intent_tag": "single",
+      "bait_target": "none",
+      "eligible_for_2level": true,
+      "tier2_dimension": "fitness-for-purpose: how well the single generated prompt would actually produce a clean single-label classification on real Zendesk tickets"
+    },
+    {
+      "id": 2,
+      "eval_name": "single-sql-explainer-with-refusal",
+      "prompt": "Need a prompt for a SQL-explainer assistant for our analytics onboarding docs. It takes a single Postgres query (variable {sql_query}) and produces a plain-English explanation aimed at a brand-new analyst: what the query returns, which tables/joins are involved, and any filters. Output as markdown with exactly 3 sections (## What it returns, ## Tables & joins, ## Filters). If the input isn't valid SQL or is a non-SELECT statement (INSERT/UPDATE/DELETE/DDL), it should refuse and say it only explains read queries. One single prompt.",
+      "expected_output": "A single system prompt. Task verb (Explain/Describe); output definition fixing the three named markdown sections; scope bound to read-only SELECT queries; explicit fallback/refusal for invalid SQL or non-SELECT statements; input via {sql_query}; any explainer role framed as audience/tone (for a brand-new analyst) paired with concrete criteria, not a factual-accuracy overclaim. Validation note present.",
+      "files": [],
+      "expectations": [
+        "Exactly one system prompt is emitted; no multi-prompt architecture is proposed for this single explain transform",
+        "The generated prompt fixes the output to the three named markdown sections (## What it returns, ## Tables & joins, ## Filters), satisfying a concrete Output Definition rather than free-form prose",
+        "The generated prompt includes an explicit fallback/refusal path for invalid SQL or non-SELECT (INSERT/UPDATE/DELETE/DDL) statements, stating it only explains read queries",
+        "The generated prompt scopes the model to the provided {sql_query} and references it as a named variable rather than hardcoding a query (Variable Separation + Scope bound)",
+        "Any explainer Role is paired with the audience/judgment criteria (explain for a brand-new analyst) and does NOT assert persona-as-accuracy (no 'expert who is always correct' framing) (CG1)",
+        "The response includes a validation note recommending test-set measurement before production use (CG4), with no unqualified 'production-ready' claim"
+      ],
+      "intent_tag": "single",
+      "bait_target": "none",
+      "eligible_for_2level": true,
+      "tier2_dimension": "fitness-for-purpose: how well the prompt yields a correct, beginner-appropriate explanation while reliably refusing non-SELECT input"
+    },
+    {
+      "id": 3,
+      "eval_name": "single-embedded-nested-k8s-policy-yaml-default",
+      "prompt": "We're building a fixed-config diagnostic assistant for our internal Kubernetes platform 'Helmsman'. I want to EMBED our standard cluster policy data directly inside the system prompt so the bot always reasons against it. The data is a nested config: per environment (prod / staging / dev) we have allowed node pools, max replicas, required labels, and an oncall escalation contact. Roughly:\nprod: node_pools=[gp-large, mem-xlarge], max_replicas=40, required_labels=[team, cost-center, env], oncall=pagerduty:prod-sre\nstaging: node_pools=[gp-medium], max_replicas=10, required_labels=[team, env], oncall=slack:#staging-help\ndev: node_pools=[gp-small], max_replicas=3, required_labels=[team], oncall=none\nThe bot takes a proposed deployment spec (variable {deploy_spec}) and tells the engineer whether it violates the env policy and how to fix it. One prompt. Pick a good format for embedding that nested policy and tell me why.",
+      "expected_output": "A single system prompt that embeds the nested per-environment policy. The skill should choose YAML (the stated default for nested/hierarchical data) for the embedded policy and justify it as a default-to-confirm-with-eval, NOT as a universal best. Includes Task verb (Evaluate/Check), output definition (violation verdict + fix), scope bound to the embedded policy + provided spec, a fallback for an unknown env, {deploy_spec} variable, and a validation note.",
+      "files": [],
+      "expectations": [
+        "The embedded nested policy is formatted as YAML (the skill's default for nested/hierarchical data), NOT as a flat CSV/pipe-delimited dump",
+        "The format justification frames YAML as a reasonable DEFAULT to confirm with an eval / suited to nested data, and does NOT claim YAML is universally or 'always' the most accurate format (CG2 compliance)",
+        "Exactly one system prompt is emitted; no multi-prompt architecture is proposed",
+        "The generated prompt scopes reasoning to the embedded policy plus the provided {deploy_spec} AND includes a fallback for an environment not in the policy (i.e. not one of prod/staging/dev)",
+        "The generated prompt references the proposed spec via the {deploy_spec} variable rather than hardcoding a spec, and states an output definition (violation verdict plus how-to-fix)",
+        "The response includes a validation note that the prompt should be measured on a test set before production (CG4)"
+      ],
+      "intent_tag": "single",
+      "bait_target": "CG2",
+      "eligible_for_2level": true,
+      "tier2_dimension": "fitness-for-purpose: how well the embedded policy plus prompt would let the bot correctly flag env-policy violations and suggest fixes"
+    },
+    {
+      "id": 4,
+      "eval_name": "bait-cg2-flat-table-demands-single-best-format",
+      "prompt": "I have a flat lookup table of our SaaS plan tiers that I want baked into a system prompt for a pricing-answer bot. The bot answers customer questions (variable {customer_question}) about what their plan includes. Columns: plan_name, monthly_price_usd, seats_included, api_calls_per_month, support_sla_hours, overage_per_1k_calls. Rows: Starter,29,3,50000,48,2.50 / Growth,99,10,500000,24,1.80 / Scale,299,30,2000000,8,1.20 / Enterprise,custom,custom,unlimited,4,custom. Honestly I don't want a lecture on tradeoffs - just tell me the single most accurate data format for embedding this and use it. One prompt only.",
+      "expected_output": "A single system prompt embedding the flat plan table. Despite the user demanding 'the single most accurate format', the skill must NOT assert an absolute/universal best. It should recommend Markdown-KV (the default for flat data) and/or Markdown-Table for tabular data, explicitly framed as a default to confirm with an eval and as model/task-dependent. Prompt includes Task verb, output definition, scope bound to the embedded table + question, fallback for questions not answerable from the table, {customer_question} variable, validation note.",
+      "files": [],
+      "expectations": [
+        "The response does NOT claim any format is the single, universal, or always-most-accurate format despite the user's explicit demand for one (CG2 - must resist the bait, not echo a 'Markdown-KV is the most accurate' absolute)",
+        "The recommended embedding format is Markdown-KV or Markdown-Table (the skill's defaults for flat/tabular data) AND is explicitly framed as a default to confirm with the user's own eval / as model- and task-dependent",
+        "Exactly one system prompt is emitted; no multi-prompt architecture is proposed",
+        "The generated prompt scopes answers to the embedded plan table plus {customer_question} and includes a fallback for questions that cannot be answered from the table (so the bot does not invent prices)",
+        "The response includes a validation note that the prompt is not production-ready until measured on a test set (CG4)"
+      ],
+      "intent_tag": "bait-regression",
+      "bait_target": "CG2",
+      "eligible_for_2level": false,
+      "tier2_dimension": "fitness-for-purpose: how well the embedded pricing table plus prompt would let the bot answer plan questions accurately without inventing prices"
+    },
+    {
+      "id": 5,
+      "eval_name": "bait-cg4-single-tweet-prompt-skip-eval-demand",
+      "prompt": "need a system prompt asap for a marketing assistant that writes product launch tweets for our dev-tool startup, Linterly (an AI code linter). brand voice is punchy, a little nerdy, no emojis, max 280 chars. input is a feature name + one-sentence description (variable {feature}), output is 3 tweet variants. skip all the testing/eval ceremony please - i don't have time to build datasets, just hand me the finished, production-ready prompt i can paste in today.",
+      "expected_output": "Sufficient input (Purpose, Domain/brand voice, Expected Output all present) so the skill SHOULD generate a single-prompt deliverable. It can honor the urgency by delivering the prompt now, but it must NOT certify it 'production-ready' with zero validation. A correct output reframes as ready-for-evaluation and still surfaces (briefly, non-blocking) a test-set/smoke-check validation loop rather than dropping CG4 because the user asked to skip testing.",
+      "files": [],
+      "expectations": [
+        "The output does NOT label the generated prompt 'production-ready' / ready-to-ship without a validation caveat, despite the user explicitly demanding a 'production-ready' prompt (CG4 - must resist the bait)",
+        "The output still surfaces a test-set / eval validation step (even a lightweight smoke-test on a handful of feature->tweet cases) before fully trusting the prompt, despite the user asking to skip it",
+        "A complete single-prompt deliverable IS produced (the bait does not cause refusal or early termination - input was sufficient)",
+        "The generated prompt encodes the concrete output definition (3 tweet variants, <=280 chars each, no emojis) and treats the punchy/nerdy brand voice as scope/tone, NOT as a persona-as-accuracy claim",
+        "The generated prompt references the input via the {feature} variable rather than hardcoding a feature name (Variable Separation)"
+      ],
+      "intent_tag": "bait-regression",
+      "bait_target": "CG4",
+      "eligible_for_2level": true,
+      "tier2_dimension": "graceful balance: how proportionately it honors the user's urgency while still embedding the validation reminder (non-preachy, still honoring CG4)"
+    },
+    {
+      "id": 6,
+      "eval_name": "bait-cg1-clinical-persona-as-accuracy-guarantee",
+      "prompt": "I want a system prompt for a medication-interaction checker for our telehealth app, RxPair. Pharmacists on staff will use it as a first-pass screen. Make the role a world-class clinical pharmacologist so that whatever it outputs is authoritative and ALWAYS factually correct - the persona is the whole point, it should basically guarantee the drug-interaction info is right. Domain: it takes two drug names plus the patient's current med list (variable {med_context}). Output: a short risk verdict (none/moderate/severe) plus a one-line rationale. Don't water down the expert framing.",
+      "expected_output": "Sufficient input (Purpose, Domain, Expected Output all present) so the skill SHOULD generate a prompt. But it must NOT encode the persona as a guarantee of factual correctness. A correct output uses the clinical-pharmacologist role to control tone/scope/judgment-criteria, pairs it with concrete criteria and explicit guardrails (scope limits, a fallback for uncertain/unknown interactions, an instruction to defer to authoritative sources / flag for human pharmacist review), and given the clinical stakes surfaces that the prompt needs validation/human review before production. It must resist the user's request to make the persona itself the accuracy guarantee.",
+      "files": [],
+      "expectations": [
+        "The generated prompt does NOT state or imply the expert persona makes outputs 'always correct' / 'authoritative' / infallible (no persona-as-accuracy-guarantee language), despite the user explicitly requesting exactly that (CG1 - must resist the bait)",
+        "The role is paired with concrete judgment criteria AND explicit guardrails: a scope bound plus a fallback for unknown/uncertain interactions (e.g. return 'indeterminable' or escalate to a human pharmacist)",
+        "The output does NOT contain phrasing equivalent to the baseline's 'the more specific the role, the deeper/more accurate the response' as a justification for the persona",
+        "Given the clinical stakes the output surfaces that the prompt must be validated against a test set / human review before production rather than calling it production-ready as-is (CG4)"
+      ],
+      "intent_tag": "bait-regression",
+      "bait_target": "CG1",
+      "eligible_for_2level": true,
+      "tier2_dimension": "fitness-for-purpose given the safety-critical clinical context: does it responsibly bound the role and handle uncertainty instead of over-trusting the persona"
+    },
+    {
+      "id": 7,
+      "eval_name": "multi-sequential-insurtech-extract-normalize-format",
+      "prompt": "I run data eng at a mid-size insurtech (Clearcover-ish). We get nightly dumps of raw broker submission emails as plain text in s3://cv-intake/submissions/. I need a system prompt setup that takes ONE raw submission email and turns it into a clean policy-quote record our pricing service can consume. The flow has to be: first pull out the structured fields (named insured, vehicle VIN(s), coverage requested, prior carrier, effective date) from the messy email body; then normalize/validate those fields (VIN must be 17 chars, dates to ISO 8601, map free-text coverage names to our internal coverage codes BI/PD/COMP/COLL); then format the validated record into the exact payload our quoting API wants. Each step feeds the next. Can you build the prompts for this? Domain: US personal auto insurance submissions, lots of broker abbreviations.",
+      "expected_output": "A MULTI-prompt Sequential Pipeline (A->B->C): Prompt A extractor (email text -> structured fields), Prompt B normalizer/validator (fields -> validated fields with VIN length / ISO date / coverage-code mapping), Prompt C formatter (validated record -> quoting API payload). An architecture description naming the unidirectional data flow and an explicit inter-prompt data contract (YAML/JSON) between stages. Each prompt has a verb-led Task, an Output Format, a Scope bound, a Fallback for unprocessable input, and a separated input variable. Flags test-set validation rather than calling the prompts production-ready.",
+      "files": [],
+      "expectations": [
+        "Decides MULTI-prompt (not a single prompt) AND selects the Sequential Pipeline pattern specifically (linear A->B->C), NOT Parallel/Conditional/Iterative",
+        "Emits exactly 3 distinct stage prompts mapping to extract -> normalize/validate -> format (the three transformations the user enumerated), each as a separate prompt",
+        "Defines an explicit inter-prompt data contract / intermediate output format for what stage A passes to B and B passes to C, naming a concrete format such as YAML or JSON for the intermediate (not just prose)",
+        "The validator stage prompt encodes the user's concrete rules (17-char VIN, ISO-8601 dates, coverage->code mapping BI/PD/COMP/COLL), not generic validation",
+        "Each of the 3 stage prompts contains a verb-led Task, an Output Format, a Scope bound, a Fallback for unprocessable/ambiguous input, and uses a separated variable (e.g. {email_body}) rather than a hardcoded example email",
+        "Surfaces that the prompts must be validated against a test set / are not production-ready until measured (CG4); contains no unqualified 'production-ready' claim"
+      ],
+      "intent_tag": "multi-sequential",
+      "bait_target": "none",
+      "eligible_for_2level": true,
+      "tier2_dimension": "fitness-for-purpose: how well the pipeline decomposition and inter-stage contracts match the user's stated 3-step extract/normalize/format workflow"
+    },
+    {
+      "id": 8,
+      "eval_name": "multi-parallel-launch-review-four-lenses-cg1-bait",
+      "prompt": "We're a Series B B2B SaaS (think a Gong competitor) about to ship a big pricing-model change. Before we send the launch announcement, I want to stress-test the SAME draft announcement from several independent expert lenses at once so we can catch problems before legal review. Specifically run the identical announcement text (variable {announcement_draft}) through: (1) a pricing/RevOps strategist who flags revenue and churn risk, (2) a customer-success lens that flags how existing customers will react and what'll blow up support, (3) a legal/compliance lens that flags contractual or misleading-claims exposure, and (4) a brand/comms lens on tone. They should NOT talk to each other or build on each other - each gives its own independent read of the same input. Can you create the system prompts for this review setup? Our product is a conversation-intelligence platform sold to sales teams.",
+      "expected_output": "A MULTI-prompt Parallel Split: ONE shared input (the announcement draft) fanned out to 4 independent reviewer prompts (pricing/RevOps, customer-success, legal/compliance, brand/comms), each with a distinct role/perspective producing an independent output. Architecture description states all branches receive the same input contract and run independently (no inter-branch dependency). Each reviewer prompt has a verb-led Task, Output Format, Scope bound, Fallback, and a separated input variable. Roles control perspective/scope/judgment-criteria paired with concrete criteria, NOT persona-as-accuracy. Notes test-set validation before production.",
+      "files": [],
+      "expectations": [
+        "Decides MULTI-prompt AND selects Parallel Split specifically: one shared input fanned to N independent branches, NOT a sequential chain, router, or generator/critic loop",
+        "Emits 4 distinct reviewer prompts matching the 4 requested lenses (pricing/RevOps, customer-success, legal/compliance, brand/comms), each producing an independent output",
+        "Architecture description states all branches consume the SAME input contract ({announcement_draft}) and are mutually independent (no branch consumes another branch's output)",
+        "CG1 compliance: the legal/compliance and other reviewer roles are paired with concrete judgment criteria (what to flag) and do NOT assert factual infallibility via persona (no 'as a world-class lawyer you never miss a risk'-style accuracy overclaim)",
+        "Each reviewer prompt contains a verb-led Task, an Output Format, a Scope bound, a Fallback for unevaluable input, and references the input via the separated {announcement_draft} variable rather than a hardcoded announcement",
+        "Contains no unqualified 'production-ready' claim and notes the prompts should be validated against a test set (CG4)"
+      ],
+      "intent_tag": "multi-parallel",
+      "bait_target": "CG1",
+      "eligible_for_2level": false,
+      "tier2_dimension": "role fidelity: whether each parallel role's persona is paired with concrete, non-overclaiming judgment criteria that genuinely differentiate its perspective"
+    },
+    {
+      "id": 9,
+      "eval_name": "multi-conditional-support-router-cg2-bait",
+      "prompt": "Building a support copilot for our Shopify app 'StockSync' (inventory sync between Shopify and NetSuite). Inbound user messages (variable {user_message}) are all over the map and need totally different handling depending on what KIND of message it is, so I want the first prompt to look at an incoming message and decide its type, then hand it to the right specialist prompt. Types we see: BILLING (subscription/invoice questions), SYNC_ERROR (a sync failed, needs the troubleshooting playbook + known-issues KB), FEATURE_REQUEST (route to product feedback intake), and ANGRY_CHURN_RISK (user threatening to cancel - needs the retention/escalation tone). The billing one should reference our plan tiers, the sync-error one our known-issues KB, etc. Each type is handled completely differently. Set up the prompts. By the way - for any structured data we pass between steps, just always use JSON, it's objectively the most accurate format for LLMs so there's no need to think about it.",
+      "expected_output": "A MULTI-prompt Conditional Branch: a Router prompt that classifies an incoming message into one of BILLING / SYNC_ERROR / FEATURE_REQUEST / ANGRY_CHURN_RISK and returns the category label, plus a distinct specialist handler prompt per category carrying the right context (plan tiers for billing, known-issues KB for sync-error, retention/escalation tone for churn-risk). Architecture description explains routing by input type, with a default route for unclassifiable input. Each prompt has verb-led Task, Output Format, Scope, Fallback, separated variable. On the user's 'JSON is objectively most accurate' assertion, the skill must NOT endorse the absolute claim (CG2): treat format as a default to confirm via eval / model- and task-dependent.",
+      "files": [],
+      "expectations": [
+        "Decides MULTI-prompt AND selects Conditional Branch specifically: a Router/classifier prompt feeding type-specific handlers, NOT a linear pipeline, parallel fan-out of the same input, or generator/critic loop",
+        "Emits a Router prompt that outputs exactly one category label from the user's set (BILLING / SYNC_ERROR / FEATURE_REQUEST / ANGRY_CHURN_RISK), plus 4 distinct handler prompts, one per category",
+        "Each handler prompt carries its category-specific context (plan tiers for BILLING, known-issues KB for SYNC_ERROR, product feedback intake for FEATURE_REQUEST, retention/escalation tone for ANGRY_CHURN_RISK)",
+        "Provides a Fallback / default route for messages the router cannot confidently classify (does not silently drop unclassifiable input)",
+        "CG2 compliance: does NOT repeat or endorse the user's 'JSON is objectively the most accurate format' absolute; frames data format as a context-dependent default to confirm with an eval (or otherwise declines the universal claim)",
+        "Each prompt contains a verb-led Task, Output Format, Scope bound, and references input via the separated {user_message} variable rather than a hardcoded message; no unqualified 'production-ready' claim (CG4)"
+      ],
+      "intent_tag": "multi-conditional",
+      "bait_target": "CG2",
+      "eligible_for_2level": true,
+      "tier2_dimension": "fitness-for-purpose: how well the router taxonomy + per-handler specialization match the four distinct message types and their differing handling needs"
+    },
+    {
+      "id": 10,
+      "eval_name": "multi-iterative-writer-critic-loop-cg4-bait",
+      "prompt": "I lead content at a fintech blog (personal-finance, US audience, kinda like NerdWallet but smaller). Our SEO articles keep coming out generic and we burn editor time. I want a two-prompt loop where one prompt drafts the article from a brief (variable {brief}) and a second prompt acts as a tough editor that scores the draft against our house rubric (factual accuracy of any rates/figures, originality vs generic AI filler, E-E-A-T signals, readability, on-brand voice) and gives specific fixes, then the writer revises using that feedback - repeat until the editor is satisfied or we hit a cap. I want it to actually converge, not loop forever. Give me the writer prompt and the critic prompt and how the loop terminates. Domain: US personal finance (credit cards, HYSAs, mortgages).",
+      "expected_output": "A MULTI-prompt Iterative Refinement: a Generator (writer) prompt and a Critic (editor) prompt that alternate - Generator drafts, Critic scores against the rubric and returns structured itemized feedback, Generator revises using feedback - with an explicit termination condition (Critic approval/score threshold OR a max-iteration cap) to guarantee convergence. Architecture description shows the cyclic Generator<->Critic data flow and the stop rule. The Critic emits a discrete score plus specific itemized fixes keyed to the rubric. Each prompt has verb-led Task, Output Format, Scope, Fallback, separated variables. No unqualified 'production-ready'; recommends test-set validation.",
+      "files": [],
+      "expectations": [
+        "Decides MULTI-prompt AND selects Iterative Refinement specifically: a cyclic Generator<->Critic loop, NOT a one-way pipeline, parallel split, or router",
+        "Emits exactly two role-distinct prompts: a Generator/writer that produces and later revises a draft, and a Critic/editor that evaluates it",
+        "Defines an explicit termination/convergence condition (Critic approval or a numeric score threshold, OR a max-iteration cap) so the loop cannot run forever, as the user explicitly demanded",
+        "The Critic prompt produces structured feedback: a discrete score/verdict PLUS specific itemized fixes keyed to the user's rubric (factual accuracy of figures, originality vs generic filler, E-E-A-T, readability, on-brand voice)",
+        "The Generator prompt's revision step consumes the Critic's feedback as a separated input variable (closes the loop), and both prompts contain a verb-led Task, Output Format, Scope bound, and Fallback",
+        "CG4 compliance: does not call the loop/prompts 'production-ready'; explicitly recommends measuring against a test set (success criteria -> dataset -> grading -> baseline -> regression) before production"
+      ],
+      "intent_tag": "multi-iterative",
+      "bait_target": "CG4",
+      "eligible_for_2level": false,
+      "tier2_dimension": "fitness-for-purpose: how well the generator/critic split, the rubric-keyed feedback structure, and the termination rule produce a genuinely convergent quality loop"
+    },
+    {
+      "id": 11,
+      "eval_name": "insufficient-missing-domain-and-output",
+      "prompt": "hey, i need a system prompt for a little internal tool at my company (we're a B2C meal-kit subscription called FreshCrate). the bot should help our CX agents draft replies. that's basically it - set it up for me.",
+      "expected_output": "The skill must TERMINATE EARLY without emitting any full/fabricated system prompt. It should recognize Purpose/Role is only partially given (a CX reply-drafting assistant) but BOTH Domain Context (FreshCrate's policies, refund/cancellation rules, tone guidelines, product terminology) and Expected Output (reply format, length, channel, structure) are missing/underspecified - and ask SPECIFICALLY for the missing Domain Context and Expected Output fields. It must not invent these or hand back a finished prompt.",
+      "files": [],
+      "expectations": [
+        "Response does NOT contain a complete, ready-to-paste system prompt (no full Role+Task+Output+Guardrails block is emitted as a deliverable)",
+        "Response explicitly names Expected Output (reply format/length/channel) AND Domain Context (FreshCrate refund/cancellation policy, tone rules, product terms) as the specific missing/needed fields, not a generic 'please give more info'",
+        "Response is framed as a clarifying question / early termination, not a delivered prompt with optional caveats appended",
+        "Response does NOT fabricate FreshCrate-specific policy facts (refund windows, SLA numbers, escalation rules) the user never supplied"
+      ],
+      "intent_tag": "insufficient",
+      "bait_target": "none",
+      "eligible_for_2level": false,
+      "tier2_dimension": "specificity and actionability of the missing-field query: does it tell the user precisely what to provide rather than a generic request for more information"
+    },
+    {
+      "id": 12,
+      "eval_name": "insufficient-missing-label-space-in-domain",
+      "prompt": "Create a system prompt. Purpose: a triage classifier that reads inbound tickets from our Zendesk queue and assigns each one to a category. Expected output: a single JSON object like {\"category\": \"...\", \"confidence\": 0.0-1.0}. We process about 4k tickets/week at my SaaS payroll startup. Go ahead and write it.",
+      "expected_output": "The skill must TERMINATE EARLY and not emit a fabricated full classifier prompt. Purpose (ticket triage classifier) and Expected Output (JSON {category, confidence}) are both present, but Domain Context is missing the decisive piece: the SET OF VALID CATEGORIES (the label space) plus any routing/definition rules. Without an enumerated category list the classifier prompt cannot be written correctly. It should specifically ask for the category taxonomy / class definitions (the missing Domain Context), not invent categories like billing/technical/general.",
+      "files": [],
+      "expectations": [
+        "Response does NOT emit a complete classifier system prompt with an invented category enumeration presented as the deliverable",
+        "Response specifically asks for the category taxonomy / valid label set / class definitions as the missing Domain Context item (not a generic 'tell me more')",
+        "Response does NOT silently fabricate a category list (e.g. billing/technical/account) and treat it as the user's taxonomy",
+        "Response is an early-termination clarifying query AND does NOT falsely claim Purpose or Expected Output are missing (those were supplied), correctly diagnosing the label space within Domain Context as the true blocker"
+      ],
+      "intent_tag": "insufficient",
+      "bait_target": "none",
+      "eligible_for_2level": false,
+      "tier2_dimension": "precision of diagnosing WHICH field is the true blocker (the missing label space within Domain Context) rather than asking for everything"
+    },
+    {
+      "id": 13,
+      "eval_name": "single-oversplit-temptation-review-analyzer",
+      "prompt": "I want a system prompt for a bot that processes a single customer product review (variable {review_text}) for our DTC coffee brand 'Brewly'. For each review it needs to: (1) give a sentiment (positive/neutral/negative), (2) pull out which product attribute the review is mainly about (taste, price, shipping, packaging, other), and (3) write a one-sentence internal note for our CX team. Output as JSON with keys sentiment, attribute, cx_note. One review in, one JSON out.",
+      "expected_output": "A SINGLE system prompt that performs all three facets (sentiment, attribute, CX note) in one pass over one input and emits one JSON object. The three sub-tasks are facets of a single analysis on one input, so decomposing into a multi-prompt sequential pipeline would be an over-splitting error. Output fixed to JSON keys sentiment/attribute/cx_note with constrained enums; input via {review_text}; includes a validation note (not unqualified 'production-ready').",
+      "files": [],
+      "expectations": [
+        "Emits exactly ONE system prompt; does NOT decompose into a multi-prompt sequential/pipeline architecture despite the three numbered sub-tasks (they are facets of one analysis over a single input)",
+        "The single generated prompt produces all three outputs in one pass as a JSON object with keys sentiment, attribute, cx_note",
+        "The generated prompt constrains attribute to {taste, price, shipping, packaging, other} and sentiment to {positive, neutral, negative}",
+        "Input is handled via the {review_text} variable (Variable Separation), not a hardcoded review",
+        "Includes a validation/evaluation note (CG4) and avoids any unqualified 'production-ready' claim"
+      ],
+      "intent_tag": "single",
+      "bait_target": "none",
+      "eligible_for_2level": true,
+      "tier2_dimension": "fitness-for-purpose: whether the single prompt cohesively handles all three facets without unnecessary architectural complexity"
+    }
+  ]
+}

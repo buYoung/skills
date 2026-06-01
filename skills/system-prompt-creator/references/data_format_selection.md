@@ -1,17 +1,28 @@
 # Data Format Selection Guide
 
-Provides criteria for selecting data formats within system prompts and accuracy comparison data for each format.
+Criteria for selecting the format of data placed inside a system prompt.
 
-## Table of Contents
+## How to Read the Numbers Below
 
-- [Format Accuracy: Flat Data](#format-accuracy-flat-data)
-- [Format Accuracy: Nested Data](#format-accuracy-nested-data)
-- [Format Selection Decision Matrix](#format-selection-decision-matrix)
-- [Use Case Recommendations](#use-case-recommendations)
+The accuracy figures in this guide come from two **small-model retrieval benchmarks** (see
+[Source](#source)). They are useful as a starting prior, **not** as a universal law:
 
-## Format Accuracy: Flat Data
+- The flat-data numbers were measured on a **single** model (GPT-4.1-nano).
+- The nested-data ranking **flips across models** (e.g. JSON beats YAML on Llama 3.2 3B).
+- Both tested only simple field-retrieval over large, single-domain datasets.
 
-LLM accuracy comparison by format for 1D (flat) key-value data:
+> The optimal format is model- and task-dependent. Treat the recommendation as a **default to
+> confirm with your own eval** (see [evaluation.md](evaluation.md)), not as a fixed truth.
+
+**Practical default**: in the absence of a task-specific eval, use **Markdown-KV for flat data**
+and **YAML for nested data**. These rank at or near the top across the tested models and remain
+token-efficient. This default is also a common practitioner heuristic — Markdown-KV / YAML tend
+to be recognized more reliably than tag-heavy or delimiter-only formats on current models —
+though that is hands-on experience, not something the benchmarks above establish.
+
+## Format Accuracy: Flat Data (single model — GPT-4.1-nano)
+
+LLM accuracy by format for 1D (flat) key-value retrieval over a large tabular dataset:
 
 | Rank | Format | Accuracy | 95% CI | Tokens |
 |------|--------|----------|--------|--------|
@@ -30,78 +41,79 @@ LLM accuracy comparison by format for 1D (flat) key-value data:
 
 ### Key Insights: Flat Data
 
-- **Highest Accuracy**: Markdown-KV (60.7%) — The explicit structure of key-value pairs is effective for LLM attention
-- **Best Token Efficiency**: CSV (19,524 tokens) — However, accuracy is low at 44.3%
-- **Accuracy-Efficiency Balance**: INI (55.7%, 48,100 tokens) or Markdown-KV (60.7%, 52,104 tokens)
-- **High Token Cost of XML/HTML**: Tag-based formats consume 75,000+ tokens with marginal accuracy benefits
-- **Limitations of Natural Language**: Unstructured format ranks in the lower-middle tier at 49.6% — structured formats are recommended for data delivery
+- **Top accuracy on this model**: Markdown-KV (60.7%) — explicit `key: value` structure is easy
+  to attend to.
+- **Best token efficiency**: CSV (19,524 tokens), but accuracy is low (44.3%).
+- **Balance**: Markdown-KV (60.7%, 52,104 tokens) or INI (55.7%, 48,100 tokens).
+- **Tag-heavy cost**: XML/HTML consume 75,000+ tokens for marginal accuracy benefit.
+- **Caveat**: single-model result — re-confirm before treating any one format as best for your
+  model.
 
-## Format Accuracy: Nested Data
+## Format Accuracy: Nested Data (ranking flips across models)
 
-LLM accuracy comparison by format for nested structure data:
+LLM accuracy by format for nested-structure retrieval, measured on **three** small models. Note
+that the best format is **not** the same for every model:
 
-| Rank | Format | Accuracy | 95% CI | Tokens | Data Size |
-|------|--------|----------|--------|--------|-----------|
-| 1 | YAML | 62.1% | 59.1% – 65.1% | 42,477 | 142.6 KB |
-| 2 | Markdown | 54.3% | 51.2% – 57.4% | 38,357 | 114.6 KB |
-| 3 | JSON | 50.3% | 47.2% – 53.4% | 57,933 | 201.6 KB |
-| 4 | XML | 44.4% | 41.3% – 47.5% | 68,804 | 241.1 KB |
+| Format | GPT-5 Nano | Llama 3.2 3B Instruct | Gemini 2.5 Flash Lite |
+|--------|-----------|-----------------------|-----------------------|
+| YAML     | **62.1%** | 49.1% | **51.9%** |
+| Markdown | 54.3% | 48.0% | 48.2% |
+| JSON     | 50.3% | **52.7%** | 43.1% |
+| XML      | 44.4% | 50.7% | 33.8% |
+
+(Bold = best format for that model.)
 
 ### Key Insights: Nested Data
 
-- **YAML Best Performance**: 62.1% accuracy + 42,477 tokens — Best in both accuracy and efficiency for nested structures
-- **Markdown Efficiency**: Least token consumption at 38,357 tokens, with 54.3% accuracy
-- **JSON Limitations**: 50.3% accuracy at 57,933 tokens — Inefficient except for programming integration
-- **XML Inefficiency**: Lowest accuracy (44.4%) + highest tokens (68,804) — Not recommended for nested data
+- **YAML wins on 2 of 3 models** (GPT-5 Nano, Gemini 2.5 Flash Lite) and is a reasonable default
+  for nested data.
+- **But JSON wins on Llama 3.2 3B** — so "YAML is always best / avoid JSON" is **false** as a
+  universal claim. The right format depends on the target model.
+- **Markdown** is consistently mid-pack and token-cheap; a fine readability-leaning choice.
+- **Verify on your actual target model** before locking a format in.
 
 ## Format Selection Decision Matrix
 
-Guide for format selection based on data characteristics:
+Defaults by data shape — confirm against your model with an eval:
 
 ```yaml
 - data_structure: Flat key-value
-  primary: Markdown-KV
-  alternative: INI
-  avoid: CSV, Pipe-Delimited
+  default: Markdown-KV
+  alternative: INI / YAML
+  note: Single-model evidence; CSV/Pipe-Delimited rank lowest on accuracy
 - data_structure: Nested/hierarchical
-  primary: YAML
-  alternative: Markdown
-  avoid: XML
+  default: YAML
+  alternative: JSON (notably stronger on some models, e.g. Llama)
+  note: Best format flips across models — verify
 - data_structure: Tabular (rows × columns)
-  primary: Markdown-Table
-  alternative: YAML
-  avoid: CSV (Low accuracy)
-- data_structure: List/array
-  primary: YAML
-  alternative: JSON
-  avoid: Natural-Language
+  default: Markdown-Table
+  alternative: Markdown-KV / YAML
+  note: CSV is token-cheap but lowest accuracy
 - data_structure: API integration required
-  primary: JSON
+  default: JSON
   alternative: YAML
-  avoid: Markdown
+  note: Prefer API-level Structured Outputs / strict schema over prompt-only JSON requests
 - data_structure: Legacy system integration
-  primary: XML
+  default: XML
   alternative: JSON
-  avoid: "-"
+  note: "-"
 ```
 
 ## Use Case Recommendations
 
-Format selection guide for system prompt design:
-
 ```yaml
-- use_case: Reference data in system prompt
-  format: Markdown-KV or YAML
-  rationale: High accuracy + reasonable token efficiency
+- use_case: Reference data in a system prompt
+  format: Markdown-KV (flat) or YAML (nested)
+  rationale: High accuracy + reasonable token efficiency on tested models
 - use_case: Intermediate data transfer (multi-prompt)
   format: YAML
-  rationale: Highest accuracy for nested data (62.1%)
+  rationale: Top-ranked for nested data on most tested models; verify per model
 - use_case: API integration output
-  format: JSON
-  rationale: Compatibility for programmatic parsing
+  format: JSON (with Structured Outputs / strict function calling)
+  rationale: Reliable programmatic parsing
 - use_case: Large-volume data input (token limit)
   format: Markdown-Table or CSV
-  rationale: Token efficiency as top priority
+  rationale: Token efficiency over accuracy
 - use_case: Final output for human reading
   format: Markdown or Plain Text
   rationale: Readability
@@ -110,26 +122,16 @@ Format selection guide for system prompt design:
   rationale: Standardized structure definition
 ```
 
-### Considerations for Format Selection
-
-```yaml
-- factor: Accuracy Priority
-  high: YAML (nested), Markdown-KV (flat)
-  low: CSV, Pipe-Delimited
-- factor: Token Efficiency Priority
-  high: CSV, Markdown-Table
-  low: XML, HTML
-- factor: Accuracy-Efficiency Balance
-  high: YAML, INI, Markdown-KV
-  low: JSON (Inefficient), XML (Inefficient)
-- factor: Programmatic Compatibility
-  high: JSON, YAML
-  low: Markdown-KV, INI
-- factor: LLM Training Data Friendly
-  high: Markdown, YAML, JSON
-  low: TOML, INI, Pipe-Delimited
-```
-
 ## Source
 
-The accuracy comparison data and selection criteria in this guide are based on the analysis from [Improving Agents - The Best Data Formats for LLMs](https://www.improvingagents.com).
+Accuracy data is from two benchmarks by Improving Agents. Both test **small models only** and
+**simple field-retrieval** tasks, and both explicitly caution that other models may prefer other
+formats:
+
+- Flat data — single model (GPT-4.1-nano), 1,000 synthetic tabular records:
+  <https://www.improvingagents.com/blog/best-input-data-format-for-llms/>
+- Nested data — three models (GPT-5 Nano, Llama 3.2 3B Instruct, Gemini 2.5 Flash Lite),
+  Terraform configs: <https://www.improvingagents.com/blog/best-nested-data-format/>
+
+Larger/newer models (Claude, GPT-4-class, Gemini Pro, etc.) were not tested. Always confirm the
+format choice for your own model and task with an eval — see [evaluation.md](evaluation.md).
