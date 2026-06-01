@@ -14,6 +14,19 @@ The accuracy figures in this guide come from two **small-model retrieval benchma
 > The optimal format is model- and task-dependent. Treat the recommendation as a **default to
 > confirm with your own eval** (see [evaluation.md](evaluation.md)), not as a fixed truth.
 
+> **If a user demands "the single most accurate / best format," do not name one.** No format is
+> universally or objectively most accurate — the ranking flips across models (the nested-data
+> table below shows JSON beating YAML on one model). The correct response is to pick the
+> **shape-based default** (Markdown-KV for flat, YAML for nested, Markdown-Table for tabular), say
+> plainly that it is a *starting default that depends on the target model and task*, and recommend
+> confirming it with the user's own eval. Never cite a benchmark number as proof that one format is
+> "the most accurate" / "the highest-accuracy" / "the top-ranked" format in general — a scoped
+> percentage does not license a universal superlative.
+>
+> - ✅ "For flat reference data I'll default to Markdown-KV — a solid starting point, but the best
+>   format is model- and task-dependent, so confirm it against your own eval."
+> - ❌ "Markdown-KV is the most accurate format (60.7%), so use it."
+
 **Practical default**: in the absence of a task-specific eval, use **Markdown-KV for flat data**
 and **YAML for nested data**. These rank at or near the top across the tested models and remain
 token-efficient. This default is also a common practitioner heuristic — Markdown-KV / YAML tend
@@ -41,8 +54,9 @@ LLM accuracy by format for 1D (flat) key-value retrieval over a large tabular da
 
 ### Key Insights: Flat Data
 
-- **Top accuracy on this model**: Markdown-KV (60.7%) — explicit `key: value` structure is easy
-  to attend to.
+- **Highest score in this single-model test**: Markdown-KV (60.7%) — explicit `key: value`
+  structure is easy to attend to. This is one model's retrieval result, not a general ranking of
+  "the most accurate format."
 - **Best token efficiency**: CSV (19,524 tokens), but accuracy is low (44.3%).
 - **Balance**: Markdown-KV (60.7%, 52,104 tokens) or INI (55.7%, 48,100 tokens).
 - **Tag-heavy cost**: XML/HTML consume 75,000+ tokens for marginal accuracy benefit.
@@ -65,8 +79,8 @@ that the best format is **not** the same for every model:
 
 ### Key Insights: Nested Data
 
-- **YAML wins on 2 of 3 models** (GPT-5 Nano, Gemini 2.5 Flash Lite) and is a reasonable default
-  for nested data.
+- **YAML scored highest on 2 of the 3 tested models** (GPT-5 Nano, Gemini 2.5 Flash Lite) and is a
+  reasonable default for nested data — on those models, not as a universal ranking.
 - **But JSON wins on Llama 3.2 3B** — so "YAML is always best / avoid JSON" is **false** as a
   universal claim. The right format depends on the target model.
 - **Markdown** is consistently mid-pack and token-cheap; a fine readability-leaning choice.

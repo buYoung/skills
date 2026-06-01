@@ -1,8 +1,9 @@
 # Quality Criteria
 
-Quality standards and checklists for production-ready system prompts.
+Quality standards and readiness checklists for system prompts. Passing the checklist below means a
+prompt is **ready for evaluation**, not certified production-ready — see the note at the end.
 
-## Production-Ready Checklist
+## Readiness Checklist
 
 ```yaml
 - check: Task Clarity

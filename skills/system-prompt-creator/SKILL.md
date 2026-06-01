@@ -49,6 +49,25 @@ deliverable with an "assumptions" caveat. A fabricated closed-output value silen
 correctness, so for closed-output systems the gate favors clarification over a polished guess. A
 stronger drafting instinct is not a license to skip this check.
 
+### Worked examples: clarify vs proceed
+
+The clarify-vs-generate call is the same judgment in both directions — terse wording is not the
+signal; the presence of the required fields is.
+
+- **Insufficient → clarify (do NOT fabricate).** Request: *"I need a system prompt for a bot that
+  helps our CX agents draft replies — that's basically it, set it up."* Purpose is partial, but
+  Domain Context (policies, refund/cancellation rules, tone, product terms) and Expected Output
+  (reply format/length/channel) are absent. ✅ Withhold the prompt and ask specifically for those
+  two fields. ❌ Emit a finished prompt that invents policies/tone/format — even under an
+  "assumptions you can override" caveat. *"I now have everything I need"* is the rationalization to
+  catch; a breezy *"just set it up"* does not supply the missing fields.
+- **Sufficient but terse → proceed (do NOT over-ask).** Request: *"auto-tag GitHub issues as one of
+  bug/feature-request/docs/question/duplicate, else triage; output just the tag — that's all i need,
+  set it up."* Terse, but the closed label set (the required Domain Context for a classifier) and
+  the Expected Output are both present. ✅ Generate the single prompt now. ❌ Ask the user for the
+  category taxonomy or "more domain context" — it was already supplied. Casual or brief wording is
+  not insufficient input.
+
 ## Output
 
 - **System prompt(s)**: 1 to N system prompts ready for evaluation
@@ -60,7 +79,7 @@ stronger drafting instinct is not a license to skip this check.
 ## Core Knowledge
 
 - **Prompt Structure**: Structural building blocks and assembly order of a system prompt. See [prompt_structure.md](references/prompt_structure.md)
-- **Quality Criteria**: Quality standards and checklists for production-ready prompts. See [quality_criteria.md](references/quality_criteria.md)
+- **Quality Criteria**: Quality standards and readiness checklists for prompts. See [quality_criteria.md](references/quality_criteria.md)
 - **Multi-Prompt Architecture**: Design patterns for cases requiring N prompts. See [multi_prompt_architecture.md](references/multi_prompt_architecture.md)
 - **Data Format Selection**: Accuracy comparison of different formats when including data in prompts. See [data_format_selection.md](references/data_format_selection.md)
 - **Evaluation**: How to validate a generated prompt with a test set (success criteria, dataset, grading, baseline, regression). See [evaluation.md](references/evaluation.md)
