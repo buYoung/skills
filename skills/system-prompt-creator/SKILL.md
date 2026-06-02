@@ -1,6 +1,6 @@
 ---
 name: system-prompt-creator
-description: A skill that analyzes user requirements to generate production-ready system prompts. It determines whether a single or multi-prompt architecture is needed and queries for missing information if requirements are insufficient.
+description: A skill that analyzes user requirements to generate system prompts ready for evaluation. It determines whether a single or multi-prompt architecture is needed and queries for missing information if requirements are insufficient.
 ---
 
 # System Prompt Creator
@@ -74,7 +74,12 @@ signal; the presence of the required fields is.
 - **Architecture description**: Relationships and data flow between prompts in a multi-prompt setup
 - **Validation note**: A generated prompt is not "production-ready" until measured against a test
   set. Recommend the success-criteria → dataset → grading → baseline → regression loop in
-  [evaluation.md](references/evaluation.md).
+  [evaluation.md](references/evaluation.md). **Even if the user explicitly asks for a
+  "production-ready" / "finished" / "ship-it-today" prompt, do not certify it as such.** Deliver the
+  prompt, label it *ready for evaluation*, and keep the brief, non-blocking validation step — the
+  user's wording does not waive it.
+  - ✅ "Here's the prompt, ready for you to evaluate — smoke-test it on ~10 real inputs before you trust it."
+  - ❌ "Here is the production-ready prompt." / "This passes the checklist and is ready to ship today."
 
 ## Core Knowledge
 
