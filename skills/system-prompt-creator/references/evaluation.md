@@ -97,7 +97,9 @@ Pick the fastest, most reliable, most scalable method that fits the task.
 - Let the judge reason before scoring, then discard the reasoning.
 - Known biases to mitigate — verified in *Zheng et al., "Judging LLM-as-a-Judge with MT-Bench
   and Chatbot Arena"* (arXiv:2306.05685):
-  - **Position bias**: for pairwise judging, randomize order or evaluate both (A,B) and (B,A).
+  - **Position bias**: for pairwise judging, randomize order or evaluate both (A,B) and (B,A). In
+    that study's MT-Bench setup even GPT-4 gave order-consistent verdicts on only ~65% of swapped
+    pairs (weaker judges far less), so treat this mitigation as required, not optional.
   - **Verbosity bias**: tends to prefer longer answers; constrain or normalize length.
   - **Self-enhancement bias**: prefers its own model family; use a different family as judge.
 - Calibrate the judge against human labels (agreement rate / Cohen's kappa) before trusting it.
