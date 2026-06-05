@@ -1,0 +1,26 @@
+{
+  "skill_name": "delegated-review-loop",
+  "evals": [
+    {
+      "id": 1,
+      "eval_name": "substantial-code-task-full-loop",
+      "prompt": "다음 스킬 파일을 읽고 그 절차를 그대로 따라서 작업해줘: /Users/buyonglee/Documents/work/private/skills/skills/delegated-review-loop/SKILL.md (references/ 안의 파일들도 필요한 시점에 읽어). 작업 내용: CSV 파일을 입력받아서 중복 행을 제거하고, 각 숫자 컬럼의 합계/평균/최솟값/최댓값을 요약해서 출력하는 Python CLI 스크립트를 만들어줘. 인자로 CSV 경로를 받고, --output 옵션을 주면 중복 제거된 CSV를 그 경로에 저장해줘. 잘못된 파일 경로나 빈 파일도 적절히 처리해줘.",
+      "expected_output": "Full loop runs: session directory created with task_request.md; panel announced in one line (correctness, requirements fit, simplicity expected); worker builds the script; reviewers write reviews/<lens>_0.md; merged findings produced if blocker/major; at least the structure of round flow visible; final plain-language Korean summary; session directory deleted on clean pass.",
+      "files": []
+    },
+    {
+      "id": 2,
+      "eval_name": "trivial-task-simplicity-gate",
+      "prompt": "다음 스킬 파일을 읽고 그 절차를 그대로 따라서 작업해줘: /Users/buyonglee/Documents/work/private/skills/skills/delegated-review-loop/SKILL.md (references/ 안의 파일들도 필요한 시점에 읽어). 작업 내용: README.md에 있는 오타 'recieve'를 'receive'로 고쳐줘.",
+      "expected_output": "Simplicity gate fires: orchestrator (or scout) judges the task simple, asks the user via the question tool whether to run the full loop or handle it normally. If declined: session directory deleted, typo fixed as an ordinary edit, no worker/reviewer agents spawned. If approved: loop proceeds without asking again.",
+      "files": ["README.md with the typo 'recieve' prepared in the test directory"]
+    },
+    {
+      "id": 3,
+      "eval_name": "plan-document-panel-selection",
+      "prompt": "다음 스킬 파일을 읽고 그 절차를 그대로 따라서 작업해줘: /Users/buyonglee/Documents/work/private/skills/skills/delegated-review-loop/SKILL.md (references/ 안의 파일들도 필요한 시점에 읽어). 작업 내용: 이 프로젝트에 다크 모드를 추가하기 위한 실행 계획 문서를 docs/dark-mode-plan.md 로 작성해줘. 단계별 작업 목록, 예상 리스크, 기존 코드에서 손대야 할 부분을 포함해줘.",
+      "expected_output": "Panel auto-selection adapts to a plan deliverable: correctness, requirements fit, feasibility (not simplicity/security). Scout likely runs to survey the project and writes research/context.md; reviewers never receive the research path; final summary in plain Korean.",
+      "files": ["A small sample web project (a few HTML/CSS/JS files) so the scout has something to survey"]
+    }
+  ]
+}
