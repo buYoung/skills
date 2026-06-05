@@ -42,7 +42,7 @@ Session cleanup follows termination, per [session_protocol.md](session_protocol.
 
 Written for someone who will not read transcripts. In the user's language, no internal vocabulary (no "lens", "merge", "round cap" jargon — describe in plain words). Keep it under ~15 lines.
 
-Structure (labels translated to the user's language):
+Use this exact structure — same sections, same order, labels translated to the user's language but not replaced with improvised ones. A consistent shape is what lets a user who runs this loop often scan straight to the section they care about:
 
 ```
 ## 결과

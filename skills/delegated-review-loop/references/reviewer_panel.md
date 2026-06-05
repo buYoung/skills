@@ -31,6 +31,8 @@ Two lenses are mandatory for every panel; the rest are selected by what the task
 
 When in doubt between two optional lenses, pick the one whose failure the user would notice later and blame the result for.
 
+When a lens's "add when" condition matches the task but you exclude it anyway (e.g., a CLI takes user-supplied file paths but it is a local single-user tool, so Security feels like overkill), record the reason in one line alongside the panel announcement. The exclusion stays your call — but an unrecorded exclusion is indistinguishable from an overlooked one, both to the user and to anyone auditing the run later.
+
 ## Reviewer prompt template
 
 Spawn one reviewer per lens, all in the same turn. Each prompt contains exactly the blocks below — never the scout's notes, the worker's reasoning, other reviewers' lenses or findings, or prior-round results. The reviewer must form its opinion from the request and the artifact alone; anything else anchors it. Per [session_protocol.md](session_protocol.md), insert **paths only** — the reviewer reads the files itself.

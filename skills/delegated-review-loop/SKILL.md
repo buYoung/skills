@@ -44,7 +44,7 @@ Extract the substantive task request from the user's own words. If the invocatio
 
 Classify the deliverable (code / document / design or plan / mixed) and pick 2–4 review lenses from the roster in [reviewer_panel.md](references/reviewer_panel.md). Correctness and requirements-fit are always in; the rest depend on what the task actually risks. Don't pad the panel — every extra reviewer costs a full read of the artifact, so add a lens only when the task plausibly fails along it.
 
-State the chosen panel to the user in one line before starting (e.g., "리뷰어 패널: 정확성, 요구사항 충족, 단순성"). No further configuration dialog — defaults carry the rest.
+**Then, as a required action of this step — not a formality:** print the chosen panel to the user in one line (e.g., "리뷰어 패널: 정확성, 요구사항 충족, 단순성") **before spawning any sub-agent** (scout included). This line is one of only three things the user sees while the loop runs; skipping it leaves them watching an opaque, slow process with no idea what is happening. Selecting the panel silently and only revealing it in the final summary defeats the line's purpose. No further configuration dialog — defaults carry the rest.
 
 ### Step 3 — Scout gathers context, and the simplicity gate
 

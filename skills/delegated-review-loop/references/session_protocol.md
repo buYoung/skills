@@ -8,7 +8,7 @@ All inter-agent content flows through documents in a per-session directory. The 
 - Isolation becomes enforceable: "the reviewer must not see the worker's reasoning" stops being an honor-system rule and becomes "the reviewer was never handed that path."
 - The session directory doubles as an audit trail while the loop runs.
 
-The rule is absolute: the main agent hands sub-agents file paths only and never inlines a session document's content into a prompt. Each sub-agent reads its inputs itself.
+The rule is absolute: the main agent hands sub-agents file paths only and never inlines a session document's content into a prompt. **Restating, summarizing, or excerpting a session document in a prompt counts as inlining** — even when the recipient has read access to that document anyway. A paraphrase injects the orchestrator's interpretation between the document and its reader, which is exactly what path-passing exists to prevent. Each sub-agent reads its inputs itself, verbatim from the file.
 
 ## Directory layout
 
