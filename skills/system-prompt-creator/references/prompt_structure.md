@@ -48,14 +48,22 @@ This order is designed to help the model build context cumulatively: "I am who �
 
 ### Role
 
-Assigning an identity to the model activates domain-specific vocabulary and perspectives.
+A role primarily controls **tone, style, vocabulary, judgment criteria, and scope** — not
+factual accuracy.
 
 ```text
 You are a [Title/Role] with expertise in [Expertise Area].
 ```
 
-- The more specific the role, the deeper the response.
-- If tone/style is important, specify it in the Role: "in a direct, technical style"
+- **Do not over-claim accuracy gains.** Adding a persona does not reliably improve performance
+  on factual tasks; across 4 LLM families and 2,410 factual questions the effect of a persona
+  was largely random and sometimes mildly negative (Zheng et al., EMNLP 2024 Findings,
+  "When 'A Helpful Assistant' Is Not Really Helpful", arXiv:2311.10054).
+- **Where a role does help**: controlling tone/style, constraining output scope, and naming the
+  criteria the model should apply. It works as a set with the objective and the judgment
+  criteria, not on its own ("You are a B2B product strategy consultant. Prioritize feature
+  requests by revenue impact, implementation cost, and request frequency.").
+- If tone/style is important, specify it in the Role: "in a direct, technical style".
 - If multiple perspectives are needed, separate primary and secondary roles.
 
 ### Context
@@ -106,9 +114,12 @@ Specifying the output structure reduces hallucinations and ensures consistency.
 
 Including input-output examples helps guide the model's output pattern.
 
-- **Quantity**: At least 3–5; more for complex tasks
+- **When to add**: Start zero-shot; add examples only when the output pattern is hard to
+  convey by instruction alone. Then use roughly 2–5 examples (more for complex tasks).
 - **Diversity**: For classification, include each class evenly and mix the order
 - **Edge Cases**: Include methods for handling unstructured input
+- **Relevance**: Examples must be close to real cases — low-relevance examples teach the wrong
+  pattern
 - **Quality**: An error in a single example can contaminate the entire output
 
 ### Guardrails

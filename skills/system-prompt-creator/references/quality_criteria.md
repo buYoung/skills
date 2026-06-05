@@ -1,8 +1,9 @@
 # Quality Criteria
 
-Quality standards and checklists for production-ready system prompts.
+Quality standards and readiness checklists for system prompts. Passing the checklist below means a
+prompt is **ready for evaluation**, not certified production-ready — see the note at the end.
 
-## Production-Ready Checklist
+## Readiness Checklist
 
 ```yaml
 - check: Task Clarity
@@ -19,6 +20,10 @@ Quality standards and checklists for production-ready system prompts.
   criteria: Are dynamic inputs separated into variables without hardcoding?
 - check: Self-Containment
   criteria: Can the task be performed using only the prompt without external explanation?
+- check: Disambiguation (labeling/extraction)
+  criteria: For classification/routing/extraction prompts, are out-of-scope inputs guarded to the
+    fallback value AND ambiguous or multi-signal inputs resolved by an explicit dominant-signal
+    tie-break (stated in the prompt, not left to the model to infer)?
 ```
 
 ## Quality Degradation Patterns
@@ -43,6 +48,31 @@ Quality standards and checklists for production-ready system prompts.
   problem: Typos/logic errors in examples → Model learns error patterns
   fix: Directly verify examples before including them
 ```
+
+## Disambiguation Rules (classification / extraction / labeling prompts)
+
+When a generated prompt assigns a label, category, or fixed-schema field, ambiguous or adversarial
+inputs cause errors unless the prompt states the tie-break **explicitly** — a strong model will not
+reliably infer it. For these prompts, encode the following rules in the prompt itself:
+
+- **Scope guard (required — distinct from the generic fallback)**: a bare "if it doesn't fit any
+  category → Other" catch-all is NOT enough, because it misses input that *keyword-matches a category
+  but is out of scope*. Add an explicit line mapping out-of-domain input to the fallback **even when
+  it contains a category trigger word**, and keep it even in a "tight" prompt — it is one sentence.
+  Template to adapt: *"If the message is not about &lt;this product/service&gt;, output &lt;fallback&gt;
+  even if it mentions &lt;trigger words like refund, charge, account, login&gt;."* e.g. a "refund"
+  request for an unrelated or physical purchase → `Other`, not `Billing`.
+- **Classify by the reported subject, not surface keywords**: with multiple cues, decide on the
+  actual symptom/subject. e.g. "the upload finished but playback is a black screen" is a *playback*
+  issue despite the word "upload".
+- **Dominant-signal tie-break for mixed input**: when signals conflict, state which wins. For
+  sentiment, an actionable defect/complaint governs over incidental praise (praise + damage →
+  negative). For a "main attribute", choose what the author is actually evaluating; a number or term
+  that is only context (e.g. an "$18" mention inside a taste review) is **not** the attribute.
+- **Reserve `neutral` / `none`** for genuinely flat input — do not let it absorb ambiguity.
+
+Encode these as explicit rules in the prompt, then confirm they hold on adversarial inputs with an
+eval — see [evaluation.md](evaluation.md).
 
 ## Single vs. Multi-Prompt Decision Criteria
 
@@ -69,8 +99,12 @@ For multi-prompt design, refer to [multi_prompt_architecture.md](multi_prompt_ar
 
 ```yaml
 - method: Enforce Structured Format (JSON, YAML)
-  effect: Reduces hallucinations, ensures consistency
+  effect: Improves consistency of machine-readable output
   when: During programming integration
+- method: Use API-level schema enforcement (Structured Outputs / strict function calling)
+  effect: Guarantees valid structure, enums, and required keys more reliably than asking for
+    JSON in the prompt
+  when: Production integrations that must parse the output programmatically
 - method: Provide Schema
   effect: Strictly enforces output structure
   when: When outputting complex structures
@@ -81,3 +115,7 @@ For multi-prompt design, refer to [multi_prompt_architecture.md](multi_prompt_ar
   effect: Prevents unnecessarily long responses
   when: Always recommended
 ```
+
+> A generated prompt is only "production-ready" once it has been measured against a test set,
+> not when the checklist above passes. See [evaluation.md](evaluation.md) for the success
+> criteria, dataset, grading, baseline, and regression loop.

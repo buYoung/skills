@@ -252,14 +252,18 @@ Data transfer protocols between multiple prompts:
 ```yaml
 - priority: 1st
   format: YAML
-  use_case: Nested structure data (62.1% accuracy)
+  use_case: Nested/hierarchical intermediate data
 - priority: 2nd
   format: Markdown-KV
-  use_case: 1D key-value data (60.7% accuracy)
+  use_case: Flat 1D key-value intermediate data
 - priority: 3rd
   format: JSON
-  use_case: Cases requiring programming integration (50.3~52.3% accuracy)
+  use_case: Cases requiring programmatic parsing between stages
 ```
+
+These are defaults, not fixed rules — the best format depends on the model and the data shape,
+and should be confirmed with an eval. For the underlying benchmarks, their model/task scope, and
+the model-dependent ranking, see [data_format_selection.md](data_format_selection.md).
 
 ### Data Contract Definition Pattern
 
