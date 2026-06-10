@@ -84,6 +84,7 @@ If the section legitimately has nothing concrete to capture (e.g., a visual regr
 
 Do not omit the section — `validate_brief.py` checks for its presence.
 The `- N/A — <reason>` form is the explicit escape hatch; a bare `- N/A` without reason is rejected.
+In the `- N/A — <reason>` and `- None — <reason>` forms, the em dash is canonical; the validator also accepts a plain hyphen or an en dash surrounded by spaces.
 
 ---
 
@@ -108,6 +109,7 @@ Short factual description of how things are today.
 This is the baseline the `Desired Outcome (To-Be)` will be compared against.
 
 - Use as many bullets as the task needs, but keep each bullet to one coherent unit of current context.
+- Anchor the snapshot: have the first bullet record the reference point — `as of <short-sha> on <branch>` — so the facts have a fixed baseline when the brief is consumed later.
 - Concrete: name the function, the module, the UX behavior.
   - Good: `LoginForm` validates email only `onBlur` — users don't see the error until they try to submit.
   - Bad: Login UX is not great.
@@ -129,6 +131,8 @@ Cover, at minimum:
 - **Environment** — browser/OS/runtime version, build, branch, data fixture, anything that matters for the repro.
 - **Frequency** — always / intermittent (with conditions) / once seen.
 - **Observed vs expected** — what actually happens, what should happen.
+
+Never embed real credentials or secrets in a brief — reference their location instead (env var name, vault/1Password item).
 
 Examples:
 
@@ -256,6 +260,7 @@ Rules:
 
 - Existing paths must exist in the repo as of the codebase review step.
 - Proposed new paths are allowed only when the user confirms them or the target directory / naming pattern is clear from the repo.
+- The proposed marker is the exact literal token `(proposed)` placed after the inline-code path — variants like `(proposed edit)` or `(proposed path)` are not recognized by the structural validator.
 - Never invent PR numbers, existing paths, or prior briefs.
 - If the review does not turn up at least one concrete entry point, ask the user before saving.
   Do not emit an empty `Related Files / Entry Points` section.
@@ -285,6 +290,7 @@ Distinct from `Desired Outcome (To-Be)`: `Desired Outcome` describes the end sta
 - Good: `- [ ] Lighthouse Performance score ≥ 90 (mobile).`
 - Bad: `- [ ] UX feels better.`
 - Bad: `- [ ] All tests pass.` (empty — tests always have to pass)
+- When the verification command is not obvious from the repo, name it inline (e.g. `npx cypress run --spec ...`).
 
 If the user cannot give concrete criteria, push back during Stage 4 — do not invent them.
 
@@ -296,6 +302,7 @@ This is the safety valve that prevents the downstream agent from silently guessi
 - Surface every uncertainty caught during codebase review here (e.g., "Two parallel implementations exist — which one should we extend?").
 - Write as questions, not statements.
 - If there genuinely are none, write `- None — <reason>`, e.g. `- None — no user-owned decisions remain; implementation choices are bounded in Constraints.`
+  The em dash is canonical; the validator also accepts a plain hyphen or an en dash surrounded by spaces — but never a bare `- None`.
 
 ---
 
@@ -324,8 +331,8 @@ feat
 - Define 5 default shortcut (capture / cancel / next / prev / open settings).
 - Add shortcut-editing section to Settings UI.
 ### Out of Scope
-- Multi-profile shortcut set (separate future brief).
-- Conflict detection vs OS-default shortcut (deferred).
+- [deferred] Multi-profile shortcut set — separate future brief.
+- [deferred] Conflict detection vs OS-default shortcut.
 
 ## Constraints
 - Tauri v2 plugin only — v1 alternative not on table.

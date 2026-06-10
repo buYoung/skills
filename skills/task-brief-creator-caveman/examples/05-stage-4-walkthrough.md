@@ -7,7 +7,10 @@ scope and contract questions in one Markdown decision table.
 **What this example shows:** how Stage 4 separates technical facts from
 user-owned decisions. Narrow codebase probes remove questions that do
 not need user judgment. The remaining questions are shown as rows with
-`순번`, `내용`, `수정 추천안`, and `근거`.
+`순번`, `내용`, `수정 추천안`, and `근거`. Because the work type is
+`refactor`, the walkthrough also shows the Stage 5.6 cold-pickup gate
+firing and terminating on a clean first pass — including the
+caveman-only `over_terse_bullets` check.
 
 The chat exchange below is in Korean because the user wrote in Korean.
 The saved brief is in English (skill output policy).
@@ -95,8 +98,9 @@ User: approve rows 1-3 and 5; for row 4 choose "freeze `AuthContext.tsx`."
 ### Termination
 
 남은 사용자 소유 결정 없음, 사용자 응답 일관, 예산 안에서 완료.
-`Open Questions` 후보 중 codebase로 해결된 2개는 제거. 잔여
-질문은 `None`. Stage 5로 이동.
+`Open Questions` 후보 중 codebase로 해결된 2개는 제거. 잔여 질문이
+없으므로 `- None — <reason>` 형태로 사유를 명시해 닫는다. Stage 5로
+이동.
 
 ---
 
@@ -131,11 +135,11 @@ refactor
 - Internal restructure of `src/hooks/useAuth.ts` (helper grouping, internal naming, dead-code removal, internal type cleanup).
 - Free editing of 3 file-internal helpers as long as public surface stay identical.
 ### Out of Scope
-- Any change to `src/contexts/AuthContext.tsx` (hard freeze).
-- Any change to named-export surface of `useAuth.ts`.
-- Modifying any of 14 importing component files.
-- Promoting `useAuthSelector` to separate file or demoting it to internal.
-- Adjusting `AuthContext` ↔ `useAuth` coupling (separate effort if needed).
+- [hard] Any change to `src/contexts/AuthContext.tsx` (hard freeze).
+- [hard] Any change to named-export surface of `useAuth.ts`.
+- [hard] Modifying any of 14 importing component files.
+- [hard] Promoting `useAuthSelector` to separate file or demoting it to internal.
+- [deferred] Adjusting `AuthContext` ↔ `useAuth` coupling (separate effort if needed).
 
 ## Related Files / Entry Points
 - `src/hooks/useAuth.ts` — sole edit target; restructure internals only.
@@ -157,8 +161,57 @@ refactor
 - [ ] `src/hooks/useAuth.ts` line count decrease (measurable simplification signal).
 
 ## Open Questions
-- None
+- None — every Stage 3 uncertainty was resolved by a codebase probe (internal-helper reach, `useAuthSelector` consumer spread) or by a Stage 4 user answer (`AuthContext.tsx` freeze).
 ```
+
+---
+
+## Stage 5.6 — Cold-Pickup Verification
+
+Gate evaluation: work type is `refactor` — type ∈ {fix, perf, refactor}
+fires the auto-ON gate regardless of input simplicity (the 5
+user-decision rows from Stage 4 would fire it independently). The
+structural validator passed in Stage 5, so the pass runs.
+
+Pass 1 — the saved brief is snapshotted, then a sub-agent receives
+**only** the original Korean input and the brief path: no Stage 3
+uncertainty register, no Stage 4 decisions, no Stage 5.5 result. The
+caveman variant adds one item to the sub-agent prompt — *are any
+bullets so terse they hide intent?* — so the report carries the
+caveman-only `over_terse_bullets` list on top of the standard schema.
+Its report:
+
+```yaml
+verdict: clean
+first_actions:
+  - Run `pnpm vitest src/hooks/__tests__/useAuth.test.ts` on `main` to confirm the 23-case baseline is green.
+  - Open `src/hooks/useAuth.ts` and map the 7 named exports against the locked surface before touching internals.
+ask_backs: []
+missing_concerns: []
+over_terse_bullets: []
+```
+
+`verdict: clean` with empty `ask_backs`, `missing_concerns`, and
+`over_terse_bullets` is termination trigger 4 (Clean pass) — the loop
+stops after 1 pass with no patches, and the pass-1 snapshot is deleted.
+Had the sub-agent flagged an over-terse bullet, it would have been
+treated as register drift and rewritten in normal prose under the
+Auto-Clarity carve-out — never matched against a Stage 4 row as
+disagreement.
+
+Stage 6 banner (Korean, because the chat is Korean — validator,
+self-check, and cold-pickup reported together):
+
+> 저장 완료 — `docs/briefs/2026-05-04-refactor-useauth-hook.md`
+> (`refactor`: Tidy `useAuth` hook internals while freezing public
+> surface; 구조 검증 통과; 내용 자체 검증 통과 — 입력 항목 3개 모두
+> 매핑, 문체 변환 동등성 확인; cold-pickup `clean_pass`로 1회 만에
+> 종료 (ask-back 없음, missing 없음, 과압축 지적 없음)).
+> 파일 열어보고 고칠 부분 있으면 알려줘.
+
+The English equivalent of the cold-pickup field is
+`cold-pickup clean_pass after 1 pass (no ask-backs, no missing
+concerns, no over-terse bullets)`.
 
 ---
 
@@ -200,15 +253,22 @@ brief if it is ever needed.
   internal helpers had no external reach; another probe confirmed
   `useAuthSelector`'s consumer spread. Technical facts do not become
   user questions once the repository can answer them.
-- **Why Open Questions ended at `None`** — every Stage 3 candidate
-  open question was either resolved by a probe (helpers reach,
-  selector publicness) or by a user answer (AuthContext freeze).
-  Recording `None` here is honest, not lazy.
+- **Why Open Questions ended at `- None — <reason>`** — every Stage 3
+  candidate open question was either resolved by a probe (helpers
+  reach, selector publicness) or by a user answer (AuthContext freeze).
+  Recording `None` with its reason is honest, not lazy — and the reason
+  is mandatory: the validator rejects a bare `- None`. The bullet also
+  stays in normal prose: the entire `Open Questions` section is an
+  Auto-Clarity carve-out, never caveman-rewritten.
 - **Why this passed the structural validator** — Stage 4 is a
   behavior variant of the brief-authoring pipeline, not an output
   variant. The saved brief has the same eight required H2 sections
-  plus the type-conditional `Behavior Contract` for `refactor`.
-  `validate_brief.py` does not care how the bullets were authored.
+  plus the type-conditional `Behavior Contract` for `refactor`, its
+  `Out of Scope` bullets carry `[hard]` / `[deferred]` classification,
+  and `Open Questions` closes with the reasoned `- None — <reason>`
+  form the validator requires. `validate_brief.py` does not care how
+  the bullets were authored — or that the body register is caveman —
+  only that the saved artifact meets the template contract.
 - **Why the user's "Context 동결" answer reshaped Out of Scope** —
   row 4 is a user-owned scope decision, so the saved brief reflects
   that answer by freezing `AuthContext.tsx` and keeping the work inside

@@ -47,7 +47,7 @@ They do not answer *"once it can, where exactly do we cut?"*.
 That second question is the **Bloat Decomposition Rules (BDR)** layer in `references/bloat-decomposition.md`.
 
 Run BDR only after the primary filter has produced a candidate child list.
-If any candidate child triggers ≥ 2 bloat signals from BDR (mixed work types, multiple acceptance-criteria clusters, multiple unrelated entry points, multiple distinct failure modes, or blocks more than one wave), apply BDR's split rules (S1–S5) and keep-together rules (K1–K2) before locking the decomposition.
+If any candidate child triggers two or more of the bloat signals B1–B5 defined in `bloat-decomposition.md`, apply BDR's split rules (S1–S5) and keep-together rules (K1–K2) before locking the decomposition.
 Primary filter answers *"can this split at all?"*; BDR answers *"where exactly to cut."*
 
 **User phrasing is not itself a trigger.** Phrases like "다중브리프", "briefset", "multi-brief", or "split this into multiple briefs" do not by themselves engage briefset mode.
@@ -70,6 +70,12 @@ docs/briefs/YYYY-MM-DD-<type>-<set-slug>-NN-<child-slug>.md          # children
   The number hints the intended starting wave but is not authoritative; the parent's `Execution Order` section is.
 - `<child-slug>` — kebab-case, ≤15 chars, names the child subtask.
 - The combined child slug `<set-slug>-NN-<child-slug>` must remain ≤40 chars so the existing `validate_brief.py` slug check passes.
+
+Enforcement levels:
+
+- The combined slug budget (≤40 chars) is machine-enforced — `validate_brief.py` reports a FAIL when exceeded.
+- The set-slug ≤15 limit is advisory — the validator emits a warning only.
+- Child filename consistency with the parent (same date, same set-slug, zero-padded `NN`) is advisory — the validators warn but do not fail.
 
 **Examples:**
 
@@ -116,7 +122,7 @@ Implementation lives in the children.
 - `<path>` — only one child brief should edit this at a time.
 
 ## Shared Constraints
-- <constraint shared by all child briefs, or "None">
+- <constraint shared by all child briefs, or "None — <reason>">
 
 ## Global Acceptance Criteria
 - [ ] <set-level completion criterion>
@@ -230,11 +236,12 @@ Save in this order:
 4. Resolve filename collisions with `-v2`, `-v3`, … on the parent and on each child independently.
 5. Run `scripts/validate_brief.py` on each child as a sanity check (optional — the briefset validator covers this transitively).
 6. Run `scripts/validate_briefset.py` on the parent.
-   It re-runs child structural validation, so a single parent invocation covers the whole set:
+   It re-runs child structural validation, so a single parent invocation covers the whole set.
+   Run the validator from the skill package directory (the directory containing SKILL.md, referred to as `<skill-dir>`):
 
    ```bash
-   python3 skills/task-brief-creator/scripts/validate_briefset.py \
-     docs/briefs/2026-04-30-briefset-checkout-i18n.md
+   python3 <skill-dir>/scripts/validate_briefset.py \
+     docs/briefs/<parent-filename>.md
    ```
 
 Treat structural failure the same way single-brief mode does: leave the file in place, surface the failure in Stage 6, let the user decide how to fix.
@@ -247,6 +254,7 @@ Briefset mode adds one parent-specific coverage rule:
 
 - **Parent decomposition coverage:** every input-implied execution context maps to a child brief.
   If the input describes 4 work units and the parent lists 3 children, the missing unit must either become a 4th child or be explicitly justified as folded into an existing child (with the *exists because* clause updated).
+  A folded unit's distinct concerns — acceptance criteria, edge cases, constraints, side-effect checkpoints — must reappear in the absorbing child's matching sections; folding is where requirement depth is most often silently lost, so verify the migration here.
   Each child also survives a BDR pass from `bloat-decomposition.md` — no child triggers ≥ 2 bloat signals, and no atomic-change-unit (K1) was split.
   If either fails, re-decompose before saving.
 
@@ -254,9 +262,16 @@ Each child runs the standard 5-item self-check from `SKILL.md` Stage 5.5.
 If any child fails the input-coverage or section-depth items, fix the child in place, re-run the briefset structural validator, and re-run the child's self-check.
 Do not skip the child self-check on the assumption "the parent covers it" — children are independently executable, so they are independently completeness-checked.
 
+### Stage 5.6 — Cold-Pickup Verification (briefset)
+
+Briefset mode is an auto-ON trigger for the Stage 5.6 cold-pickup verification in `SKILL.md`: the **parent and every child** run their own cold-pickup pass.
+For briefsets with 5 or more children, the agent may offer the user a sampling fallback — parent plus up to 3 representative children — instead of the full set.
+Force OFF from the user skips cold-pickup for the whole set.
+The Stage 6 banner reports `K/N children verified` alongside the parent outcome.
+
 ### Stage 6 — Review + Iterate
 
-Report the parent path, the child paths, the structural validator outcome (parent + per-child), and the Stage 5.5 self-check outcome (parent + per-child).
+Report the parent path, the child paths, the structural validator outcome (parent + per-child), the Stage 5.5 self-check outcome (parent + per-child), and the Stage 5.6 cold-pickup outcome — per-document verdicts collapsed to `K/N children verified` in the banner, or the skip reason when cold-pickup did not run.
 
 If the parent or any child contains `Open Questions` that require a user decision, present a combined decision table immediately after the save report:
 
@@ -278,7 +293,7 @@ Iterate on disk via `Edit`; do not re-render the briefs into chat.
 - Parent filename pattern, title shape (`# Brief Set: <title>`).
 - Required parent sections present.
 - `Child Briefs` and `Global Acceptance Criteria` use `- [ ]` format.
-- `Execution Order`, `Parallelization`, `Open Questions`, `Purpose`, `Conflict Hotspots`, `Shared Constraints` are populated (write `- None — <reason>` if genuinely none).
+- `Execution Order`, `Dependencies`, `Parallelization`, `Open Questions`, `Purpose`, `Conflict Hotspots`, `Shared Constraints` are populated (write `- None — <reason>` if genuinely none).
 - Each referenced child path exists on disk.
 - No referenced child is itself a briefset parent (no recursion).
 - Inline-code paths in `Dependencies` reference children listed in `Child Briefs`.

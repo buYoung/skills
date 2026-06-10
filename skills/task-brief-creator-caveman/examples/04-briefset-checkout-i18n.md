@@ -112,7 +112,7 @@ hotspot**.
 | 5 | 충돌 영역 | `src/i18n/messages.ko.json`과 `src/i18n/index.ts`를 parent의 conflict hotspot으로 둔다. | checkout import가 barrel을 통해 들어오며, 자식 셋 모두 새 키 추가로 두 파일을 만질 가능성이 있다. |
 | 6 | 공통 제약 | 한국어(`ko`) 로케일만 대상, 영어 fallback은 Out of Scope, 새 i18n 도구 도입 없음. | 입력이 "결제 화면에서 영어 텍스트가 한 글자도 안 남아야 함"과 기존 메시지 파일 유지 방향을 명시했다. |
 | 7 | 자식 02 완료 기준 | `docs/marketing/cart-copy-2026-04.md`와 cart copy diff가 0이어야 한다는 기준을 추가한다. | 마케팅 카피 적용은 해석보다 원문 일치가 검증 가능한 완료 기준이다. |
-| 8 | 사용자 결정이 필요한 Open Questions | Parent에는 영어 fallback 처리 일정을 남기고, 01에는 hardcoded JSX string 금지 ESLint rule을 후속 권장으로 남긴다. 02와 03은 `- None`으로 둔다. | fallback 일정과 lint rule 도입은 코드베이스만으로 결정할 수 없는 범위/일정 판단이다. |
+| 8 | 사용자 결정이 필요한 Open Questions | Parent에는 영어 fallback 처리 일정을 남기고, 01에는 hardcoded JSX string 금지 ESLint rule을 후속 권장으로 남긴다. 02와 03은 잔여 불확실성이 없으므로 `- None — <reason>` 형태로 사유를 명시해 닫는다 (bare `- None`은 validator가 거부한다). | fallback 일정과 lint rule 도입은 코드베이스만으로 결정할 수 없는 범위/일정 판단이다. 02와 03의 불확실성은 Stage 4에서 모두 해소되었다. |
 
 User: approve rows 1-8.
 
@@ -173,7 +173,7 @@ docs/briefs/2026-04-30-briefset-checkout-i18n.md
 - No new i18n tooling — stay on existing `react-i18next` setup.
 
 ## Global Acceptance Criteria
-- [ ] `rg "[A-Za-z]{4,}" src/checkout` find no English-letter sequences in user-visible JSX strings.
+- [ ] `rg "[가-힣]" src/checkout` return no matches — every user-visible checkout string resolve from `src/i18n/messages.ko.json`; no copy hardcoded in component sources.
 - [ ] All three child briefs' Acceptance Criteria checked.
 - [ ] Cart copy diff against `docs/marketing/cart-copy-2026-04.md` is 0 (verbatim match).
 
@@ -212,9 +212,9 @@ refactor
 - `src/i18n/messages.ko.json` — collapse duplicate keys to dot-separated form; add missing keys as empty placeholders for 02 and 03 to fill.
 - `src/i18n/index.ts` — re-export cleaned namespace.
 ### Out of Scope
-- Cart user-visible copy text (handled by `02-cart-copy`).
-- Validation error copy text (handled by `03-validation-copy`).
-- English (`en`) locale file — separate future briefset.
+- [hard] Cart user-visible copy text (handled by `02-cart-copy`).
+- [hard] Validation error copy text (handled by `03-validation-copy`).
+- [deferred] English (`en`) locale file — separate future briefset.
 
 ## Related Files / Entry Points
 - `src/checkout/PaymentForm.tsx` — inline English error labels lines 42-78.
@@ -228,7 +228,7 @@ refactor
 - [ ] No untranslated key warnings in dev console after swap.
 
 ## Acceptance Criteria
-- [ ] `rg "[A-Za-z]{4,}" src/checkout/**/*.tsx` find no English-letter sequences in JSX text or error throws.
+- [ ] `rg "[가-힣]" src/checkout` return no matches — every inline copy literal externalized to `src/i18n/messages.ko.json` and resolve through `t('namespace.key')`.
 - [ ] No underscore-form message keys (`*_err_*`) remain in `src/i18n/messages.ko.json`.
 - [ ] Placeholder keys for `cart.*` and `payment.err.*` exist (empty strings allowed) so children 02 and 03 can fill them without edits to 01's surface.
 
@@ -238,8 +238,12 @@ refactor
 
 (Children 02 and 03 follow the same template; omitted here for brevity.
 Both contain a populated `Side Effect Checkpoints` and child-scoped
-`Acceptance Criteria`. Child 03, being a `fix`, also carries a populated
-`## Reproduction` section per the type-conditional rule.)
+`Acceptance Criteria`, and — per decision row 8 — both close their
+`Open Questions` with the reasoned `- None — <reason>` form, e.g.
+`- None — Stage 4 resolved scope and key ownership for this child; no
+user-owned decision remains.` Child 03, being a `fix`, also carries a
+populated `## Reproduction` section per the type-conditional rule. Both
+bodies are in caveman full mode like the two files shown above.)
 
 ---
 
@@ -285,8 +289,12 @@ Scope` — that's child 03), and does not touch the English locale (per
 
 ## Stage 6 — Validator output
 
+`<skill-dir>` is the installed skill package directory (the directory
+containing `SKILL.md`) — the validator ships with the skill, not with
+the user's repository.
+
 ```bash
-$ python3 skills/task-brief-creator-caveman/scripts/validate_briefset.py \
+$ python3 <skill-dir>/scripts/validate_briefset.py \
     docs/briefs/2026-04-30-briefset-checkout-i18n.md
 Validating briefset: docs/briefs/2026-04-30-briefset-checkout-i18n.md
 
@@ -311,6 +319,24 @@ Validating 3 child brief(s)...
 
 PASS - structural checks OK (0 warning(s)).
 ```
+
+One `validate_briefset.py` invocation covers the whole set — it re-runs
+`validate_brief.py`'s structural checks transitively on every referenced
+child, so the three `child ...: structural checks OK.` lines above *are*
+the per-child validation. The validator checks structure only — the
+caveman register of the brief bodies is invisible to it.
+
+**Stage 5.6 note** — briefset mode is itself an auto-ON trigger for
+cold-pickup verification: the parent and every child each run their own
+sub-agent pass (per-child signal gating is intentionally disabled in
+briefset mode). The caveman variant adds one item to each sub-agent's
+prompt — *are any bullets so terse they hide intent?* — and one
+`over_terse_bullets` list to each report. With all four files
+terminating on a clean first pass, the Stage 6 banner reports the
+collapsed form
+`cold-pickup: 1/1 parent + 3/3 children verdict:clean (no ask-backs, no missing concerns, no over-terse bullets)`.
+See `references/cold-pickup.md` for the report schema and termination
+triggers, and example 05 for a full single-file pass.
 
 ---
 

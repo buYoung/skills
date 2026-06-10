@@ -117,6 +117,8 @@ B5 is a by-product signal — it only justifies a split in conjunction with one 
 
 1. **Primary filter.** Confirm the candidate child list already clears the briefset primary filter (the "independently executable work unit" rule).
    If a candidate fails the primary filter, fold it back before applying BDR.
+   **Folding never drops content:** whenever a candidate is folded back — here, by a K1 merge, or by a K2 prune — every distinct concern it carried (acceptance criteria, edge cases, constraints, side-effect checkpoints) migrates into the matching sections of the absorbing child or parent.
+   Folding collapses the *document*, not the *requirements*.
 2. **Bloat detection.** For each surviving candidate, count B1–B5 signals.
    Stop if every candidate has ≤ 1 signal.
 3. **K1 pre-check.** Before considering any split, ask whether the candidate is an atomic change unit (K1).

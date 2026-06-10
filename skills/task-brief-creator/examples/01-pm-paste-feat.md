@@ -1,8 +1,8 @@
 # Example 01 — PM paste → `feat` (dark mode in settings)
 
 Long-form input from a PM. Skill runs Stage 3 codebase review to refine
-`Current State (As-Is)`, then Stage 4 interview to lock down `Out of Scope`
-and `Acceptance Criteria`.
+`Current State (As-Is)`, then the Stage 4 decision table to lock down
+`Out of Scope` and `Acceptance Criteria`.
 
 **What this example produces:** a saved brief that a coding agent can pick up
 without re-reading the PM spec, without asking which `ThemeProvider` to extend,
@@ -111,9 +111,9 @@ feat
 - Add the Theme row to `SettingsScreen.tsx`'s Appearance section.
 - Add `flag.darkMode` and gate the new row + provider behavior on it.
 ### Out of Scope
-- Restyling any screen other than Settings — the rest of the app keeps the light palette.
-- Modifying any existing `useTheme()` consumer outside the Settings screen.
-- Theming for the mobile app shell — separate epic owned by the mobile team.
+- [hard] Restyling any screen other than Settings — the rest of the app keeps the light palette.
+- [hard] Modifying any existing `useTheme()` consumer outside the Settings screen.
+- [deferred] Theming for the mobile app shell — separate epic owned by the mobile team.
 
 ## Constraints
 - Do not introduce a new theming library — extend the existing `ThemeProvider`.
@@ -176,12 +176,12 @@ brief locked it down.
   Without an explicit guardrail, a downstream agent might helpfully
   cascade-restyle them and blow the scope. This is exactly the case the
   Out-of-Scope section was designed to catch.
-- **Why the fourth Acceptance Criterion ("no flash of light theme") got
-  added in Round 4** — it was not in the PM input, but it is the kind of
+- **Why the second Acceptance Criterion ("no flash of light theme")
+  exists** — it was not in the PM input, but it is the kind of
   measurable end-state criterion that prevents a downstream agent from
-  declaring "done" while the experience is broken. The walk surfaced it
-  as part of the Acceptance Criteria draft after recognizing the
-  OS-theme detection gap from Stage 3.
+  declaring "done" while the experience is broken. Stage 3 surfaced the
+  missing OS-theme detection, and decision-table row 4 turned that gap
+  into the first-paint criterion the user approved.
 - **Why the Open Question stayed in** — the listener-teardown question is
   a real tradeoff with no clear right answer from the brief alone.
   Leaving it in `Open Questions` is correct; pushing the user for a

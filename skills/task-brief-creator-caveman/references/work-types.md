@@ -59,6 +59,7 @@ If the user says "refactor the auth middleware to also log failed attempts", the
 Options to surface:
 
 - Split into two briefs: a pure `refactor` followed by a `feat`.
+  Splitting means recommending briefset mode per `briefset.md` — apply its decision criteria first; if they do not hold, keep a single brief with type `feat`.
 - Reclassify the whole thing as `feat` and note the refactor as an implementation detail.
 
 ### `feat` vs `fix` — when behavior "should have worked"
@@ -69,6 +70,11 @@ A never-implemented capability is `feat`.
 
 Gray zone: if a prior release implicitly promised a capability (e.g., the marketing page claimed it), the user may reasonably want `fix`.
 Confirm.
+
+### Reverts are written as `fix`
+
+Reverts are intentionally not a separate work type.
+Write a revert as `fix` — the current behavior is wrong — and name the offending commit/PR in `Constraints`.
 
 ### `chore` vs `build` vs `ci`
 
@@ -83,6 +89,8 @@ When in doubt, pick the more specific of the three — `build` and `ci` trigger 
 If the change is motivated by speed/memory but happens to also reorganize code, it's `perf`.
 The performance framing pulls in measurement discipline that `refactor` does not demand.
 Only use `refactor` when speed is genuinely not the goal.
+
+Tiebreak: `perf` applies only when the deliverable itself is a measured improvement of existing behavior; a new capability with a performance budget is `feat`, with the budget recorded in `Constraints`.
 
 ### `style` is narrower than it sounds
 

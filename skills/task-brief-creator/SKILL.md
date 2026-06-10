@@ -7,6 +7,11 @@ description: >
   (refactor → preserve, fix → reproduce first, perf → measure first).
   Briefset mode emits a parent execution-management document plus N child
   briefs when the input describes multiple execution contexts.
+  Manual trigger only — use when the user explicitly invokes this skill or
+  asks for a work brief, task brief, handoff brief, implementation ticket,
+  or task spec for a downstream agent. Not for prose summaries, status
+  reports, design docs, or meeting notes. For the plain-language caveman
+  variant, use task-brief-creator-caveman instead.
 ---
 
 # Task Brief Creator
@@ -52,11 +57,12 @@ See `references/stage-4-interview.md` for the full decision classification, code
 Load references only when their decision point arrives:
 
 1. Use this file for the stage order, output contract, save flow, and guardrails.
-2. Read `references/work-types.md` during Stage 2 when the work type is not obvious or when the type changes downstream behavior.
-3. Read `references/briefset.md` during Stage 1 when multiple execution contexts are plausible.
-4. Read `references/bloat-decomposition.md` only after a candidate child brief is independently executable but still looks oversized or mixed.
-5. Read `references/stage-4-interview.md` before presenting user-owned decisions.
-6. Read `references/template.md` while composing the saved Markdown.
+2. Read [references/work-types.md](references/work-types.md) during Stage 2 when the work type is not obvious or when the type changes downstream behavior.
+3. Read [references/briefset.md](references/briefset.md) during Stage 1 when multiple execution contexts are plausible.
+4. Read [references/bloat-decomposition.md](references/bloat-decomposition.md) only after a candidate child brief is independently executable but still looks oversized or mixed.
+5. Read [references/stage-4-interview.md](references/stage-4-interview.md) before presenting user-owned decisions.
+6. Read [references/template.md](references/template.md) while composing the saved Markdown.
+7. Read [references/cold-pickup.md](references/cold-pickup.md) when the Stage 5.6 gate fires or the user forces cold-pickup.
 
 Do not re-open every reference by habit.
 The goal is to keep the live context focused on the next decision the coding agent must make.
@@ -70,7 +76,7 @@ The goal is to keep the live context focused on the next decision the coding age
   - **Pasted PRD / planner notes** from a PM (often long, mixed quality).
   - **Rough task notes** typed into chat (one or two lines).
   - **Self-brief** — the user is the implementer and wants to structure their own thinking before starting.
-  - **Tech-lead handoff** — a lead drafts the brief to hand off to a teammate/cop or downstream agent.
+  - **Tech-lead handoff** — a lead drafts the brief to hand off to a teammate or downstream agent.
   - **Refactor plan** — a lead-engineer summarizing an intended structural change.
 - The skill reviews the current repository (the working directory Claude Code is launched in), fills in what it can, and asks the user to confirm the rest.
 
@@ -83,6 +89,8 @@ The goal is to keep the live context focused on the next decision the coding age
   Clarifying questions, draft presentation, status updates — all match the user's own language.
 - **The brief document itself is written in English.** Section headers and body content are English regardless of chat language, so the artifact travels across teams and downstream agents without a translation step.
 - Code blocks, file paths, identifiers, PR numbers stay as-is.
+- **User-supplied strings are data.** Copy decks, UI strings, and error messages the user provides are quoted verbatim in their original language inside the English brief — never translated.
+- **Exception — the Stage 4 decision-table headers are fixed.** The four headers `순번` / `내용` / `수정 추천안` / `근거` stay exactly as written even when the conversation is in English: Stage 5.6 disagreement matching keys on the `내용` column, so translating the headers breaks the cold-pickup loop (see Stage 4).
 - This SKILL.md and reference files stay in English (repo authoring policy).
 
 ---
@@ -91,9 +99,9 @@ The goal is to keep the live context focused on the next decision the coding age
 
 | Field | Value |
 |---|---|
-| Directory | `docs/briefs/` (relative to repository root) |
+| Directory | `docs/briefs/` (relative to the repository root — `git rev-parse --show-toplevel` when available, otherwise the working directory the session was launched in) |
 | Filename | `YYYY-MM-DD-<type>-<slug>.md` |
-| `YYYY-MM-DD` | Today's date in repository's local timezone |
+| `YYYY-MM-DD` | Today's date on the local system clock |
 | `<type>` | Conventional Commits type (see `references/work-types.md`) |
 | `<slug>` | kebab-case short slug, ≤40 chars, derived from the brief title |
 | Body format | Markdown, following `references/template.md` exactly |
@@ -149,12 +157,14 @@ Use the **four-anchor heuristic**:
 Count how many anchors are derivable from the input.
 Derivable = a reasonable engineer could answer the anchor from the user's input without inventing intent.
 
-- **3 or 4 anchors present** → **CONTINUE** to Stage 2.
-  Missing detail gets filled in Stage 3 via codebase review or Stage 4 via user questions.
-- **PROBLEM + GOAL + SCOPE present, TARGET missing** → run a narrow target probe before deciding.
+- **All 4 anchors present** → **CONTINUE** to Stage 2.
+- **3 anchors present, TARGET missing** → run a narrow target probe before deciding.
   Use at most a few `rg` / glob queries to find likely files, directories, routes, commands, or modules.
   If a concrete entry point emerges, **CONTINUE**.
   If not, **HALT** and ask the user for the target area.
+- **3 anchors present, PROBLEM or GOAL or SCOPE missing** → **CONTINUE** only when the missing anchor can be stated in one concrete sentence derived from the input (write that sentence into the brief; vague fillers like "make it better / cleaner" do not count).
+  Otherwise **HALT** and ask for that anchor.
+  Detail that survives this check gets filled in Stage 3 via codebase review or Stage 4 via user questions.
 - **2 or fewer anchors present** → **HALT**.
   Respond in the user's chat language naming exactly which anchors are missing, and ask for more input.
   Do NOT proceed through Stages 2–6 on an underspecified input.
@@ -186,6 +196,7 @@ Do not use file count, line count, input length, or several related edit points 
 Those are supporting evidence only.
 
 If briefset signals are strong, recommend briefset mode and ask the user to choose before Stage 2 instead of switching silently.
+If the candidate contexts are fully independent — no ordering, no dependencies, no shared conflict hotspots — recommend separate single-brief invocations (one per task) instead of a briefset: a parent whose coordination sections are all `- None — <reason>` adds overhead without value.
 Use the user's chat language and keep the question short.
 Korean example:
 
@@ -209,6 +220,7 @@ Consult `references/work-types.md` for the full list and per-type behavior hints
 - If the type is implicit but high-confidence, assign a provisional type and include it in the Stage 4 decision table only when user confirmation is still useful.
   Do not add a separate early round-trip just for type confirmation.
 - If the implicit type is low-confidence and changes the likely execution approach, ask one short question before proceeding.
+  Low-confidence means two or more candidate types remain plausible **and** they would force different type-conditional sections or downstream behavior profiles; otherwise treat the inference as high-confidence.
 
 See `references/work-types.md` for the full type-confirmation routing table (explicit-agree / explicit-conflict / high-confidence implicit / low-confidence implicit).
 
@@ -290,11 +302,13 @@ The user reviews the file in their editor in Stage 6, where real markdown render
 5. **Run the structural validator** — a fast smoke test for the template contract:
 
    ```bash
-   python3 skills/task-brief-creator/scripts/validate_brief.py \
-     docs/briefs/<filename>.md
+   python3 <skill-dir>/scripts/validate_brief.py docs/briefs/<filename>.md
    ```
 
-   - Exit **0** → proceed to Stage 6 with a "passed" banner.
+   `<skill-dir>` is the installed skill package directory — the directory containing this SKILL.md (resolve it from wherever this skill was loaded, e.g. `~/.claude/skills/task-brief-creator` or a plugin cache).
+   Never assume the user's repository contains the script: the brief lives in the user's repo, the validator lives with the skill.
+
+   - Exit **0** → continue to Stage 5.5; the validator result is reported in the Stage 6 banner.
    - Exit **1** (structural failure) → **leave the file in place**.
      Do not delete or silently rewrite it.
      Carry the failed checks into Stage 6 so the user can see what tripped and decide how to fix.
@@ -346,7 +360,8 @@ This skill's contract authorizes the sub-agent spawn when the gate fires; do not
 
 **Auto-ON triggers (any one fires Stage 5.6):**
 
-- Briefset mode — parent and every child run cold-pickup unconditionally; per-child signal gating is intentionally disabled because coordination drift between siblings is the main risk briefset cold-pickup catches. Use Force OFF on the briefset to skip wholesale.
+- Briefset mode — parent and every child run cold-pickup; per-child signal gating is intentionally disabled because coordination drift between siblings is the main risk briefset cold-pickup catches.
+  For a wide briefset (≥ 5 children) you may offer the user the sampling fallback defined in `references/cold-pickup.md` before running; Force OFF on the briefset skips the whole set.
 - Stage 4 produced **≥ 1 user-decision row** in the decision table (input had real interpretive ambiguity).
 - `Open Questions` section is non-empty — i.e. it does not consist solely of `- None — <reason>` (Stage 3 surfaced unresolved uncertainty that survived Stage 4).
 - Work type is `fix`, `perf`, or `refactor` — fires *regardless of input simplicity*. The type-conditional section (`Reproduction` / `Baseline Measurement` / `Behavior Contract`) amplifies drift risk on these types, so cold-pickup pays off even for short inputs. Use Force OFF if you want to skip a one-line fix.
@@ -354,87 +369,32 @@ This skill's contract authorizes the sub-agent spawn when the gate fires; do not
 **Auto-OFF (trivial signals).** When none of the auto-ON triggers fire, Stage 5.6 is skipped automatically.
 The Stage 6 banner reports the skip with the signal snapshot — `cold-pickup skipped: trivial signals (single-brief, stage-4-rows=0, open-questions=none, type=<type>)` — so the user can see exactly which gates evaluated to false.
 
-**User override.**
-
-- **Force ON** — user can force Stage 5.6 to run even on trivial signals via the trigger words listed in the `## Cold-Pickup Verification (Stage 5.6)` section below (e.g. `run cold-pickup`, `force cold-pickup`, `콜드픽업 강제`, `--cold-pickup`).
-- **Force OFF** — user can skip Stage 5.6 even when auto-ON triggers fire via the existing opt-out triggers (e.g. `skip cold-pickup`, `콜드픽업 끄기`).
+**User override.** Force ON runs Stage 5.6 despite trivial signals (e.g. `run cold-pickup`, `--cold-pickup`, `콜드픽업 강제`); Force OFF skips it despite firing signals (e.g. `skip cold-pickup`, `--no-cold-pickup`, `콜드픽업 끄기`).
+The full trigger-phrase lists and the rule for inputs containing both live in `references/cold-pickup.md`.
 
 **Skip on validator failure.** Stage 5.6 is also skipped when the Stage 5 structural validator failed — the brief is not yet well-formed enough to verify.
 
 Reasons that are **not** valid skips when a gate has fired: token budget, latency, inferred host policy, "the brief looks fine".
 If a gate fires and Stage 5.6 is skipped anyway, the Stage 6 banner is wrong and the loop is broken.
 
-Mechanism:
+**Mechanism — when the gate fires, read `references/cold-pickup.md` (report schema, pass bookkeeping, routing table, termination triggers, banner formats), then:**
 
-1. Spawn an `Explore` or `general-purpose` sub-agent.
-2. Hand it **only the original user input or planning notes plus the brief path** — no Stage 3 uncertainty register, no Stage 4 decisions, no suspected gaps, no decomposition rationale, and no Stage 5.5 result.
+1. Snapshot the saved brief for this pass (rollback anchor — see *Pass Bookkeeping and Rollback* in the reference).
+2. Spawn an `Explore` or `general-purpose` sub-agent.
+   If the host cannot spawn sub-agents, use the *Sub-Agent Unavailable Fallback* in the reference — never silently skip a gated-ON run.
+3. Hand it **only the original user input or planning notes plus the brief path** — no Stage 3 uncertainty register, no Stage 4 decisions, no suspected gaps, no decomposition rationale, and no Stage 5.5 result.
    Do not include hints such as what to inspect, what might be missing, or which split you expect the sub-agent to prefer.
    For briefset mode, hand the parent and every child path one at a time; each file runs its own cold-pickup pass.
-3. Ask the sub-agent to return the YAML report below.
-   Free-form prose is not accepted — the report is parsed deterministically.
-
-   ```yaml
-   verdict: clean | needs_changes | blocked
-   first_actions:
-     - <file to open, search to run, or hypothesis to test — one bullet each>
-   ask_backs:
-     - id: a1
-       question: <what it would ask the requester before starting>
-       evidence: "<direct quote from the brief or the original input>"
-       source_of_uncertainty: user_input_ambiguity | unverifiable_fact | minor_default
-       affects_direction: true | false
-   missing_concerns:
-     - id: m1
-       description: <concern absent or specified too thinly>
-       evidence: "<direct quote from the original input>"
-   ```
-
-   Rules enforced on the sub-agent:
-   - Every `ask_backs[*]` and `missing_concerns[*]` **must include a direct-quote `evidence`**. Paraphrases are not accepted; if no quote applies, drop the item.
-   - Every `ask_backs[*]` must classify `source_of_uncertainty`:
-     - `user_input_ambiguity` — the input is ambiguous; the brief picked one interpretation but others are equally reasonable.
-     - `unverifiable_fact` — an external fact (API behavior, library version, data shape) the sub-agent cannot confirm from the two inputs alone.
-     - `minor_default` — a reasonable default for something the user did not specify; alternative values would not change the brief's direction.
-   - `verdict: clean` is only valid when `ask_backs` and `missing_concerns` are both empty.
-   - Do **not** emit a numeric confidence score, similarity ratio, or any other LLM-rated number. Self-rated numbers are unreliable in this context — use the qualitative verdict only.
-
-4. Diff the YAML report against the original input + Stage 3 uncertainty register + Stage 4 decisions.
+4. Collect the YAML report (schema and sub-agent rules in the reference) and diff it against the original input + Stage 3 uncertainty register + Stage 4 decisions.
 
 **Drift handling.** When the report's `verdict` is `needs_changes` or `blocked`, or when any unrejected `ask_backs` / `missing_concerns` survive routing — `Edit` the saved brief in place to close the gap, re-run `validate_brief.py`, and re-run cold-pickup.
-Loop until a termination trigger fires (see below) or the hard cap of **5 passes** is reached.
+Route every `ask_backs[*]` / `missing_concerns[*]` through the routing table in the reference before patching, including the disagreement-vs-drift check against answered Stage 4 rows.
+Loop until one of the six termination triggers in the reference fires (Regression, Oscillation, Stable findings, Clean pass, No-op pass — evaluated in that priority order) or the hard cap of **5 passes** is reached.
 
-**Termination triggers (evaluated in priority order at the end of every pass):**
+Cold-pickup never overrides a Stage 4 decision the user already locked, never invents Acceptance Criteria, Side Effect Checkpoints, or Out-of-Scope guardrails the input did not imply, and never silently rewrites `Open Questions` — drift fixes either resolve a question into another section or leave the question intact for the user.
 
-| # | Trigger | Category | Definition | Action |
-|---|---------|----------|------------|--------|
-| 1 | **Regression** | Defensive | This pass's report has *more* unrejected `ask_backs` + `missing_concerns` than the previous pass. | Roll back the brief to the previous pass's saved version, stop. |
-| 2 | **Oscillation** | Convergence | The same finding has been accepted → rejected → accepted (or vice versa) across passes (uses the rejection log from routing). | Adopt the brief from the pass where the oscillating finding was last rejected, stop. |
-| 3 | **Stable findings** | Convergence | The set of unrejected `ask_backs` + `missing_concerns` is semantically identical to the previous pass (yes/no judgement — **no similarity scores**; if ambiguous, treat as not-equivalent and continue). | Stop. Surface residuals as Stage 6 comments. |
-| 4 | **Clean pass** | Positive | `verdict: clean` with empty `ask_backs` and `missing_concerns`. | Stop. Adopt the current brief. |
-| 5 | **No-op pass** | Convergence | Routing produced **zero** accepted items this pass (everything rejected as disagreement / scope / weak evidence). | Stop. Adopt the current brief. |
-| 6 | **Hard cap** | Fallback | Pass count reached 5. | Stop. Surface residuals as Stage 6 comments. |
-
-Regression is evaluated first because rolling back must outrank optimistic "one more pass might help" instinct. Hard cap is the fallback — not a preferred outcome.
-
-**Pass condition (normal termination):** trigger 4 (Clean pass). Triggers 1, 2, 3, 5, 6 stop the loop but signal residual concerns that Stage 6 must surface.
-
-**Routing `ask_backs`.** Classify before deciding to patch:
-
-| `source_of_uncertainty` | `affects_direction` | Action |
-|---|---|---|
-| `user_input_ambiguity` | `true` | Surface in `Open Questions` for the user — chat-only while the brief is in flight, decision-table row when already saved. Never invent the answer in `Edit`. |
-| `user_input_ambiguity` | `false` | State the default assumption in the relevant section; patch in place. |
-| `unverifiable_fact` | (any) | Main verifies directly (codebase check, doc read) or rewrites the bullet as a hedge. **Never ask the user** — this is the main agent's job. |
-| `minor_default` | (any) | Patch in place with the assumption stated. |
-
-**Disagreement vs drift.** The sub-agent sees the original input and the brief but not the Stage 3 register or Stage 4 decisions, so it cannot know which items the user locked.
-Before applying the routing table above, if an ask-back's subject matches the `내용` of a row in the Stage 4 decision table the user already answered, treat it as **disagreement** — chat-only comment, no patch.
-Otherwise route per the table.
-
-Cold-pickup never overrides user decisions, never invents Acceptance Criteria, never silently rewrites Open Questions.
-
-**Reporting.** The cold-pickup outcome integrates into the Stage 6 save banner alongside the structural validator and the Stage 5.5 self-check.
-For briefset mode, the banner uses the collapsed `parent + K/N children` format defined under `## Cold-Pickup Verification (Stage 5.6)` below — one summary line plus details only on flagged children, not one line per child.
+**Reporting.** The cold-pickup outcome integrates into the Stage 6 save banner alongside the structural validator and the Stage 5.5 self-check, using the banner phrasings in `references/cold-pickup.md`.
+For briefset mode, the banner uses the collapsed `parent + K/N children` format from the reference — one summary line plus details only on flagged children, not one line per child.
 
 ### Stage 6 — Review + Iterate
 
@@ -459,17 +419,11 @@ Hand off to the user for review.
    > Saved — `docs/briefs/2026-04-23-feat-dark-mode-settings.md` (`feat`: Dark mode toggle in Settings; structural validation passed; content self-check passed — N input concerns covered; cold-pickup skipped: trivial signals (single-brief, stage-4-rows=0, open-questions=none, type=feat)).
    > Tell me `run cold-pickup` or `--cold-pickup` if you want the sub-agent verification anyway.
 
-   **Korean (validator + self-check passed, cold-pickup auto-skipped on trivial signals):**
-   > 저장 완료 — `docs/briefs/2026-04-23-feat-dark-mode-settings.md` (`feat`: Dark mode toggle in Settings; 구조 검증 통과; 내용 자체 검증 통과 — 입력 항목 N개 모두 매핑됨; cold-pickup 자동 생략: trivial signals (single-brief, stage-4-rows=0, open-questions=none, type=feat)).
-   > sub-agent 검증을 강제로 돌리고 싶으면 `콜드픽업 강제` 또는 `--cold-pickup`로 알려줘.
-
    **English (validator failed):**
    > Saved — `docs/briefs/2026-04-23-feat-dark-mode-settings.md`, but the structural validator flagged 2 issue(s): ✗ <first failure verbatim> ✗ <second failure verbatim> The file is on disk.
    > Want me to patch these, or will you edit directly?
 
-   **Korean (validator failed):**
-   > 저장 완료 — `docs/briefs/2026-04-23-feat-dark-mode-settings.md`, 다만 구조 검증에서 2건 지적: ✗ <첫 번째 실패 메시지 그대로> ✗ <두 번째 실패 메시지 그대로> 파일은 디스크에 있음.
-   > 내가 패치할까, 직접 고칠래?
+   Mirror any banner into the user's chat language as the Korean example above shows — translate the prose, keep paths, filenames, and technical fields (`trivial signals (...)`, termination triggers, validator messages) verbatim.
 
    When the structural validator fails, Stage 5.5 and Stage 5.6 are **skipped** — the brief is not yet well-formed enough to run content or cold-pickup checks against.
    The banner stays as shown; do not append `self-check skipped` / `cold-pickup skipped` lines in this case.
@@ -536,10 +490,11 @@ Start with `examples/README.md` for the index.
 ## Structural Validator
 
 `scripts/validate_brief.py` is a stand-alone Python 3 script (no external deps) that verifies structural conformity of a saved brief.
-It is wired into Stage 6 but can also be run ad-hoc against any existing brief:
+It runs as step 5 of Stage 5 (save + validate) but can also be run ad-hoc against any existing brief.
+Always resolve the script path against `<skill-dir>` — the installed skill package directory containing this SKILL.md — never against the user's repository:
 
 ```bash
-python3 skills/task-brief-creator/scripts/validate_brief.py \
+python3 <skill-dir>/scripts/validate_brief.py \
   docs/briefs/2026-04-23-feat-global-hotkey-system.md
 ```
 
@@ -548,10 +503,10 @@ Exit codes: `0` pass, `1` structural failure, `2` file I/O error.
 Scope of the validator (deliberately structural only):
 
 - Filename pattern, title format, type coherence across filename / title / section value, and slug length.
-- Presence of required H2 sections + `In Scope` / `Out of Scope` H3s.
+- Presence and template order of required H2 sections + `In Scope` / `Out of Scope` H3s; duplicate H2 sections are rejected.
 - Type-conditional section (`Reproduction` / `Baseline Measurement` / `Behavior Contract`) present and populated for the matching type.
 - Bullet content in narrative sections; `- [ ]` format in checklist sections; populated `Open Questions` with `- None — <reason>` when no questions remain.
-- Inline-code paths under `Related Files / Entry Points` resolve on disk (skipped when the bullet carries a `(proposed)` marker).
+- Inline-code paths under `Related Files / Entry Points` resolve on disk (skipped when the bullet carries the exact literal token `(proposed)`).
 - Optional `Constraints` heading shape.
 - Warning only: `Out of Scope` bullets without `[hard]` or `[deferred]` classification.
   The validator does not judge whether the classification is semantically correct.
@@ -561,7 +516,7 @@ Out of scope (still on the human): concreteness of bullets, whether Out-of-Scope
 For briefset mode, use `scripts/validate_briefset.py` on the parent file — it validates the parent structure and re-runs `validate_brief.py`'s checks transitively on every referenced child brief, so one invocation covers the whole set:
 
 ```bash
-python3 skills/task-brief-creator/scripts/validate_briefset.py \
+python3 <skill-dir>/scripts/validate_briefset.py \
   docs/briefs/2026-04-30-briefset-checkout-i18n.md
 ```
 
@@ -570,61 +525,9 @@ See `references/briefset.md` for what the parent validator checks and what stays
 
 ---
 
-## Cold-Pickup Verification (Stage 5.6)
-
-Stage 5.6 spawns an `Explore` or `general-purpose` sub-agent that reads only the original user input or planning notes plus the saved brief, then returns the YAML report defined in Stage 5.6 (`verdict`, `first_actions`, `ask_backs` with evidence + `source_of_uncertainty` + `affects_direction`, `missing_concerns` with evidence).
-The main agent classifies and routes each `ask_backs[*]` per the routing table in Stage 5.6, patches the brief in place if drift survives routing, and re-runs the structural validator.
-No numeric confidence score is used — `verdict: clean` (with empty `ask_backs` and `missing_concerns`) is the pass condition.
-
-**Default behavior: signal-gated.** Cold-pickup runs automatically after Stage 5.5 passes **only when at least one auto-ON trigger fires**: briefset mode, Stage 4 decision-table rows ≥ 1, non-empty `Open Questions` (i.e. not solely `- None — <reason>`), or work type in `{fix, perf, refactor}`.
-When none of those signals fire, Stage 5.6 is auto-skipped with a `trivial signals` notation on the Stage 6 banner.
-When any signal fires, Stage 5.6 runs; host-level "only spawn sub-agents on explicit request" defaults do not override the gate.
-
-**Force ON (run despite trivial signals).** The user can force Stage 5.6 to run even when no auto-ON trigger fires:
-
-- An explicit phrase — `run cold-pickup`, `force cold-pickup`, `cold-pickup on`, `콜드픽업 강제`, `콜드픽업 실행`.
-- A flag-style hint — `--cold-pickup` or equivalent.
-- Any other phrase that unambiguously opts into cold-pickup verification — when in doubt, confirm with one short question before running.
-
-**Force OFF (skip despite firing signals).** The user can skip Stage 5.6 even when auto-ON triggers fire:
-
-- An explicit phrase in the input — `skip cold-pickup`, `cold-pickup off`, `no cold-pickup`, `콜드픽업 건너뛰기`, `콜드픽업 끄기`, `cold-pickup 생략`.
-- A flag-style hint — `--no-cold-pickup` or equivalent.
-- Any other phrase that unambiguously opts out of cold-pickup verification — when in doubt, confirm with one short question before skipping.
-
-**Conflict resolution.** If the same input contains both Force ON and Force OFF triggers (e.g. `run cold-pickup` together with `--no-cold-pickup`), do not silently pick one — ask one short question in the user's chat language to disambiguate before deciding: e.g. `Got both Force ON and Force OFF — which one wins?` / `Force ON과 Force OFF가 모두 들어왔어. 어느 쪽으로 갈까?`.
-
-Banner phrasing on the Stage 6 save report:
-
-- Auto-skip (no auto-ON trigger fired) — `cold-pickup skipped: trivial signals (single-brief, stage-4-rows=0, open-questions=none, type=<type>)`.
-- Force OFF (user opt-out) — `cold-pickup skipped per user request`.
-- Force ON (user override on trivial signals) — `cold-pickup forced by user over trivial signals (single-brief, stage-4-rows=0, open-questions=none, type=<type>); <termination trigger> after <N> pass(es)`.
-- Default gated run (auto-ON fired) — `cold-pickup <termination trigger> after <N> pass(es)` (no extra prefix — same shape as before).
-
-**Snapshot semantics.** Stage 4 always runs as a user decision table (see `## Modes`), so `stage-4-rows=0` in the auto-skip snapshot always means *Stage 4 ran and produced no user-decision rows*, never "Stage 4 was skipped". Likewise `open-questions=none` means the `Open Questions` section consists solely of `- None — <reason>`. And `type=<type>` in an auto-skip snapshot is always a type *outside* `{fix, perf, refactor}` — if it were inside, trigger #4 would have fired and the run would not have been skipped.
-
-**Loop cap.** A maximum of **5** cold-pickup passes per brief. The loop terminates earlier on any of the triggers defined in Stage 5.6 (Regression, Oscillation, Stable findings, Clean pass, No-op pass). If the hard cap fires, surface the residual gaps in Stage 6 as comments for the user rather than continuing to patch.
-
-**Briefset cost note.** In briefset mode the total spawn count is `parent + N children`, multiplied by up to **5×** in the worst case when every file hits the hard cap.
-In practice most files terminate earlier (Clean pass on pass 1, or Stable findings / No-op on pass 2–3), so the average is closer to `1.5×–2×`.
-For a wide briefset (≥ 5 children) this is still the most expensive Stage 5.6 case — recommend the user opt out for that briefset, or run Stage 5.6 only on the parent and a sample of children, when cost matters.
-
-**Briefset reporting (Stage 6 banner).** Per-child cold-pickup status is collapsed to one summary line plus details only on flagged children, not one line per child:
-
-- Pass-everything case: `cold-pickup: 1/1 parent + N/N children verdict:clean (no ask-backs, no missing concerns)`.
-- Mixed case: `cold-pickup: 1/1 parent clean, K/N children clean, M flagged — see chat for details`, then list the flagged child paths and the specific drift items below.
-
-**What cold-pickup never does:**
-
-- Override a Stage 4 decision the user already locked.
-- Invent Acceptance Criteria, Side Effect Checkpoints, or Out-of-Scope guardrails the input did not imply.
-- Silently rewrite `Open Questions` — drift fixes either resolve a question into another section or leave the question intact for the user.
-
 ## Guardrails
 
-- **Executable, not discursive.** The emitted document is a work instruction, not a memo about the work.
-  If any section reads like a discussion summary, scope-negotiation log, planning note, or rationale essay, rewrite it until it directs concrete action.
-  Prose that explains *why we are thinking about this* belongs in the PR description, not the brief.
+- **Executable, not discursive.** Apply the intro's prose-style rule to every section — rewrite discussion-summary, negotiation-log, or rationale prose until it directs concrete action; *why we are thinking about this* prose belongs in the PR description, not the brief.
 - **Never fabricate file paths or PR numbers.** `Related Files / Entry Points` is mandatory because it is the downstream agent's starting route.
   If the codebase review does not surface at least one concrete file, directory, route, command, module, related brief, or confirmed proposed path, ask the user to provide or confirm the entry point before saving the brief.
 - **Never infer Acceptance Criteria from thin air.** Vague criteria poison the downstream agent.
@@ -636,6 +539,7 @@ For a wide briefset (≥ 5 children) this is still the most expensive Stage 5.6 
   Put bounded implementation choices in `Constraints`, and user-owned unresolved choices in `Open Questions`.
 - **One brief per invocation, unless the input has multiple execution contexts.** If it does, recommend briefset mode and ask the user to choose (see `references/briefset.md`).
   Briefset mode is the supported way to handle multi-context work — do not stuff multiple unrelated tasks into a single brief unless the user explicitly chooses single-brief after the recommendation, and do not nest briefsets (a child cannot become a parent).
+  When the contexts share no dependency, no ordering, and no conflict hotspot, recommend separate single-brief invocations instead of a briefset (see Stage 1).
 - **Decision table does not bypass the ambiguity gate.** Halt-eligible inputs still halt at Stage 1.
   Do not try to reconstruct missing PROBLEM / GOAL / SCOPE / TARGET through a large decision table — the gate exists precisely to prevent that failure mode.
   See `references/stage-4-interview.md` for the table rules and termination conditions.
@@ -649,16 +553,21 @@ The structural validator catches format errors after the fact; this list catches
 
 - [ ] Filename matches `YYYY-MM-DD-<type>-<slug>.md`.
 - [ ] `<type>` is one of the ten Conventional Commits types.
-- [ ] Title on line 1 starts with `[<type>]`.
+- [ ] Title on line 1 matches `# [<type>] <title>`.
 - [ ] `Current State (As-Is)` and `Desired Outcome (To-Be)` are both populated and distinguishable.
 - [ ] If type is `fix` / `perf` / `refactor`, the type-conditional section (`Reproduction` / `Baseline Measurement` / `Behavior Contract`) is present and populated — `- N/A — <reason>` if genuinely none.
 - [ ] `Out of Scope` has at least one specific entry (or an explicit "None — self-contained." with rationale).
   Use `[hard]` for must-not-touch guardrails and `[deferred]` for follow-up work when the distinction matters.
 - [ ] `Acceptance Criteria` are measurable (checkable, not aspirational).
 - [ ] `Related Files / Entry Points` entries are existing repo paths, verified references, or confirmed proposed paths.
-  Paths under inline-code that are not yet created carry a `(proposed)` marker so the structural validator does not flag them as fabricated.
+  Paths under inline-code that are not yet created carry the exact literal token `(proposed)` so the structural validator does not flag them as fabricated — variants like `(proposed edit)` are not recognized.
   Each entry routes the agent's first read or first edit, not just "related file" context.
 - [ ] `Open Questions` uses `- None — <reason>` only if the brief is genuinely unambiguous; otherwise populate it with real questions.
+
+## Post-Run Checklist (before the Stage 6 banner)
+
+Evaluated after Stage 5.5 / 5.6 have run or been skipped, immediately before reporting the Stage 6 banner — these items cannot be checked before `Write`.
+
 - [ ] Cold-pickup ran when any auto-ON trigger fired (briefset / stage-4-rows ≥ 1 / non-empty `Open Questions` / type ∈ `{fix, perf, refactor}`) OR the user used Force ON triggers.
 - [ ] Cold-pickup auto-skipped with `trivial signals (...)` snapshot when no auto-ON trigger fired and no Force ON was used.
 - [ ] Cold-pickup skipped per user request (`cold-pickup skipped per user request`) when Force OFF was used, even if auto-ON triggers would have fired.

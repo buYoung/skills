@@ -82,8 +82,13 @@ The skill replies in the user's chat language. Both versions follow.
     (threshold is 3+).
   - A defect + an end state + a scope hint (PROBLEM + GOAL + SCOPE) —
     "session tokens are in localStorage; move them to HttpOnly cookies
-    for the web app" → 3 anchors, **CONTINUE**. TARGET will be filled
-    in Stage 3 codebase review.
+    for the web app" → 3 anchors with TARGET missing. The gate does not
+    CONTINUE on faith: it runs a narrow target probe first (a couple of
+    `rg` queries such as `rg "localStorage" -t ts src` and
+    `rg "setItem.*token"`). Here the probe surfaces `src/auth/session.ts`
+    as a concrete entry point, so **CONTINUE**. Had the probe found no
+    concrete entry point, the gate would still HALT and ask for the
+    target area.
 - **Why not just guess the most likely interpretation** — the cost of a
   wrong-framing brief is the entire downstream implementation cycle.
   The cost of pushing back is one round-trip with the user. The
@@ -146,3 +151,8 @@ wanted **session tokens moved out of localStorage for security** — a
 totally different problem, in different files, possibly a `feat`
 rather than a `refactor`. The cost is the entire restructuring cycle
 plus the rework. That is the asymmetry the halt protects against.
+
+(The sketch is also sloppy *structurally* — its bare `- None` under
+`Open Questions` would fail `validate_brief.py`, which requires the
+reasoned `- None — <reason>` form. But the deeper failure is the
+fabricated problem framing, which no structural validator can catch.)

@@ -48,19 +48,25 @@ reviewer-owned unknown.
 | 순번 | 내용 | 수정 추천안 | 근거 |
 |---|---|---|---|
 | 1 | Work type to write into the brief | Keep `fix`. | The input names a defect: login rejects valid credentials on iOS Safari. |
-| 2 | Reproduction detail | Pin iOS Safari 17, password `foo@bar`, QA account `qa+iossafari@example.com`, "invalid credentials" toast, 5/5 fresh-session attempts. | `fix` briefs need a reproducible failing state before implementation. The codebase can identify the likely validation site, but it cannot supply the user's observed environment. |
+| 2 | Reproduction detail | Provide the observed environment so it can be pinned in `## Reproduction`: exact iOS Safari version and device, the failing test account (no literal password — name where the secret lives), the observed error surface, and how often it reproduces. | `fix` briefs need a reproducible failing state before implementation. The codebase can identify the likely validation site, but only the user can supply the observed environment, account, and frequency. |
 | 3 | Out of Scope boundary | Lock both the broader validation-chain refactor and the `/api/login` request/response contract out of scope. | Stage 3 found both adjacent to the suspected line. Touching them would widen the defect fix into unrelated behavior change. |
 | 4 | Acceptance criteria ordering | Require a red Cypress reproduction first, then the fix, then iOS Safari manual verification and full suite pass. | Reproduction-first criteria make the defect non-regression explicit for downstream agents. |
 | 5 | Side effect checkpoints | Keep checks for the existing valid-login case, URL-significant password characters, and the PR #211 motivation. | `%`, `+`, and `&` share the same risk surface as `@` because `decodeURIComponent` is the suspected interaction site. |
 | 6 | PR #211 remove-vs-patch decision | Carry this as an `Open Questions` item for the reviewer instead of deciding it in the brief. | The original motivation is not recoverable from the current input or code probe, and the downstream reviewer owns whether the cleanup remains necessary. |
 
-User: approve rows 1-6.
+User: approve rows 1 and 3-6; for row 2 the user supplies the values —
+iOS Safari 17 on iPhone 14 via BrowserStack, QA account
+`qa+iossafari@example.com` whose password contains `@` (stored in the
+1Password item "QA iOS Safari"), "invalid credentials" toast, 5/5
+attempts on fresh sessions, reproducing on both the `main` dev build
+and the current production build.
 
 ### Termination
 
-All user-owned decisions are decided. `Reproduction` is pinned, and the
-reviewer-owned PR #211 decision is explicitly carried forward as an
-`Open Questions` item. Stage 5 follows.
+All user-owned decisions are decided. `Reproduction` is pinned from the
+user's row-2 answer, and the reviewer-owned PR #211 decision is
+explicitly carried forward as an `Open Questions` item. Stage 5
+follows.
 
 ---
 
@@ -77,7 +83,7 @@ fix
 - `validatePassword()` in `src/auth/validation.ts` calls `decodeURIComponent` on the raw input — likely interaction site (per Stage 3 review).
 
 ## Reproduction
-- Steps: open `/login` on iOS Safari 17, enter a known-valid account whose password contains `@` (test account `qa+iossafari@example.com` / `foo@bar`), tap "Log in".
+- Steps: open `/login` on iOS Safari 17, enter the known-valid QA account `qa+iossafari@example.com` whose password contains `@` (password: see 1Password item "QA iOS Safari"), tap "Log in".
 - Observed: form returns "invalid credentials" toast; no network error in dev tools.
 - Expected: same credentials succeed (verified working on desktop Safari 17, Chrome 124, Firefox 125 against the same backend).
 - Environment: iOS Safari 17 on iPhone 14 (BrowserStack); reproduces against `main` branch dev build and the current production build.
@@ -93,9 +99,9 @@ fix
 - Fix the validation step in `src/auth/validation.ts` that mishandles `@` on iOS Safari.
 - Add a Cypress E2E case that exercises the failing input.
 ### Out of Scope
-- Refactoring or restructuring the validation chain beyond the offending step.
-- Changing the `/api/login` request or response contract.
-- Reviewing other characters that may have similar issues — separate brief if found.
+- [hard] Refactoring or restructuring the validation chain beyond the offending step.
+- [hard] Changing the `/api/login` request or response contract.
+- [deferred] Reviewing other characters that may have similar issues — separate brief if found.
 
 ## Related Files / Entry Points
 - `src/auth/validation.ts:34` — `validatePassword()`; suspected `decodeURIComponent` interaction with `@` on iOS Safari.
@@ -111,7 +117,7 @@ fix
 ## Acceptance Criteria
 - [ ] A new Cypress case in `cypress/e2e/login.cy.ts` reproduces the failure on the unfixed code (commit it red first, then fix).
 - [ ] The new case passes after the fix on the same iOS Safari target.
-- [ ] Manual verification on iOS Safari 17 with password `foo@bar` results in successful login.
+- [ ] Manual verification on iOS Safari 17 with the QA account's `@`-containing password results in successful login.
 - [ ] Full Cypress suite stays green.
 
 ## Open Questions
@@ -126,7 +132,8 @@ A coding agent receiving only the saved brief should reach a red test in
 under 30 minutes. From the brief alone:
 
 1. Spin up the documented repro environment (BrowserStack, iOS Safari 17,
-   account `qa+iossafari@example.com` / `foo@bar` per `Reproduction`).
+   account `qa+iossafari@example.com` with the password from the
+   1Password item "QA iOS Safari", per `Reproduction`).
    Confirm the failure on `main` to verify the repro is real.
 2. Add a Cypress case in `cypress/e2e/login.cy.ts` (named in `Related
    Files / Entry Points` and required by `Acceptance Criteria` #1) that
@@ -141,7 +148,7 @@ under 30 minutes. From the brief alone:
 The agent does **not** restructure the validation chain (per `Out of
 Scope`), does not change the `/api/login` contract (per `Out of Scope`),
 and does not need to ask the user for the repro account — the brief
-ships it.
+names the account and where its password lives.
 
 ---
 
@@ -157,6 +164,11 @@ ships it.
   `decodeURIComponent` is the suspect. Anything that would change its
   behavior risks regressing other passwords. The downstream agent needs
   to deliberately verify, not assume.
+- **Why the password is a 1Password reference, not a literal** — briefs
+  are committed artifacts, and the template forbids embedding real
+  credentials; the brief references the secret's location instead. The
+  load-bearing fact for this bug — the password contains `@` — is stated
+  explicitly, so nothing the downstream agent needs is lost.
 - **Why Open Questions kept the "remove vs. patch" question** — the
   brief writer does not have authority to decide whether PR #211's
   defensive code is still needed. Leaving the question open lets the

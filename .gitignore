@@ -87,3 +87,6 @@ fabric.properties
 __pycache__/
 *.pyc
 *.pyo
+
+# delegated-review-loop session scratch
+.agents/
