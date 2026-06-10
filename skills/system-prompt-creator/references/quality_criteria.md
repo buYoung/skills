@@ -15,7 +15,8 @@ prompt is **ready for evaluation**, not certified production-ready — see the n
 - check: Fallback Handling
   criteria: Is the response defined for inputs that cannot be processed?
 - check: Reproducibility
-  criteria: Does the structure produce consistent output for the same input?
+  criteria: Are decision rules, tie-breaks, and format constraints explicit enough that no
+    output-shaping choice (format, length, label) is left for the model to improvise per run?
 - check: Variable Separation
   criteria: Are dynamic inputs separated into variables without hardcoding?
 - check: Self-Containment
@@ -24,6 +25,10 @@ prompt is **ready for evaluation**, not certified production-ready — see the n
   criteria: For classification/routing/extraction prompts, are out-of-scope inputs guarded to the
     fallback value AND ambiguous or multi-signal inputs resolved by an explicit dominant-signal
     tie-break (stated in the prompt, not left to the model to infer)?
+- check: Untrusted Input Isolation
+  criteria: When a variable carries end-user or third-party text, is it wrapped in explicit
+    delimiters with an instruction that its content is data to process, never instructions to
+    follow? (See the Guardrails block in prompt_structure.md.)
 ```
 
 ## Quality Degradation Patterns
@@ -43,7 +48,7 @@ prompt is **ready for evaluation**, not certified production-ready — see the n
   fix: "Only within the scope of the provided input"
 - pattern: Missing Examples
   problem: Conveying complex output patterns through explanation only
-  fix: Add 3–5 input-output examples
+  fix: Add 2–5 input-output examples (see prompt_structure.md — start zero-shot first)
 - pattern: Erroneous Examples
   problem: Typos/logic errors in examples → Model learns error patterns
   fix: Directly verify examples before including them
@@ -76,16 +81,29 @@ eval — see [evaluation.md](evaluation.md).
 
 ## Single vs. Multi-Prompt Decision Criteria
 
-A multi-prompt architecture is needed when a single system prompt cannot solve the task.
+A multi-prompt architecture is needed **only when a single system prompt cannot solve the
+task**. Failure signals: an intermediate artifact is consumed or retried independently by an
+external system, the steps require instructions that conflict within one prompt, the context
+budget is exceeded, or a measured eval shows a single prompt underperforming. Each added prompt
+costs latency, money, and error propagation — the burden of proof is on splitting.
+
+**Over-splitting guard**: N output fields from one analysis of one input (e.g. sentiment +
+attribute + note from a single review) is **one prompt with an output schema** — "multiple
+aspects" alone never justifies a split.
+
+Pattern signals (apply only after the gate above says a single prompt is insufficient):
 
 - **Task can be completed with a single role**: Single
-- **Input → Output is a single transformation**: Single
+- **Input → Output is a single transformation (even with multiple output fields)**: Single
 - **Intermediate transformation steps exist (A→B→C)**: Multi: Sequential
-- **Processing the same input from different perspectives**: Multi: Parallel
+- **Independent perspectives whose outputs are consumed separately**: Multi: Parallel
 - **Processing differs based on the input type**: Multi: Conditional
 - **Iterative draft → review → revision cycle is needed**: Multi: Iterative
+- **General principles must be extracted before the main task**: Multi: Step-back
+- **Input must be split into chunks, processed independently, then merged**: Multi: Fan-out/Fan-in
 
-For multi-prompt design, refer to [multi_prompt_architecture.md](multi_prompt_architecture.md).
+This list is the summary; the canonical walkthrough is the Architecture Design Process in
+[multi_prompt_architecture.md](multi_prompt_architecture.md).
 
 ## Principles for Writing Instructions
 

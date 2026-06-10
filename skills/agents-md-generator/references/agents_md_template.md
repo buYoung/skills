@@ -230,7 +230,7 @@ See the working agreements specification referenced from SKILL.md.
 
 ## Format Requirements
 
-- **Language**: English only (for the content of the `AGENTS.md` file)
+- **Language**: English by default (for the content of the `AGENTS.md` file); if the user explicitly requests another language for the generated document, follow that request
 - **Max Length**: Dynamic based on repository LOC (see LOC measurement specification referenced from SKILL.md)
 - **Format**: Valid Markdown
 - **Tone**: Concise, neutral
@@ -244,3 +244,5 @@ See the working agreements specification referenced from SKILL.md.
 - "Testing Strategy" documentation
 - Build/deploy instructions
 - Detailed CI pipeline configuration
+
+**Exception**: the discovered type-check command included in Working Agreements (see the working agreements specification, "Type Check After Changes") is required content — it is verification guidance, not a build/run instruction, even when the discovered command is literally a build tool invocation (e.g., `go build`, `gradle compileKotlin`). Do not remove it to satisfy this list.

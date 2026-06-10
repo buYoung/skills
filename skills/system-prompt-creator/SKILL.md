@@ -1,15 +1,45 @@
 ---
 name: system-prompt-creator
-description: A skill that analyzes user requirements to generate system prompts ready for evaluation. It determines whether a single or multi-prompt architecture is needed and queries for missing information if requirements are insufficient.
+description: A skill that analyzes user requirements to generate system prompts ready for evaluation. It determines whether a single or multi-prompt architecture is needed and queries for missing information if requirements are insufficient. Use when asked to create, design, or draft a system prompt for an LLM-powered bot, assistant, classifier, router, or multi-step prompt pipeline (e.g. "create a system prompt", "시스템 프롬프트 만들어줘", "분류기 프롬프트 짜줘"). Not for refining an existing prompt, one-off user prompts, agent definition files, CLAUDE.md/AGENTS.md, or Claude Code skill definitions.
 ---
 
 # System Prompt Creator
 
-Generates ready-to-use system prompts based on user requirements.
+Generates ready-for-evaluation system prompts based on user requirements.
 
 ## Trigger
 
-`Create a system prompt`
+Representative requests (not exhaustive — the frontmatter description is the routing surface):
+
+- "Create a system prompt for ..." / "I need a system prompt that ..."
+- "Design the prompts for this LLM pipeline ..." (multi-step flow)
+- "시스템 프롬프트 만들어줘", "분류기/라우터 프롬프트 짜줘"
+
+### Out of scope
+
+- Refining or reviewing an existing system prompt the user already has
+- One-off user prompts (a single message to paste into a chat)
+- Agent definition files, CLAUDE.md / AGENTS.md, or Claude Code skill definitions
+- Image/video generation prompts
+
+## Workflow
+
+1. **Collect input** — map the request onto the Input fields below.
+2. **Sufficiency gate** — apply the Input Sufficiency Criteria and the generate-vs-clarify gate.
+   If a required field is missing, terminate early and ask for the specific field(s).
+3. **Decide the architecture** — single prompt is the default. Read
+   [multi_prompt_architecture.md](references/multi_prompt_architecture.md) (Architecture Design
+   Process) only when the request describes intermediate artifacts, branching, iteration, or
+   input splitting.
+4. **Assemble the prompt(s)** — always read
+   [prompt_structure.md](references/prompt_structure.md) for blocks and assembly order. Read
+   [data_format_selection.md](references/data_format_selection.md) only when embedding data
+   inside a prompt or defining an inter-prompt data contract.
+5. **Quality check** — verify every item of the Readiness Checklist in
+   [quality_criteria.md](references/quality_criteria.md); for classification/routing/extraction
+   prompts the Disambiguation Rules (scope guard + tie-break) are required.
+6. **Deliver with a validation note** — per the Output contract below, based on
+   [evaluation.md](references/evaluation.md).
 
 ## Input
 
@@ -36,7 +66,10 @@ Generates ready-to-use system prompts based on user requirements.
   output schema keys are REQUIRED domain context** — a classifier or router whose output space is
   unknown cannot be specified, so a missing label set is a hard blocker, not a detail to assume.
 - **Expected Output**: Information to determine what the final deliverable is
-- **Complexity Judgment**: Information to decide whether a single or multi-prompt is needed
+
+Single vs multi-prompt is **derived by the skill** from the fields above (explicit steps,
+branching, or iteration the user described) — do not ask the user to choose an architecture;
+ask only when their described processing flow is contradictory.
 
 **If insufficient**: Early termination → Query specifically for the missing item(s).
 
@@ -54,13 +87,14 @@ stronger drafting instinct is not a license to skip this check.
 The clarify-vs-generate call is the same judgment in both directions — terse wording is not the
 signal; the presence of the required fields is.
 
-- **Insufficient → clarify (do NOT fabricate).** Request: *"I need a system prompt for a bot that
-  helps our CX agents draft replies — that's basically it, set it up."* Purpose is partial, but
-  Domain Context (policies, refund/cancellation rules, tone, product terms) and Expected Output
-  (reply format/length/channel) are absent. ✅ Withhold the prompt and ask specifically for those
-  two fields. ❌ Emit a finished prompt that invents policies/tone/format — even under an
-  "assumptions you can override" caveat. *"I now have everything I need"* is the rationalization to
-  catch; a breezy *"just set it up"* does not supply the missing fields.
+- **Insufficient → clarify (do NOT fabricate).** Request: *"Give me a system prompt for a bot
+  that turns our weekly sales-call transcripts into summaries — nothing fancy, just get it
+  going."* Purpose is partial, but Domain Context (sales methodology, deal stages, terminology,
+  what matters in a call) and Expected Output (summary structure/length/destination) are absent.
+  ✅ Withhold the prompt and ask specifically for those two fields. ❌ Emit a finished prompt
+  that invents the summary structure and domain rules — even under an "assumptions you can
+  override" caveat. *"I now have everything I need"* is the rationalization to catch; a breezy
+  *"just get it going"* does not supply the missing fields.
 - **Sufficient but terse → proceed (do NOT over-ask).** Request: *"auto-tag GitHub issues as one of
   bug/feature-request/docs/question/duplicate, else triage; output just the tag — that's all i need,
   set it up."* Terse, but the closed label set (the required Domain Context for a classifier) and
@@ -69,6 +103,11 @@ signal; the presence of the required fields is.
   not insufficient input.
 
 ## Output
+
+Deliverable shape: the architecture decision (single, or the pattern name) with a one-paragraph
+rationale → each system prompt in its own fenced code block, labeled by stage → for multi-prompt
+setups, the inter-prompt data contract → the validation note. Write the generated prompt in the
+language the target model will serve end users in (default: the language of the user's request).
 
 - **System prompt(s)**: 1 to N system prompts ready for evaluation
 - **Architecture description**: Relationships and data flow between prompts in a multi-prompt setup

@@ -14,7 +14,9 @@ Output is a JSON object with:
                             position relative to other standard sections
 
 Only the first occurrence of any standard heading is treated as standard;
-duplicates are preserved as-is. This matches references/update_strategy.md.
+duplicates are preserved as-is. Lines inside fenced code blocks (``` or ~~~)
+are never treated as section headings. This matches
+references/update_strategy.md.
 
 Usage:
     python parse_sections.py FILE [--doc-type single_repo|monorepo_root]
@@ -41,12 +43,27 @@ MONOREPO_ROOT_STANDARD = [
 ]
 
 
+_FENCE_OPEN = re.compile(r"^ {0,3}(`{3,}|~{3,})")
+_FENCE_CLOSE = re.compile(r"^ {0,3}(`{3,}|~{3,})\s*$")
+
+
 def parse_sections(text: str):
     lines = text.splitlines()
     sections = []
     preamble_end = None
     current = None
+    fence_marker = None
     for i, line in enumerate(lines):
+        if fence_marker is not None:
+            close = _FENCE_CLOSE.match(line)
+            if (close and close.group(1)[0] == fence_marker[0]
+                    and len(close.group(1)) >= len(fence_marker)):
+                fence_marker = None
+            continue
+        fence_open = _FENCE_OPEN.match(line)
+        if fence_open:
+            fence_marker = fence_open.group(1)
+            continue
         if re.match(r"^##\s", line):
             if preamble_end is None:
                 preamble_end = i
@@ -75,6 +92,9 @@ def main():
             text = f.read()
     except OSError as e:
         sys.stderr.write(f"Cannot read {args.file}: {e}\n")
+        sys.exit(2)
+    except UnicodeDecodeError as e:
+        sys.stderr.write(f"{args.file} is not valid UTF-8: {e}\n")
         sys.exit(2)
 
     standard = SINGLE_REPO_STANDARD if args.doc_type == "single_repo" else MONOREPO_ROOT_STANDARD

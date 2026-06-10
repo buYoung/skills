@@ -5,10 +5,12 @@ Defines the method for measuring repository size and determining dynamic charact
 ## Measurement Command
 
 ```bash
-tokei -e "*.json" -e "*.yaml" -e "*.yml" -e "*.md" -e "*.sh" -e "*.lock" -e "*.map" -e "*.svg" .
+tokei -e "*.json" -e "*.yaml" -e "*.yml" -e "*.md" -e "*.sh" -e "*.lock" -e "*.map" -e "*.svg" -e node_modules -e vendor -e dist .
 ```
 
 **Priority**: This is the **first step** before generating AGENTS.md.
+
+The explicit directory excludes (`node_modules`, `vendor`, `dist`) matter outside git repositories: `tokei` honors `.gitignore` only inside a git repo, so vendored dependencies and build output would otherwise inflate LOC in exported or unzipped directories.
 
 ## Tool Installation
 
@@ -53,6 +55,8 @@ https://github.com/XAMPPRocky/tokei Please install it from here and try again.
 
 Distribute the total character limit across sections to prevent front-loading. These are recommended proportions — adjust slightly based on project characteristics.
 
+**Budget scope in update mode**: the character limit covers the preamble plus the standard (managed) sections only. Custom user sections are excluded from the limit and must never be trimmed to satisfy it.
+
 ### Single Repo / Package Document (5 Sections)
 
 ```yaml
@@ -64,7 +68,7 @@ Distribute the total character limit across sections to prevent front-loading. T
   note: "Proportional to directory depth and complexity"
 - section: "3. Core Behaviors & Patterns"
   budget: "25%"
-  note: "Largest section; cross-cutting patterns need detail to be actionable"
+  note: "Cross-cutting patterns need detail to be actionable"
 - section: "4. Conventions"
   budget: "25%"
   note: "Each convention should include rule + example"

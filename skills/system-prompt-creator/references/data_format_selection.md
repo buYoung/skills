@@ -33,6 +33,11 @@ token-efficient. This default is also a common practitioner heuristic — Markdo
 to be recognized more reliably than tag-heavy or delimiter-only formats on current models —
 though that is hands-on experience, not something the benchmarks above establish.
 
+> These rankings concern **data embedded for the model to read**. They say nothing about XML
+> tags used to *delimit prompt sections* (`<task>`, `<examples>`, `<user_input>`) — a standard,
+> low-token practice for Claude-family models that remains recommended regardless of the
+> tag-heavy data-format costs in the tables below.
+
 ## Format Accuracy: Flat Data (single model — GPT-4.1-nano)
 
 LLM accuracy by format for 1D (flat) key-value retrieval over a large tabular dataset:
@@ -102,7 +107,8 @@ Defaults by data shape — confirm against your model with an eval:
 - data_structure: Tabular (rows × columns)
   default: Markdown-Table
   alternative: Markdown-KV / YAML
-  note: CSV is token-cheap but lowest accuracy
+  note: CSV/Pipe-Delimited rank lowest on accuracy; Markdown-Table buys materially higher
+    accuracy for ~29% more tokens than CSV
 - data_structure: API integration required
   default: JSON
   alternative: YAML
@@ -119,9 +125,11 @@ Defaults by data shape — confirm against your model with an eval:
 - use_case: Reference data in a system prompt
   format: Markdown-KV (flat) or YAML (nested)
   rationale: High accuracy + reasonable token efficiency on tested models
-- use_case: Intermediate data transfer (multi-prompt)
+- use_case: Intermediate data transfer (multi-prompt) read by the NEXT PROMPT as in-context text
   format: YAML
-  rationale: Top-ranked for nested data on most tested models; verify per model
+  rationale: Top-ranked for nested-data reading on most tested models; verify per model. If an
+    orchestrator parses stage outputs programmatically, prefer JSON + Structured Outputs
+    instead — see multi_prompt_architecture.md (Inter-Prompt Data Contract)
 - use_case: API integration output
   format: JSON (with Structured Outputs / strict function calling)
   rationale: Reliable programmatic parsing

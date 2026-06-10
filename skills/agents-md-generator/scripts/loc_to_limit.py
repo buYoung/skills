@@ -13,7 +13,13 @@ import shutil
 import subprocess
 import sys
 
-EXCLUDES = ["*.json", "*.yaml", "*.yml", "*.md", "*.sh", "*.lock", "*.map", "*.svg"]
+# Directory excludes matter outside git repositories: tokei honors .gitignore
+# only inside a git repo, so vendored deps and build output would otherwise
+# inflate LOC in exported or unzipped directories.
+EXCLUDES = [
+    "*.json", "*.yaml", "*.yml", "*.md", "*.sh", "*.lock", "*.map", "*.svg",
+    "node_modules", "vendor", "dist",
+]
 
 # (upper_bound_inclusive, scale_label, character_limit)
 SCALE_TABLE = [
@@ -48,9 +54,9 @@ def run_tokei(path: str) -> str:
 
 def parse_total_lines(tokei_output: str) -> int:
     for line in tokei_output.splitlines():
-        m = re.match(r"\s*Total\s+\d+\s+(\d+)", line)
+        m = re.match(r"\s*Total\s+[\d,]+\s+([\d,]+)", line)
         if m:
-            return int(m.group(1))
+            return int(m.group(1).replace(",", ""))
     raise ValueError("Could not find a 'Total' row in tokei output")
 
 
@@ -70,7 +76,11 @@ def main():
     args = parser.parse_args()
 
     output = sys.stdin.read() if args.from_stdin else run_tokei(args.path)
-    loc = parse_total_lines(output)
+    try:
+        loc = parse_total_lines(output)
+    except ValueError as e:
+        sys.stderr.write(f"{e}\n")
+        sys.exit(1)
     scale, limit = loc_to_scale(loc)
     json.dump({"loc": loc, "scale": scale, "character_limit": limit}, sys.stdout)
     sys.stdout.write("\n")
