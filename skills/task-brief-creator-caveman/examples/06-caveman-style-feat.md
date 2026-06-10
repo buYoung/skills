@@ -80,9 +80,9 @@ feat
 - Define 5 default shortcut combo (provisional draft — product to confirm).
 - Add shortcut-editing section to Settings UI (Linux: disabled state + tooltip when plugin unavailable).
 ### Out of Scope
-- Multi-profile shortcut set (separate future brief).
-- Conflict detection vs OS-default shortcut (deferred).
-- Tauri v1 fallback path — v2 only.
+- [deferred] Multi-profile shortcut set — future brief.
+- [deferred] Conflict detection vs OS-default shortcut.
+- [hard] Tauri v1 fallback path — v2 only.
 
 ## Constraints
 - Tauri v2 plugin only — v1 alternative not on table.
@@ -122,11 +122,16 @@ check.
 ## Stage 6 — Save report (chat, normal prose)
 
 > Saved — `docs/briefs/2026-05-05-feat-global-hotkey-system.md`
-> (`feat`: Global hotkey system; structural validation passed). Body
-> is in caveman full mode per skill spec. Open it and let me know if
-> anything reads ambiguously — caveman compresses prose, not
-> contracts, but human review catches what compression should have
-> backed off on.
+> (`feat`: Global hotkey system; structural validation passed; content
+> self-check passed — all input concerns covered, caveman parity held;
+> cold-pickup `clean_pass` after 1 pass — no ask-backs, no missing
+> concerns, no over-terse bullets). Body is in caveman full mode per
+> skill spec. Open it and let me know if anything reads ambiguously —
+> caveman compresses prose, not contracts, but human review catches
+> what compression should have backed off on.
+
+(Stage 5.6 ran because two Stage 4 decision rows and a populated
+`Open Questions` both fired the auto-ON gate.)
 
 ---
 

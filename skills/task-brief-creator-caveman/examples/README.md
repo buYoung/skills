@@ -55,10 +55,8 @@ demonstration, and use `06` for the smallest caveman conversion. See
 `references/caveman-style.md` for the caveman conversion rules.
 
 Under the dummy-path precondition above, the brief outputs in `01`,
-`02`, and `05` each pass `scripts/validate_brief.py` with exit code 0
-and 0 warnings. `06` also passes with exit code 0, with one warning —
-its `Out of Scope` bullets carry no `[hard]` / `[deferred]`
-classification, which the validator flags as a warning, not a failure.
+`02`, `05`, and `06` each pass `scripts/validate_brief.py` with exit
+code 0 and 0 warnings.
 For `04`, the parent and child 01 as shown — together with minimal
 conforming caveman versions of children 02 and 03, which the example
 only sketches — pass `scripts/validate_briefset.py` (one invocation,
