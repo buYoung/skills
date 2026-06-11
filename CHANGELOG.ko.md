@@ -10,19 +10,14 @@
 
 ### 추가
 
-- `iterative-self-review` 반복 개선 검증을 위한 새 skill 추가
+- `iterative-self-review` 반복 개선 검증을 위한 새 skill 추가 — sub-agent에 사용자 질의와 작업 산출물 중심의 최소 prompt를 전달하고, 명시적 호출 시에만 실행
 - `feature-design-doc` 단일 제품 기능 설계 문서 작성·검토용 skill 추가
 - `prompt-engineering.md`와 `delegated-review-loop` 문서 추가
 
 ### 개선
 
 - `task-brief-creator`와 `task-brief-creator-caveman` brief 성능 관련 안내 개선
-- `iterative-self-review` sub-agent에 사용자 질의와 작업 산출물 중심의 최소 prompt 전달 흐름 개선
 - `system-prompt-creator`와 `agents-md-generator` 안내 개선
-
-### 변경
-
-- `iterative-self-review` 실행 조건을 명시적 호출 중심으로 변경
 
 ## [1.4.0] - 2026-05-10
 

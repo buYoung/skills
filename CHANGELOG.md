@@ -10,19 +10,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Added
 
+- Added `iterative-self-review` for repeated improvement using a delegated sub-agent — passes the sub-agent a minimal prompt focused on the user query and work output, and runs only on explicit user requests.
 - Added `feature-design-doc` for FDD workflows.
-- Added `iterative-self-review` for repeated improvement using a delegated sub-agent.
 - Added `prompt-engineering.md` and `delegated-review-loop` documentation.
 
 ### Improved
 
 - Improved `task-brief-creator` and `task-brief-creator-caveman` guidance for better brief output.
-- Improved `iterative-self-review` guidance across repeated updates.
 - Improved `system-prompt-creator` and `agents-md-generator` guidance.
-
-### Changed
-
-- Changed `iterative-self-review` to run only on explicit user requests.
 
 ## [1.4.0] - 2026-05-10
 
