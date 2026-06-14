@@ -33,7 +33,7 @@ This is a genuine **halt**: the run does not advance past Step 6 until the user 
 
 To keep the halt from becoming friction, the orchestrator still owns the routine calls that are not judgments of *correctness*:
 
-- whether a review checkpoint is warranted at all for a given run (low-stakes runs may skip it)
+- whether a review checkpoint is warranted at all for a given run (low-stakes runs may skip it) — but a skip is **stated, with its reason**, never silent. Deciding *not* to review is adjacent to the judgment that is the user's, so it must be transparent, the same way cost and dropped failures are surfaced.
 - which two (or more) lenses fit the run
 - readability merging and ranking, as above
 

@@ -59,5 +59,41 @@ user-judged review, run-id/superseded re-versioning, and lifecycle/orphan accoun
   multi-phase backbone the other two are specializations of.
 - Termination block reuses the review skills' `termination:` convention and shared field
   names (`trigger`, `user_decisions`, `residual_issues`, `failure_log`), extended with
-  pipeline-specific fields — not a claim of identical schema. Reference files are not
+  run-specific fields — not a claim of identical schema. Reference files are not
   cross-linked (marketplace bundles each skill independently).
+
+## 2026-06-14 (revision 2) — generality re-frame + production hardening
+
+Renamed `delegated-pipeline-orchestration` → `orchestration`: the user wanted a single
+general-purpose orchestration skill, and the prior name overcommitted to one shape.
+
+**Why the re-frame.** The first version's workflow still assumed one topology — investigate
+→ prove a slice → fan out across variants — which is the batch/experiment shape, not general
+orchestration. A linear pipeline, a dependency DAG, or an iterative loop did not fit cleanly.
+
+**Changes:**
+
+1. **Topology as a parameter, not a fork.** New `references/orchestration_shapes.md` defines
+   linear / fan-out+reduce / DAG / loop / recursive (+ nesting). One backbone; the topology
+   only changes Step 5's execution order and whether Step 4 applies. SKILL Step 2 now picks a
+   topology; Step 4's "sanity gate" generalized to a *conditional* "cheap proof before an
+   expensive commitment" (skipped when there is no expensive step).
+2. **Resumability.** `phase_protocol.md` gains a `state.json` ledger and a resume protocol:
+   re-entry under the same run-id skips `done` phases, re-runs `running`/`failed` ones.
+   Termination block gains `resumed_from`.
+3. **Output-contract validation + retry.** Validate each phase output; retry shape violations
+   up to a cap (default 2), then escalate. Kept distinct from work failure (no masking).
+4. **Recovery policy.** Topology-dependent: fan-out item fails → continue + report; linear
+   phase fails → halt; DAG phase fails → block only dependents; loop → keep last good.
+5. **Progress + cost.** Live plan + per-phase checkpoints (the Codex pattern the user liked).
+   Cost is surfaced as an estimate but is **observed, never a governor** — per the user's
+   explicit constraint that cost must not constrain the orchestration (mirrors how they treat
+   tool-call count as observation-only).
+6. **Tool-permission defaults.** `orchestration_template.md` gains least-privilege-per-tier
+   defaults, secrets-out-of-outputs, and no-exfiltration (canonical rule in review_gate).
+
+**User-input provenance:** decisions on resume (durable checkpoint), cost (soft, non-
+governing), progress (plan + checkpoints), and output validation (schema + retry-then-
+escalate) were chosen by the user. Their Codex run was treated as a strong prior but cross-
+checked against general production practice — resumability and cost-surfacing were added
+*beyond* what that run did.

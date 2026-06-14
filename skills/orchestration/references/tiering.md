@@ -59,7 +59,7 @@ This is the common case and it needs an honest caveat in the run plan, not a sil
 
 - The deliberation axis disappears. You are left with capability (model choice) only.
 - Substituting "stronger model" for "more deliberation" is an **approximation**, not an equivalence: it changes the capability ceiling and the failure modes, not just the thinking budget.
-- **Do not assume the approximation holds — validate it.** The sanity gate (SKILL Step 4) is exactly the validator: a mis-bound tier shows up as a quality cliff on the cheap representative slice, before the expensive fan-out. State in the run plan that the binding is approximate and that the sanity slice is what confirms it.
+- **Do not assume the approximation holds — validate it.** The cheap-proof gate (SKILL Step 4) is exactly the validator: a mis-bound tier shows up as a quality cliff on the cheap representative slice, before the expensive step. State in the run plan that the binding is approximate and that the cheap slice is what confirms it.
 
 ## Cost note
 

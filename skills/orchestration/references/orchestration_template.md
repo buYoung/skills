@@ -64,6 +64,18 @@ Keep the **output schema explicit** for every phase. A phase whose output anothe
 
 Reviewer sub-agents use the same skeleton with two changes: the objective is to *find* (improve, for the constructive lens; refute, for the adversarial lens), and a hard rule that they **do not decide accept/reject and do not edit anything** — they emit evidence-bearing findings only. See [review_gate.md](review_gate.md).
 
+## Tool-permission defaults
+
+A phase gets the **least tool surface that lets it do its job** — not the orchestrator's full surface. Fill each prompt's `Allowed tools / surface` block from these defaults, then remove anything the specific phase does not need:
+
+- **Read-only phases** (investigate, evaluate, review) get read/search/inspect tools only — no edit, no write outside their own output document, no state-mutating commands.
+- **Producing phases** get write access to their deliverable path and their output document, plus whatever their work needs — nothing broader.
+- **Command-running phases** get exactly the command surface their task names; forbid arbitrary shell beyond it where the runtime allows scoping.
+- **Secrets stay out of outputs.** No phase prints credentials, tokens, or full environment into its output document or status.
+- **No exfiltration of run-internal material.** A phase must not send the run's inputs, intermediate outputs, or sensitive artifacts to an external service. The external-reviewer caveat in [review_gate.md](review_gate.md) is the canonical rule; if an external call is blocked by policy, record the block and do not route around it.
+
+These are defaults that reduce blast radius and accidental leakage, not a hardened sandbox — bind them to whatever permission controls the runtime actually provides.
+
 ## Binding to a runtime (notes, not core logic)
 
 The skill itself never names a spawn API or a model. Bind at the edge:
