@@ -57,34 +57,38 @@ Distribute the total character limit across sections to prevent front-loading. T
 
 **Budget scope in update mode**: the character limit covers the preamble plus the standard (managed) sections only. Custom user sections are excluded from the limit and must never be trimmed to satisfy it.
 
-### Single Repo / Package Document (5 Sections)
+### Single Repo / Package Document (4-5 Sections)
+
+`Ownership Map` is optional. Use its budget only when repository analysis finds concrete, stable ownership boundaries. If no such boundaries are detected, omit the section and do not pad other sections just to consume the unused budget.
 
 ```yaml
 - section: "1. Overview"
   budget: "5%"
   note: "Keep brief; 1-2 sentences"
-- section: "2. Folder Structure"
-  budget: "35%"
-  note: "Proportional to directory depth and complexity"
-- section: "3. Core Behaviors & Patterns"
+- section: "2. Ownership Map"
   budget: "25%"
+  note: "Optional; current responsibility boundaries, not directory inventory"
+- section: "3. Core Behaviors & Patterns"
+  budget: "30%"
   note: "Cross-cutting patterns need detail to be actionable"
 - section: "4. Conventions"
   budget: "25%"
   note: "Each convention should include rule + example"
 - section: "5. Working Agreements"
-  budget: "10%"
+  budget: "15%"
   note: "Fixed rules; relatively stable across projects"
 ```
 
-### Monorepo Root Document (3 Sections)
+### Monorepo Root Document (2-3 Sections)
+
+For monorepo roots, include `Ownership Map` when package-level roles or shared cross-package contracts are evident from names plus manifests, public exports, README text, or dependency direction. If the root only exposes an uninformative package list, omit the section.
 
 ```yaml
 - section: "1. Overview"
   budget: "10%"
-- section: "2. Folder Structure"
+- section: "2. Ownership Map"
   budget: "50%"
-  note: "Main value of root doc is the structural map"
+  note: "Optional; package-level responsibility boundaries and shared contracts"
 - section: "3. Working Agreements"
   budget: "40%"
 ```

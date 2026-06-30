@@ -8,6 +8,7 @@ Defines the allowed commands for repository analysis during AGENTS.md generation
 - [Symbol-Level Analysis (Optional, requires Serena MCP)](#symbol-level-analysis-optional-requires-serena-mcp)
 - [ripgrep (`rg`) Usage Patterns](#ripgrep-rg-usage-patterns)
 - [Dependency Discovery](#dependency-discovery)
+- [Git History Signals (Update Mode)](#git-history-signals-update-mode)
 - [tree Command Usage](#tree-command-usage)
 - [Files to Ignore](#files-to-ignore)
 - [Files Allowed to Read](#files-allowed-to-read)
@@ -43,6 +44,19 @@ Defines the allowed commands for repository analysis during AGENTS.md generation
   priority: Fallback
   notes: Use only if `rg` unavailable
 ```
+
+### Git History Signals
+
+Use git only as an update-mode ownership discovery signal. Git history helps prioritize where to inspect next; current code and documented contracts decide what can be written into `AGENTS.md`.
+
+Allowed commands:
+
+- **`python scripts/git_ownership_signals.py`**: Preferred compact high-churn path aggregation helper; emits Markdown-KV
+- **`git log`**: Commit metadata, changed paths, rename/delete status
+- **`git show --stat`**: Compact stats for candidate commits only
+- **`git show --name-only`**: Changed path list for candidate commits only
+
+Do not read broad diffs by default. Use `git show` without `--stat` or `--name-only` only for a narrow candidate boundary after metadata/path signals are insufficient.
 
 ### Paginated File Reading
 
@@ -155,6 +169,116 @@ find . -maxdepth 2 -type f \( -name "package.json" -o -name "pyproject.toml" \
 - Do **not** hard-code language-specific extraction logic; adapt reading range to whatever manifest format is discovered
 - Focus on identifying **frameworks and libraries** that influence architectural patterns and naming conventions
 - Skip lock files — only read the manifest source files listed in [Files Allowed to Read](#files-allowed-to-read)
+
+## Git History Signals (Update Mode)
+
+Git history is optional and non-authoritative. If git is unavailable, the repository is a shallow clone, or history commands fail, skip this step and continue with current-code analysis.
+
+### Scope Selection
+
+1. Prefer the change range since the target `AGENTS.md` was last updated by this skill.
+2. If no reliable update anchor exists, use roughly the last 3 months.
+3. Treat 3 months as an activity-adjusted default, not a hard truth. If the range is too sparse to reveal ownership movement, cautiously expand by commit count. If it is too noisy, cap the result set by top changed paths and report the truncation to the user.
+
+Useful anchor commands:
+
+```bash
+# Find recent updates to the target AGENTS.md
+git log --follow --date=short --pretty=format:"%h %ad %s" -- <path/to/AGENTS.md>
+
+# Count commits in the fallback window before collecting path detail
+git log --since="3 months ago" --oneline | wc -l
+```
+
+### Progressive Query Pattern
+
+Start with the bundled compact helper. It prints Markdown-KV rather than JSON to minimize context use:
+
+```bash
+python ./scripts/git_ownership_signals.py <target_directory>
+```
+
+If an update anchor exists:
+
+```bash
+python ./scripts/git_ownership_signals.py <target_directory> --anchor <anchor_commit>
+```
+
+The output shape is stable:
+
+```markdown
+repo: /abs/path
+scope: .
+range: since
+since: 3 months ago
+commits: 142
+limit: 20
+min_commits: 2
+truncated: true
+deleted: excluded
+
+top_changed_paths:
+- 37 src/payment/retry.ts last=2026-06-12 exists=true
+- 31 src/payment/PaymentService.ts last=2026-06-10 exists=true
+
+notes:
+- excludes: *.lock, pnpm-lock.yaml, package-lock.json, yarn.lock, node_modules/**, vendor/**, dist/**, build/**
+- use: discovery signal only; confirm against current code or documented contracts
+```
+
+Only expand manually when the compact helper is too sparse, truncated, or points to an ambiguous boundary. Start manual expansion with metadata and changed paths only:
+
+```bash
+git log --since="3 months ago" --date=short --name-only --pretty=format:"%h %ad %s"
+```
+
+If an update anchor exists, replace the time filter with the anchored range:
+
+```bash
+git log <anchor_commit>..HEAD --date=short --name-only --pretty=format:"%h %ad %s"
+```
+
+Then inspect only candidate signals:
+
+```bash
+# Rename/delete movement only
+git log --since="3 months ago" --name-status --diff-filter=RD --pretty=format:"%h %ad %s"
+
+# Compact stat for a candidate commit
+git show --stat <commit>
+
+# Changed paths for a candidate commit
+git show --name-only <commit>
+```
+
+### Signal Extraction
+
+Look for:
+
+- High-churn files surfaced by `git_ownership_signals.py`
+- Changed-path clusters that repeatedly move together
+- Repeated co-change between entry points, state owners, contract files, and external surfaces
+- Renames/moves that show responsibility moved rather than disappeared
+- Deleted paths that may indicate removed ownership, but confirm against current code before documenting absence
+- High-churn boundary files such as route/command registrations, schema files, public exports, stores, adapters, or integration surfaces
+
+### Exclusions
+
+Ignore or down-rank:
+
+- Lock files and generated/vendor/build output listed in [Files to Ignore](#files-to-ignore)
+- Merge commits
+- Bot-only automation churn
+- Broad formatting-only commits
+- Bulk rename commits unless rename/move tracking is the specific question
+- Churn caused only by dependency upgrades or generated artifacts
+
+### Output Rules
+
+- Do not document a boundary from git history alone.
+- Do not persist timeline summaries such as "earlier focus", "recent focus", or "current focus" in `AGENTS.md`.
+- Use timeline summaries only in the final user-facing report, unless the transition is currently represented in code as a live migration, compatibility layer, deprecated path, or adapter boundary.
+- Do not map ownership to authors, teams, or blame output. Ownership in this skill means system responsibility boundary, not person ownership.
 
 ## tree Command Usage
 

@@ -14,14 +14,28 @@ Defines the exact structure and content requirements for generated `AGENTS.md` f
 
 Used only when generating the root document for a monorepo.
 
+When package-level ownership boundaries or shared cross-package contracts are detected:
+
 ```markdown
 # AGENTS.md
 
 ## 1. Overview
 [1-2 sentences describing the monorepo's purpose]
 
-## 2. Folder Structure
-[High-level map of apps, packages, and shared configs]
+## 2. Ownership Map
+[Optional evidence-backed map of package-level responsibility boundaries, shared state/config owners, cross-package contracts, and verification anchors. Omit this section when no stable ownership boundaries are detected.]
+
+## 3. Working Agreements
+[Common working agreements applicable to all packages]
+```
+
+When no stable root-level ownership boundaries are detected:
+
+```markdown
+# AGENTS.md
+
+## 1. Overview
+[1-2 sentences describing the monorepo's purpose]
 
 ## 3. Working Agreements
 [Common working agreements applicable to all packages]
@@ -29,14 +43,34 @@ Used only when generating the root document for a monorepo.
 
 ## Standard Document Structure (Single Repo & Packages)
 
+When ownership boundaries are detected:
+
 ```markdown
 # AGENTS.md
 
 ## 1. Overview
 [1-2 sentences describing the project's purpose and role]
 
-## 2. Folder Structure
-[Key directories with brief descriptions]
+## 2. Ownership Map
+[Optional evidence-backed map of responsibility boundaries. Omit this section when no stable ownership boundaries are detected.]
+
+## 3. Core Behaviors & Patterns
+[Observed patterns from code analysis]
+
+## 4. Conventions
+[Naming, comments, code style rules]
+
+## 5. Working Agreements
+[Agent behavior rules - see working_agreements.md]
+```
+
+When no stable ownership boundaries are detected:
+
+```markdown
+# AGENTS.md
+
+## 1. Overview
+[1-2 sentences describing the project's purpose and role]
 
 ## 3. Core Behaviors & Patterns
 [Observed patterns from code analysis]
@@ -50,60 +84,59 @@ Used only when generating the root document for a monorepo.
 
 ## Section Specifications
 
+**Numbering rule**: Section numbers are stable identifiers used by update mode. When optional `## 2. Ownership Map` is omitted, keep the remaining section numbers unchanged (for example `## 1`, `## 3`, `## 4`, `## 5`). Do not renumber sections to close the gap.
+
 ### Section 1: Overview
 
 - **Length**: 1-2 very short sentences
 - **Content**: Abstract description of project purpose and role
 - **Excludes**: Long lists of tools, frameworks, commands, environment details
 
-### Section 2: Folder Structure
+### Section 2: Ownership Map
 
-- **Format**: Hierarchical nested bullet list with indentation
-- **Analysis Scope**: Traverse **all depths** of the directory tree during analysis
-- **Output Scope**: Stop at **architecturally significant boundaries** where roles become clear
-- **Content**: Each listed entry should explain the **role and responsibility** concisely
-- **Goal**: Reader should understand where to find/place code for a given concern
+Ownership Map is an **optional** standard section. It replaces directory inventory with a concise map of the current system boundaries that matter when updating an established project after meaningful changes.
 
-**Analysis vs Output Principle**:
+Do **not** force this section. If analysis finds no concrete, stable ownership boundaries, omit `## 2. Ownership Map` entirely. Do not emit placeholder text such as "No ownership map detected", generic directory lists, or speculative ownership.
 
-- **Analysis**: All depths — Understand full structure and identify architectural boundaries
-- **Output**: Significant levels only — Present only directories where distinct roles and responsibilities exist
+**Format**: Short bullet list grouped by responsibility boundary. Each bullet should name the boundary and include only evidence-backed anchors.
 
-**When to Stop Drilling Down**:
+**Analysis Scope**:
 
-- When a directory represents a **single cohesive concern** (e.g., `services`, `models`, `utils`)
-- When further depth would only list individual files, not distinct modules
-- When the role can be summarized in one brief sentence
+- Start from stable entry points, not from a directory tree.
+- Trace where state/data is stored or read, where behavior is decided, how output is exposed, which contracts and side effects are touched, and what verifies the boundary.
+- In Update mode, use git history as a discovery signal: recent changed-path clusters, repeated co-change, renames/moves, deleted paths, and high-churn boundary files can reveal where ownership may have shifted.
+- Confirm every history-derived candidate against current code or documented contracts before writing it. Git history decides where to look next; it does not prove ownership by itself.
+- Use file paths and identifiers only as evidence anchors; do not turn the section into a folder tour.
+- For monorepo roots, map package-level responsibility boundaries and shared cross-package contracts only. A package qualifies when manifests, package names, README text, public exports, or dependency direction show a clear role; package-internal ownership belongs in package `AGENTS.md` files.
 
 **Content Requirements**:
 
-- Describe **what** the directory contains and **why** it exists in a brief sentence
-- For source directories, explain the architectural role (e.g., "actions", "services", "models")
-- Mention any conventions (e.g., "mirror main packages if tests are added")
-- Note cross-references to docs if relevant (e.g., "align changes with these when relevant")
+- Include only boundaries with concrete repository evidence: named entry points, state owners, behavior decision points, external surfaces, connection contracts, side effects, or verification anchors.
+- Include a boundary only when at least two evidence anchors support it, such as entry point + behavior decision point, state owner + external surface, contract + side effect, or existing verification anchor + the code path it verifies.
+- Explain what each boundary owns and which kind of change should start there.
+- Prefer current code and documented contracts over inferred intent. Use recent history or comments only as supporting context when current ownership is otherwise ambiguous.
+- Keep verification anchors concise: name the representative check path, existing test area, type-check target, log point, or manual confirmation surface. Do not create a testing strategy section or list common commands.
+- Omit categories that are not detected. A good Ownership Map can be 2-4 strong bullets; one well-evidenced critical boundary is better than several weak guesses.
+- Do not include timeline summaries such as "earlier focus", "recent focus", or "current focus" in `AGENTS.md`. Use those summaries only in the user-facing update report, unless the transition is currently represented in code as a live migration, compatibility layer, deprecated path, or adapter boundary.
 
 **Example Structure**:
 
 ```markdown
-- `src/main/kotlin/com/example/app`: core application code.
-    - `actions`: UI actions wiring user interactions to business logic.
-    - `services`: business logic, external integrations, data processing.
-    - `ui`: view components, dialogs, panels, layout scaffolding.
-    - `model`: domain entities, enums, DTOs.
-    - `utils`: shared helpers and utility functions.
-    - `settings`: configuration management and persistent state.
-- `src/main/resources`: configuration files, message bundles, static assets.
-- `src/test/kotlin`: test code; mirror main package structure when adding tests.
-- `docs`: development guides and specifications; keep aligned with implementation.
-- `gradle/` or `config/`: build configuration and tooling setup.
+- **Editor command boundary**: User actions enter through `EditorAction` registrations and delegate execution to `EditorCommandService`; command behavior and validation changes should start there, then verify through the editor integration path.
+- **Settings state boundary**: Persistent settings are owned by `SettingsStore`; UI panels read/write through the store facade rather than mutating configuration files directly. Compatibility changes must account for default values and migration handling.
+- **API response boundary**: HTTP handlers own the response surface and route error output through `ErrorMapper`; changes to response ownership should start at the handler/mapper boundary. Detailed error-flattening and schema-format rules belong in Section 4 (Conventions).
 ```
 
 **Anti-patterns**:
 
-- Flat list without hierarchy or context
-- Generic descriptions like "Core plugin implementation" without explaining structure
-- Omitting important subdirectories that define architecture
-- Missing guidance on where to place new code
+- Listing directories and their contents as a substitute for ownership
+- Claiming ownership from naming alone (e.g., "`services/` owns business logic") without tracing entry points, state, contracts, or behavior
+- Filling every category even when the repository does not expose evidence for it
+- Writing speculative history or intent as fact
+- Documenting a boundary from git history without current-code or documented-contract confirmation
+- Turning `AGENTS.md` into a changelog with time-relative focus summaries
+- Duplicating Section 3 by describing full recurring behavior flows instead of current responsibility boundaries
+- Duplicating Section 4 by turning boundary ownership into naming/style rules, error-shape rules, schema-format rules, or other coding conventions
 
 ### Section 3: Core Behaviors & Patterns
 
