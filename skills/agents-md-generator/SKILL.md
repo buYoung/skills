@@ -22,7 +22,7 @@ This skill enables the agent to generate `AGENTS.md` files that serve as contrib
 For single repositories or individual packages in a monorepo:
 
 - **Overview**: 1-2 sentence project description (abstract, no tool/framework lists)
-- **Ownership Map**: Optional, evidence-backed map of current responsibility boundaries — entry points, state owners, behavior decision points, external surfaces, contracts/side effects, and verification anchors. Omit this section when the repository does not expose stable boundaries worth documenting; never invent ownership just to fill the template.
+- **Ownership Map**: Optional, evidence-backed map split into stable ownership boundaries and active change routes — entry points, state owners, behavior decision points, external surfaces, contracts/side effects, verification anchors, and recent history-informed routes. Omit this section when the repository does not expose stable boundaries or active routes worth documenting; never invent ownership just to fill the template.
 - **Core Behaviors & Patterns**: Cross-cutting patterns traced through full flows — error propagation chains, state lifecycle transitions, cross-boundary wiring mechanisms, resilience/recovery strategies, shared resource management. Discovered via multi-phase analysis: surface idiom detection, then deep tracing across layers.
 - **Conventions**: Naming, code style, API/interface design conventions (callback naming, return value shapes, method responsibility splitting), configuration/registration structure, boundary conventions (error flattening, schema drift absorption, containment rules), component composition patterns.
 - **Working Agreements**: Rules for agent behavior and communication
@@ -31,7 +31,7 @@ For single repositories or individual packages in a monorepo:
 For the root of a monorepo structure:
 
 - **Overview**: 1-2 sentences describing the monorepo's purpose
-- **Ownership Map**: Optional map of package-level responsibility boundaries, shared state/config owners, cross-package contracts, and verification anchors. At monorepo roots, package names plus manifests, public exports, README text, or dependency direction can establish enough evidence; omit the section when the root exposes only an uninformative package list.
+- **Ownership Map**: Optional map split into stable package-level responsibility boundaries and active cross-package change routes. At monorepo roots, package names plus manifests, public exports, README text, dependency direction, and recent confirmed change clusters can establish enough evidence; omit the section when the root exposes only an uninformative package list.
 - **Working Agreements**: Common working agreements applicable to all packages
 
 ## Operation Modes
@@ -107,7 +107,7 @@ Run this analysis in the current context only. **Do not delegate to subagents** 
 
 Stay within each section's character budget from Step 2. Document only patterns/conventions actually observed.
 
-If optional `## 2. Ownership Map` has no evidence-backed content, omit the section and keep later section numbers unchanged. Section numbers are update-mode identifiers; never renumber `Core Behaviors & Patterns`, `Conventions`, or `Working Agreements` to close the gap.
+If optional `## 2. Ownership Map` has no evidence-backed content, omit the section and keep later section numbers unchanged. Section numbers are update-mode identifiers; never renumber `Core Behaviors & Patterns`, `Conventions`, or `Working Agreements` to close the gap. When evidence exists, split Ownership Map content into `Stable Ownership Boundaries` for the durable safety boundaries the previous single-list Ownership Map would have documented, and `Active Change Routes` for recent history-informed routes confirmed against current code. Treat `Active Change Routes` as additive update-mode context, not as a replacement or filter for stable boundaries. Stable bullets are full change-routing rules; Active bullets are parent-linked or cross-boundary delta routes. Do not restate the parent Stable boundary's broad owner, contract, or verification in Active. If no meaningful delta remains after removing inherited Stable details, omit the Active route. Do not impose a bullet-count limit beyond the section character budget.
 
 ### Step 5 — Assemble (Generate) or Splice (Update)
 
@@ -135,6 +135,7 @@ Before writing, confirm:
 - For Update mode: every preserved custom section is byte-for-byte identical to the original.
 - For Update mode: report to the user any wording being removed from managed standard sections — user additions inside managed sections are not preserved, so list what is dropped before overwriting and suggest moving anything user-owned into a custom section.
 - For Update mode: if an existing managed `Ownership Map` or legacy `Folder Structure` section will be omitted because no current evidence supports it, report that whole-section removal and get confirmation before overwriting.
+- For single-repo documents: the managed `Working Agreements` section does not contain monorepo-only wording such as package-level `AGENTS.md` guidance.
 
 Then write with the Edit/Write tool. For Monorepo with mode = **All**, repeat Steps 2–6 per target package after handling the root, re-running the Step 1 Generate/Update decision (and the skill-ownership check) for each package — a package without `AGENTS.md` is Generate even when the root was Update.
 

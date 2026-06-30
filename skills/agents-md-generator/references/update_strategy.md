@@ -68,7 +68,7 @@ This guard exists because title-based matching cannot safely splice into an exte
 - section: "3. Working Agreements"
 ```
 
-`Ownership Map` is optional but managed. Generate or retain it only when repository analysis finds stable responsibility boundaries. Do not emit placeholder content or generic directory descriptions just to satisfy the standard section list.
+`Ownership Map` is optional but managed. Generate or retain it only when repository analysis finds stable responsibility boundaries or active change routes confirmed against current code or documented contracts. Do not emit placeholder content or generic directory descriptions just to satisfy the standard section list.
 
 Section numbers are stable update identifiers. If optional `## 2. Ownership Map` is omitted, keep later standard headings numbered as `## 3`, `## 4`, and `## 5`; do not renumber them to close the gap.
 
@@ -120,7 +120,7 @@ Generate fresh content for every matched standard section:
 - Measure LOC with `tokei` to determine character limits
 - Use git history as an ownership-discovery signal when available: prefer changes since the last skill-generated `AGENTS.md` update, otherwise use roughly the last 3 months with activity-based adjustment. Run `python ./scripts/git_ownership_signals.py <target_directory>` first, passing `--anchor <commit-ish>` when an update anchor exists. The script prints compact Markdown-KV high-churn path signals; use them to choose where to inspect next. Do not read broad diffs by default.
 - Rebuild analysis-derived sections (`Overview`, optional `Ownership Map`, `Core Behaviors & Patterns`, `Conventions`) from fresh repository analysis
-- For `Ownership Map`, include only concrete, stable ownership boundaries. If no boundary has evidence, do not insert the missing section; if an existing managed `Ownership Map` or legacy `Folder Structure` section was matched, remove that managed section rather than preserving stale or invented content.
+- For `Ownership Map`, split fresh content into `Stable Ownership Boundaries` and `Active Change Routes` when both have evidence. Stable boundaries describe the durable safety boundaries that the previous single-list Ownership Map would have documented; active routes add recent history-informed change deltas confirmed against current code or documented contracts. Do not let active routes replace or filter out stable boundaries. Write Active routes as parent-linked or cross-boundary deltas, not standalone ownership summaries; do not restate the parent Stable boundary's broad owner, contract, or verification. If no meaningful delta remains after removing inherited Stable details, omit the Active route. Omit an empty subsection rather than adding placeholder text. If neither subsection has evidence, do not insert the missing section; if an existing managed `Ownership Map` or legacy `Folder Structure` section was matched, remove that managed section rather than preserving stale or invented content.
 - Do not write timeline summaries such as "earlier focus" or "current focus" into `AGENTS.md`; report them to the user only when useful. A history-derived boundary can be documented only after current code or documented contracts confirm it.
 - Rebuild `Working Agreements` from the current canonical rule set in `working_agreements.md`, plus discovered repository-specific response language and type-check details
 - Do not reuse a standard section body from the old `AGENTS.md` after a subjective "already good" judgment

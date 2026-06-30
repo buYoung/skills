@@ -59,20 +59,20 @@ Distribute the total character limit across sections to prevent front-loading. T
 
 ### Single Repo / Package Document (4-5 Sections)
 
-`Ownership Map` is optional. Use its budget only when repository analysis finds concrete, stable ownership boundaries. If no such boundaries are detected, omit the section and do not pad other sections just to consume the unused budget.
+`Ownership Map` is optional. Use its budget only when repository analysis finds concrete stable ownership boundaries or active change routes. If neither category is detected, omit the section and do not pad other sections just to consume the unused budget. Do not add a separate bullet-count limit inside this budget; let the character limit and evidence quality control length.
 
 ```yaml
 - section: "1. Overview"
   budget: "5%"
   note: "Keep brief; 1-2 sentences"
 - section: "2. Ownership Map"
-  budget: "25%"
-  note: "Optional; current responsibility boundaries, not directory inventory"
+  budget: "35%"
+  note: "Optional; stable ownership boundaries plus active change routes, not directory inventory"
 - section: "3. Core Behaviors & Patterns"
-  budget: "30%"
+  budget: "25%"
   note: "Cross-cutting patterns need detail to be actionable"
 - section: "4. Conventions"
-  budget: "25%"
+  budget: "20%"
   note: "Each convention should include rule + example"
 - section: "5. Working Agreements"
   budget: "15%"
@@ -81,16 +81,16 @@ Distribute the total character limit across sections to prevent front-loading. T
 
 ### Monorepo Root Document (2-3 Sections)
 
-For monorepo roots, include `Ownership Map` when package-level roles or shared cross-package contracts are evident from names plus manifests, public exports, README text, or dependency direction. If the root only exposes an uninformative package list, omit the section.
+For monorepo roots, include `Ownership Map` when package-level roles, shared cross-package contracts, or active cross-package change routes are evident from names plus manifests, public exports, README text, dependency direction, or recent confirmed change clusters. If the root only exposes an uninformative package list, omit the section.
 
 ```yaml
 - section: "1. Overview"
   budget: "10%"
 - section: "2. Ownership Map"
-  budget: "50%"
-  note: "Optional; package-level responsibility boundaries and shared contracts"
+  budget: "60%"
+  note: "Optional; package-level responsibility boundaries, shared contracts, and active change routes"
 - section: "3. Working Agreements"
-  budget: "40%"
+  budget: "30%"
 ```
 
 ## tokei Output Interpretation
