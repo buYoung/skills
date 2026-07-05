@@ -19,7 +19,7 @@ Defines the standard working agreements to be included in generated `AGENTS.md` 
 
 - **Impact Reporting**: Check likely side effects across related flows, behavior boundaries, and public APIs. Report relevant impact, behavior changes, and API compatibility risks to the user
 - **Type Check After Changes**: During codebase analysis, identify the project's type-check command from build configs, scripts, or tooling (e.g., `tsc --noEmit` from `tsconfig.json`, `mypy`/`pyright` from `pyproject.toml`, `cargo check` from `Cargo.toml`, `go vet`/`go build` from `go.mod`, `javac` from `pom.xml` or `build.gradle`, `gradle compileKotlin` from `build.gradle.kts`). Include the discovered command in this section. After code modifications, run that command to verify type safety before considering the task complete. If the project's stack has no type checker available, omit this bullet from the generated AGENTS.md rather than inventing a placeholder
-- **Package-Local Verification in Monorepos**: If tests, type-check, or other verification commands apply only to one package, place that guidance in the package-level `AGENTS.md`, not the root `AGENTS.md`
+- **Monorepo Root Package-Local Verification**: For confirmed monorepo root documents only, state that package-only tests, type-check, or other verification commands belong in the package-level `AGENTS.md`, not the root `AGENTS.md`. Do not include this rule in single-repository documents
 - **New Code**: New functions/modules should be small, single-purpose, and colocated near related code
 - **Dependencies**: Avoid new external dependencies unless necessary; if added, briefly explain why
 
@@ -41,9 +41,16 @@ Include the package-local verification line only when analysis finds a command t
 
 Due to the **dynamic character limit** (based on LOC), working agreements in generated AGENTS.md should be compressed. The output below is the canonical current generated rule set, not an optional example. Update mode must rebuild managed `Working Agreements` sections from this rule set, while still adding discovered repository-specific response language and type-check command details when applicable.
 
-```markdown
-## 5. Working Agreements
+Use the correct heading number for the document type:
 
+- Single repo / package document: `## 5. Working Agreements`
+- Monorepo root document: `## 3. Working Agreements`
+
+Use the base bullet set for single repositories and monorepo root documents. Add the monorepo-only package-local verification bullet **only** when generating a monorepo root document. Do not include monorepo-specific wording in single-repository `AGENTS.md` files.
+
+### Base Bullet Set (Single Repo and Monorepo Root)
+
+```markdown
 - Respond in user's preferred language; if unspecified, infer from codebase (keep tech terms in English, never translate code blocks)
 - Ask the user before introducing tests, lint, or formatter setups; add them only on explicit request
 - Build context by reviewing related usages, flows, patterns, and likely impact before editing
@@ -51,7 +58,14 @@ Due to the **dynamic character limit** (based on LOC), working agreements in gen
 - Check side effects across callers, shared abstractions, and behavior/API boundaries; report relevant impact and compatibility risks
 - Ask actively when user decisions are needed for scope, behavior, or tradeoffs
 - Run type-check after code changes (include the discovered command, e.g., `tsc --noEmit`, `cargo check`, `go vet`, `javac`, `gradle compileKotlin`); omit this bullet if no type checker is configured
-- In monorepos, put package-only tests/type-check/verification guidance in the package-level AGENTS.md, not the root document
 - New functions: single-purpose, colocated with related code
 - External dependencies: only when necessary, explain why
+```
+
+### Monorepo Root Addition
+
+Add this bullet to the root `AGENTS.md` only when the repository is confirmed as a monorepo with 2+ packages:
+
+```markdown
+- Put package-only tests/type-check/verification guidance in the package-level AGENTS.md, not the root document
 ```

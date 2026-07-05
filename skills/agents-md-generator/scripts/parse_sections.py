@@ -10,13 +10,24 @@ Output is a JSON object with:
                             in document order; line indices are 0-based and
                             inclusive
     - missing_standard    : standard headings that did not appear in the file;
-                            update mode should insert these at their numerical
-                            position relative to other standard sections
+                            backward-compatible union of missing required and
+                            missing optional standard headings
+    - missing_required_standard
+                          : required standard headings that did not appear and
+                            should be inserted during update mode
+    - missing_optional_standard
+                          : optional standard headings that did not appear and
+                            should be inserted only with fresh content
+    - optional_standard   : standard headings that are evidence-gated and
+                            should not be inserted without fresh content
 
-Only the first occurrence of any standard heading is treated as standard;
-duplicates are preserved as-is. Lines inside fenced code blocks (``` or ~~~)
-are never treated as section headings. This matches
-references/update_strategy.md.
+Only the first occurrence of any canonical standard heading is the replacement
+target. Duplicate current or legacy headings for the same canonical standard are
+managed duplicates and should be omitted during reassembly unless the user moves
+their content to a custom section. Legacy standard headings are treated as
+managed and include their replacement heading in canonical_title. Lines inside
+fenced code blocks (``` or ~~~) are never treated as section headings. This
+matches references/update_strategy.md.
 
 Usage:
     python parse_sections.py FILE [--doc-type single_repo|monorepo_root]
@@ -30,7 +41,7 @@ import sys
 
 SINGLE_REPO_STANDARD = [
     "## 1. Overview",
-    "## 2. Folder Structure",
+    "## 2. Ownership Map",
     "## 3. Core Behaviors & Patterns",
     "## 4. Conventions",
     "## 5. Working Agreements",
@@ -38,9 +49,21 @@ SINGLE_REPO_STANDARD = [
 
 MONOREPO_ROOT_STANDARD = [
     "## 1. Overview",
-    "## 2. Folder Structure",
+    "## 2. Ownership Map",
     "## 3. Working Agreements",
 ]
+
+SINGLE_REPO_LEGACY = {
+    "## 2. Folder Structure": "## 2. Ownership Map",
+}
+
+MONOREPO_ROOT_LEGACY = {
+    "## 2. Folder Structure": "## 2. Ownership Map",
+}
+
+OPTIONAL_STANDARD = {
+    "## 2. Ownership Map",
+}
 
 
 _FENCE_OPEN = re.compile(r"^ {0,3}(`{3,}|~{3,})")
@@ -98,20 +121,34 @@ def main():
         sys.exit(2)
 
     standard = SINGLE_REPO_STANDARD if args.doc_type == "single_repo" else MONOREPO_ROOT_STANDARD
+    legacy = SINGLE_REPO_LEGACY if args.doc_type == "single_repo" else MONOREPO_ROOT_LEGACY
+    standard_lookup = {title: title for title in standard}
+    standard_lookup.update(legacy)
     sections, preamble_end = parse_sections(text)
 
     seen = set()
     for s in sections:
-        is_std = s["title"] in standard and s["title"] not in seen
-        if is_std:
-            seen.add(s["title"])
+        canonical_title = standard_lookup.get(s["title"])
+        is_duplicate_standard = canonical_title is not None and canonical_title in seen
+        is_std = canonical_title is not None
+        s["canonical_title"] = canonical_title
+        s["is_legacy_standard"] = canonical_title is not None and s["title"] != canonical_title
+        s["is_optional_standard"] = canonical_title in OPTIONAL_STANDARD if canonical_title else False
+        s["is_duplicate_standard"] = is_duplicate_standard
+        if canonical_title is not None and not is_duplicate_standard:
+            seen.add(canonical_title)
         s["is_standard"] = is_std
 
+    missing_required = [t for t in standard if t not in seen and t not in OPTIONAL_STANDARD]
+    missing_optional = [t for t in standard if t not in seen and t in OPTIONAL_STANDARD]
     result = {
         "doc_type": args.doc_type,
         "preamble_end_line": preamble_end,
         "sections": sections,
-        "missing_standard": [t for t in standard if t not in seen],
+        "missing_standard": missing_required + missing_optional,
+        "missing_required_standard": missing_required,
+        "missing_optional_standard": missing_optional,
+        "optional_standard": [t for t in standard if t in OPTIONAL_STANDARD],
     }
     json.dump(result, sys.stdout, indent=2)
     sys.stdout.write("\n")

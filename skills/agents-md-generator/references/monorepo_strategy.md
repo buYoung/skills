@@ -21,11 +21,11 @@ Defines the strategy for generating AGENTS.md files in a monorepo environment.
 ```yaml
 - document: Root
   location: /AGENTS.md
-  sections: 3
+  sections: 2-3
   character_limit: Dynamic based on LOC
 - document: Package
   location: Per-package directories discovered via workspace config (see monorepo_detection.md)
-  sections: 5 (Standard)
+  sections: 4-5 (Standard)
   character_limit: Dynamic based on LOC
 ```
 

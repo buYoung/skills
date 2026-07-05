@@ -57,36 +57,40 @@ Distribute the total character limit across sections to prevent front-loading. T
 
 **Budget scope in update mode**: the character limit covers the preamble plus the standard (managed) sections only. Custom user sections are excluded from the limit and must never be trimmed to satisfy it.
 
-### Single Repo / Package Document (5 Sections)
+### Single Repo / Package Document (4-5 Sections)
+
+`Ownership Map` is optional. Use its budget only when repository analysis finds concrete stable ownership boundaries or active change routes. If neither category is detected, omit the section and do not pad other sections just to consume the unused budget. Do not add a separate bullet-count limit inside this budget; let the character limit and evidence quality control length.
 
 ```yaml
 - section: "1. Overview"
   budget: "5%"
   note: "Keep brief; 1-2 sentences"
-- section: "2. Folder Structure"
+- section: "2. Ownership Map"
   budget: "35%"
-  note: "Proportional to directory depth and complexity"
+  note: "Optional; stable ownership boundaries plus active change routes, not directory inventory"
 - section: "3. Core Behaviors & Patterns"
   budget: "25%"
   note: "Cross-cutting patterns need detail to be actionable"
 - section: "4. Conventions"
-  budget: "25%"
+  budget: "20%"
   note: "Each convention should include rule + example"
 - section: "5. Working Agreements"
-  budget: "10%"
+  budget: "15%"
   note: "Fixed rules; relatively stable across projects"
 ```
 
-### Monorepo Root Document (3 Sections)
+### Monorepo Root Document (2-3 Sections)
+
+For monorepo roots, include `Ownership Map` when package-level roles, shared cross-package contracts, or active cross-package change routes are evident from names plus manifests, public exports, README text, dependency direction, or recent confirmed change clusters. If the root only exposes an uninformative package list, omit the section.
 
 ```yaml
 - section: "1. Overview"
   budget: "10%"
-- section: "2. Folder Structure"
-  budget: "50%"
-  note: "Main value of root doc is the structural map"
+- section: "2. Ownership Map"
+  budget: "60%"
+  note: "Optional; package-level responsibility boundaries, shared contracts, and active change routes"
 - section: "3. Working Agreements"
-  budget: "40%"
+  budget: "30%"
 ```
 
 ## tokei Output Interpretation
