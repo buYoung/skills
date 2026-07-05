@@ -40,6 +40,18 @@ When strong signals are present, do not enter briefset mode silently.
 Recommend it and ask the user to choose before Stage 2.
 If the user chooses single-brief despite the recommendation, proceed single-brief and record any ordering or PR constraints explicitly.
 
+When the target area already contains both single-brief and briefset contracts, review both surfaces even if the user asked about only one visible symptom.
+Always check:
+
+- Whether a single-brief rule also applies to child briefs.
+- Whether parent validation is intentionally looser than child validation, or whether the difference is a contract gap.
+- Whether parent and child filename rules match the validator's actual checks.
+- Whether save order resolves final child paths before the parent references them.
+- Whether Stage 5.5, Stage 5.6, and Stage 5.7 apply to parent and children in the documented order.
+
+Put only the briefset issues that are necessary for the current work in scope.
+Record independent briefset hardening as `[deferred]` when it is real but not required for the requested fix.
+
 ### Secondary decomposition (when bloated)
 
 The criteria above answer *"can this work split at all?"*.
@@ -75,7 +87,7 @@ Enforcement levels:
 
 - The combined slug budget (≤40 chars) is machine-enforced — `validate_brief.py` reports a FAIL when exceeded.
 - The set-slug ≤15 limit is advisory — the validator emits a warning only.
-- Child filename consistency with the parent (same date, same set-slug, zero-padded `NN`) is advisory — the validators warn but do not fail.
+- Child filename consistency with the parent (same date and exact `<set-slug>-NN-<child-slug>` order) is machine-enforced by `validate_briefset.py`.
 
 **Examples:**
 
@@ -103,20 +115,20 @@ Implementation lives in the children.
 - <why this brief set exists — one or two bullets, no implementation detail>
 
 ## Child Briefs
-- [ ] `docs/briefs/<child-01>.md` — <child title>; exists because <reason>
-- [ ] `docs/briefs/<child-02>.md` — <child title>; exists because <reason>
+- [ ] `docs/briefs/2026-04-30-feat-checkout-i18n-01-message-keys.md` — <child title>; exists because <reason>
+- [ ] `docs/briefs/2026-04-30-feat-checkout-i18n-02-cart-copy.md` — <child title>; exists because <reason>
 
 ## Execution Order
-- Wave 1: `<child-01>`, `<child-02>` can run in parallel.
-- Wave 2: `<child-03>` starts after `<child-01>` is complete.
+- Wave 1: `docs/briefs/2026-04-30-feat-checkout-i18n-01-message-keys.md`, `docs/briefs/2026-04-30-feat-checkout-i18n-02-cart-copy.md` can run in parallel.
+- Wave 2: `docs/briefs/2026-04-30-fix-checkout-i18n-03-validation-copy.md` starts after `docs/briefs/2026-04-30-feat-checkout-i18n-01-message-keys.md` is complete.
 
 ## Dependencies
-- `<child-03>` depends on `<child-01>` because <reason>.
-- `<child-02>` has no dependencies.
+- `docs/briefs/2026-04-30-fix-checkout-i18n-03-validation-copy.md` depends on `docs/briefs/2026-04-30-feat-checkout-i18n-01-message-keys.md` because <reason>.
+- `docs/briefs/2026-04-30-feat-checkout-i18n-02-cart-copy.md` has no dependencies.
 
 ## Parallelization
-- `<child-01>` and `<child-02>` can run in parallel — they touch separate entry points.
-- `<child-03>` must not run in parallel with `<child-04>` — both touch `<conflict path>`.
+- `docs/briefs/2026-04-30-feat-checkout-i18n-01-message-keys.md` and `docs/briefs/2026-04-30-feat-checkout-i18n-02-cart-copy.md` can run in parallel — they touch separate entry points.
+- `docs/briefs/2026-04-30-fix-checkout-i18n-03-validation-copy.md` must not run in parallel with another child that edits `<conflict path>`.
 
 ## Conflict Hotspots
 - `<path>` — only one child brief should edit this at a time.
@@ -196,6 +208,18 @@ Mixed types across children is an expected, supported case; do not flatten them 
 Run one combined review pass, but tag findings and uncertainties with the specific parent or child they will land in.
 Track uncertainties as candidate `Open Questions` during the review; do not silently resolve them or drop them just because they are child-specific.
 Each child's `Related Files / Entry Points` should be a distinct slice — if two children point at the same primary entry point, they probably collapse into one.
+Track shared contracts separately from child-local findings.
+If an id, key, event, schema, persisted value, generated file, route, command, or payload is used by more than one child or by existing consumers outside the briefset, put that contract in the parent `Shared Constraints` or `Global Acceptance Criteria`, then repeat only the child-specific verification inside the affected child.
+
+When reviewing an existing briefset-capable skill or generator, tag findings as one of:
+
+- Parent-only.
+- Child-only.
+- Shared parent/child contract.
+- Validator/documentation mismatch.
+- Deferred hardening.
+
+This prevents briefset concerns from disappearing in one run and over-expanding the work in the next.
 
 ### Stage 4 — User Decision Table
 
@@ -217,6 +241,7 @@ Put user-owned decisions into the four-column table (`순번`, `내용`, `수정
    Do not enumerate speculative hotspots.
 5. **Per-child residuals** — only after the topology is locked, table each child's user-owned `Acceptance Criteria`, `Out of Scope`, and unresolved `Open Questions`.
    Codebase-review uncertainties tagged in Stage 3 are surfaced here and routed to *answer now*, *keep in Open Questions*, or *delegate to downstream agent*.
+   Low-risk wording, local implementation choices, and reversible sequencing choices should usually become a recommendation in the parent or child brief instead of an `Open Questions` row.
 
 Briefset Stage 4 still respects the carry-over codebase budget.
 A parent-level branch probe (e.g., "does `i18n/messages.ko.json` import from any other child's entry point?") counts against the same budget as Stage 3.
@@ -226,14 +251,14 @@ A parent-level branch probe (e.g., "does `i18n/messages.ko.json` import from any
 Save in this order:
 
 1. Ensure `docs/briefs/` exists.
-2. Write each child brief first (so the parent can reference them).
+2. Resolve child filename collisions first, then write each child brief to its final path (so the parent can reference final filenames, not provisional names).
 
    When writing child briefs, populate `Open Questions` from the Stage 3 uncertainty register and Stage 4 answers.
    Do not add new unreviewed questions after the Stage 4 decision table closes just to fill the section.
    If Stage 4 resolves every uncertainty for a child, write `- None — <reason>` with confidence that the child is genuinely unambiguous.
 
-3. Write the parent brief.
-4. Resolve filename collisions with `-v2`, `-v3`, … on the parent and on each child independently.
+3. Resolve the parent filename collision, then write the parent brief with the finalized child paths.
+4. Filename collisions use `-v2`, `-v3`, … on the parent and on each child independently.
 5. Run `scripts/validate_brief.py` on each child as a sanity check (optional — the briefset validator covers this transitively).
 6. Run `scripts/validate_briefset.py` on the parent.
    It re-runs child structural validation, so a single parent invocation covers the whole set.
@@ -247,9 +272,15 @@ Save in this order:
 Treat structural failure the same way single-brief mode does: leave the file in place, surface the failure in Stage 6, let the user decide how to fix.
 Do not delete or silently rewrite.
 
-### Stage 5.5 — Content-Level Self-Check (briefset)
+### Stage 5.5 — Downstream Interpretation Check (briefset)
 
-Run the self-check from `SKILL.md` Stage 5.5 on the **parent** and on **every child** independently.
+Run the downstream interpretation check from `SKILL.md` Stage 5.5 against the **parent briefset file only**.
+The sub-agent receives a natural work-start request with the parent path, not each child path, and no original user request or validation rubric.
+If the interpretation drops a child, changes execution order, broadens scope, or misses a parent constraint, patch the parent or affected child, re-run `validate_briefset.py`, and re-enter the validation chain at Stage 5.5.
+
+### Stage 5.6 — Content-Level Self-Check (briefset)
+
+Run the self-check from `SKILL.md` Stage 5.6 on the **parent** and on **every child** independently.
 Briefset mode adds one parent-specific coverage rule:
 
 - **Parent decomposition coverage:** every input-implied execution context maps to a child brief.
@@ -257,21 +288,25 @@ Briefset mode adds one parent-specific coverage rule:
   A folded unit's distinct concerns — acceptance criteria, edge cases, constraints, side-effect checkpoints — must reappear in the absorbing child's matching sections; folding is where requirement depth is most often silently lost, so verify the migration here.
   Each child also survives a BDR pass from `bloat-decomposition.md` — no child triggers ≥ 2 bloat signals, and no atomic-change-unit (K1) was split.
   If either fails, re-decompose before saving.
+- **Parent contract coverage:** shared contracts discovered during Stage 3 appear in parent `Shared Constraints`, `Conflict Hotspots`, or `Global Acceptance Criteria`.
+  Children may add local checks, but the parent must carry the cross-child compatibility rule so parallel work cannot silently break it.
+- **Deferred coverage:** valid findings excluded from the current briefset appear as `[deferred]` in the parent when they affect the whole initiative, or in the relevant child when they affect only that child.
+  Do not drop a finding merely because it is outside the chosen child boundaries.
 
-Each child runs the standard 5-item self-check from `SKILL.md` Stage 5.5.
-If any child fails the input-coverage or section-depth items, fix the child in place, re-run the briefset structural validator, and re-run the child's self-check.
+Each child runs the standard Stage 5.6 self-check from `SKILL.md`.
+If the parent or any child fails any Stage 5.6 self-check item, fix the affected file in place, re-run `validate_briefset.py`, and re-enter the validation chain at Stage 5.5.
 Do not skip the child self-check on the assumption "the parent covers it" — children are independently executable, so they are independently completeness-checked.
 
-### Stage 5.6 — Cold-Pickup Verification (briefset)
+### Stage 5.7 — Cold-Pickup Verification (briefset)
 
-Briefset mode is an auto-ON trigger for the Stage 5.6 cold-pickup verification in `SKILL.md`: the **parent and every child** run their own cold-pickup pass.
+Briefset mode is an auto-ON trigger for the Stage 5.7 cold-pickup verification in `SKILL.md`: the **parent and every child** run their own cold-pickup pass.
 For briefsets with 5 or more children, the agent may offer the user a sampling fallback — parent plus up to 3 representative children — instead of the full set.
 Force OFF from the user skips cold-pickup for the whole set.
 The Stage 6 banner reports `K/N children verified` alongside the parent outcome.
 
 ### Stage 6 — Review + Iterate
 
-Report the parent path, the child paths, the structural validator outcome (parent + per-child), the Stage 5.5 self-check outcome (parent + per-child), and the Stage 5.6 cold-pickup outcome — per-document verdicts collapsed to `K/N children verified` in the banner, or the skip reason when cold-pickup did not run.
+Report the parent path, the child paths, the structural validator outcome (parent + per-child), the Stage 5.5 downstream interpretation outcome, the Stage 5.6 self-check outcome (parent + per-child), and the Stage 5.7 cold-pickup outcome — per-document verdicts collapsed to `K/N children verified` in the banner, or the skip reason when cold-pickup did not run.
 
 If the parent or any child contains `Open Questions` that require a user decision, present a combined decision table immediately after the save report:
 
@@ -281,7 +316,7 @@ If the parent or any child contains `Open Questions` that require a user decisio
 | 1 | <parent or child path + Open Question requiring user decision> | <recommended patch to apply> | <why this cannot be delegated safely> |
 ```
 
-After the user answers, patch the affected parent or child files in place, move resolved questions into the appropriate sections, leave only genuinely unresolved or delegated questions in `Open Questions`, and re-run `validate_briefset.py` plus the Stage 5.5 self-check.
+After the user answers, patch the affected parent or child files in place, move resolved questions into the appropriate sections, leave only genuinely unresolved or delegated questions in `Open Questions`, then re-run `validate_briefset.py`, Stage 5.5, Stage 5.6, and the Stage 5.7 gate.
 Iterate on disk via `Edit`; do not re-render the briefs into chat.
 
 ---
@@ -297,6 +332,9 @@ Iterate on disk via `Edit`; do not re-render the briefs into chat.
 - Each referenced child path exists on disk.
 - No referenced child is itself a briefset parent (no recursion).
 - Inline-code paths in `Dependencies` reference children listed in `Child Briefs`.
+- Parent filename date is a real calendar date.
+- Parent sections appear exactly once and in canonical order.
+- Child filenames use the exact `<set-slug>-NN-<child-slug>` order and share the parent date.
 - Every child passes `validate_brief.py`'s structural checks (re-run transitively).
 
 Out of scope (still on the human reviewer):

@@ -175,7 +175,7 @@ docs/briefs/2026-04-30-briefset-checkout-i18n.md
 - No new i18n tooling — stay on the existing `react-i18next` setup.
 
 ## Global Acceptance Criteria
-- [ ] `rg "[가-힣]" src/checkout` returns no matches — every user-visible checkout string resolves from `src/i18n/messages.ko.json`; no copy is hardcoded in component sources.
+- [ ] `rg "[가-힣]" src/checkout` returns no matches — Korean checkout copy resolves from `src/i18n/messages.ko.json`; no Korean copy is hardcoded in component sources.
 - [ ] All three child briefs' Acceptance Criteria are checked.
 - [ ] Cart copy diff against `docs/marketing/cart-copy-2026-04.md` is 0 (verbatim match).
 
@@ -326,7 +326,7 @@ One `validate_briefset.py` invocation covers the whole set — it re-runs
 child, so the three `child ...: structural checks OK.` lines above *are*
 the per-child validation.
 
-**Stage 5.6 note** — briefset mode is itself an auto-ON trigger for
+**Stage 5.7 note** — briefset mode is itself an auto-ON trigger for
 cold-pickup verification: the parent and every child each run their own
 sub-agent pass (per-child signal gating is intentionally disabled in
 briefset mode). With all four files terminating on a clean first pass,

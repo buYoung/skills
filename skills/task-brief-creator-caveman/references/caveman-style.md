@@ -15,8 +15,8 @@ If a caveman rule below would force you to drop a fact, a bullet, or a distinct 
 
 ## Two Hard Rules
 
-1. **Brief file body uses caveman full mode.** Always.
-   No mode switch inside the file.
+1. **Brief file body uses caveman full mode, except `## Open Questions` and any bullet whose meaning would become ambiguous.**
+   Those exceptions stay in normal prose because clarity beats register.
 2. **Chat / interaction surfaces are normal prose.** Always.
    No caveman in halt messages, interview questions, recommended answers, save reports, validator dialogs, edit confirmations.
 

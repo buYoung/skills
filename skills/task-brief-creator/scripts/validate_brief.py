@@ -27,9 +27,10 @@ What this script checks (STRUCTURAL ONLY):
     - Required sections contain at least one content bullet
     - `## Side Effect Checkpoints` and `## Acceptance Criteria` use `- [ ]` checklist format
     - `## Open Questions` is populated (questions or `None — <reason>`)
-    - Inline-code paths in `## Related Files / Entry Points` exist on disk
-        (skipped when the bullet carries a `(proposed)` marker; tokens
-        starting with `/` only warn — they are often routes, not files)
+    - Inline-code paths and root filenames in `## Related Files / Entry Points`
+        exist on disk (skipped only when `(proposed)` appears immediately after
+        that path token; tokens starting with `/` only warn — they are often
+        routes, not files)
     - Optional constraints use `## Constraints`, sit between `## Scope`
         and `## Related Files / Entry Points`, and are non-empty
 
@@ -101,15 +102,16 @@ TYPE_CONDITIONAL_SECTIONS = set(TYPE_REQUIRED_SECTION.values())
 BULLET_RE = re.compile(r"^\s*-\s+.+")
 CHECKLIST_ITEM_RE = re.compile(r"^\s*-\s+\[[ xX]\]\s+.+")
 INLINE_CODE_RE = re.compile(r"`([^`]+)`")
-PROPOSED_RE = re.compile(r"\(proposed\)", re.IGNORECASE)
 LINE_NUM_SUFFIX_RE = re.compile(r"(?::\d+(?:-\d+)?)+$")
-# Canonical reason separator is the em dash (`- None — <reason>`); an en
-# dash or plain hyphen surrounded by spaces is accepted. Bare `- None` /
-# `- N/A` (with or without a dangling separator) still fails.
+# `- None — <reason>` and `- N/A — <reason>` are exact contract forms.
+# Bare values and alternate dash separators fail so generated briefs do not
+# drift from the template text.
 BARE_NA_RE = re.compile(r"^\s*-\s+N/A\s*(?:[—–-]\s*)?$", re.IGNORECASE)
 BARE_NONE_RE = re.compile(r"^\s*-\s+None\s*(?:[—–-]\s*)?$", re.IGNORECASE)
-NONE_WITH_REASON_RE = re.compile(r"^\s*-\s+None\s+[—–-]\s+\S+", re.IGNORECASE)
+NA_WITH_REASON_RE = re.compile(r"^\s*-\s+N/A\s+—\s+\S+", re.IGNORECASE)
+NONE_WITH_REASON_RE = re.compile(r"^\s*-\s+None\s+—\s+\S+", re.IGNORECASE)
 OUT_OF_SCOPE_PREFIX_RE = re.compile(r"^\s*-\s+\[(hard|deferred)\]\s+.+", re.IGNORECASE)
+ROOT_FILE_RE = re.compile(r"^[A-Za-z0-9._-]+\.[A-Za-z0-9][A-Za-z0-9._-]*$")
 
 REPORT_SYMBOLS = "✓⚠✗—–≤"
 
@@ -450,7 +452,7 @@ def validate_sections(
             for line in body
         ):
             report.fail(
-                "`## Open Questions` uses `None` without an em dash reason — "
+                "`## Open Questions` uses `None` without the exact em dash reason form — "
                 "write `- None — <reason>`."
             )
         else:
@@ -469,20 +471,32 @@ def validate_sections(
                 "`Desired Outcome (To-Be)`."
             )
         else:
-            body = h2[expected_conditional]
-            non_empty = [line for line in body if line.strip()]
-            if not non_empty:
+            body = [line for line in h2[expected_conditional] if line.strip()]
+            if not body:
                 report.fail(
                     f"`## {expected_conditional}` is empty — populate it, or "
                     "write `- N/A — <reason>` if genuinely none."
                 )
             else:
                 bullets = [line for line in body if BULLET_RE.match(line)]
-                bare_na = [line for line in bullets if BARE_NA_RE.match(line)]
-                if bare_na:
+                non_bullet_content = [line for line in body if not BULLET_RE.match(line)]
+                if non_bullet_content:
+                    report.fail(
+                        f"`## {expected_conditional}` contains non-bullet content — "
+                        "use bullets, or the single bullet `- N/A — <reason>`."
+                    )
+                elif any(BARE_NA_RE.match(line) for line in bullets):
                     report.fail(
                         f"`## {expected_conditional}` uses bare `- N/A` — "
                         "the escape hatch is `- N/A — <reason>` (em dash + reason)."
+                    )
+                elif any(
+                    line.lower().startswith("- n/a") and not NA_WITH_REASON_RE.match(line)
+                    for line in bullets
+                ):
+                    report.fail(
+                        f"`## {expected_conditional}` uses `N/A` without the exact "
+                        "em dash reason form — write `- N/A — <reason>`."
                     )
                 else:
                     report.ok(
@@ -537,13 +551,18 @@ def infer_repo_root(brief_path: Path) -> Path:
 
 
 def looks_like_path(s: str) -> bool:
-    """Treat inline-code as a path candidate only when it contains '/'.
+    """Treat inline-code as a path candidate when it is path-shaped.
 
-    This deliberately skips bare filenames like `package.json` and
-    namespaced identifiers like `flag.darkMode`. Paths with at least one
-    slash are the high-value, high-risk-of-fabrication case.
+    Slash-bearing entries are checked as before. Bare root filenames such
+    as `package.json` and `README.md` are also checked, while namespaced
+    identifiers such as `flag.darkMode` are skipped.
     """
-    return "/" in s
+    return "/" in s or bool(ROOT_FILE_RE.match(s))
+
+
+def has_adjacent_proposed_marker(line: str, match_end: int) -> bool:
+    """Return true only when `(proposed)` immediately follows this path token."""
+    return line[match_end:].lstrip().lower().startswith("(proposed)")
 
 
 def validate_entry_paths(
@@ -553,11 +572,12 @@ def validate_entry_paths(
 ) -> None:
     """Verify inline-code paths under `Related Files / Entry Points` exist.
 
-    Skips bullets that carry a `(proposed)` marker. PRs, URLs, and
-    bare identifiers (no slash) are not checked. Tokens starting with
-    '/' (routes or absolute paths) only warn when missing — they are
-    often URL routes, not repo files. Trailing `:N` / `:N-M` suffixes
-    (also repeated, e.g. `:12:5`) are stripped before the disk check.
+    Skips a path only when `(proposed)` appears immediately after that
+    inline-code token. PRs, URLs, and bare identifiers are not checked.
+    Tokens starting with '/' (routes or absolute paths) only warn when
+    missing — they are often URL routes, not repo files. Trailing `:N` /
+    `:N-M` suffixes (also repeated, e.g. `:12:5`) are stripped before
+    the disk check.
     """
     if "Related Files / Entry Points" not in h2:
         return
@@ -567,13 +587,13 @@ def validate_entry_paths(
     for line in h2["Related Files / Entry Points"]:
         if not BULLET_RE.match(line):
             continue
-        if PROPOSED_RE.search(line):
-            continue
         for match in INLINE_CODE_RE.finditer(line):
             raw = match.group(1).strip()
-            if not looks_like_path(raw):
+            if has_adjacent_proposed_marker(line, match.end()):
                 continue
             cleaned = LINE_NUM_SUFFIX_RE.sub("", raw)
+            if not looks_like_path(cleaned):
+                continue
             target = repo_root / cleaned
             seen += 1
             if target.exists():

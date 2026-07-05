@@ -122,20 +122,21 @@ check.
 ## Stage 6 — Save report (chat, normal prose)
 
 > Saved — `docs/briefs/2026-05-05-feat-global-hotkey-system.md`
-> (`feat`: Global hotkey system; structural validation passed; content
-> self-check passed — all input concerns covered, caveman parity held;
+> (`feat`: Global hotkey system; structural validation passed;
+> downstream interpretation aligned; content self-check passed — major
+> input concerns reflected, caveman parity held;
 > cold-pickup `clean_pass` after 1 pass — no ask-backs, no missing
 > concerns, no over-terse bullets). Body is in caveman full mode per
 > skill spec. Open it and let me know if anything reads ambiguously —
 > caveman compresses prose, not contracts, but human review catches
 > what compression should have backed off on.
 
-(Stage 5.6 ran because two Stage 4 decision rows and a populated
+(Stage 5.7 ran because two Stage 4 decision rows and a populated
 `Open Questions` both fired the auto-ON gate.)
 
 ---
 
-## Picked Up Cold (downstream agent's first 30 min)
+## Picked Up Cold (downstream agent orientation)
 
 A coding agent opening the saved brief without prior context:
 
@@ -152,9 +153,10 @@ A coding agent opening the saved brief without prior context:
 6. Routes to `src/hotkeys/useHotkey.ts`, `src-tauri/Cargo.toml`,
    PR #128, and the proposed `src/settings/SettingsScreen.tsx`.
 
-Caveman compression saved roughly 25-30% of the body tokens on this
-brief vs. the normal-prose form in `references/template.md`'s worked
-example, with no loss of routing information.
+This section is commentary only, not part of the saved brief template.
+It shows that caveman style preserved the same routing facts, completion
+criteria, and open decisions; the goal is content preservation in a
+different register, not token reduction.
 
 ---
 

@@ -1,7 +1,7 @@
-# Cold-Pickup Verification (Stage 5.6) — Execution Rules
+# Cold-Pickup Verification (Stage 5.7) — Execution Rules
 
-Loaded when the Stage 5.6 gate fires or the user forces cold-pickup.
-`SKILL.md` Stage 5.6 defines *when* cold-pickup runs (auto-ON triggers, Force ON / Force OFF, skip conditions, the 5-pass hard cap).
+Loaded when the Stage 5.7 gate fires or the user forces cold-pickup.
+`SKILL.md` Stage 5.7 defines *when* cold-pickup runs (auto-ON triggers, Force ON / Force OFF, skip conditions, the 5-pass hard cap).
 This file defines *how* each pass executes: the sub-agent report schema, pass bookkeeping, termination triggers, ask-back routing, override trigger phrases, and Stage 6 banner formats.
 
 ## Sub-Agent Report Schema
@@ -12,7 +12,7 @@ Free-form prose is not accepted — the report is parsed deterministically.
 ```yaml
 verdict: clean | needs_changes | blocked
 first_actions:
-  - <file to open, search to run, or hypothesis to test — one bullet each>
+  - <optional first read/search/hypothesis, for orientation only>
 ask_backs:
   - id: a1
     question: <what it would ask the requester before starting>
@@ -32,8 +32,13 @@ Rules enforced on the sub-agent:
   - `user_input_ambiguity` — the input is ambiguous; the brief picked one interpretation but others are equally reasonable.
   - `unverifiable_fact` — an external fact (API behavior, library version, data shape) the sub-agent cannot confirm from the two inputs alone.
   - `minor_default` — a reasonable default for something the user did not specify; alternative values would not change the brief's direction.
+- `first_actions` is advisory only. It never determines pass/fail by itself; the pass criteria are no unresolved ask-backs, no missing concerns, no need to re-interview, and enough completion criteria to know when the work is done.
 - `verdict: clean` is only valid when `ask_backs` and `missing_concerns` are both empty.
+- Sub-agent `verdict: clean` maps to the Stage 6 termination label `clean_pass`.
 - Do **not** emit a numeric confidence score, similarity ratio, or any other LLM-rated number. Self-rated numbers are unreliable in this context — use the qualitative verdict only.
+- If the original input included a source-of-truth checklist, TODO file, review rubric, or audit document, a clean verdict requires item-level coverage.
+  Each source item must be represented in the brief, explicitly deferred / out of scope, or preserved as an Open Question.
+  Representative theme coverage is not clean.
 
 ## Pass Bookkeeping and Rollback
 
@@ -72,6 +77,21 @@ Classify before deciding to patch:
 **Disagreement vs drift.** The sub-agent sees the original input and the brief but not the Stage 3 register or Stage 4 decisions, so it cannot know which items the user locked.
 Before applying the routing table above, if an ask-back's subject matches the `내용` of a row in the Stage 4 decision table the user already answered, treat it as **disagreement** — chat-only comment, no patch.
 Otherwise route per the table.
+
+## Routing `missing_concerns`
+
+Classify each item before patching:
+
+| Classification | Action |
+|---|---|
+| `infer_and_patch` | The concern is present in the original input and the brief omitted it, but the correct destination is reasonably inferable from the input, Stage 3 findings, or already-locked Stage 4 decisions. Patch the brief in place and mention the inferred addition in the Stage 6 save report. |
+| `conflicts_with_user_decision` | The concern is present in the original input, but the user already decided the opposite in Stage 4. Do not patch; surface it as a cold-pickup disagreement in Stage 6. |
+| `out_of_scope` | The concern is real but outside the current brief's scope or intentionally deferred. Do not patch unless it is missing from `Out of Scope`; if the deferral is not recorded, add the narrow `Out of Scope` bullet. |
+
+The main agent owns this routing. The sub-agent only reports the missing concern with evidence.
+Never silently drop an input concern merely because the sub-agent did not propose a patch.
+When source-of-truth input exists, route omitted source items even if the sub-agent reports only a representative sample.
+Never invent new Acceptance Criteria, Side Effect Checkpoints, or Out-of-Scope guardrails that are not implied by the input, codebase review, or a user decision.
 
 ## Override Trigger Phrases
 
@@ -115,4 +135,6 @@ Per-child cold-pickup status is collapsed to one summary line plus details only 
 ## Sub-Agent Unavailable Fallback
 
 If the host environment cannot spawn sub-agents, do not silently skip a gated-ON run.
-Re-run the Stage 5.5 self-check with fresh eyes against only the original input plus the saved brief, and report `cold-pickup unavailable (no sub-agent support); strengthened self-check substituted` in the Stage 6 banner.
+This fallback applies only to Stage 5.7 cold-pickup sub-agent verification; it does not replace Stage 5.5 downstream interpretation or Stage 5.6 content self-check.
+Record Stage 5.7 as unavailable, re-run the Stage 5.6 self-check with fresh eyes against only the original input plus the saved brief, then proceed to Stage 6.
+Report `cold-pickup unavailable (no sub-agent support); strengthened self-check substituted` in the Stage 6 banner.

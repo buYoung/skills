@@ -15,8 +15,8 @@ Classifying correctly is worth the one clarifying question it may cost.
 
 | Type | Meaning | Downstream agent behavior profile |
 |---|---|---|
-| `feat` | New feature — user-visible capability that did not exist. | Discovery-oriented; asks about UX edge cases; expects new tests. |
-| `fix` | Bug fix — existing behavior is wrong. | Reproduction-first; writes a failing test before patching. |
+| `feat` | New feature — user-visible capability that did not exist. | Discovery-oriented; asks about UX edge cases; uses existing verification first; adds tests only when the user or repo rules allow it. |
+| `fix` | Bug fix — existing behavior is wrong. | Reproduction-first; pins the failure before patching, using existing tests or manual repro first; adds a failing test only when allowed. |
 | `refactor` | Structural change with **no behavior change**. | Behavior-preservation obsessed; relies on existing tests as the contract. |
 | `perf` | Performance improvement. | Measurement-first; baseline before, benchmark after; rejects un-measured "optimizations". |
 | `chore` | Build / dependency / config / misc maintenance. | Low-ceremony; skims; no test expectation unless logic moved. |
@@ -36,7 +36,7 @@ Three types require an extra H2 section between `Current State (As-Is)` and `Des
 
 | Type | Required Section | Why this section, for this type |
 |---|---|---|
-| `fix` | `## Reproduction` | The reproduction-first profile needs the repro pinned (steps, environment, frequency, observed vs expected) — not buried in As-Is. The agent writes a failing test against this section. |
+| `fix` | `## Reproduction` | The reproduction-first profile needs the repro pinned (steps, environment, frequency, observed vs expected) — not buried in As-Is. The agent verifies against this section, using existing checks first and adding a failing test only when allowed. |
 | `perf` | `## Baseline Measurement` | The measurement-first profile needs the baseline number stated explicitly (current measurement, method, environment, target). Without it, "improvement" is unverifiable. |
 | `refactor` | `## Behavior Contract` | The behavior-preservation profile needs the contract named: which observable behaviors must stay invariant, which tests / specs / artifacts lock them, how preservation is verified. |
 

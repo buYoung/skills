@@ -142,6 +142,16 @@ feat
 
 ---
 
+## Post-Save Verification Summary
+
+This example focuses on the saved brief shape.
+In a live run, Stage 5.5, Stage 5.6, and Stage 5.7 still run after the
+file is written and structurally validated.
+Because Stage 4 produced user-decision rows, Stage 5.7 cold-pickup is
+auto-ON unless the user explicitly disables it; the final Stage 6 banner
+would report the structural validator, downstream interpretation,
+content self-check, caveman parity, and cold-pickup outcome together.
+
 ## Picked Up Cold — Coding Agent's First Actions
 
 A coding agent receiving only the saved brief above should be able to act

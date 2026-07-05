@@ -173,7 +173,7 @@ docs/briefs/2026-04-30-briefset-checkout-i18n.md
 - No new i18n tooling — stay on existing `react-i18next` setup.
 
 ## Global Acceptance Criteria
-- [ ] `rg "[가-힣]" src/checkout` return no matches — every user-visible checkout string resolve from `src/i18n/messages.ko.json`; no copy hardcoded in component sources.
+- [ ] `rg "[가-힣]" src/checkout` return no matches — Korean checkout copy resolve from `src/i18n/messages.ko.json`; no Korean copy hardcoded in component sources.
 - [ ] All three child briefs' Acceptance Criteria checked.
 - [ ] Cart copy diff against `docs/marketing/cart-copy-2026-04.md` is 0 (verbatim match).
 
@@ -326,12 +326,11 @@ child, so the three `child ...: structural checks OK.` lines above *are*
 the per-child validation. The validator checks structure only — the
 caveman register of the brief bodies is invisible to it.
 
-**Stage 5.6 note** — briefset mode is itself an auto-ON trigger for
+**Stage 5.7 note** — briefset mode is itself an auto-ON trigger for
 cold-pickup verification: the parent and every child each run their own
 sub-agent pass (per-child signal gating is intentionally disabled in
-briefset mode). The caveman variant adds one item to each sub-agent's
-prompt — *are any bullets so terse they hide intent?* — and one
-`over_terse_bullets` list to each report. With all four files
+briefset mode). `references/cold-pickup.md` requires one
+`over_terse_bullets` list in each caveman report. With all four files
 terminating on a clean first pass, the Stage 6 banner reports the
 collapsed form
 `cold-pickup: 1/1 parent + 3/3 children verdict:clean (no ask-backs, no missing concerns, no over-terse bullets)`.

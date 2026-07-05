@@ -146,7 +146,7 @@ Stop the Stage 4 loop when **any** of these is true:
 - A pending answer requires information neither the codebase nor the user has at hand (e.g., a product decision owned by someone else).
   Record the dependency in `Open Questions`, mark the brief as blocked on that input, and continue.
 
-After termination, proceed to Stage 5 (save + structural validate) and Stage 5.5 (content-level self-check) exactly as documented in `SKILL.md`, then cold-pickup verification (Stage 5.6) when its gate fires.
+After termination, proceed to Stage 5 (save + structural validate), Stage 5.5 (downstream interpretation check), and Stage 5.6 (content-level self-check) exactly as documented in `SKILL.md`, then cold-pickup verification (Stage 5.7) when its gate fires.
 Stage 4 does not change the saved-brief structure.
 
 ---

@@ -84,7 +84,7 @@ If the section legitimately has nothing concrete to capture (e.g., a visual regr
 
 Do not omit the section — `validate_brief.py` checks for its presence.
 The `- N/A — <reason>` form is the explicit escape hatch; a bare `- N/A` without reason is rejected.
-In the `- N/A — <reason>` and `- None — <reason>` forms, the em dash is canonical; the validator also accepts a plain hyphen or an en dash surrounded by spaces.
+The validator requires the exact em dash form for `- N/A — <reason>` and `- None — <reason>`; plain hyphens and en dashes are rejected.
 
 ---
 
@@ -123,7 +123,8 @@ This is the baseline the `Desired Outcome (To-Be)` will be compared against.
 ### § Reproduction (`fix` only)
 
 A pinned reproduction is the most expensive thing a `fix` agent has to recover if it isn't in the brief.
-Capture it explicitly so the agent can write a failing test before patching.
+Capture it explicitly so the agent can pin the failure before patching, using existing tests or manual reproduction first.
+Add a new failing test only when the user or repository rules allow new tests.
 
 Cover, at minimum:
 
@@ -190,7 +191,8 @@ Examples:
 - Bad: `Tests still pass.` (which tests? what do they actually pin?)
 - Caveman OK: `` Locked: public methods of `UserService` (signature, return shape, thrown errors). Contract: `src/user/__tests__/UserService.test.ts` pass unchanged. Verification: full suite + 3 manual scenarios in `docs/qa/user-service.md`. ``
 
-If existing tests do not cover the behavior the refactor must preserve, that gap belongs in `Open Questions` — and may push back into expanding test coverage before the refactor proceeds.
+If existing tests do not cover the behavior the refactor must preserve, record the verification gap in `Open Questions` or `Side Effect Checkpoints`.
+Expanding test coverage is allowed only when the user or repository rules permit it.
 
 ### § Desired Outcome (To-Be)
 
@@ -205,6 +207,9 @@ This is what tells the downstream agent when to stop.
 - Steps belong to the downstream agent's plan, not the brief.
 - Preserve structural target facts that direct implementation.
   If completion depends on a specific layer split, data shape, API list, setting, event sequence, or platform behavior, state that end-state as its own bullet or move exact constraints into `## Constraints`.
+- If code already has an internal completion signal, keep it distinct from user's success goal when they are not same thing.
+  Example: event firing, status row changing, or validator passing may prove workflow advanced; it may not prove user understood new UX, operator can recover failure, or downstream consumer sees intended data.
+  Put internal signal in `Current State (As-Is)` / `Side Effect Checkpoints`; put desired user or operator result here.
 
 ### § Scope
 
@@ -227,6 +232,15 @@ Out of Scope is the higher-leverage one: it stops the downstream agent from bein
 
 If the task is legitimately narrow and there's no realistic adjacent overreach, write `- None — self-contained.` Do not pad.
 
+When input is review, audit, TODO list, or broad cleanup request, triage findings before writing this section:
+
+- Must fix now — directly required for user's requested outcome.
+- Check while here — cheap, tightly coupled verification that prevents must-fix work from drifting.
+- Deferred — real issues that should not expand this brief.
+
+Use `[deferred]` bullets for third group.
+If user must choose whether deferred item becomes must-fix, put it in `Open Questions` instead of silently expanding scope.
+
 ### § Constraints
 
 **Task-specific constraints only.** Repository-global rules (style, linting, tone, language conventions) live in CLAUDE.md / AGENTS.md and must not be duplicated here.
@@ -237,6 +251,8 @@ Examples of what belongs:
 - Bundle size increase ≤ 5KB gzipped.
 - Mobile Safari 15+ must still work.
 - Agent may choose between two implementation paths only when both satisfy the listed constraints; name the required behavior, risk, and verification.
+- Existing saved records with `status: "pending"` must still load without migration.
+- Existing event name `payment:retry-scheduled` and payload fields remain compatible unless requester explicitly approves breaking change.
 
 This section is optional.
 If none, omit the section entirely — do not write `None`.
@@ -255,12 +271,18 @@ Acceptable entry shapes:
 - PR number: `PR #142 — last year's refactor in the same area — reference approach.`
 - Related brief: `docs/briefs/2026-03-12-refactor-auth.md — prerequisite work.`
 - Proposed new path: `` `src/auth/sessionStore.ts` (proposed) — new module location confirmed by user.``
+- Root file path: `` `package.json` — inspect existing scripts before naming verification commands.``
 
 Rules:
 
 - Existing paths must exist in the repo as of the codebase review step.
 - Proposed new paths are allowed only when the user confirms them or the target directory / naming pattern is clear from the repo.
-- The proposed marker is the exact literal token `(proposed)` placed after the inline-code path — variants like `(proposed edit)` or `(proposed path)` are not recognized by the structural validator.
+- The proposed marker is the exact literal token `(proposed)` placed immediately after the inline-code path — variants like `(proposed edit)` or `(proposed path)` are not recognized by the structural validator, and a marker later in the line does not skip validation for earlier paths.
+- Root filenames such as `package.json` and `README.md` are checked on disk just like slash-bearing paths.
+- Prefer stable locators over bare line numbers.
+  Good: `` `validate_entry_paths()` in `scripts/validate_brief.py` — tighten `(proposed)` handling.``
+  Risky: `` `scripts/validate_brief.py:570` — fix this.``
+  Line numbers may appear, but pair them with section, symbol, or nearby literal token.
 - Never invent PR numbers, existing paths, or prior briefs.
 - If the review does not turn up at least one concrete entry point, ask the user before saving.
   Do not emit an empty `Related Files / Entry Points` section.
@@ -280,6 +302,15 @@ Derive checkpoints from:
 2. Known integrations — what external services / teams touch this surface?
 3. User's answers during Stage 4.
 
+Always add explicit checkpoints for contracts that codebase review shows must remain stable:
+
+- Persisted identifiers, status values, and storage formats.
+- Public API shapes, CLI flags, route names, schema fields, event names, and cross-process payloads.
+- i18n keys, analytics event names, generated files, and config keys consumed outside edited module.
+
+Avoid generic compatibility language.
+Name contract and expected preservation behavior.
+
 ### § Acceptance Criteria
 
 Measurable completion criteria.
@@ -290,6 +321,10 @@ Distinct from `Desired Outcome (To-Be)`: `Desired Outcome` describes the end sta
 - Good: `- [ ] Lighthouse Performance score ≥ 90 (mobile).`
 - Bad: `- [ ] UX feels better.`
 - Bad: `- [ ] All tests pass.` (empty — tests always have to pass)
+- If task has both internal pass condition and user / operator success condition, include both as separate criteria.
+  Good: ``- [ ] `job.completed` emit only after export file written.``
+  Good: `- [ ] Success toast tell operator where to find exported file.`
+  Bad: `- [ ] Export works.` (collapses system completion and operator usability)
 - When the verification command is not obvious from the repo, name it inline (e.g. `npx cypress run --spec ...`).
 
 If the user cannot give concrete criteria, push back during Stage 4 — do not invent them.
@@ -300,9 +335,11 @@ Things that are not yet decided.
 This is the safety valve that prevents the downstream agent from silently guessing.
 
 - Surface every uncertainty caught during codebase review here (e.g., "Two parallel implementations exist — which one should we extend?").
+- Before adding a question, try to make a bounded recommendation in `Constraints`, `Side Effect Checkpoints`, `Acceptance Criteria`, or `[deferred]` Out of Scope.
+  Use `Open Questions` only when requester must own product direction, scope expansion, sequencing, acceptance threshold, ownership, or compatibility break.
 - Write as questions, not statements.
 - If there genuinely are none, write `- None — <reason>`, e.g. `- None — no user-owned decisions remain; implementation choices are bounded in Constraints.`
-  The em dash is canonical; the validator also accepts a plain hyphen or an en dash surrounded by spaces — but never a bare `- None`.
+  The exact em dash form is required; the validator rejects a plain hyphen, an en dash, and bare `- None`.
 
 ---
 

@@ -14,8 +14,9 @@ What this script checks (STRUCTURAL ONLY):
 
   Parent file:
     - Filename matches YYYY-MM-DD-briefset-<set-slug>.md (with optional -vN)
+      with a real calendar date
     - Title line: `# Brief Set: <title>`
-    - Required H2 sections present:
+    - Required H2 sections present exactly once, in canonical order:
         Purpose, Child Briefs, Execution Order, Dependencies,
         Parallelization, Conflict Hotspots, Shared Constraints,
         Global Acceptance Criteria, Open Questions
@@ -30,8 +31,8 @@ What this script checks (STRUCTURAL ONLY):
     - No referenced child is itself a briefset parent (no recursion)
     - Inline-code paths in `## Dependencies` only reference children
         listed in `## Child Briefs`
-    - Child filenames share the parent's date and set-slug and carry a
-        zero-padded `NN` sequence segment (warn-only on mismatch)
+    - Child filenames use `<set-slug>-NN-<child-slug>` order and share the
+        parent's date
 
   Child files:
     - Each referenced child re-runs `validate_brief.py`'s structural checks
@@ -44,6 +45,7 @@ that.
 
 from __future__ import annotations
 
+import datetime
 import re
 import sys
 from pathlib import Path
@@ -108,10 +110,6 @@ POPULATED_PARENT_SECTIONS = [
 
 CHILD_PATH_RE = re.compile(r"`([^`]+\.md)`")
 
-# Zero-padded execution-order segment in a child slug, e.g. `-01-`.
-CHILD_SEQUENCE_RE = re.compile(r"(?:^|-)\d{2}(?:-|$)")
-
-
 def validate_parent_filename(path: Path, report: Report) -> tuple[str, str] | None:
     """Return (date, set-slug) parsed from the parent filename, or None."""
     match = PARENT_FILENAME_RE.match(path.name)
@@ -122,7 +120,15 @@ def validate_parent_filename(path: Path, report: Report) -> tuple[str, str] | No
         )
         return None
     parent_date, set_slug, _ = match.groups()
-    report.ok(f"Parent filename format OK (set-slug='{set_slug}').")
+    try:
+        datetime.date.fromisoformat(parent_date)
+    except ValueError:
+        report.fail(
+            f"Parent filename date '{parent_date}' is not a real calendar date "
+            "(YYYY-MM-DD)."
+        )
+    else:
+        report.ok(f"Parent filename format OK (set-slug='{set_slug}').")
     if len(set_slug) > SET_SLUG_MAX_LENGTH:
         report.warn(
             f"Parent set-slug '{set_slug}' is {len(set_slug)} chars; "
@@ -145,7 +151,9 @@ def validate_parent_title(first_line: str, report: Report) -> str | None:
     return title
 
 
-def validate_parent_sections(h2: dict[str, list[str]], report: Report) -> None:
+def validate_parent_sections(
+    h2: dict[str, list[str]], h2_titles: list[str], report: Report
+) -> None:
     # 1. Required sections present.
     for name in REQUIRED_PARENT_SECTIONS:
         if name not in h2:
@@ -153,7 +161,37 @@ def validate_parent_sections(h2: dict[str, list[str]], report: Report) -> None:
         else:
             report.ok(f"Section `## {name}` present.")
 
-    # 2. Checklist sections must use `- [ ]`.
+    # 2. Each H2 section must appear exactly once.
+    seen_titles: set[str] = set()
+    duplicated_titles: list[str] = []
+    for title in h2_titles:
+        if title in seen_titles and title not in duplicated_titles:
+            duplicated_titles.append(title)
+        seen_titles.add(title)
+    for title in duplicated_titles:
+        report.fail(
+            f"Duplicate section `## {title}` — a briefset parent must contain "
+            "each section exactly once."
+        )
+
+    # 3. Required parent sections must follow the canonical order.
+    first_index: dict[str, int] = {}
+    for position, title in enumerate(h2_titles):
+        first_index.setdefault(title, position)
+    failures_before_order = len(report.failures)
+    present_required = [
+        name for name in REQUIRED_PARENT_SECTIONS if name in first_index
+    ]
+    for previous_name, current_name in zip(present_required, present_required[1:]):
+        if first_index[current_name] < first_index[previous_name]:
+            report.fail(
+                f"Section `## {current_name}` is out of order — the template "
+                f"places it after `## {previous_name}`."
+            )
+    if len(present_required) >= 2 and len(report.failures) == failures_before_order:
+        report.ok("Parent section order matches the canonical template.")
+
+    # 4. Checklist sections must use `- [ ]`.
     for name in CHECKLIST_PARENT_SECTIONS:
         if name not in h2:
             continue
@@ -171,7 +209,7 @@ def validate_parent_sections(h2: dict[str, list[str]], report: Report) -> None:
         else:
             report.ok(f"`## {name}` uses `- [ ]` checklist format.")
 
-    # 3. Populated sections must contain content (write `- None — <reason>`
+    # 5. Populated sections must contain content (write `- None — <reason>`
     #    if truly empty).
     for name in POPULATED_PARENT_SECTIONS:
         if name not in h2:
@@ -190,11 +228,11 @@ def validate_parent_sections(h2: dict[str, list[str]], report: Report) -> None:
             for line in body
         ):
             report.fail(
-                f"`## {name}` uses `None` without an em dash reason — "
+                f"`## {name}` uses `None` without the exact em dash reason form — "
                 f"write `- None — <reason>`."
             )
 
-    # 4. Warn on unexpected sections.
+    # 6. Warn on unexpected sections.
     for section_name in h2.keys():
         if section_name in REQUIRED_PARENT_SECTIONS:
             continue
@@ -335,11 +373,10 @@ def validate_child_filename_consistency(
     set_slug: str,
     report: Report,
 ) -> None:
-    """Warn when a child filename drifts from the parent's naming convention.
+    """Fail when a child filename drifts from the parent's naming convention.
 
     Children should follow YYYY-MM-DD-<type>-<set-slug>-NN-<child-slug>.md
-    with the parent's date and set-slug. Warn-only — mismatches are
-    suspicious but not structurally fatal.
+    with the parent's date and set-slug.
     """
     match = CHILD_FILENAME_RE.match(child_path.name)
     if not match:
@@ -347,19 +384,17 @@ def validate_child_filename_consistency(
     child_date, _, child_slug, _ = match.groups()
     label = f"child `{child_path.name}`"
     if child_date != parent_date:
-        report.warn(
+        report.fail(
             f"{label}: filename date '{child_date}' differs from the "
             f"parent's date '{parent_date}'."
         )
-    if set_slug not in child_slug:
-        report.warn(
-            f"{label}: slug does not contain the parent set-slug "
-            f"'{set_slug}' (expected `<set-slug>-NN-<child-slug>`)."
-        )
-    if not CHILD_SEQUENCE_RE.search(child_slug):
-        report.warn(
-            f"{label}: slug has no zero-padded `NN` sequence segment "
-            "(expected `<set-slug>-NN-<child-slug>`)."
+    expected_slug_re = re.compile(
+        rf"^{re.escape(set_slug)}-\d{{2}}-[a-z0-9][a-z0-9-]*$"
+    )
+    if not expected_slug_re.match(child_slug):
+        report.fail(
+            f"{label}: slug must follow `<set-slug>-NN-<child-slug>` with "
+            f"set-slug '{set_slug}'."
         )
 
 
@@ -419,8 +454,8 @@ def main(argv: list[str]) -> int:
 
     parent_identity = validate_parent_filename(path, report)
     validate_parent_title(lines[0], report)
-    h2, _, _ = parse_sections(text)
-    validate_parent_sections(h2, report)
+    h2, _, h2_titles = parse_sections(text)
+    validate_parent_sections(h2, h2_titles, report)
 
     child_paths = validate_child_briefs_section(path, h2, report)
     validate_dependencies_references(h2, child_paths, report)

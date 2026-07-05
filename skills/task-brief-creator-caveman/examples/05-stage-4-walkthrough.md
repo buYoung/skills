@@ -8,8 +8,9 @@ scope and contract questions in one Markdown decision table.
 user-owned decisions. Narrow codebase probes remove questions that do
 not need user judgment. The remaining questions are shown as rows with
 `순번`, `내용`, `수정 추천안`, and `근거`. Because the work type is
-`refactor`, the walkthrough also shows the Stage 5.6 cold-pickup gate
-firing and terminating on a clean first pass — including the
+`refactor`, the walkthrough also shows the Stage 5.5 downstream
+interpretation check and the Stage 5.7 cold-pickup gate firing and
+terminating on a clean first pass — including the
 caveman-only `over_terse_bullets` check.
 
 The chat exchange below is in Korean because the user wrote in Korean.
@@ -52,7 +53,7 @@ be confirmed inside the Stage 4 decision table.
 
 ## Codebase Review Notes (Stage 3)
 
-Inline `rg` / `Read` / Serena symbol probes, ~6 reads / 4 queries
+Inline `rg` / `Read` / allowed symbol probes, ~6 reads / 4 queries
 (carry-over budget for Stage 4 probes: ~9 reads / ~6 queries unused +
 ~5 reads / ~3 queries Stage 4 cap):
 
@@ -91,7 +92,7 @@ shows they are only referenced inside `useAuth.ts`.
 | 2 | Behavior Contract source | Use the 23 existing `src/hooks/__tests__/useAuth.test.ts` cases as the locked behavior contract. | Codebase review shows these cases cover login, logout, refresh, selector memoization, and error states. |
 | 3 | `useAuthSelector` public-surface status | Treat `useAuthSelector` as public and keep it in the Behavior Contract. | It is imported by 4 dashboard components for memoized role-based rendering. Internalizing it would expand scope into consumer migration. |
 | 4 | `AuthContext.tsx` coupling | Freeze `AuthContext.tsx`; refactor only `useAuth.ts` while preserving the import surface. | The file is tightly coupled through reducer/dispatch. User prefers a narrow hook-only brief and no separate context follow-up. |
-| 5 | Acceptance Criteria wording | Require all 23 tests green, unchanged export signatures, zero `AuthContext.tsx` diff, no consumer-site edits, and a reduced `useAuth.ts` line count without a fixed percentage target. | These criteria preserve behavior while allowing internal cleanup. A fixed 30% reduction would be arbitrary for a refactor. |
+| 5 | Acceptance Criteria wording | Require all 23 existing tests green, unchanged export signatures, zero `AuthContext.tsx` diff, no consumer-site edits, and a reviewer-readable internal organization diff in `useAuth.ts`. | These criteria preserve behavior while allowing internal cleanup. Line-count reduction is not a reliable refactor quality signal. |
 
 User: approve rows 1-3 and 5; for row 4 choose "freeze `AuthContext.tsx`."
 
@@ -158,7 +159,7 @@ refactor
 - [ ] Named-export surface of `src/hooks/useAuth.ts` byte-identical for names and shape.
 - [ ] `src/contexts/AuthContext.tsx` unchanged.
 - [ ] None of 14 importing component files require edits to compile or test.
-- [ ] `src/hooks/useAuth.ts` line count decrease (measurable simplification signal).
+- [ ] `src/hooks/useAuth.ts` diff show clearer internal organization (helpers grouped, dead branches removed, naming consistent) without relying on line-count reduction as success signal.
 
 ## Open Questions
 - None — every Stage 3 uncertainty was resolved by a codebase probe (internal-helper reach, `useAuthSelector` consumer spread) or by a Stage 4 user answer (`AuthContext.tsx` freeze).
@@ -166,19 +167,30 @@ refactor
 
 ---
 
-## Stage 5.6 — Cold-Pickup Verification
+## Stage 5.5 — Downstream Interpretation Check
+
+After structural validation passes, a sub-agent receives a natural
+work-start request with only the saved brief path. The sub-agent explains
+that it would refactor `useAuth` internals while preserving the exported
+surface and avoiding `AuthContext.tsx`. That interpretation matches the
+user request and Stage 4 decisions, so no patch is needed.
+
+---
+
+## Stage 5.7 — Cold-Pickup Verification
 
 Gate evaluation: work type is `refactor` — type ∈ {fix, perf, refactor}
 fires the auto-ON gate regardless of input simplicity (the 5
 user-decision rows from Stage 4 would fire it independently). The
-structural validator passed in Stage 5, so the pass runs.
+structural validator passed in Stage 5 and downstream interpretation
+aligned in Stage 5.5, so the pass runs.
 
 Pass 1 — the saved brief is snapshotted, then a sub-agent receives
 **only** the original Korean input and the brief path: no Stage 3
-uncertainty register, no Stage 4 decisions, no Stage 5.5 result. The
-caveman variant adds one item to the sub-agent prompt — *are any
-bullets so terse they hide intent?* — so the report carries the
-caveman-only `over_terse_bullets` list on top of the standard schema.
+uncertainty register, no Stage 4 decisions, no Stage 5.5 downstream
+interpretation result, no Stage 5.6 self-check result. The
+`references/cold-pickup.md` requires the caveman-only
+`over_terse_bullets` list on top of the standard schema.
 Its report:
 
 ```yaml
@@ -200,12 +212,12 @@ Auto-Clarity carve-out — never matched against a Stage 4 row as
 disagreement.
 
 Stage 6 banner (Korean, because the chat is Korean — validator,
-self-check, and cold-pickup reported together):
+downstream interpretation, self-check, and cold-pickup reported together):
 
 > 저장 완료 — `docs/briefs/2026-05-04-refactor-useauth-hook.md`
 > (`refactor`: Tidy `useAuth` hook internals while freezing public
-> surface; 구조 검증 통과; 내용 자체 검증 통과 — 입력 항목 3개 모두
-> 매핑, 문체 변환 동등성 확인; cold-pickup `clean_pass`로 1회 만에
+> surface; 구조 검증 통과; downstream 해석 일치; 내용 자체 검증 통과 — 입력의 주요 항목
+> 반영, 문체 변환 동등성 확인; cold-pickup `clean_pass`로 1회 만에
 > 종료 (ask-back 없음, missing 없음, 과압축 지적 없음)).
 > 파일 열어보고 고칠 부분 있으면 알려줘.
 
@@ -217,8 +229,9 @@ concerns, no over-terse bullets)`.
 
 ## Picked Up Cold — Coding Agent's First Actions
 
-A coding agent receiving only the saved brief should reach a green
-locked-test run inside an hour. From the brief alone:
+A coding agent receiving only the saved brief should be able to start,
+preserve the locked behavior, and decide completion without asking for
+more scope. From the brief alone:
 
 1. Run `pnpm vitest src/hooks/__tests__/useAuth.test.ts` against `main`
    to confirm the 23-case baseline is green (Behavior Contract).
@@ -232,7 +245,8 @@ locked-test run inside an hour. From the brief alone:
    `src/hooks/useAuth.ts` (Side Effect Checkpoints + Out of Scope).
 5. Verify named-export shape with a type-check pass against the
    unmodified consumers (Acceptance Criteria #2 & #4).
-6. Confirm line-count reduction (Acceptance Criteria #5).
+6. Review `useAuth.ts` diff for clearer internal organization without
+   using line-count reduction as success signal (Acceptance Criteria #5).
 
 The agent does **not** touch `AuthContext.tsx` (frozen), does not edit
 any of the 14 importing components, and does not refactor across

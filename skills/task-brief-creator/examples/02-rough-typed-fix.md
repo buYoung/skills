@@ -5,8 +5,10 @@ GOAL implicit, SCOPE narrow, TARGET findable), then leans on the `fix`
 behavior profile to shape Acceptance Criteria around reproduction.
 
 **What this example produces:** a saved brief with a pinned `Reproduction`
-that lets a coding agent commit a failing test *before* touching code —
-the load-bearing discipline of `fix`-type work. Treat the saved brief as
+that lets a coding agent pin the failure *before* touching code.
+Where a new regression test is mentioned, the example assumes the user
+allowed that test during Stage 4; otherwise the brief would require an
+existing test or manual repro path instead. Treat the saved brief as
 the work instruction; the meta sections show how a one-line input got
 ground enough to support it.
 
@@ -50,11 +52,12 @@ reviewer-owned unknown.
 | 1 | Work type to write into the brief | Keep `fix`. | The input names a defect: login rejects valid credentials on iOS Safari. |
 | 2 | Reproduction detail | Provide the observed environment so it can be pinned in `## Reproduction`: exact iOS Safari version and device, the failing test account (no literal password — name where the secret lives), the observed error surface, and how often it reproduces. | `fix` briefs need a reproducible failing state before implementation. The codebase can identify the likely validation site, but only the user can supply the observed environment, account, and frequency. |
 | 3 | Out of Scope boundary | Lock both the broader validation-chain refactor and the `/api/login` request/response contract out of scope. | Stage 3 found both adjacent to the suspected line. Touching them would widen the defect fix into unrelated behavior change. |
-| 4 | Acceptance criteria ordering | Require a red Cypress reproduction first, then the fix, then iOS Safari manual verification and full suite pass. | Reproduction-first criteria make the defect non-regression explicit for downstream agents. |
+| 4 | Acceptance criteria ordering | Because the user allows a new regression test for this fix, require a red Cypress reproduction first, then the fix, then iOS Safari manual verification and full suite pass. | Reproduction-first criteria make the defect non-regression explicit for downstream agents, while still respecting the rule that new tests need user or repo permission. |
 | 5 | Side effect checkpoints | Keep checks for the existing valid-login case, URL-significant password characters, and the PR #211 motivation. | `%`, `+`, and `&` share the same risk surface as `@` because `decodeURIComponent` is the suspected interaction site. |
 | 6 | PR #211 remove-vs-patch decision | Carry this as an `Open Questions` item for the reviewer instead of deciding it in the brief. | The original motivation is not recoverable from the current input or code probe, and the downstream reviewer owns whether the cleanup remains necessary. |
 
-User: approve rows 1 and 3-6; for row 2 the user supplies the values —
+User: approve rows 1 and 3-6, including the new Cypress regression case
+in row 4; for row 2 the user supplies the values —
 iOS Safari 17 on iPhone 14 via BrowserStack, QA account
 `qa+iossafari@example.com` whose password contains `@` (stored in the
 1Password item "QA iOS Safari"), "invalid credentials" toast, 5/5
@@ -92,12 +95,12 @@ fix
 ## Desired Outcome (To-Be)
 - Login succeeds on iOS Safari 17 with passwords containing `@`, matching desktop browser behavior.
 - The validation chain stays structurally the same; only the offending step changes.
-- A regression test captures the bug so it cannot silently return.
+- The allowed Cypress regression case captures the bug so it cannot silently return.
 
 ## Scope
 ### In Scope
 - Fix the validation step in `src/auth/validation.ts` that mishandles `@` on iOS Safari.
-- Add a Cypress E2E case that exercises the failing input.
+- Add the user-approved Cypress E2E case that exercises the failing input.
 ### Out of Scope
 - [hard] Refactoring or restructuring the validation chain beyond the offending step.
 - [hard] Changing the `/api/login` request or response contract.
@@ -115,7 +118,7 @@ fix
 - [ ] The original motivation for the `decodeURIComponent` step (per PR #211) remains addressed, or is explicitly noted as obsolete.
 
 ## Acceptance Criteria
-- [ ] A new Cypress case in `cypress/e2e/login.cy.ts` reproduces the failure on the unfixed code (commit it red first, then fix).
+- [ ] Because the user approved new test coverage for this fix, a new Cypress case in `cypress/e2e/login.cy.ts` reproduces the failure on the unfixed code before the fix is applied.
 - [ ] The new case passes after the fix on the same iOS Safari target.
 - [ ] Manual verification on iOS Safari 17 with the QA account's `@`-containing password results in successful login.
 - [ ] Full Cypress suite stays green.
@@ -126,18 +129,30 @@ fix
 
 ---
 
+## Post-Save Verification Summary
+
+This example focuses on the saved brief shape.
+In a live run, Stage 5.5, Stage 5.6, and Stage 5.7 still run after the
+file is written and structurally validated.
+Because the work type is `fix`, Stage 5.7 cold-pickup is auto-ON even if
+the input is short; the final Stage 6 banner would report the structural
+validator, downstream interpretation, content self-check, and
+cold-pickup outcome together.
+
 ## Picked Up Cold — Coding Agent's First Actions
 
-A coding agent receiving only the saved brief should reach a red test in
-under 30 minutes. From the brief alone:
+A coding agent receiving only the saved brief should be able to start,
+verify, patch, and know when the fix is complete without asking for more
+scope. From the brief alone:
 
 1. Spin up the documented repro environment (BrowserStack, iOS Safari 17,
    account `qa+iossafari@example.com` with the password from the
    1Password item "QA iOS Safari", per `Reproduction`).
    Confirm the failure on `main` to verify the repro is real.
-2. Add a Cypress case in `cypress/e2e/login.cy.ts` (named in `Related
+2. Add the user-approved Cypress case in `cypress/e2e/login.cy.ts` (named in `Related
    Files / Entry Points` and required by `Acceptance Criteria` #1) that
-   exercises the failing input. **Commit it red.**
+   exercises the failing input. Confirm it fails on the unfixed code
+   before patching.
 3. Open `src/auth/validation.ts:34` (named in `Related Files / Entry
    Points` with the suspected interaction site already noted) and read
    PR #211's motivation before patching, per the open question.
@@ -154,12 +169,11 @@ names the account and where its password lives.
 
 ## Notes
 
-- **Why the Acceptance Criteria lead with "commit a red test first"** —
-  the `fix` behavior profile mandates reproduction-first. Without that
-  guardrail, a downstream agent can ship a "fix" that does not actually
-  cover the original failure mode, leaving the bug latent. Pinning the
-  failing test as Acceptance Criterion #1 makes that mistake structurally
-  impossible.
+- **Why the Acceptance Criteria lead with an approved regression check** —
+  the `fix` behavior profile requires reproduction-first. Because the
+  Stage 4 answer allows a new Cypress case, this example names that case.
+  Without that permission, the brief would use an existing test or manual
+  reproduction path instead.
 - **Why Side Effect Checkpoint #2 lists URL-significant characters** —
   `decodeURIComponent` is the suspect. Anything that would change its
   behavior risks regressing other passwords. The downstream agent needs
