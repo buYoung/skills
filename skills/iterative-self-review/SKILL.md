@@ -1,6 +1,6 @@
 ---
 name: iterative-self-review
-description: "Run a clean-context blind-verification loop when the user explicitly asks for verification, review, re-check, cross-check, proof, or another second-pass quality gate. The main agent drafts the current response, a clean-context sub-agent verifies only the applicable user requirements plus that current response, and the main agent revises and re-verifies until every blocker/major issue is gone and only minor residuals remain. Applies to all response types: code changes, document edits, design proposals, summaries, plans, recommendations, explanations, and file-change reports. If the user explicitly narrows verification to a specific part, scope both the user-input slot and the response slot to only that requested part. Do not auto-trigger on ordinary conversation or routine task completion."
+description: "Use only when the user explicitly invokes this skill. Run a clean-context blind verification loop on the current response."
 ---
 
 # Iterative Self-Review
