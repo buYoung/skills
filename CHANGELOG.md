@@ -6,6 +6,26 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [1.6.0] - 2026-07-06
+
+### Added
+
+- Added `orchestration` for explicit multi-agent task orchestration workflows.
+- Added `fable5` operating instructions and skill guidelines for agent workflow guidance.
+
+### Improved
+
+- Improved `agents-md-generator` to produce an `Ownership Map` instead of a `Folder Structure` section.
+- Improved `task-brief-creator` guidance.
+
+### Fixed
+
+- Fixed `iterative-self-review` instructions.
+
+### Internal
+
+- Updated release tooling, repository guidance, and miscellaneous maintenance.
+
 ## [1.5.0] - 2026-06-11
 
 ### Added

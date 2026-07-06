@@ -6,6 +6,22 @@
 
 ## [Unreleased]
 
+## [1.6.0] - 2026-07-06
+
+### 추가
+
+- `orchestration` 대형 작업을 격리된 sub-agent 단계로 나누는 새 skill 추가
+- `fable5.md` 기반 운영 지침과 가이드라인 추가
+
+### 개선
+
+- `agents-md-generator` Folder Structure 대신 검증된 Ownership Map을 생성하도록 개선
+- `task-brief-creator` brief 생성 흐름 개선
+
+### 수정
+
+- `iterative-self-review` 안내 수정
+
 ## [1.5.0] - 2026-06-11
 
 ### 추가
