@@ -61,3 +61,4 @@ This repository maintains reusable AI agent skills and the package-local artifac
 
 ## 6. user custom
 - skill을 만들때 절대 serena를 활용하지마세요.
+- @fable5.md 를 참고해.
