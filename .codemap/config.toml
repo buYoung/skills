@@ -1,0 +1,103 @@
+# codemap-config-version: 3
+# codemap-search repo-local config. Optional: with every key commented out (the state
+# below), this file reproduces the built-in behavior exactly. Uncomment and edit a line to
+# override its default. Resolution precedence is per key: repo > global > built-in default.
+
+# Where the tantivy index lives (relative to the repo root).
+# index_path = ".codemap/index"
+
+# `search` returns file details at or below this many matches, a codemap overview above.
+# result_threshold = 5
+
+# Files larger than this many bytes are skipped before parse/index (minified/generated blobs).
+# max_file_size = 1048576   # 1 MiB
+
+# Directory names to exclude, ADDED to the built-ins (node_modules, target, dist, build,
+# vendor, .git, …). Built-ins can't be removed — this augments, it does not replace.
+# excluded_directories = ["__pycache__", ".next", "coverage"]
+
+# Dedicated toggle for `.git/info/exclude` ONLY. Set false to let index/codemap/find/grep
+# see files hidden solely by `.git/info/exclude` (e.g. local personal excludes) while
+# `.gitignore`, the global gitignore, and `.codemapignore` stay honored.
+# use_git_exclude = true
+
+# Debounce window (milliseconds) for background index/codemap refreshes triggered by
+# search/overview: within this window repeated calls enqueue at most one background refresh,
+# and each call answers immediately from the committed snapshot. read/find/grep always read
+# live disk, so brief search staleness is corrected by the follow-up read. (default 5000)
+# index_staleness_ms = 5000
+
+# Max file headers `search` emits in its codemap-overview branch (when matches exceed
+# result_threshold). Caps the context a broad query can spend. (default 50)
+# search_overview_file_limit = 50
+
+# Filesystem watcher: when true (the default), file changes refresh the index in the
+# background on their own and search/overview never trigger a tree walk. Set false to
+# fall back to the request-triggered lazy refresh (debounced by index_staleness_ms).
+# watch = true
+
+# Debounce window (milliseconds) for watcher events: changes arriving within this window
+# are batched into one incremental refresh. (default 500)
+# watch_debounce_ms = 500
+
+# Automatic recovery when the background indexer thread dies: the next search/overview
+# rebuilds the index engine, respawns the indexer, and re-attaches the watcher (capped
+# per server run so a deterministic crash cannot respawn-loop). Set false to serve
+# results frozen at the last commit until the server is restarted instead.
+# indexer_auto_restart = true
+
+# Allow `find` absolute-path patterns whose static prefix resolves OUTSIDE the workspace
+# root (Claude Code's Glob accepts any absolute base). Default false keeps the sandbox:
+# absolute/`..` patterns escaping the root are rejected. Set true only to opt into
+# searching arbitrary on-disk locations via `find`.
+# allow_absolute_path_outside_root = false
+
+# `grep` content-mode column cap: a matched line longer than this many columns is replaced
+# with `[Omitted long matching line]` instead of being dumped in full (Claude Code passes
+# `--max-columns 500`). 0 disables the cap. (default 500)
+# grep_max_columns = 500
+
+# `read` always-applied output ceiling (bytes): even with `offset`/`limit` set, a `read`
+# whose rendered output would exceed this throws rather than emitting an unbounded blob
+# (approximates Claude Code's ~25,000-token cap). Measured on the RENDERED output including
+# the `     N→` line-number prefixes (~7 bytes/line). Separate from the 256 KiB whole-file
+# cap that applies only when `limit` is omitted. (default 102400 ≈ 100 KiB)
+# read_output_byte_cap = 102400
+
+# `search` detail-view caps (the ≤ result_threshold branch that emits code snippets). These
+# bound the detail response so a query matching a few large files can't dump tens of
+# thousands of lines. Output-size only.
+# search_detail_snippet_max_lines = 80   # per-symbol snippet line cap; over-long bodies elide
+# search_detail_symbol_limit = 20        # max symbols rendered per file; rest summarized
+# search_detail_byte_cap = 32768         # total detail-view byte budget (32 KiB) before cutoff
+# search_literal_max_len = 200           # matched-literal truncation length (chars)
+# search_literal_limit = 10              # max matched literals rendered per file
+
+# Caller/callee context for the `search` detail view. When the `caller_context` request
+# parameter is omitted, this key decides the default; an explicit parameter always wins.
+# The feature annotates each matched `fn` symbol's snippet with its depth-1 callers and
+# callees (name-match only, approximate). Default on; set false (or pass
+# caller_context=false per call) to disable.
+# caller_context_default = true
+
+# Caps for the caller/callee annotation (all output-size / cost bounds, tunable).
+# scan_cap = 500               # hit budget for the combined-regex walk, split across scanned names (floor 25/name)
+# caller_list_cap = 5          # max callers (or non-call references) rendered per symbol
+# callee_list_cap = 5          # max callees rendered per symbol
+# annotation_sub_budget = 8192 # annotation byte budget WITHIN search_detail_byte_cap (not added on top)
+# common_name_threshold = 2    # a name with ≥ this many fn defs gets its callers/callees labeled ambiguous
+
+# navigation_store_references = false
+
+# navigation_callsite_budget = 1000
+
+# Precise caller/callee attribution. When false, annotations use conservative name matching.
+# Set true to allow tree-sitter navigation data to mark unambiguous lines as precise.
+# navigation_context_default = false
+
+# Automatic repo config file creation and schema sync on `mcp` startup.
+# true: create missing `.codemap/config.toml` and append commented blocks for new settings.
+# false: never writes `.codemap/config.toml` automatically; existing config is still read.
+# Existing-file schema sync adds new settings as commented blocks, not active values.
+# [update]
+# config_auto_update = true

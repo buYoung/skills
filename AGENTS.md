@@ -2,63 +2,58 @@
 
 ## 1. Overview
 
-This repository maintains reusable AI agent skills and the package-local artifacts that make those skills portable across agent runtimes. Each skill is a self-contained capability with a `SKILL.md` entry point plus optional references, scripts, examples, evaluations, and revision notes.
+This repository maintains portable AI agent skill packages and the release/catalog metadata that makes those packages installable across agent runtimes. Each skill owns its own activation contract, domain references, examples, validators, and revision evidence.
 
-## 2. Folder Structure
+## 2. Ownership Map
 
-- `skills/`: Primary skill packages. Add capability content here unless the change is repository-level release or catalog work.
-    - `<skill-name>/SKILL.md`: Required entry point with YAML frontmatter, activation description, workflow, output contract, references, and guardrails.
-    - `<skill-name>/references/`: Detailed domain rules, templates, routing tables, prompt bodies, and policy material linked from `SKILL.md`.
-    - `<skill-name>/scripts/`: Package-local deterministic helpers such as AGENTS parsers, brief validators, and Feature Design Doc validators.
-    - `<skill-name>/examples/`: Worked sample artifacts or plugin examples that demonstrate expected output shape.
-    - `<skill-name>/evals/`: Regression fixtures for skills that need repeatable behavior checks.
-    - `<skill-name>/updates/`: Dated design notes, review records, and patch evidence for skills with explicit revision history.
-    - `system-prompt-creator-workspace/`, `task-brief-creator-old/`, and similar workspace or legacy directories: preserve as supporting material unless the task explicitly targets them.
-- `scripts/release/`: Repository-level release automation. `bump-marketplace.js` updates `.claude-plugin/marketplace.json`; `write-changelog.js` asks Codex for English and Korean changelog bodies.
-- `.claude-plugin/marketplace.json`: Claude plugin marketplace bundles. Published bundles point at selected `skills/<skill-name>` directories and must stay aligned with README availability tables.
-- `.github/workflows/`: Tag-triggered release publication. The workflow verifies both changelog files contain the tagged version before creating a draft GitHub release.
-- `docs/`: Repository-level guidance, planning briefs, and snapshots. Keep this separate from per-skill `references/` unless a skill explicitly owns the material.
-- `README.md`: Public catalog, install guidance, skill status tables, and attribution links.
-- `CHANGELOG.md` and `CHANGELOG.ko.md`: Release notes maintained by release automation; keep both languages in sync.
-- `package.json` and `.release-it.json`: Package metadata, Node engine constraints, and release-it hook wiring.
-- `.agent/`, `.windsurf/`, and `.agents/`: Agent-runtime mirrors or orchestration run artifacts. Treat them as runtime/support surfaces, not the canonical source for published skill packages.
+### Stable Ownership Boundaries
+
+- **Skill package contract**: Start in `skills/<skill-name>/SKILL.md` when changing a skill's trigger, workflow, output contract, or guardrails. It owns the public activation surface consumed by README catalog entries and marketplace bundles, and must preserve package-local routing into `references/`, `scripts/`, `examples/`, `evals/`, or `updates/`; verify by checking the skill entry point plus any linked package-local artifacts.
+- **Reference and artifact boundary**: Start in the owning package's `references/`, `examples/`, `evals/`, or `updates/` when changing detailed domain rules, sample outputs, regression material, or design notes. These files extend the owning `SKILL.md` without becoming shared repository policy; verify that relative links from the entry point still resolve and that examples/evals still match the documented output shape.
+- **Structural validator boundary**: Start in the owning package's `scripts/` directory when changing machine-checkable document shape. Validators use standard-library Python with constants, regex contracts, explicit exit codes, and `Report` objects, and they must remain structural checks rather than semantic judges; verify through the script's own usage contract and representative fixture or target document.
+- **Release and marketplace boundary**: Start in `scripts/release/`, `.release-it.json`, `.claude-plugin/marketplace.json`, README availability tables, and both changelogs when changing published bundle membership, package versioning, or release notes. These files form one metadata chain, so bundle paths, advertised availability, generated changelog sections, and tag workflow checks must stay aligned.
+- **Repository guidance boundary**: Start in root `AGENTS.md`, `fable5.md`, and `docs/` when changing agent-facing repository policy or operating guidance. Repository-level guidance applies across skill packages, while package-specific rules stay beside the owning skill; verify that generated or managed sections preserve custom user sections and do not duplicate package-owned details.
+
+### Active Change Routes
+
+- **Brief skill evolution route**: Within **Skill package contract**, start in `skills/task-brief-creator/SKILL.md` and mirror only intentional variant differences into `skills/task-brief-creator-caveman/` when changing brief generation behavior. Recent churn clusters around Stage 4, briefset, examples, templates, and validators, so confirm normal and caveman package contracts separately instead of assuming one file proves both.
+- **Catalog promotion route**: Within **Release and marketplace boundary**, start in README skill status tables before editing `.claude-plugin/marketplace.json` when promoting, demoting, renaming, or bundling a skill. Recent changes repeatedly co-touch README, marketplace metadata, changelogs, and `package.json`, so verify the public catalog and marketplace plugin lists describe the same availability state.
+- **Operating-guidance route**: Within **Repository guidance boundary**, start in `fable5.md` and root `AGENTS.md` when changing agent behavior rules. Recent updates added operating instructions outside a skill package, so keep durable repository rules in `AGENTS.md` and keep the detailed reasoning source in `fable5.md`.
 
 ## 3. Core Behaviors & Patterns
 
-- **Progressive disclosure**: `SKILL.md` files act as routers and contracts; long domain knowledge moves into package-local `references/`. Read the entry point first, then only the referenced files that match the current task.
-- **Frontmatter-driven activation**: Skill discovery is controlled by `name` and especially `description`. Descriptions include capability, trigger language, and exclusions such as `Use when`, `Not for`, or explicit-invocation boundaries.
-- **Capability-local ownership**: Templates, validators, examples, eval fixtures, licenses, and update notes live under the owning skill package. Repository-level scripts are reserved for release flows that span packages.
-- **Structured workflow gates**: Complex skills encode numbered stages, halt conditions, routing tables, output contracts, and handoff rules. Preserve these transitions in `task-brief-creator`, `linear-issue-*`, `feature-design-doc`, `iterative-self-review`, `delegated-review-loop`, and `orchestration`.
-- **Validation is structural by design**: Python validators use constants, regex contracts, explicit exit codes, and report objects to check shape, ordering, filenames, checklists, frontmatter, and references. They do not judge semantic quality; that stays in the skill workflow or human review.
-- **Release chain is metadata-first**: Published grouping flows from `skills/` to README tables and `.claude-plugin/marketplace.json`, then through `release-it` hooks and the tag workflow. A promoted, demoted, renamed, or bundled skill needs all of those surfaces checked together.
-- **Evidence stays near the skill**: Complex behavior changes should add or update evidence in `examples/`, `evals/`, `updates/`, or package-local scripts rather than creating a shared catch-all evidence area.
-- **Runtime mirrors are secondary**: `.agent/`, `.windsurf/`, `.agents/`, and `docs/skills-main/` can provide context, but the canonical editable skill packages are under `skills/` unless the task names another surface.
+- **Progressive disclosure**: `SKILL.md` files define activation, scope, workflow, output contract, and routing. Large domain rules move into package-local `references/`, and entry points tell agents which reference to read at each decision point instead of loading every file by default.
+- **Frontmatter-driven discovery**: Skill activation is controlled by YAML `name` and especially `description`. Descriptions carry trigger phrases, exclusions, explicit-invocation boundaries, and routing to sibling variants such as `task-brief-creator-caveman`.
+- **Capability-local evidence**: A skill's templates, validators, examples, evals, licenses, and update notes stay under the same `skills/<skill-name>/` package. Cross-skill repository material belongs only in root docs or release scripts; do not create shared evidence areas for a single package's behavior.
+- **Workflow gates as contracts**: Complex skills encode numbered stages, halt conditions, role splits, decision tables, output schemas, and termination metadata. Preserve these transitions in `task-brief-creator`, `feature-design-doc`, `iterative-self-review`, `delegated-review-loop`, `orchestration`, and `linear-issue-*` because downstream agents rely on them for when to ask, stop, validate, or hand off.
+- **Structural validation only**: Python validators check filenames, headings, section order, checklist shape, frontmatter, references, and duplicate/empty sections with explicit exit codes. They intentionally avoid judging content quality; semantic judgment remains in the skill workflow, reviewer, or user decision step.
+- **Release metadata chain**: Release state flows through `package.json`, `.release-it.json`, `scripts/release/*`, changelog files, `.github/workflows/release.yml`, `.claude-plugin/marketplace.json`, and README tables. A version bump or bundle change is unsafe unless each public metadata surface agrees.
+- **Agent isolation patterns**: Review and orchestration skills distinguish main-agent, sub-agent, reviewer, and worker responsibilities. Keep path-passing, clean-context, no-prior-findings, and user-judged halt contracts explicit when editing those skills.
 
 ## 4. Conventions
 
-- **Skill package naming**: Skill directories use `kebab-case`, and the folder name should match the `name` frontmatter value. Variants keep the base name visible, as in `task-brief-creator-caveman`.
-- **Frontmatter shape**: Every installable `SKILL.md` starts with YAML frontmatter. Keep `name` lowercase kebab-case, make `description` the activation surface, and add `license` when the package carries license material.
-- **Entry point structure**: Keep `SKILL.md` concise and navigational. Use sections such as trigger, workflow, output contract, references, helper scripts, and scope boundaries instead of embedding all detailed rules inline.
-- **Reference filenames**: Use topic-oriented names and follow local schemes: `snake_case` for AGENTS generator specs, hyphenated workflow topics for brief skills, and numbered prefixes for JetBrains reference ordering.
-- **Relative package links**: Link package-local material with relative paths such as `references/template.md` or `scripts/validate_brief.py`. Do not point repository docs at installed absolute paths.
-- **Template and validator placement**: Reusable Markdown templates belong in `references/`, structural checks in `scripts/`, sample outputs in `examples/`, and regression data in `evals/`.
-- **Python script style**: Use standard-library modules, uppercase contract constants, compiled regexes, explicit exit codes, small parsing/validation functions, and report objects for user-facing output.
-- **Node release script style**: Use CommonJS with `node:` imports, uppercase root/path constants, `fail(message)` helpers, explicit argument validation, and targeted file writes.
-- **Catalog consistency**: When a skill is promoted, demoted, renamed, bundled, or made private, update README tables, marketplace bundles, changelog intent, and package paths together.
-- **Documentation language**: Repository artifacts are English by default unless intentionally localized, such as `CHANGELOG.ko.md`; keep exact code, paths, command names, and frontmatter keys unchanged.
+- **Skill package naming**: Use `kebab-case` for skill directories, and keep the directory name aligned with the `name` frontmatter value. Variants keep the base name visible, such as `task-brief-creator-caveman`.
+- **Frontmatter shape**: Installable `SKILL.md` files start with YAML frontmatter. Keep `name` lowercase kebab-case, make `description` the complete activation surface, and add `license` when package-local license material requires it.
+- **Entry point structure**: Keep `SKILL.md` navigational rather than encyclopedic. Use sections for triggers, workflow, output contract, reference routing, helper scripts, guardrails, and scope boundaries; push detailed domain rules into `references/`.
+- **Reference naming**: Use topic-oriented filenames that match local package schemes: `snake_case` for AGENTS generator specs, hyphenated workflow topics for brief skills, and numbered prefixes for JetBrains plugin references.
+- **Relative package links**: Link package-owned material with relative paths like `references/template.md` or `scripts/validate_brief.py`. Avoid installed absolute paths in repository-authored skill docs.
+- **Artifact placement**: Put reusable Markdown templates in `references/`, structural checks in `scripts/`, sample outputs in `examples/`, regression fixtures in `evals/`, and design/revision notes in `updates/`.
+- **Python validator style**: Use standard-library modules, uppercase contract constants, compiled regexes, explicit exit codes, small parsing/validation functions, and `Report` or dataclass report objects for user-facing output.
+- **Node release script style**: Use CommonJS, `node:` imports, uppercase root/path constants, `fail(message)` helpers, explicit argument validation, and targeted writes to release-owned files.
+- **Documentation language**: Repository artifacts are English by default unless intentionally localized, such as `CHANGELOG.ko.md`; keep code, paths, command names, frontmatter keys, and exact user-provided strings unchanged.
 
 ## 5. Working Agreements
 
-- Respond to the user in Korean unless they explicitly request another language; keep code blocks, file paths, identifiers, and exact logs unchanged.
-- Ask the user before introducing tests, lint, formatter setup, or related automation; add them only on explicit request.
-- Build context by reviewing related skill packages, references, examples, scripts, marketplace entries, and release metadata before editing.
-- Fix the underlying cause, not only the visible symptom; inspect related contracts and apply the narrowest complete documentation or script change.
-- Check side effects across public skill contracts, frontmatter names, output formats, trigger behavior, bundle availability, and release metadata; report relevant compatibility risks.
+- Respond in Korean unless the user explicitly requests another language; keep technical terms, code blocks, file paths, identifiers, and exact logs unchanged.
+- Ask the user before introducing tests, lint, formatter setups, or related automation; add them only on explicit request.
+- Build context by reviewing related usages, flows, patterns, and likely impact before editing.
+- Fix the underlying cause, not only the visible symptom; inspect affected flows and apply the narrowest complete change that resolves the root issue.
+- Check side effects across callers, shared abstractions, public skill contracts, output formats, trigger behavior, bundle availability, and release metadata; report relevant impact and compatibility risks.
 - Ask actively when user decisions are needed for scope, behavior, packaging, or tradeoffs.
 - New functions, scripts, or modules should be single-purpose and colocated with the owning skill package or release workflow.
-- Avoid new external dependencies unless necessary; explain why any added dependency is required.
-- Preserve user-owned custom sections when updating generated `AGENTS.md` files; refresh only the standard managed sections.
+- External dependencies are allowed only when necessary; explain why any added dependency is required.
+- Preserve user-owned custom sections when updating generated `AGENTS.md` files; refresh only standard managed sections.
 
 ## 6. user custom
 - skill을 만들때 절대 serena를 활용하지마세요.
-- @fable5.md 를 참고해.
+- Absolute rule for `fable5.md`: before any work that reads, edits, summarizes, reviews, references, or derives decisions from `fable5.md`, read `fable5.md` first. Its current contents are the authoritative source of truth, and this rule must not be skipped, weakened, or overridden by convenience, assumptions, prior context, or conflicting secondary instructions.
