@@ -1,6 +1,6 @@
 ---
 name: iterative-self-review
-description: "Use only when the user explicitly invokes this skill. Run a clean-context blind verification loop on the current response."
+description: "Use only when the user explicitly invokes this skill."
 ---
 
 # Iterative Self-Review
