@@ -1,29 +1,31 @@
 ---
 name: task-brief-creator
 description: >
-  Generate a structured work-brief Markdown at `docs/briefs/` from planning
-  notes or a rough task description. Eight required sections keyed to
-  Conventional Commits types so downstream coding agents switch behavior
+  Generate an executable implementation work-plan Markdown at `docs/briefs/`
+  from planning notes or a rough task description. Work brief, task brief,
+  handoff brief, implementation ticket, and task spec remain trigger aliases.
+  Nine required sections are keyed to Conventional Commits types so coding agents switch behavior
   (refactor → preserve, fix → reproduce first, perf → measure first).
   Briefset mode emits a parent execution-management document plus N child
   briefs when the input describes multiple execution contexts.
   Manual trigger only — use when the user explicitly invokes this skill or
-  asks for a work brief, task brief, handoff brief, implementation ticket,
-  or task spec for a downstream agent. Not for prose summaries, status
+  asks for a work plan, implementation plan, work brief, task brief, handoff brief,
+  implementation ticket, or task spec for a coding agent. Not for prose summaries, status
   reports, design docs, or meeting notes. For the plain-language caveman
   variant, use task-brief-creator-caveman instead.
 ---
 
 # Task Brief Creator
 
-Produce a structured work-brief Markdown document under `docs/briefs/` that a downstream coding agent (or a human engineer) can pick up and execute without re-interviewing the requester.
+Produce an executable implementation work plan under `docs/briefs/` that one coding agent authors and another coding agent can execute without reconstructing the route or re-interviewing the requester.
+The historical work-brief and handoff names remain activation aliases; the saved artifact's primary identity is a code-execution PLAN.
 
-The brief is the *handoff artifact*.
-Its job is to let a coding agent move from first read through completion judgement without re-interviewing the requester — routing it to the right files, fixing the behavior envelope, and pre-answering the questions that would otherwise bounce back.
+The plan is the *execution artifact*.
+Its job is to let a coding agent recover the first stage, intended order, stage deliverables and handoffs, replan boundaries, and whole-work completion criteria — while routing it to the right files and fixing the behavior envelope.
 
-**The brief is an executable work instruction — nothing else.** It is not a scope-control memo, not a discussion summary, not a planning note, not a background briefing, not a rationale document.
+**The plan is an executable work instruction — nothing else.** It is not a scope-control memo, discussion summary, background briefing, or rationale document.
 Every section must answer *"what does the coding agent do next?"* — if a section reads like meeting minutes, negotiation history, or context prose, rewrite it until it routes to files, decisions, or verifiable outcomes.
-A brief that makes the downstream agent re-interview the requester is a **failed brief**, regardless of how polished it reads.
+A plan that makes the coding agent reconstruct its execution sequence or re-interview the requester is a **failed plan**, regardless of how polished it reads.
 
 **"Executable, not discursive" is a *prose style* rule, not a *content reduction* rule.** It tells you how each bullet should read — direct, action-routing, no rationale prose.
 It does not tell you to *drop* distinct concerns, *merge* unrelated bullets, or *summarize* the input down to its highlights.
@@ -36,18 +38,18 @@ Tight prose, full enumeration: short bullets are fine and encouraged, but every 
 
 This skill operates in one of two **output modes**:
 
-- **Single-brief mode** (default) — emits one brief per invocation.
+- **Single-plan mode** (default; historical single-brief name remains) — emits one executable work plan per invocation.
   The workflow below covers this case end to end.
 - **Briefset mode** — emits a parent execution-management document plus N independently executable child briefs.
   Used when the input describes **multiple execution contexts** that need coordination (independent completion criteria, mixed work types, ordered dependencies, parallelizable waves, or shared conflict hotspots).
-  Recommended by the criteria in `references/briefset.md`; long input, many files, or many related edit points alone never trigger briefset mode.
+  Selected by the criteria in `references/briefset.md`; long input, many files, or many related edit points alone never trigger briefset mode.
 
-Output-mode selection happens at Stage 1 alongside the ambiguity gate.
+Output-mode selection happens at Stage 1 alongside the ambiguity gate and is author-owned when the input and codebase make it evident.
 In briefset mode, follow the workflow below with the per-stage adaptations in `references/briefset.md` (parent template, naming, decomposition decision table, dual-validator save).
 
-**Stage 4 always runs as a user decision table** — after codebase review, gather ambiguous or user-owned decisions and present them in a Markdown table with `순번`, `내용`, `수정 추천안`, and `근거`.
-Codebase-resolvable technical facts are probed instead of asked, while product intent, scope, acceptance thresholds, sequencing, and ownership decisions are tabled for the user.
-The decision table is the default Stage 4 behavior, not a separate mode.
+**Stage 4 always runs an ownership pass.** When user-owned decisions remain after codebase review, present only those decisions in a Markdown table with `순번`, `내용`, `수정 추천안`, and `근거`.
+Codebase-resolvable facts, output mode, evident work type, and reversible implementation choices are decided by the author or worker; product intent, scope, compatibility breaks, external ownership, and acceptance thresholds remain user-owned.
+The decision table is the output of the ownership pass when it has rows, not a separate mode.
 See `references/stage-4-interview.md` for the full decision classification, codebase-precedence, and termination rules.
 
 ---
@@ -78,7 +80,7 @@ The goal is to keep the live context focused on the next decision the coding age
   - **Self-brief** — the user is the implementer and wants to structure their own thinking before starting.
   - **Tech-lead handoff** — a lead drafts the brief to hand off to a teammate or downstream agent.
   - **Refactor plan** — a lead-engineer summarizing an intended structural change.
-- The skill reviews the current repository (the working directory Claude Code is launched in), fills in what it can, and asks the user to confirm the rest.
+- The skill reviews the current repository (the working directory Claude Code is launched in), fills in what it can, and asks only for remaining user-owned decisions.
 
 ---
 
@@ -114,8 +116,11 @@ If a file with the same name already exists, append `-v2`, `-v3`, … until the 
 For briefset mode, the parent uses `YYYY-MM-DD-briefset-<set-slug>.md` and children use `YYYY-MM-DD-<type>-<set-slug>-NN-<child-slug>.md`.
 See `references/briefset.md` for the parent template and naming rules.
 
-The eight required H2 sections are: `Work Type`, `Current State (As-Is)`, `Desired Outcome (To-Be)`, `Scope` (with `In Scope` / `Out of Scope` H3s), `Related Files / Entry Points`, `Side Effect Checkpoints`, `Acceptance Criteria`, `Open Questions`.
+The nine required H2 sections are: `Work Type`, `Current State (As-Is)`, `Desired Outcome (To-Be)`, `Scope` (with `In Scope` / `Out of Scope` H3s), `Related Files / Entry Points`, `Execution Plan`, `Side Effect Checkpoints`, `Acceptance Criteria`, `Open Questions`.
 Optional `Constraints` may appear between `Scope` and `Related Files / Entry Points` when task-specific constraints exist.
+`Execution Plan` appears immediately after `Related Files / Entry Points` and before `Side Effect Checkpoints`.
+Put stage-local completion under each stage's `Ends when`.
+Reserve `Acceptance Criteria` for whole-work completion after all required stages and side-effect checkpoints finish.
 
 Three work types require an **additional H2 section** between `Current State (As-Is)` and `Desired Outcome (To-Be)`:
 
@@ -146,8 +151,8 @@ When review surfaces many valid concerns, separate them before saving:
 - **Defer / record** — valid follow-up issues that do not have to change for this brief to succeed.
 
 `In Scope` should usually hold the must-fix set plus tightly coupled checks, not the whole discovery list.
-Record deferred items in `Out of Scope` as `[deferred]` or in `Open Questions` when the user must decide whether to expand the work.
-If more than five independent must-fix concerns remain after this triage, reconsider briefset mode or ask the user to choose the first slice.
+Record deferred items in `Out of Scope` as `[deferred]`; use `Open Questions` only for non-blocking user-owned decisions with a safe default and reconfirm milestone.
+If more than five independent must-fix concerns remain after this triage, reconsider briefset mode or ask the user to choose the first slice only when slicing is a user-owned scope decision.
 
 ---
 
@@ -206,20 +211,11 @@ See `examples/03-halt-ambiguous.md` for a worked halt case.
 Do not use file count, line count, input length, or several related edit points as triggers by themselves.
 Those are supporting evidence only.
 
-If briefset signals are strong, recommend briefset mode and ask the user to choose before Stage 2 instead of switching silently.
-If the candidate contexts are fully independent — no ordering, no dependencies, no shared conflict hotspots — recommend separate single-brief invocations (one per task) instead of a briefset: a parent whose coordination sections are all `- None — <reason>` adds overhead without value.
-Use the user's chat language and keep the question short.
-Korean example:
-
-> 다중 브리프로 나누는 것이 권장됩니다.
-> 실행 단위가 독립적이고 순서/병렬 조정이 필요해 보입니다.
-> 어떻게 진행할까요?
-> 1. 다중 브리프로 생성
-> 2. 단일 브리프로 유지
-
-If the user chooses briefset, continue with `references/briefset.md`.
-If the user chooses single-brief, keep one cohesive brief and document the requested execution ordering in `Constraints` / `Acceptance Criteria` as needed.
-If the evidence is unclear, default to single-brief mode and let Stage 4 surface the question.
+If briefset signals are strong, select briefset mode and state the evidence before Stage 2.
+If the candidate contexts are fully independent — no ordering, dependencies, or shared conflict hotspots — select separate single-plan invocations instead: a parent whose coordination sections are all `- None — <reason>` adds overhead without value.
+If the evidence is unclear, default to single-plan mode.
+Ask only when output topology depends on a user-owned delivery boundary, release unit, or scope choice; do not ask the user to choose a document shape when code and input already settle it.
+Several stages inside one cohesive execution context do not justify briefset mode; consult `references/bloat-decomposition.md` before splitting an oversized candidate.
 
 ### Stage 2 — Work Type Selection
 
@@ -227,13 +223,12 @@ Determine the Conventional Commits type.
 Consult `references/work-types.md` for the full list and per-type behavior hints.
 
 - If the input explicitly names a type (e.g., "this is a refactor"), use it when the input evidence agrees.
-- If the user names a type that conflicts with the described work (e.g., "refactor" but the work changes behavior), pause and confirm with one question before codebase review.
-- If the type is implicit but high-confidence, assign a provisional type and include it in the Stage 4 decision table only when user confirmation is still useful.
-  Do not add a separate early round-trip just for type confirmation.
-- If the implicit type is low-confidence and changes the likely execution approach, ask one short question before proceeding.
-  Low-confidence means two or more candidate types remain plausible **and** they would force different type-conditional sections or downstream behavior profiles; otherwise treat the inference as high-confidence.
+- If the named type conflicts with the described outcome, classify by the outcome and record the mismatch; ask only if resolving it requires a user-owned behavior or scope decision.
+- If the type is implicit but high-confidence, assign it without a confirmation round-trip.
+- If the implicit type is low-confidence but technically resolvable, probe the codebase or put the distinction into the first `Execution Plan` stage as an investigation with a `Replan when` boundary.
+- Ask in Stage 4 only when the work type depends on an underlying product or scope choice the user owns; derive the type from that answer.
 
-See `references/work-types.md` for the full type-confirmation routing table (explicit-agree / explicit-conflict / high-confidence implicit / low-confidence implicit).
+See `references/work-types.md` for the full author-selection routing table.
 
 ### Stage 3 — Codebase Review
 
@@ -246,7 +241,7 @@ Review budget (soft limits):
 - At most ~15 file reads
 - At most ~10 search queries
 - Stop when you can confidently enumerate the **primary** entry points and major affected areas implied by the input — not just the first file or symbol that grounds the brief.
-  If likely input-implied surfaces remain unverified within the review budget, surface them in `Open Questions` so the downstream agent inherits them rather than having them silently dropped.
+  If likely input-implied surfaces remain unverified within the review budget, add a bounded investigation stage with a named deliverable and `Replan when` condition.
 
 Strategy:
 
@@ -277,9 +272,11 @@ Evidence discipline:
   A confirmed finding cites the file and a stable locator: section heading, function / class name, validator message, command output, or nearby quoted token.
   Line numbers are useful as secondary hints, but do not rely on line numbers alone because they drift after edits.
 - Mark risk statements as **inferred** when they describe likely downstream behavior rather than a fact already present in a file.
-  Name what would confirm the inference, such as a validator fixture, a downstream interpretation check, or a specific command.
+  Name what would confirm the inference, such as a validator fixture, an execution-reconstruction check, or a specific command.
 - Do not write an inferred risk as if it were a confirmed defect.
   The saved brief may stay concise, but the wording must let the downstream agent tell evidence from judgment.
+- Prefix every load-bearing `Current State (As-Is)` bullet with `[confirmed]` or `[inferred]`.
+  The validator checks the label shape only; Stage 5.6 and human review own the truthfulness of the classification.
 
 Contract discipline:
 
@@ -292,7 +289,7 @@ Contract discipline:
 
 **Source-of-truth inputs.** When the user provides a checklist, TODO file, review rubric, audit notes, or any document as the source of truth, do not turn it into a representative summary.
 
-- Treat each listed item as a required concern until it is mapped, explicitly deferred / out of scope, or left as an Open Question.
+- Treat each listed item as a required concern until it is mapped, explicitly deferred / out of scope, or represented as a non-blocking user-owned Open Question with a safe default.
 - Preserve the source's own dimensions, such as named variants, files, examples, sections, or checklist groups.
   Do not collapse them unless the user asks for a summary rather than an executable brief.
 - Use searches only for literal terms that come from the user's source document or the target files being reviewed.
@@ -300,7 +297,7 @@ Contract discipline:
 - The saved brief does not need to expose an internal ledger, but Stage 5.6 must be able to trace each source item to a concrete bullet or checklist item.
 
 If the source document is long, keep a private coverage ledger during review.
-The ledger does not need to be saved, but every source item must end as one of: in scope, out of scope / deferred, acceptance criterion, side-effect checkpoint, related file, constraint, or open question.
+The ledger does not need to be saved, but every source item must end as one of: in scope, out of scope / deferred, execution stage, acceptance criterion, side-effect checkpoint, related file, constraint, or structured non-blocking open question.
 
 **Do not:**
 
@@ -308,11 +305,22 @@ The ledger does not need to be saved, but every source item must end as one of: 
 - Chase tangential code just to pad the brief.
   If it does not tighten `Current State (As-Is)` or `Related Files / Entry Points`, skip it.
 - Make architectural claims the code does not support.
-  If uncertain, flag it in `Open Questions` instead.
+  If uncertain, label it `[inferred]` and route confirmation into an investigation stage or `Replan when` boundary.
+
+**Already-satisfied gate.** Before Stage 4, compare the full requested outcome and acceptance boundary against current code plus current verification signals.
+
+- If all requested outcomes are confirmed, all acceptance checks already hold, and no edit, integration, migration, or evidence-producing work remains, create no plan.
+  Report `no-work-needed` in the user's language with the inspected paths, verification action, and observed signal, then stop.
+- If the user explicitly asked for a saved verification record despite the already-satisfied state, create a verification-only plan that expects no edits and records the no-change evidence route.
+  Its first stage must also say what happens if the proof fails: stop dependent work, return to the owning plan, activate bounded correction plus re-verification work, then re-run the briefset topology and handoffs before continuing.
+- If only part of the outcome is already satisfied, keep the remaining work and make the no-change branch explicit instead of directing an unconditional edit.
+- In briefset mode, re-run topology after this gate: zero active children means `no-work-needed`, one means single-plan mode, and two or more retain briefset mode. Follow `references/briefset.md` for the child and handoff rules.
+
+This outcome is called `no-work-needed`; do not confuse it with Stage 5.7's `No-op pass`, which describes a review-loop termination.
 
 ### Stage 4 — User Decision Table
 
-After Stage 3 has gathered enough codebase context, collect the remaining ambiguous or user-owned decisions into a Markdown decision table.
+After Stage 3 has gathered enough codebase context, run an ownership pass and collect only remaining user-owned decisions into a Markdown decision table.
 Stage 4 is not a pre-review guessing interview: ask only after the codebase has been checked enough to state the uncertainty, the recommended change, and the evidence behind it.
 
 Use this exact table shape for user-decision questions:
@@ -326,25 +334,25 @@ Use this exact table shape for user-decision questions:
 Keep these four headers exactly as written, even when the surrounding conversation is not Korean.
 They are the stable decision-table contract: number, decision content, recommended change, and rationale.
 
-Required gaps to close before drafting:
+User-owned gaps to close before drafting:
 
 - **Desired Outcome (To-Be)** — confirm when absent, ambiguous, or when the codebase review suggests more than one plausible interpretation.
-- **Work Type** — confirm the provisional type from Stage 2 when it was inferred rather than explicitly provided.
 - **Out of Scope** — the most valuable guardrail for the downstream agent.
   Put unclear or high-risk scope boundaries in the decision table with a recommended exclusion/inclusion.
-- **Related Files / Entry Points** — confirm at least one concrete entry point if the codebase review did not surface one.
-  This section is mandatory because the brief must tell the downstream agent where to start.
 - **Acceptance Criteria** — what makes the task verifiably done.
   If the code has a separate internal completion condition and the user has a separate success condition, carry both instead of collapsing them into one vague criterion.
-- **Side Effect Checkpoints** — what else must be verified if this area is touched.
-  If the list has user-owned tradeoffs, present those tradeoffs in the decision table instead of hiding them in a generic "add/change?" prompt.
-- **Open Questions** — explicitly surface anything the codebase review raised that the user should answer, keep in the brief, or delegate to the downstream agent.
+- **Compatibility and ownership** — ask before breaking a contract or crossing an externally owned boundary.
+- **Open Questions** — keep only non-blocking user-owned decisions with a safe fallback and reconfirm milestone.
+
+The author determines output mode, work type, entry points, side-effect checks, and technical sequencing when the input and codebase make them evident.
+Technical unknowns become investigation stages, bounded `Worker decision` fields, `Replan when` conditions, constraints, or author-selected defaults.
 
 **Decision-table rule.** Each row must be a real decision, not a vague status note.
 `내용` states what the user must decide.
 `수정 추천안` states the concrete brief change you recommend.
 `근거` cites the input, codebase finding, existing pattern, or risk.
 After the user answers, patch the draft plan in memory before composing the brief.
+A timeout, cancellation, or no response is not approval: non-blocking rows use their declared safe fallback, remain in structured `Open Questions` form, and proceed; any blocking row halts without writing.
 Full decision classification, table rules, and termination rules live in `references/stage-4-interview.md`.
 
 Before writing `Open Questions`:
@@ -352,10 +360,11 @@ Before writing `Open Questions`:
 - Make one active judgement pass.
   Ask: would a downstream coding agent still need to ask the requester what to do, or can the brief make a reasonable call?
 - Do not use `Open Questions` to avoid making an implementation recommendation.
-  If the answer is a reasonable bounded choice, put that choice directly into `Scope`, `Constraints`, `Side Effect Checkpoints`, or `Acceptance Criteria`.
+  If the answer is a reasonable bounded choice, put it into `Worker decision`, `Constraints`, or the relevant execution stage.
 - Keep `Open Questions` for user-owned decisions only.
-  Product direction, scope expansion, tradeoffs, acceptance thresholds, ownership, and sequencing can require a question.
-  Routine implementation choices and weak adjacent signals usually should not.
+  Product direction, scope expansion, compatibility breaks, acceptance thresholds, and external ownership can require a question.
+- Save a question only when it is non-blocking and use exactly `- [non-blocking] <question> — Default: <safe fallback>; Reconfirm before: <stage or milestone>`.
+- If the user has not answered a blocking decision and no safe fallback exists, **HALT** and create no file.
 - `Open Questions: None` is acceptable only after this pass.
   It means "a downstream agent can proceed without re-interviewing the requester," not "nothing interesting was found."
 
@@ -374,25 +383,27 @@ The user reviews the file in their editor in Stage 6, where real markdown render
    python3 <skill-dir>/scripts/validate_brief.py docs/briefs/<filename>.md
    ```
 
+   If the brief is stored in an isolated artifact tree while its entry-point paths belong to another checkout, add `--repo-root <repository-root>` before the brief path.
+
    `<skill-dir>` is the installed skill package directory — the directory containing this SKILL.md (resolve it from wherever this skill was loaded, e.g. `~/.claude/skills/task-brief-creator` or a plugin cache).
    Never assume the user's repository contains the script: the brief lives in the user's repo, the validator lives with the skill.
 
    - Exit **0** → continue to Stage 5.5; the validator result is reported in the Stage 6 banner.
-   - Exit **1** (structural failure) → **leave the file in place**.
-     Do not delete or silently rewrite it.
-     Carry the failed checks into Stage 6 so the user can see what tripped and decide how to fix.
+   - Exit **1** (structural failure) → fix the file and rerun the validator without asking the user.
+     If the same structural cause still fails after two repair attempts, leave the file in place and carry the residual failure into Stage 6.
    - Exit **2** (file I/O error) → the save did not actually land; investigate and retry.
 
    The validator only checks **structural** conformity (section presence, checklist format, filename pattern, type coherence).
-   It does *not* judge content quality — that's what the Stage 5.5 downstream interpretation check, Stage 5.6 self-check, Stage 5.7 cold-pickup, and the human review in Stage 6 are for.
+   It does *not* judge content quality — that's what the Stage 5.5 execution-reconstruction check, Stage 5.6 self-check, Stage 5.7 cold-pickup, and the human review in Stage 6 are for.
    Passing validator ≠ good brief; failing validator = malformed brief.
 
-### Stage 5.5 — Downstream Interpretation Check
+### Stage 5.5 — Downstream Execution-Reconstruction Check
 
-After the structural validator passes, run a blind downstream interpretation check before any cold-pickup verification.
+After the structural validator passes, run a blind downstream execution-reconstruction check before any cold-pickup verification.
 This is not a review prompt and not a rubric-driven validation prompt.
-Its purpose is to observe how a fresh downstream agent naturally interprets the saved brief as work to start.
-This checks direction and intent alignment, not full input coverage; Stage 5.6 remains the coverage and missing-content check.
+Its purpose is to observe how a fresh coding agent naturally reconstructs the saved plan as work to start.
+The explanation must recover the first stage, intended order, each stage's deliverable and addressable handoff, verification input and expected signal when present, any no-change branch, replan boundaries, and the whole-work completion basis after side-effect checks.
+This checks direction and executability, not full input coverage; Stage 5.6 remains the coverage and missing-content check.
 
 Spawn a sub-agent and send only a natural work-start request in the user's ordinary style, containing the saved brief path.
 For briefset mode, include only the briefset parent path.
@@ -405,16 +416,18 @@ Example shape only — do not hard-code this sentence:
 <brief path> 작업 진행할꺼야. 우선 이 브리프 파일을 확인하고 어떻게 작업할껀지 의도 설명해줘.
 ```
 
-Compare the sub-agent's natural interpretation against the user's original request and any user-locked Stage 4 decisions.
+Compare the sub-agent's natural reconstruction against the user's original request, the saved `Execution Plan`, and any user-locked Stage 4 decisions.
 Treat only material drift as a failure:
 
 - The work purpose is different.
 - The understood scope is materially wider or narrower.
 - The first work direction points away from the intended entry points or workflow.
-- A user constraint, exclusion, or acceptance threshold is missing from the interpretation.
+- The first stage, intended order, stage deliverable, handoff, or replan boundary cannot be recovered.
+- Stage-local `Ends when` checks are confused with whole-work `Acceptance Criteria`.
+- A user constraint, exclusion, or acceptance threshold is missing from the reconstruction.
 - The sub-agent assumes work that the brief did not intend.
 
-If material drift appears, patch the brief in place, re-run the structural validator (`validate_brief.py` for a single brief, `validate_briefset.py` for a briefset parent), and run this downstream interpretation check again with the same information boundary.
+If material drift appears, patch the brief in place, re-run the structural validator (`validate_brief.py` for a single brief, `validate_briefset.py` for a briefset parent), and run this downstream execution-reconstruction check again with the same information boundary.
 Do not fix drift by changing the sub-agent prompt.
 Fix the brief.
 
@@ -422,7 +435,7 @@ This check is mandatory whenever the host can spawn a sub-agent.
 Do not downgrade it to a self-check because the brief looks obvious or because Stage 5.6 is clean.
 The failure being tested is not "did I cover the input?" but "does a fresh agent naturally read the brief the way I intended?"
 
-If the host cannot spawn a sub-agent, report the interpretation check as unavailable in Stage 6.
+If the host cannot spawn a sub-agent, report the execution-reconstruction check as unavailable in Stage 6.
 Do not block the workflow waiting for sub-agent support; continue to Stage 5.6 and mark Stage 5.5 as unavailable in the save report.
 Do not replace it with a self-check; the point is the downstream agent's natural read.
 
@@ -431,42 +444,47 @@ Do not replace it with a self-check; the point is the downstream agent's natural
 The structural validator confirms the file has the required sections.
 It does not confirm the file is a *complete* work instruction.
 Before handing off in Stage 6, re-read the saved brief from disk and run a content-coverage self-check against the original input plus Stage 3 / Stage 4 findings.
-This checks whether input and codebase concerns survived into the brief; do not treat a clean Stage 5.5 interpretation as proof that nothing is missing.
+This checks whether input and codebase concerns survived into the brief; do not treat a clean Stage 5.5 reconstruction as proof that nothing is missing.
 
 The brief is a work instruction, not a summary.
 Any concern that existed in the input must survive into the brief — possibly reshaped into the right section, never silently dropped.
 Run this checklist:
 
-- [ ] **Input coverage:** every distinct concern named in the input, including referenced spec section headings that change the coding route, maps to at least one bullet somewhere in the brief (In Scope, Out of Scope, Related Files, Constraints, Side Effect Checkpoints, Acceptance Criteria, or Open Questions, depending on the concern's shape).
-  If a spec section is intentionally not implemented now, it appears in `Out of Scope` as `[hard]` or `[deferred]`, or in `Open Questions` when the user must decide.
+- [ ] **Input coverage:** every distinct concern named in the input, including referenced spec section headings that change the coding route, maps to at least one bullet or stage somewhere in the brief (In Scope, Out of Scope, Related Files, Execution Plan, Constraints, Side Effect Checkpoints, Acceptance Criteria, or structured non-blocking Open Questions, depending on the concern's shape).
+  If a spec section is intentionally not implemented now, it appears in `Out of Scope` as `[hard]` or `[deferred]`, or in `Open Questions` only when a non-blocking user decision has a safe default.
   Two unrelated implementation or verification obligations are never merged into one bullet.
-- [ ] **Source-of-truth coverage:** if the user supplied a checklist, TODO file, review rubric, audit notes, or other source-of-truth document, every listed item is represented in the saved brief, explicitly deferred / out of scope, or left as an Open Question.
+- [ ] **Source-of-truth coverage:** if the user supplied a checklist, TODO file, review rubric, audit notes, or other source-of-truth document, every listed item is represented in the saved brief, explicitly deferred / out of scope, or saved as a structured non-blocking user question.
   Representative theme coverage is not enough.
 - [ ] **Scope triage:** every discovered concern is either must-fix in this brief, a tightly coupled check, explicitly deferred / out of scope, or left for a user decision.
   The brief does not turn a broad review into an unbounded implementation task.
-- [ ] **Stage 3 coverage:** every primary entry point or major affected area surfaced during the codebase review appears in `Related Files / Entry Points`, and every uncertainty raised by the review either appears in `Open Questions` or was explicitly resolved during Stage 4.
+- [ ] **Stage 3 coverage:** every primary entry point or major affected area surfaced during the codebase review appears in `Related Files / Entry Points`, and every technical uncertainty is resolved or routed into an investigation stage, `Worker decision`, or `Replan when` boundary.
 - [ ] **Contract preservation:** existing contracts discovered in Stage 3 that must not change are named in `Constraints`, `Side Effect Checkpoints`, or `Acceptance Criteria`; compatibility-sensitive changes are not hidden behind generic wording.
 - [ ] **Success split:** when internal completion and user / operator success are different, both are represented; the brief does not treat an event firing, validator passing, or state transition as proof that the user's goal was achieved unless that is actually the goal.
 - [ ] **Section depth:** no section was reduced to a single bullet when the input or Stage 3 findings contain multiple distinct concerns for it.
   Sections expand to fit the work; they are not capped.
 - [ ] **No content compression:** no bullet was shortened by dropping qualifiers, quantities, units, thresholds, versions, environment conditions, or ordering words (`only on cold start`, `≤ 5KB gzipped`, `iOS Safari 17+`, `after move end`).
   "Executable, not discursive" is a *prose* rule, not a *content* rule.
-- [ ] **Evidence clarity:** confirmed facts cite concrete evidence, inferred risks are labeled as inferred or phrased as risks, and line numbers are not the only locator for a load-bearing claim.
-- [ ] **Handoff readiness:** a downstream coding agent reading only the brief can move from first read through completion judgement without re-interviewing the requester.
+- [ ] **Evidence clarity:** every load-bearing current-state bullet uses `[confirmed]` or `[inferred]`; confirmed facts cite stable evidence, inferred risks name what will confirm them, and line numbers are not the only locator.
+- [ ] **Execution continuity:** Stage 1 has a concrete precondition; stage numbers are consecutive; every stage has a bounded outcome, deliverable, local completion checks, explicit handoff, and replan boundary; each handoff gives the next stage what its `Starts when` requires.
+- [ ] **Already-satisfied discipline:** the plan does not force an edit when current evidence already satisfies the requested outcome; full satisfaction exited as `no-work-needed` unless the user explicitly requested a verification record, partial satisfaction has a bounded no-change route, and a failed proof stops dependents and names the correction/re-verification owner.
+- [ ] **Verification concreteness:** every named verification action comes from repository evidence or is a bounded inspection, identifies its exact input/target, and states an observable expected signal.
+  When success means no matches, the plan also identifies the population being checked so an empty or wrong input cannot pass accidentally.
+- [ ] **Completion separation:** stage-local completion appears only under `Ends when`; whole-work `Acceptance Criteria` are evaluated after all required stages and side-effect checkpoints finish.
+- [ ] **Handoff readiness:** a downstream coding agent reading only the brief can recover the first stage, order, deliverables, handoffs, replan conditions, and whole-work completion judgement without re-interviewing the requester.
   If a re-interview would be needed, identify the thin section and patch it.
 - [ ] **Question discipline:** every `Open Questions` item is genuinely user-owned.
-  If the item can be handled by a reasonable recommendation, move it into the brief as a decision, constraint, checkpoint, or deferred item.
+  Every saved question is non-blocking and names a safe default plus reconfirm milestone; move technical and reversible choices into investigation, `Worker decision`, `Replan when`, constraints, or deferred scope.
   If `Open Questions` says `None`, the brief has made the necessary calls instead of hiding them.
 
 If any check fails, fix the brief in place with `Edit`, then re-run the structural validator (`validate_brief.py` for a single brief, `validate_briefset.py` for a briefset parent).
 Because the file changed after Stage 5.5, re-enter the validation chain at Stage 5.5 before running Stage 5.6 again.
 Loop until the latest saved file passes Stage 5.5 and Stage 5.6 in order.
 
-The self-check outcome is a separate signal from the structural validator and downstream interpretation check — all are reported in Stage 6.
+The self-check outcome is a separate signal from the structural validator and downstream execution-reconstruction check — all are reported in Stage 6.
 A brief can pass structural validation and still fail this self-check; in that case the file is incomplete even though it is well-formed.
 
 For briefset mode, run the self-check on the parent and on every child independently.
-The parent's coverage check asks whether every input-implied execution context maps to a child; each child's coverage check uses the same five items above.
+The parent's coverage check asks whether every input-implied execution context maps to a child; each child's coverage check uses all items above.
 
 ### Stage 5.7 — Cold-Pickup Sub-Agent Verification
 
@@ -483,7 +501,7 @@ This skill's contract authorizes the sub-agent spawn when the gate fires; do not
 - Briefset mode — parent and every child run cold-pickup; per-child signal gating is intentionally disabled because coordination drift between siblings is the main risk briefset cold-pickup catches.
   For a wide briefset (≥ 5 children) you may offer the user the sampling fallback defined in `references/cold-pickup.md` before running; Force OFF on the briefset skips the whole set.
 - Stage 4 produced **≥ 1 user-decision row** in the decision table (input had real interpretive ambiguity).
-- `Open Questions` section is non-empty — i.e. it does not consist solely of `- None — <reason>` (Stage 3 surfaced unresolved uncertainty that survived Stage 4).
+- `Open Questions` section is non-empty — i.e. it contains at least one structured non-blocking user decision rather than solely `- None — <reason>`.
 - Work type is `fix`, `perf`, or `refactor` — fires *regardless of input simplicity*. The type-conditional section (`Reproduction` / `Baseline Measurement` / `Behavior Contract`) amplifies drift risk on these types, so cold-pickup pays off even for short inputs. Use Force OFF if you want to skip a one-line fix.
 
 **Auto-OFF (trivial signals).** When none of the auto-ON triggers fire, Stage 5.7 is skipped automatically.
@@ -492,7 +510,7 @@ The Stage 6 banner reports the skip with the signal snapshot — `cold-pickup sk
 **User override.** Force ON runs Stage 5.7 despite trivial signals (e.g. `run cold-pickup`, `--cold-pickup`, `콜드픽업 강제`); Force OFF skips it despite firing signals (e.g. `skip cold-pickup`, `--no-cold-pickup`, `콜드픽업 끄기`).
 The full trigger-phrase lists and the rule for inputs containing both live in `references/cold-pickup.md`.
 
-**Skip on validator failure.** Stage 5.7 is also skipped when the Stage 5 structural validator failed — the brief is not yet well-formed enough to verify.
+**Skip on residual validator failure.** Stage 5.7 is skipped only when structural validation still fails after the two repair attempts — the plan is not yet well-formed enough to verify.
 
 Reasons that are **not** valid skips when a gate has fired: token budget, latency, inferred host policy, "the brief looks fine".
 If a gate fires and Stage 5.7 is skipped anyway, the Stage 6 banner is wrong and the loop is broken.
@@ -502,9 +520,10 @@ If a gate fires and Stage 5.7 is skipped anyway, the Stage 6 banner is wrong and
 1. Snapshot the saved brief for this pass (rollback anchor — see *Pass Bookkeeping and Rollback* in the reference).
 2. Spawn an `Explore` or `general-purpose` sub-agent.
    If the host cannot spawn sub-agents, use the *Sub-Agent Unavailable Fallback* in the reference — never silently skip a gated-ON run.
-3. Hand it **only the original user input or planning notes plus the brief path** — no Stage 3 uncertainty register, no Stage 4 decisions, no suspected gaps, no decomposition rationale, no Stage 5.5 downstream interpretation result, and no Stage 5.6 self-check result.
+3. Hand it **only the original user input or planning notes plus the brief path** — no Stage 3 uncertainty register, no Stage 4 decisions, no suspected gaps, no decomposition rationale, no Stage 5.5 execution-reconstruction result, and no Stage 5.6 self-check result.
    Do not include hints such as what to inspect, what might be missing, or which split you expect the sub-agent to prefer.
-   For briefset mode, hand the parent and every child path one at a time; each file runs its own cold-pickup pass.
+   For briefset mode, the parent pass receives the original input plus the parent path. Each child pass receives the original input, the same parent path, and one child path.
+   The parent is a scope-allocation map for the child pass: compare only concerns assigned to that child plus relevant shared constraints, and never patch a sibling-owned concern into the target child.
 4. Collect the YAML report (schema and sub-agent rules in the reference) and route it against the original input plus the main agent's Stage 3 uncertainty register and Stage 4 decisions.
    The sub-agent is not responsible for Stage 3 coverage it never saw; Stage 3 coverage remains a Stage 5.6 responsibility.
 
@@ -514,7 +533,7 @@ Loop until one of the six termination triggers in the reference fires (Regressio
 
 Cold-pickup never overrides a Stage 4 decision the user already locked, never invents Acceptance Criteria, Side Effect Checkpoints, or Out-of-Scope guardrails the input did not imply, and never silently rewrites `Open Questions` — drift fixes either resolve a question into another section or leave the question intact for the user.
 
-**Reporting.** The cold-pickup outcome integrates into the Stage 6 save banner alongside the structural validator, Stage 5.5 downstream interpretation check, and the Stage 5.6 self-check, using the banner phrasings in `references/cold-pickup.md`.
+**Reporting.** The cold-pickup outcome integrates into the Stage 6 save banner alongside the structural validator, Stage 5.5 downstream execution-reconstruction check, and the Stage 5.6 self-check, using the banner phrasings in `references/cold-pickup.md`.
 For briefset mode, the banner uses the collapsed `parent + K/N children` format from the reference — one summary line plus details only on flagged children, not one line per child.
 
 ### Stage 6 — Review + Iterate
@@ -522,34 +541,35 @@ For briefset mode, the banner uses the collapsed `parent + K/N children` format 
 The brief is on disk.
 Hand off to the user for review.
 
-1. Report the path, a one-line summary (work type + title), the structural validator result, the Stage 5.5 downstream interpretation result, the Stage 5.6 self-check result, **and the Stage 5.7 cold-pickup result**.
+1. Report the path and one-line summary, then distinguish **structural validation** from **executability validation**.
+   Structural validation is the Stage 5 validator result.
+   Executability validation combines the Stage 5.5 execution reconstruction, Stage 5.6 content/execution self-check, and Stage 5.7 cold-pickup result.
    Use the user's chat language.
    All four signals are reported together so the user can see whether the file is well-formed, naturally interpreted as intended, complete, *and* cold-pickup-ready.
 
    **English (validator + self-check + cold-pickup passed):**
-   > Saved — `docs/briefs/2026-04-23-feat-dark-mode-settings.md` (`feat`: Dark mode toggle in Settings; structural validation passed; downstream interpretation aligned; content self-check passed — major input concerns reflected; cold-pickup terminated with `clean_pass` after 1 pass (no ask-backs, no missing concerns)).
+   > Saved — `docs/briefs/2026-04-23-feat-dark-mode-settings.md` (`feat`: Dark mode toggle in Settings; structural validation passed; executability validation passed — execution reconstruction aligned, content/execution self-check passed, cold-pickup terminated with `clean_pass` after 1 pass (no ask-backs, no missing concerns)).
    > Open it and let me know if anything needs editing.
 
    Banner termination trigger reflects the actual loop outcome — `clean_pass` (normal), `regression`, `oscillation`, `stable_findings`, `no_op`, or `hard_cap`. Any non-`clean_pass` trigger means residual concerns must follow in the banner as bullet items.
 
    **Korean (validator + self-check + cold-pickup passed):**
-   > 저장 완료 — `docs/briefs/2026-04-23-feat-dark-mode-settings.md` (`feat`: Dark mode toggle in Settings; 구조 검증 통과; downstream 해석 일치; 내용 자체 검증 통과 — 입력의 주요 항목 반영됨; cold-pickup `clean_pass`로 1회 만에 종료 (ask-back 없음, missing 없음)).
+   > 저장 완료 — `docs/briefs/2026-04-23-feat-dark-mode-settings.md` (`feat`: Dark mode toggle in Settings; 구조 검증 통과; 실행 가능성 검증 통과 — 실행 경로 복원 일치, 내용/실행 자체 검증 통과, cold-pickup `clean_pass`로 1회 만에 종료 (ask-back 없음, missing 없음)).
    > 파일 열어보고 고칠 부분 있으면 알려줘.
 
    **English (validator + self-check passed, cold-pickup auto-skipped on trivial signals):**
-   > Saved — `docs/briefs/2026-04-23-feat-dark-mode-settings.md` (`feat`: Dark mode toggle in Settings; structural validation passed; downstream interpretation aligned; content self-check passed — major input concerns reflected; cold-pickup skipped: trivial signals (single-brief, stage-4-rows=0, open-questions=none, type=feat)).
+   > Saved — `docs/briefs/2026-04-23-feat-dark-mode-settings.md` (`feat`: Dark mode toggle in Settings; structural validation passed; executability validation passed — execution reconstruction aligned, content/execution self-check passed, cold-pickup skipped: trivial signals (single-brief, stage-4-rows=0, open-questions=none, type=feat)).
    > Tell me `run cold-pickup` or `--cold-pickup` if you want the sub-agent verification anyway.
 
-   **English (validator failed):**
-   > Saved — `docs/briefs/2026-04-23-feat-dark-mode-settings.md`, but the structural validator flagged 2 issue(s): ✗ <first failure verbatim> ✗ <second failure verbatim> The file is on disk.
-   > Want me to patch these, or will you edit directly?
+   **English (validator still fails after two repair attempts):**
+   > Saved — `docs/briefs/2026-04-23-feat-dark-mode-settings.md`, but structural validation still flags 2 issue(s) after two repair attempts: ✗ <first failure verbatim> ✗ <second failure verbatim>. The file is on disk; executability validation did not run.
 
    Mirror any banner into the user's chat language as the Korean example above shows — translate the prose, keep paths, filenames, and technical fields (`trivial signals (...)`, termination triggers, validator messages) verbatim.
 
-   When the structural validator fails, Stage 5.5, Stage 5.6, and Stage 5.7 are **skipped** — the brief is not yet well-formed enough to run interpretation, content, or cold-pickup checks against.
+   When structural validation still fails after the repair budget, Stage 5.5, Stage 5.6, and Stage 5.7 are **skipped** — the plan is not yet well-formed enough to run execution, content, or cold-pickup checks against.
    The banner stays as shown; do not append `self-check skipped` / `cold-pickup skipped` lines in this case.
 
-   If Stage 5.5 surfaced material interpretation drift that you fixed in place, mention what you patched so the user knows the brief was corrected before handoff (e.g., "downstream interpretation drifted toward API cleanup; clarified UI-only scope, re-validated").
+   If Stage 5.5 surfaced material execution-reconstruction drift that you fixed in place, mention what you patched (e.g., "execution reconstruction skipped Stage 2's deliverable; clarified the handoff and re-validated").
    If the structural validator passed but the Stage 5.6 self-check surfaced gaps that you fixed in place, report it the same way (e.g., "self-check found 2 input concerns missing from In Scope; added them, re-validated").
    If Stage 5.7 patched the brief after cold-pickup drift, report it the same way (e.g., `cold-pickup flagged 2 gap(s); patched in place`).
    If the user used Force OFF triggers, report `cold-pickup skipped per user request`.
@@ -559,15 +579,16 @@ Hand off to the user for review.
    Do **not** re-render the full brief into chat — that defeats the point of save-then-review.
    Re-run the structural validator after each edit pass, then re-run Stage 5.5 and Stage 5.6, then re-evaluate the Stage 5.7 gate and report the delta.
 
-3. If the saved single brief contains `Open Questions` that require a user decision (after any Stage 5.7 patches have landed), present them immediately after the save report using the same four-column decision table from Stage 4:
+3. If the saved single plan contains structured non-blocking `Open Questions` (after any Stage 5.7 patches have landed), present them immediately after the save report using the same four-column decision table from Stage 4:
 
    ```markdown
    | 순번 | 내용 | 수정 추천안 | 근거 |
    |---|---|---|---|
-   | 1 | <Open Question requiring user decision> | <recommended patch to apply to the brief> | <why this cannot be delegated safely> |
+   | 1 | <non-blocking user decision> | <recommended patch to apply to the plan> | <safe default and reconfirm milestone> |
    ```
 
-   After the user answers, patch the saved brief in place, move resolved questions into the appropriate sections, leave only genuinely unresolved or delegated questions in `Open Questions`, re-run the validator plus Stage 5.5 downstream interpretation check and Stage 5.6 self-check, then re-evaluate the Stage 5.7 gate.
+   After the user answers, patch the saved plan in place, move resolved decisions into the appropriate sections, leave only structured non-blocking user questions in `Open Questions`, re-run the validator plus Stage 5.5 execution-reconstruction check and Stage 5.6 self-check, then re-evaluate the Stage 5.7 gate.
+   If the user does not answer, cancels, or lets structured input expire, leave the declared defaults active and the questions unchanged; they do not block the coding agent before their named reconfirmation milestones.
 
 4. The user owns "done." Do not stage or commit the file.
    Loop on Stage 6 until they explicitly stop.
@@ -583,7 +604,7 @@ The tradeoff — a file briefly on disk before approval — is neutral: `docs/br
 
 See `references/template.md` for:
 
-- The exact eight-required-section Markdown template.
+- The exact nine-required-section Markdown template.
 - Per-section writing guidance (what good looks like, what not to write).
 - Worked example of a filled brief.
 
@@ -620,20 +641,22 @@ python3 <skill-dir>/scripts/validate_brief.py \
   docs/briefs/2026-04-23-feat-global-hotkey-system.md
 ```
 
-Exit codes: `0` pass, `1` structural failure, `2` file I/O error.
+Exit codes: `0` pass with no warnings, `1` structural failure or any reported warning, `2` file I/O error.
 
 Scope of the validator (deliberately structural only):
 
 - Filename pattern, title format, type coherence across filename / title / section value, and slug length.
-- Presence and template order of required H2 sections + `In Scope` / `Out of Scope` H3s; duplicate H2 sections are rejected.
-- Type-conditional section (`Reproduction` / `Baseline Measurement` / `Behavior Contract`) present and populated for the matching type.
-- Bullet content in narrative sections; `- [ ]` format in checklist sections; populated `Open Questions` with `- None — <reason>` when no questions remain.
-- Inline-code paths and root filenames under `Related Files / Entry Points` resolve on disk (skipped only when the exact literal token `(proposed)` appears immediately after that inline-code path).
+- Presence and template order of all nine required H2 sections + `In Scope` / `Out of Scope` H3s; duplicate H2 sections are rejected.
+- `[confirmed]` / `[inferred]` prefixes in `Current State (As-Is)`, unique consecutive execution-stage headings with required fields, and structured non-blocking `Open Questions` shape.
+- Type-conditional section (`Reproduction` / `Baseline Measurement` / `Behavior Contract`) present and populated for the matching type; `- N/A — <reason>` cannot be mixed with other bullets.
+- Top-level bullet content in narrative sections; top-level `- [ ]` items in checklist sections; populated `Open Questions` with `- None — <reason>` when no questions remain.
+- `Related Files / Entry Points` contains at least one path-shaped inline-code top-level entry; non-proposed paths and root filenames resolve on disk, while confirmed future paths use the exact adjacent `(proposed)` marker. A safe extensionless root basename is checked when it is the first inline-code token of a bullet, already exists at the repository root, or uses that exact marker. This accepts real files such as `Pipfile` without mistaking later symbols such as `STANDARD_SECTIONS` for paths; an invented first-token name fails.
+- Optional `--repo-root` lets isolated brief artifacts validate their entry points against the actual target checkout.
 - Optional `Constraints` heading shape.
-- Warning only: `Out of Scope` bullets without `[hard]` or `[deferred]` classification.
-  The validator does not judge whether the classification is semantically correct.
+- `Out of Scope` bullets without `[hard]` or `[deferred]` classification are reported as warnings.
+  Any warning makes validation fail; the validator does not judge whether the classification is semantically correct.
 
-Out of scope (still on the human): concreteness of bullets, whether Out-of-Scope entries are real guardrails vs. filler, whether entry points are *good* (the path-existence check only catches fabricated paths, not poorly-chosen ones), whether Acceptance Criteria are measurable, whether the type-conditional section's content is sufficient.
+Out of scope (still on content review): whether evidence labels are truthful, stage outcomes and handoffs are executable, Out-of-Scope entries are real guardrails vs. filler, entry points are *good*, Acceptance Criteria are measurable, and the type-conditional section's content is sufficient.
 
 For briefset mode, use `scripts/validate_briefset.py` on the parent file — it validates the parent structure and re-runs `validate_brief.py`'s checks transitively on every referenced child brief, so one invocation covers the whole set:
 
@@ -652,19 +675,21 @@ See `references/briefset.md` for what the parent validator checks and what stays
 - **Executable, not discursive.** Apply the intro's prose-style rule to every section — rewrite discussion-summary, negotiation-log, or rationale prose until it directs concrete action; *why we are thinking about this* prose belongs in the PR description, not the brief.
 - **Never fabricate file paths or PR numbers.** `Related Files / Entry Points` is mandatory because it is the downstream agent's starting route.
   If the codebase review does not surface at least one concrete file, directory, route, command, module, related brief, or confirmed proposed path, ask the user to provide or confirm the entry point before saving the brief.
-- **Never infer Acceptance Criteria from thin air.** Vague criteria poison the downstream agent.
-  Ask the user.
+  At least one top-level entry must carry that path in inline code; a plain-text path, PR-only bullet, or symbol-only bullet is not structurally checkable.
+- **Ground Acceptance Criteria in input or code evidence.** Vague criteria poison the coding agent.
+  Ask only for product or acceptance thresholds the user owns; derive technical proof paths from the repository.
 - **Never proceed past the Ambiguity Gate on a hunch.** Halting is the correct answer when anchors are missing.
 - **Keep Out-of-Scope specific.** "Don't refactor unrelated code" is filler.
   "Do not change the `PaymentService` interface" is a real guardrail.
-- **Triage scope before saving.** A good review often finds more problems than one brief should fix.
-  Put the user's required outcome first, keep tightly coupled checks second, and move unrelated valid findings to `[deferred]` or `Open Questions`.
+- **Triage scope before saving.** A good review often finds more problems than one plan should fix.
+  Put the user's required outcome first, keep tightly coupled checks second, and move unrelated valid findings to `[deferred]`; technical unknowns go to investigation or replan boundaries.
 - **Keep implementation judgment out of Out-of-Scope.** `Out of Scope` tells the downstream coding agent what not to do.
   Put bounded implementation choices in `Constraints`, and user-owned unresolved choices in `Open Questions`.
 - **Preserve named contracts.** When a change touches existing callers, persisted state, user-visible ids, event flows, schemas, file formats, or generated outputs, name the exact contracts that must remain compatible.
   Do not rely on "avoid regressions" or "keep compatibility" as a substitute.
-- **One brief per invocation, unless the input has multiple execution contexts.** If it does, recommend briefset mode and ask the user to choose (see `references/briefset.md`).
-  Briefset mode is the supported way to handle multi-context work — do not stuff multiple unrelated tasks into a single brief unless the user explicitly chooses single-brief after the recommendation, and do not nest briefsets (a child cannot become a parent).
+- **One plan per invocation, unless the input has multiple execution contexts.** When it does, select briefset mode from the documented signals and explain the evidence (see `references/briefset.md`).
+  Ask only when topology depends on a user-owned delivery or scope boundary.
+  Briefset mode is the supported way to handle multi-context work — do not stuff unrelated execution contexts into one plan, and do not nest briefsets (a child cannot become a parent).
   When the contexts share no dependency, no ordering, and no conflict hotspot, recommend separate single-brief invocations instead of a briefset (see Stage 1).
 - **Decision table does not bypass the ambiguity gate.** Halt-eligible inputs still halt at Stage 1.
   Do not try to reconstruct missing PROBLEM / GOAL / SCOPE / TARGET through a large decision table — the gate exists precisely to prevent that failure mode.
@@ -681,7 +706,7 @@ The structural validator catches format errors after the fact; this list catches
 - [ ] `<type>` is one of the ten Conventional Commits types.
 - [ ] Title on line 1 matches `# [<type>] <title>`.
 - [ ] `Current State (As-Is)` and `Desired Outcome (To-Be)` are both populated and distinguishable.
-- [ ] Load-bearing current-state bullets separate confirmed facts from inferred risks; each confirmed fact has a stable locator beyond a bare line number when possible.
+- [ ] Every load-bearing current-state bullet starts with `[confirmed]` or `[inferred]`; confirmed facts cite stable evidence and inferred findings name what will confirm them.
 - [ ] Existing contracts that must not change are named concretely: ids, keys, event names, API shapes, schemas, file formats, persisted values, commands, or generated outputs.
 - [ ] If internal completion and user / operator success differ, both are represented in the brief and verification does not confuse one for the other.
 - [ ] If type is `fix` / `perf` / `refactor`, the type-conditional section (`Reproduction` / `Baseline Measurement` / `Behavior Contract`) is present and populated — `- N/A — <reason>` if genuinely none.
@@ -692,8 +717,11 @@ The structural validator catches format errors after the fact; this list catches
 - [ ] `Acceptance Criteria` are measurable (checkable, not aspirational).
 - [ ] `Related Files / Entry Points` entries are existing repo paths, verified references, or confirmed proposed paths.
   Paths under inline-code that are not yet created carry the exact literal token `(proposed)` immediately after that path so the structural validator does not flag them as fabricated — variants like `(proposed edit)` are not recognized, and a marker elsewhere in the line does not skip path validation.
+  At least one top-level entry contains a path-shaped inline-code token; plain-text paths do not count.
   Each entry routes the agent's first read or first edit, not just "related file" context.
-- [ ] `Open Questions` uses `- None — <reason>` only after one active judgement pass: user-owned decisions are asked, reasonable implementation calls are made in the brief, and weak adjacent signals are left for the Stage 6 report instead of becoming questions.
+- [ ] `Execution Plan` has consecutive `### Stage N — <name>` stages; every stage contains `Starts when`, bounded `Work`, `Deliverable`, indented `Ends when` checks, `Handoff`, and `Replan when` in order.
+- [ ] Each stage handoff supplies the next stage's start, and stage-local `Ends when` checks are distinct from whole-work `Acceptance Criteria` evaluated after all stages and side-effect checks.
+- [ ] `Open Questions` contains only structured non-blocking user decisions in `- [non-blocking] <question> — Default: <safe fallback>; Reconfirm before: <stage or milestone>` form, or `- None — <reason>` after one active judgement pass.
 
 ## Post-Run Checklist (before the Stage 6 banner)
 

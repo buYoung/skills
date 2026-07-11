@@ -1,6 +1,6 @@
 # Bloat Decomposition Rules (BDR)
 
-BDR is the **secondary** decomposition layer that runs *after* the briefset primary filter (the "independently executable work unit" rule) has already cleared a candidate child list.
+BDR is the **secondary** decomposition layer that runs *after* the briefset primary filter (the "independently executable work unit" rule) has already cleared a candidate child-plan list.
 The primary filter answers *"can this work split at all?"*.
 BDR answers *"once it can, where exactly do we cut?"*.
 
@@ -12,8 +12,11 @@ BDR is **not** a structural rule.
 The structural validators (`validate_brief.py`, `validate_briefset.py`) already reject empty children, missing sections, and malformed checklists — that is the only machine-checkable side of decomposition.
 BDR is what the human or agent author runs in their head before saving.
 
-This reference is instruction prose, not a saved brief.
-Do not rewrite it in caveman style.
+This reference is instruction prose, not a saved plan; keep it in normal prose.
+
+The number of stages in a child's `Execution Plan` is never a bloat signal by itself.
+Stages express the ordered work inside one executable context; briefset children express separate execution contexts that require coordination.
+Do not split a cohesive plan merely because it has several stages.
 
 ---
 
@@ -28,7 +31,8 @@ Inside that list, evaluate each child against the bloat signals below.
   Splitting a child that has not yet earned its own existence multiplies underspecified briefs.
 
 BDR also applies in **single-brief mode** when the input passes the ambiguity gate but the resulting single brief, once mentally drafted, triggers ≥ 2 bloat signals.
-In that case BDR's split rules become a recommendation to switch into briefset mode — surface that recommendation to the user before saving.
+In that case BDR's split rules select briefset mode when they reveal multiple execution contexts.
+Ask the user only if the split depends on a user-owned delivery or scope boundary.
 
 ---
 
@@ -138,4 +142,5 @@ B5 is a by-product signal — it only justifies a split in conjunction with one 
 
 ## One-line summary
 
-A brief owns **one contract to stabilise** *or* **one executable behavior** — except when work that must change together to preserve data/state, or that shares the same failure path, must stay inside that brief.
+A child plan owns **one contract to stabilise** *or* **one executable behavior** — except when work that must change together to preserve data/state, or that shares the same failure path, must stay inside that child.
+Its `Execution Plan` may contain as many ordered stages as that single execution context needs.

@@ -152,7 +152,9 @@ totally different problem, in different files, possibly a `feat`
 rather than a `refactor`. The cost is the entire restructuring cycle
 plus the rework. That is the asymmetry the halt protects against.
 
-(The sketch is also sloppy *structurally* — its bare `- None` under
-`Open Questions` would fail `validate_brief.py`, which requires the
-reasoned `- None — <reason>` form. But the deeper failure is the
-fabricated problem framing, which no structural validator can catch.)
+(The sketch is also deliberately malformed *structurally*: it omits the
+required `## Execution Plan`, its load-bearing `Current State (As-Is)`
+bullets lack `[confirmed]` / `[inferred]`, and its bare `- None` under
+`Open Questions` lacks `— <reason>`. `validate_brief.py` would report all
+three contract failures. The deeper failure is still the fabricated
+problem framing, which no structural validator can catch.)

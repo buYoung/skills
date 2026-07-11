@@ -7,7 +7,8 @@ This is the only Stage 4 path.
 Do not run a pre-review guessing interview.
 Do not hide decisions in prose.
 If the codebase can answer a technical fact, resolve it before asking.
-If the decision is about product intent, scope, acceptance threshold, risk tolerance, sequencing, or ownership, ask the user with the table format below.
+If the decision is about product intent, scope, a compatibility break, external ownership, or an acceptance threshold, ask the user with the table format below.
+Do not ask the user to settle work type, output mode, codebase facts, or reversible implementation choices when the input and repository make them clear.
 
 For user-decision questions, use this exact table shape:
 
@@ -30,44 +31,41 @@ The register drives what goes into the table.
 Standard single-brief root layout:
 
 ```
-Work Type (provisional)
-└─ Desired Outcome (To-Be)
+Desired Outcome (To-Be)
    ├─ In Scope boundary
    │  └─ Out of Scope guardrails
-   ├─ Acceptance Criteria
-   ├─ Side Effect Checkpoints
-   └─ Type-conditional input (only if type is fix/perf/refactor)
+   ├─ User-owned Acceptance Criteria thresholds
+   └─ Type-conditional user input (only if type is fix/perf/refactor)
       ├─ fix      → Reproduction
       ├─ perf     → Baseline Measurement
       └─ refactor → Behavior Contract
-Residual Open Questions (only those a codebase probe cannot resolve)
+Residual Open Questions (only non-blocking user-owned decisions with a safe default)
 ```
 
 Briefset root layout:
 
 ```
-Decomposition validity (which children, why each exists)
-└─ Per-child work types
-   └─ Execution order
-      ├─ Parallelization
-      ├─ Conflict hotspots
-      └─ Per-child residuals
-         ├─ child Acceptance Criteria
-         ├─ child Out of Scope
-         └─ child Open Questions
+User-owned topology constraints, when any
+└─ Per-child residuals
+   ├─ child Acceptance Criteria thresholds
+   ├─ child Out of Scope boundaries
+   └─ child Open Questions
 ```
 
 Tree-construction rules:
 
 - A row is only worth asking if the user must decide something.
   If a node maps to "general background", drop it — Stage 4 is not a context-gathering interview.
-- Each row maps to a concrete brief change: add, remove, narrow, broaden, split, defer, keep as `Open Questions`, or delegate to the downstream agent.
+- Each row maps to a concrete brief change: add, remove, narrow, broaden, split, defer, or keep as a structured non-blocking `Open Questions` item with a safe default.
 - If one decision changes whether another is relevant, state the dependency in `근거` and order the rows parent-before-child.
   After the user answers, prune irrelevant rows before applying changes.
 - If a node can be answered by reading the codebase, mark it *codebase-resolvable* and resolve it before the table.
+  If it needs deeper technical investigation, put that work into `Execution Plan` with a `Replan when` boundary.
   Technical facts do not become user questions.
 - Product intent, business rules, future scope, acceptance thresholds, sequencing preferences, and ownership decisions are **not** codebase-resolvable.
   Code findings can support the recommendation, but the user still decides.
+- Output mode and work type are author-owned when code and input make them evident.
+- A reversible local approach is worker-owned and belongs in `Worker decision`, not the table.
 
 ---
 
@@ -83,8 +81,9 @@ Can a narrow codebase probe answer this node?
 │        │  Do not ask. Carry the result into the brief or into
 │        │  the `근거` for a related user-owned decision.
 │        └─ Probe inconclusive →
-│           Add a table row if the user can decide; otherwise keep
-│           the uncertainty in `Open Questions`.
+│           Add a table row only if the underlying choice is user-owned;
+│           otherwise add an investigation stage, `Worker decision`,
+│           `Replan when`, constraint, or safe default.
 └─ NO  → Add a table row when the node is user-owned.
 ```
 
@@ -99,11 +98,12 @@ Stage 4 inherits any unused budget plus a small additional cap reserved for bran
 | Stage 4 additional | ~5 reads / ~3 queries |
 
 Per-node ceiling: 1–2 queries per branch probe.
-If a single node would need a deep dive, that is a signal the question belongs to the user, not the codebase.
+If a technical node would need a deep dive, stop the authoring probe and route it into an `Execution Plan` investigation stage with a concrete deliverable and `Replan when` boundary.
+Ask only when the unresolved node is a decision the user owns.
 
 When the carry-over budget is exhausted, stop running probes and ask the user only for user-owned decisions.
-Technical unknowns that neither the current budget nor the user can answer belong in `Open Questions`.
-Do not silently continue exploring.
+Technical unknowns belong in a bounded investigation stage and must name what evidence changes the plan.
+Do not put them in `Open Questions` or silently continue exploring.
 
 ---
 
@@ -119,7 +119,7 @@ Each row follows this contract:
 - **`내용`** — the actual decision the user must make.
   Phrase it as a decision question, not as background.
 - **`수정 추천안`** — the concrete change you recommend applying to the brief.
-  This can be "include in scope", "exclude from scope", "split into a child brief", "keep as Open Questions", or "delegate to downstream agent".
+  This can be "include in scope", "exclude from scope", or "keep as a structured non-blocking Open Question with this safe default".
 - **`근거`** — concise evidence from the input, codebase review, existing patterns, or risk.
   Mention paths or symbols when they are the reason for the recommendation.
 
@@ -127,26 +127,33 @@ Rules:
 
 - Do not use a generic `추가/수정?` prompt as the only question when any user-owned decision remains.
 - Do not collapse multiple unrelated decisions into one row.
-- If a list-shaped section (`Acceptance Criteria`, `Side Effect Checkpoints`, `Constraints`, candidate `Open Questions`) contains multiple user-owned tradeoffs, make one row per tradeoff.
+- If a list-shaped section (`Acceptance Criteria`, `Constraints`, candidate `Open Questions`) contains multiple user-owned tradeoffs, make one row per tradeoff.
 - If the list is already fully determined by the input and codebase, no table row is needed; write it directly into the brief.
 - If the table has many rows, group them by section in the `내용` text, but keep the four-column table shape.
 - After the user answers, apply the decision to the draft brief plan.
   If an answer invalidates later rows, drop or revise those rows before continuing.
-- If a saved single brief or briefset contains `Open Questions` that require user decisions, present those items after save using the same four-column table and patch the saved file after the user answers.
+- A timeout, cancellation, or no response is not approval.
+  For a non-blocking row that already names a safe fallback and reconfirmation point, activate that fallback, preserve the row in structured `Open Questions` form, and continue without another approval round.
+  For any blocking row, halt without writing.
+- If a saved single brief or briefset contains structured non-blocking `Open Questions`, present those items after save using the same four-column table and patch the saved file after the user answers.
+- Never use a row to delegate a technical unknown to a reviewer or downstream worker.
 
 ---
 
 ## Termination Conditions
 
-Stop the Stage 4 loop when **any** of these is true:
+Proceed to Stage 5 only when **any** of these is true:
 
 - Every mandatory user-owned decision is decided (the brief can be drafted).
-- The user explicitly stops (`stop`, `enough`, `그만`, `충분해`, `done`).
-- Carry-over codebase budget is exhausted **and** every remaining node is unanswerable by the user without external input — record those as `Open Questions` and continue to Stage 5.
-- A pending answer requires information neither the codebase nor the user has at hand (e.g., a product decision owned by someone else).
-  Record the dependency in `Open Questions`, mark the brief as blocked on that input, and continue.
+- The user explicitly stops (`stop`, `enough`, `그만`, `충분해`, `done`) and no blocking user-owned decision remains; otherwise halt without writing.
+- Every remaining user-owned decision is non-blocking, has a safe fallback, and has a reconfirmation point; save each one as `- [non-blocking] <question> — Default: <safe fallback>; Reconfirm before: <stage or milestone>`.
 
-After termination, proceed to Stage 5 (save + structural validate), Stage 5.5 (downstream interpretation check), and Stage 5.6 (content-level self-check) exactly as documented in `SKILL.md`, then cold-pickup verification (Stage 5.7) when its gate fires.
+If a user-owned decision has no safe fallback and execution cannot continue without it, **HALT** in Stage 4 and create no file.
+External ownership does not make a blocking decision safe to defer.
+If the user does not answer, cancels, or lets structured input expire, apply the same split: non-blocking rows use their declared fallback and proceed to Stage 5; any blocking row halts without writing.
+Silence never changes a row's ownership or counts as approval.
+
+After a safe termination, proceed to Stage 5 (save + structural validate), Stage 5.5 (downstream execution reconstruction), and Stage 5.6 (content and executability self-check) exactly as documented in `SKILL.md`, then cold-pickup verification (Stage 5.7) when its gate fires.
 Stage 4 does not change the saved-brief structure.
 
 ---
@@ -156,7 +163,7 @@ Stage 4 does not change the saved-brief structure.
 The decision table is a **behavior variant of the brief-authoring pipeline**, not an output variant.
 The saved brief still follows `references/template.md` exactly:
 
-- Eight required H2 sections (`Work Type`, `Current State (As-Is)`, `Desired Outcome (To-Be)`, `Scope`, `Related Files / Entry Points`, `Side Effect Checkpoints`, `Acceptance Criteria`, `Open Questions`).
+- Nine required H2 sections (`Work Type`, `Current State (As-Is)`, `Desired Outcome (To-Be)`, `Scope`, `Related Files / Entry Points`, `Execution Plan`, `Side Effect Checkpoints`, `Acceptance Criteria`, `Open Questions`).
 - Type-conditional H2 (`Reproduction` / `Baseline Measurement` / `Behavior Contract`) when the type demands it.
 - Optional `Constraints` block between `Scope` and `Related Files / Entry Points` when task-specific constraints exist.
 - Briefset parent + children when briefset mode is also active.
@@ -169,13 +176,14 @@ A brief that fails the validator failed for the same reasons regardless of which
 ## Briefset Interaction
 
 Briefset mode uses the same decision-table policy.
-Decomposition is usually the highest-value user decision, and parent topology often contributes several table rows: decomposition validity, ordering, parallelization, conflict hotspots, and per-child residual decisions.
+The author determines decomposition, child types, ordering, parallelization, and conflict rules when the code and input make them evident.
+Table only user-owned constraints that would change that topology, followed by per-child residual decisions.
 
 Workflow notes:
 
 - Put briefset decisions in the same four-column table.
   Use `내용` to identify whether the row belongs to the parent or to a child.
-- Per-child `Acceptance Criteria` and `Out of Scope` decisions come after the parent topology is locked.
+- Per-child user-owned `Acceptance Criteria` thresholds and `Out of Scope` decisions come after the parent topology is locked.
   Asking them earlier produces guardrails for children that may not survive the decomposition decision.
 - Children inherit decision-table question output but are still saved as standard child briefs (`validate_briefset.py` covers them transitively).
 
@@ -194,7 +202,7 @@ Do not:
   Repeated asks signal the agent did not believe the user, which is corrosive.
 - **Drop `수정 추천안`.** A naked "what do you want?" offloads the design problem to the user.
 - **Loop forever.** Honor the termination conditions.
-  Residual ambiguity that is not user-owned belongs in `Open Questions`, not in another table round.
+  Residual technical ambiguity belongs in an investigation stage, `Worker decision`, or `Replan when`, not in another table round or `Open Questions`.
 
 ---
 

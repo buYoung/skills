@@ -1,13 +1,13 @@
 # Work Types (Conventional Commits)
 
-The work type is the single most load-bearing field in the brief.
+The work type is a load-bearing field in the implementation work plan.
 It changes how the downstream coding agent approaches the task — not just how the commit is labeled.
 
 A `refactor` agent obsesses over behavior preservation and writes a before/after diff.
 A `fix` agent starts by reproducing the bug.
 A `perf` agent measures first and second-guesses micro-optimizations.
 One token flips the behavior profile.
-Classifying correctly is worth the one clarifying question it may cost.
+Classify it from the input and codebase whenever the evidence is clear; do not turn an obvious technical classification into a user decision.
 
 ---
 
@@ -40,12 +40,20 @@ Three types require an extra H2 section between `Current State (As-Is)` and `Des
 | `perf` | `## Baseline Measurement` | The measurement-first profile needs the baseline number stated explicitly (current measurement, method, environment, target). Without it, "improvement" is unverifiable. |
 | `refactor` | `## Behavior Contract` | The behavior-preservation profile needs the contract named: which observable behaviors must stay invariant, which tests / specs / artifacts lock them, how preservation is verified. |
 
-The other seven types (`feat`, `chore`, `docs`, `test`, `style`, `build`, `ci`) use the eight required sections only.
+The other seven types (`feat`, `chore`, `docs`, `test`, `style`, `build`, `ci`) use the nine required sections only, including `Execution Plan`.
 
 When the section legitimately has nothing concrete to capture (e.g., a visual-regression `fix` whose entire repro is "open the page"), the brief may use a single bullet: `- N/A — <one-line reason>`.
 The section itself must still be present; `validate_brief.py` checks for it.
 
 See `template.md` for the per-section writing guidance and examples.
+
+Tie the type-conditional section to the first execution stage:
+
+- `fix` — Stage 1 starts from the documented reproduction inputs and ends with the failure pinned or a named replan condition.
+- `perf` — Stage 1 starts from the measurement method and ends with a confirmed baseline on the stated environment.
+- `refactor` — Stage 1 starts from the behavior contract and ends with the preservation baseline verified before structural edits begin.
+
+Do not let a worker skip these gates and jump directly to implementation.
 
 ---
 
@@ -53,14 +61,16 @@ See `template.md` for the per-section writing guidance and examples.
 
 ### When the user says "refactor" but describes behavior change
 
-Push back.
+Reclassify from the described outcome and explain the mismatch.
 A refactor *by definition* preserves behavior.
 If the user says "refactor the auth middleware to also log failed attempts", the logging is a `feat`.
 Options to surface:
 
 - Split into two briefs: a pure `refactor` followed by a `feat`.
-  Splitting means recommending briefset mode per `briefset.md` — apply its decision criteria first; if they do not hold, keep a single brief with type `feat`.
+  Splitting means applying the briefset criteria in `briefset.md`; select briefset mode when the execution-context split is clear, otherwise keep a single brief with type `feat`.
 - Reclassify the whole thing as `feat` and note the refactor as an implementation detail.
+
+Ask the user only when resolving the mismatch requires a user-owned scope or behavior choice, such as whether logging is actually part of the requested outcome.
 
 ### `feat` vs `fix` — when behavior "should have worked"
 
@@ -69,7 +79,7 @@ If the user says "login should support SSO but doesn't" — that's `feat`, not `
 A never-implemented capability is `feat`.
 
 Gray zone: if a prior release implicitly promised a capability (e.g., the marketing page claimed it), the user may reasonably want `fix`.
-Confirm.
+Probe the spec or release evidence first; ask only if the promised behavior itself is a user-owned interpretation.
 
 ### Reverts are written as `fix`
 
@@ -99,31 +109,16 @@ Renaming a variable is **not** `style`; it's `refactor` (structural change witho
 
 ---
 
-## Confirmation Question Pattern
+## Author Selection Pattern
 
-Type-confirmation routing depends on confidence — most cases defer to the Stage 4 decision table and do not need a separate Stage 2 round-trip.
+The plan author owns work-type classification when the code and input make it evident.
 
-- **Explicit type from user, evidence agrees** → use it; no question.
-- **Explicit type from user, evidence conflicts** (e.g. user says "refactor" but the work changes behavior) → ask one question in Stage 2 before codebase review.
-  The conflict has to resolve before Stage 3, otherwise the review targets the wrong artifacts.
-- **Implicit type, high-confidence** → assign a provisional type and include it in the **Stage 4 decision table** only when user confirmation is still useful.
-  Do not add an early Stage 2 round-trip.
-- **Implicit type, low-confidence AND the inferred type changes the likely execution approach** → ask one short question in Stage 2 before proceeding.
-  Catching it here is cheaper than letting Stage 3 explore the wrong subsystem.
+- **Explicit type from user, evidence agrees** → use it.
+- **Explicit type from user, evidence conflicts** → classify by the requested outcome and record the mismatch in the plan-authoring report.
+  Ask only if the conflict hides a user-owned behavior or scope decision.
+- **Implicit type, high-confidence** → assign it without a confirmation round-trip.
+- **Implicit type, low-confidence but technically resolvable** → probe the codebase or put the distinction into the first `Execution Plan` stage as an investigation with a `Replan when` boundary.
+- **Implicit type depends on user intent** → ask the underlying product or scope decision in Stage 4, then derive the type from the answer.
 
-When a question fires (in Stage 2 or as the first Stage 4 node), use the user's chat language and the template below.
-
-**English:**
-
-> I'd like to classify this as `<inferred>` — does that match?
-> The type changes how the downstream agent works — e.g. `refactor` focuses on behavior preservation, `fix` starts from a reproduction.
-> Tell me if a different type fits better.
-
-**Korean:**
-
-> 작업 유형을 `<inferred>`로 잡을 생각인데 맞아?
-> 유형에 따라 에이전트 접근 방식이 달라져서 — 예를 들어 `refactor`면 동작 보존에 집중하고 `fix`면 재현부터 시작해.
-> 다른 유형이 더 적절하면 말해줘.
-
-Offer 2–3 alternatives if the classification was close.
-Do not list all ten — that's noise.
+Do not ask the user to choose among commit labels when the real uncertainty is technical.
+Do not store type uncertainty in `Open Questions`; the saved plan must already carry the work type and the execution behavior it activates.

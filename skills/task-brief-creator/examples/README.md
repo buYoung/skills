@@ -1,7 +1,7 @@
 # Examples
 
 End-to-end worked scenarios for `task-brief-creator`. Each file contains
-the input, what the skill did at each stage, and the resulting brief (or
+the input, what the skill did at each stage, and the resulting executable implementation plan (or
 halt response). Examples `01`, `02`, `04`, and `05` additionally include
 a `Picked Up Cold` section showing the first actions a coding agent takes
 from the saved brief alone; `03` is a halt case, so there is no brief to
@@ -10,8 +10,9 @@ pick up.
 It is not part of the saved brief template and should not be emitted into
 real `docs/briefs/` artifacts.
 
-**How to read these files.** The saved brief in each example is the *work
-instruction*. The meta sections (input, codebase review notes, decision
+**How to read these files.** The saved plan in each example is the *work
+instruction*. Its nine required H2 sections include `Execution Plan`, the
+authoritative stage sequence for a single plan or child plan. The meta sections (input, codebase review notes, decision
 table, notes) explain how the skill arrived at that instruction — they
 are commentary, not deliverable. If you only have time to skim one part,
 read the saved-brief code block plus the commentary-only `Picked Up Cold`
@@ -30,14 +31,16 @@ otherwise the path-existence check will correctly flag them as missing.
 
 | File | Input shape | Type | What it shows |
 |---|---|---|---|
-| [01-pm-paste-feat.md](01-pm-paste-feat.md) | Pasted PM spec, ~20 lines | `feat` | Long-input case; how Stage 3 codebase review *grounds* As-Is in concrete files (without dropping concerns from the input) and how Out-of-Scope guards a downstream agent. |
-| [02-rough-typed-fix.md](02-rough-typed-fix.md) | One-line typed task | `fix` | Short-input case; how `fix`-type behavior profile shapes Acceptance Criteria and Side Effect Checkpoints (reproduce-first), and how credentials are referenced instead of embedded. |
+| [01-pm-paste-feat.md](01-pm-paste-feat.md) | Pasted PM spec, ~20 lines | `feat` | Long-input case; confirmed/inferred As-Is evidence, ordered execution stages, and a bounded worker choice instead of a technical Open Question. |
+| [02-rough-typed-fix.md](02-rough-typed-fix.md) | One-line typed task | `fix` | Short-input case; how `Reproduction` gates Stage 1, stage completion stays separate from whole-work acceptance, and credentials are referenced instead of embedded. |
 | [03-halt-ambiguous.md](03-halt-ambiguous.md) | Vague one-liner | — | Halt case; what the four-anchor check rejects, what additional input would flip it to CONTINUE, and where the narrow target probe fits when only TARGET is missing. |
-| [04-briefset-checkout-i18n.md](04-briefset-checkout-i18n.md) | Tech-lead Korean note | briefset (`refactor`+`feat`+`fix`) | Briefset mode; how mixed types, ordered dependencies, and a shared i18n conflict hotspot drive the parent + 3 children decomposition, with cold-pickup running on parent + every child. |
-| [05-stage-4-walkthrough.md](05-stage-4-walkthrough.md) | Korean refactor note | `refactor` | Focused Stage 4 example; how codebase probes remove technical questions, the remaining scope decisions become a user decision table, Stage 5.5 checks downstream interpretation, and the Stage 5.7 cold-pickup gate fires on a `refactor` type. |
+| [04-briefset-checkout-i18n.md](04-briefset-checkout-i18n.md) | Tech-lead Korean note | briefset (`refactor`+`feat`+`fix`) | Addressable handoffs, pairwise parallel/hotspot rules, no-change branches, and verification inputs/signals; the parent owns child coordination while each child `Execution Plan` owns its internal stages. |
+| [05-stage-4-walkthrough.md](05-stage-4-walkthrough.md) | Korean refactor note | `refactor` | Focused Stage 4 example; codebase probes remove technical questions, one user-owned scope decision remains, and Stage 5.5 reconstructs the executable route. |
 
-Stage 4 always runs as a Markdown decision table with `순번`, `내용`,
-`수정 추천안`, and `근거` after codebase-resolvable nodes are probed.
+Stage 4 always runs an ownership pass and uses the Markdown decision table
+with `순번`, `내용`, `수정 추천안`, and `근거` only when user-owned decisions remain.
+Saved questions use `- [non-blocking] ... — Default: ...; Reconfirm before: ...`;
+technical unknowns and reversible choices move into execution stages, replan boundaries, or worker decisions.
 Use `01` / `02` / `04` for type-specific output shape (`feat` /
 `fix` / briefset), and use `05` for the most focused Stage 4
 decision-table walkthrough plus the shortest Stage 5.5 interpretation and Stage 5.7 cold-pickup
@@ -53,5 +56,6 @@ example only sketches — pass `scripts/validate_briefset.py` (one
 invocation, transitive child checks) with exit code 0 and 0 warnings;
 each child also passes `validate_brief.py` individually with 0
 warnings. Run the validators from the installed skill package
-directory:
-`python3 <skill-dir>/scripts/validate_brief.py docs/briefs/<file>.md`.
+directory. When the extracted briefs live outside the hypothetical host
+repo, pass that host repo as `--repo-root <repository-root>` so standard
+entry-point paths do not need artifact-only rewrites.

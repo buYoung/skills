@@ -99,29 +99,23 @@ hotspot**.
 
 ## Stage 4 — Briefset User Decision Table (Korean)
 
-코드베이스가 답할 수 있는 노드는 먼저 확인한다. 그 다음 분해,
-자식별 작업 유형, 실행 순서, 충돌 영역, 자식별 잔여 결정처럼
-사용자 소유 판단만 표로 묻는다.
+코드베이스와 입력으로 명백한 분해, 자식별 작업 유형, 실행 순서,
+병렬화, 충돌 소유권은 작성 담당이 확정한다. 표에는 마케팅 원문의
+수용 기준과 영어 fallback 일정처럼 사용자만 소유하는 결정만 남긴다.
 
 | 순번 | 내용 | 수정 추천안 | 근거 |
 |---|---|---|---|
-| 1 | briefset 분해안 | `01-message-keys`, `02-cart-copy`, `03-validation-copy` 셋으로 분해한다. | 입력의 세 줄이 서로 다른 entry point와 완료 기준을 가진다. 하나로 합치면 작업 유형 규율이 섞인다. |
-| 2 | 자식별 work type | `01=refactor`, `02=feat`, `03=fix`로 둔다. | 01은 구조 정리와 behavior 보존, 02는 새 마케팅 카피라는 사용자 가시 변경, 03은 잘못된 언어 노출 결함 수정이다. |
-| 3 | 실행 순서 | Wave 1: 01, Wave 2: 02 + 03. | 01의 키 네임스페이스가 먼저 자리잡아야 02와 03이 안정적으로 키를 채울 수 있다. |
-| 4 | 병렬화 여부 | 02와 03은 같은 wave에서 병렬 가능하되 충돌 영역을 parent에 표기한다. | 코드베이스 프로브에서 `cart.*`와 `payment.err.*` 키 영역은 겹치지 않았다. 다만 둘 다 `messages.ko.json`을 편집한다. |
-| 5 | 충돌 영역 | `src/i18n/messages.ko.json`과 `src/i18n/index.ts`를 parent의 conflict hotspot으로 둔다. | checkout import가 barrel을 통해 들어오며, 자식 셋 모두 새 키 추가로 두 파일을 만질 가능성이 있다. |
-| 6 | 공통 제약 | 한국어(`ko`) 로케일만 대상, 영어 fallback은 Out of Scope, 새 i18n 도구 도입 없음. | 입력이 "결제 화면에서 영어 텍스트가 한 글자도 안 남아야 함"과 기존 메시지 파일 유지 방향을 명시했다. |
-| 7 | 자식 02 완료 기준 | `docs/marketing/cart-copy-2026-04.md`와 cart copy diff가 0이어야 한다는 기준을 추가한다. | 마케팅 카피 적용은 해석보다 원문 일치가 검증 가능한 완료 기준이다. |
-| 8 | 사용자 결정이 필요한 Open Questions | Parent에는 영어 fallback 처리 일정을 남기고, 01에는 hardcoded JSX string 금지 ESLint rule을 후속 권장으로 남긴다. 02와 03은 잔여 불확실성이 없으므로 `- None — <reason>` 형태로 사유를 명시해 닫는다 (bare `- None`은 validator가 거부한다). | fallback 일정과 lint rule 도입은 코드베이스만으로 결정할 수 없는 범위/일정 판단이다. 02와 03의 불확실성은 Stage 4에서 모두 해소되었다. |
+| 1 | 자식 02의 마케팅 카피 수용 기준 | `docs/marketing/cart-copy-2026-04.md`와 cart copy diff가 0이어야 한다. | 마케팅 승인 원문은 사용자가 소유하며, 원문 일치가 해석보다 안전한 완료 기준이다. |
+| 2 | 영어 fallback 처리 일정 | 비차단 질문으로 저장하고 EN locale rebuild 전까지 defer한다. | 현재 `ko` 범위는 안전하게 실행할 수 있지만, 별도 fallback 일정은 제품/릴리스 소유 결정이다. |
 
-User: approve rows 1-8.
+User: approve row 1 and keep row 2 as a structured non-blocking question with the recommended default.
 
 ### Termination
 
-모든 사용자 소유 결정이 확정됐다. 코드베이스 프로브는 병렬화와
-충돌 영역의 기술적 사실을 먼저 해결했고, 남은 사용자 결정은
-parent와 child `Open Questions`에 명시적으로 배치된다. Stage 5로
-이동.
+차단 사용자 결정은 모두 확정됐다. 코드베이스 프로브는 분해,
+작업 유형, 순서, 병렬화, 충돌 규칙을 해결했고, 영어 fallback만
+안전한 기본값과 재확인 시점을 가진 parent `Open Questions`로 남긴다.
+Stage 5로 이동.
 
 ---
 
@@ -153,32 +147,37 @@ docs/briefs/2026-04-30-briefset-checkout-i18n.md
 - [ ] `docs/briefs/2026-04-30-fix-checkout-i18n-03-validation-copy.md` — Translate Zod-driven validation error strings; exists because wrong-language error break the no-English goal and depend on stable message keys from 01.
 
 ## Execution Order
-- Wave 1: `01-message-keys` run first.
-- Wave 2: `02-cart-copy` and `03-validation-copy` can run in parallel after 01 lands.
+- Wave 1 — `docs/briefs/2026-04-30-refactor-checkout-i18n-01-message-keys.md`: Start: current keys and rendered-copy contract confirmed; Deliverable: normalized namespace manifest with placeholders and proof; Location: `docs/briefs/handoffs/checkout-i18n/message-keys.md` (proposed); Done: child 01 stage checks and Acceptance Criteria pass; Handoff: children 02 and 03 read same manifest before edits.
+- Wave 2 — `docs/briefs/2026-04-30-feat-checkout-i18n-02-cart-copy.md`: Start: namespace manifest `cart.*` fields verified; Deliverable: approved cart-copy evidence; Location: `docs/briefs/handoffs/checkout-i18n/cart-copy.md` (proposed); Done: child 02 stage checks and Acceptance Criteria pass; Handoff: global verification receives cart-copy diff evidence.
+- Wave 2 — `docs/briefs/2026-04-30-fix-checkout-i18n-03-validation-copy.md`: Start: namespace manifest `payment.err.*` fields verified; Deliverable: validation-copy evidence; Location: `docs/briefs/handoffs/checkout-i18n/validation-copy.md` (proposed); Done: child 03 stage checks and Acceptance Criteria pass; Handoff: global verification receives validation-copy evidence.
 
 ## Dependencies
-- `2026-04-30-feat-checkout-i18n-02-cart-copy.md` depends on `2026-04-30-refactor-checkout-i18n-01-message-keys.md` — consume normalized `cart.*` key namespace introduced by 01.
-- `2026-04-30-fix-checkout-i18n-03-validation-copy.md` depends on `2026-04-30-refactor-checkout-i18n-01-message-keys.md` — validation must emit new `payment.err.*` keys defined by 01.
+- Predecessor: `docs/briefs/2026-04-30-refactor-checkout-i18n-01-message-keys.md`; Deliverable path: `docs/briefs/handoffs/checkout-i18n/message-keys.md` (proposed); Format: Markdown headings `Namespaces`, `Placeholders`, and `Evidence` with separate `cart.*` and `payment.err.*` entries; Successor: `docs/briefs/2026-04-30-feat-checkout-i18n-02-cart-copy.md`; Starts when: manifest lists resolvable `cart.*` placeholders; Verify: `inspect Namespaces, Placeholders, Evidence, and cart.* entries in the handoff`; Inputs: complete `docs/briefs/handoffs/checkout-i18n/message-keys.md` file; Expected: all three headings exist and at least one resolvable `cart.*` entry names its consumer.
+- Predecessor: `docs/briefs/2026-04-30-refactor-checkout-i18n-01-message-keys.md`; Deliverable path: `docs/briefs/handoffs/checkout-i18n/message-keys.md` (proposed); Format: Markdown headings `Namespaces`, `Placeholders`, and `Evidence` with separate `cart.*` and `payment.err.*` entries; Successor: `docs/briefs/2026-04-30-fix-checkout-i18n-03-validation-copy.md`; Starts when: manifest lists resolvable `payment.err.*` placeholders; Verify: `inspect Namespaces, Placeholders, Evidence, and payment.err.* entries in the handoff`; Inputs: complete `docs/briefs/handoffs/checkout-i18n/message-keys.md` file; Expected: all three headings exist and at least one resolvable `payment.err.*` entry names its consumer.
 
 ## Parallelization
-- `2026-04-30-feat-checkout-i18n-02-cart-copy.md` and `2026-04-30-fix-checkout-i18n-03-validation-copy.md` can run in parallel — their key namespaces (`cart.*` vs `payment.err.*`) do not overlap.
-- Both still touch `src/i18n/messages.ko.json` and `src/i18n/index.ts`; coordinate via small, key-scoped commits and rebase, not long-lived branches.
+- Can run together: `docs/briefs/2026-04-30-feat-checkout-i18n-02-cart-copy.md` and `docs/briefs/2026-04-30-fix-checkout-i18n-03-validation-copy.md` — key namespaces do not overlap. Join when: both deliverables rebased onto child 01 and checks pass together.
+- Must not overlap: `docs/briefs/2026-04-30-refactor-checkout-i18n-01-message-keys.md` and `docs/briefs/2026-04-30-feat-checkout-i18n-02-cart-copy.md` — child 02 waits for child 01 manifest. Join when: child 01 handoff verified before child 02 edits `cart.*` values.
+- Must not overlap: `docs/briefs/2026-04-30-refactor-checkout-i18n-01-message-keys.md` and `docs/briefs/2026-04-30-fix-checkout-i18n-03-validation-copy.md` — child 03 waits for child 01 manifest. Join when: child 01 handoff verified before child 03 edits `payment.err.*` values.
 
 ## Conflict Hotspots
-- `src/i18n/messages.ko.json` — every child edit this file. Append-only edits per child; no key reordering.
-- `src/i18n/index.ts` — barrel re-exports touched by all three. Keep additions alphabetized to minimize merge friction.
+- `src/i18n/messages.ko.json` — Children: `docs/briefs/2026-04-30-refactor-checkout-i18n-01-message-keys.md`, `docs/briefs/2026-04-30-feat-checkout-i18n-02-cart-copy.md`; Access: serialized; Owner: `docs/briefs/2026-04-30-refactor-checkout-i18n-01-message-keys.md`; Rule: child 01 lands namespace structure before child 02 changes only `cart.*` values.
+- `src/i18n/messages.ko.json` — Children: `docs/briefs/2026-04-30-refactor-checkout-i18n-01-message-keys.md`, `docs/briefs/2026-04-30-fix-checkout-i18n-03-validation-copy.md`; Access: serialized; Owner: `docs/briefs/2026-04-30-refactor-checkout-i18n-01-message-keys.md`; Rule: child 01 lands namespace structure before child 03 changes only `payment.err.*` values.
+- `src/i18n/messages.ko.json` — Children: `docs/briefs/2026-04-30-feat-checkout-i18n-02-cart-copy.md`, `docs/briefs/2026-04-30-fix-checkout-i18n-03-validation-copy.md`; Access: parallel-safe; Rule: child 02 owns `cart.*`, child 03 owns `payment.err.*`, neither reorders unrelated keys, both rebase before join.
 
 ## Shared Constraints
 - Korean (`ko`) only locale touched in this set. English fallback strings out of scope.
 - No new i18n tooling — stay on existing `react-i18next` setup.
 
 ## Global Acceptance Criteria
-- [ ] `rg "[가-힣]" src/checkout` return no matches — Korean checkout copy resolve from `src/i18n/messages.ko.json`; no Korean copy hardcoded in component sources.
+- [ ] `rg -n '>[[:space:]]*[A-Za-z][^<{]*<' src/checkout` returns exit 1 after scanning all checkout JSX files — no user-visible English JSX text remains.
+- [ ] `rg -n 'message:[[:space:]]*"[A-Za-z]' src/checkout` returns exit 1 after scanning validation sources — no raw English validation message remains.
+- [ ] `rg "[가-힣]" src/checkout` returns exit 1 after scanning all checkout sources — Korean copy resolves from `src/i18n/messages.ko.json`, not hardcoded component text.
 - [ ] All three child briefs' Acceptance Criteria checked.
 - [ ] Cart copy diff against `docs/marketing/cart-copy-2026-04.md` is 0 (verbatim match).
 
 ## Open Questions
-- Should English fallback strings be added in a follow-up briefset, or deferred until the EN locale rebuild is scheduled?
+- [non-blocking] Should English fallback strings be added in a follow-up briefset or wait for the EN locale rebuild? — Default: defer them to the EN locale rebuild; Reconfirm before: checkout i18n release scope is finalized.
 ```
 
 ---
@@ -192,9 +191,9 @@ docs/briefs/2026-04-30-briefset-checkout-i18n.md
 refactor
 
 ## Current State (As-Is)
-- `src/checkout/PaymentForm.tsx:42-78` hardcode English error labels instead of resolving message keys.
-- Message-key naming inconsistent across checkout: `payment.err.*` (dot-separated) coexist with `payment_err_*` (underscore-separated).
-- `src/i18n/messages.ko.json` has both styles — double lookup paths and break grep-by-key.
+- [confirmed] `src/checkout/PaymentForm.tsx:42-78` hardcode English labels — Evidence: `PaymentForm` validation-rendering branch.
+- [confirmed] Checkout uses `payment.err.*` and `payment_err_*` forms — Evidence: repo search across checkout consumers.
+- [inferred] Duplicate forms risk lookup drift during parallel copy work — Confirm by: map both forms to consumers before normalization.
 
 ## Behavior Contract
 - Locked: every user-visible string already shown in checkout flow continue to render same Korean text. No text content change permitted in this child — only resolution path moves from inline literal to `t('namespace.key')`.
@@ -204,7 +203,7 @@ refactor
 
 ## Desired Outcome (To-Be)
 - All checkout strings resolve through `t('namespace.key')`; no inline English literals remain in JSX or in error throwers.
-- Single namespacing convention adopted (`payment.err.*`, `cart.*`) and enforced by ESLint rule (or TODO if rule cannot land in this brief).
+- Single namespacing convention adopted (`payment.err.*`, `cart.*`) across checkout consumers.
 
 ## Scope
 ### In Scope
@@ -215,12 +214,36 @@ refactor
 - [hard] Cart user-visible copy text (handled by `02-cart-copy`).
 - [hard] Validation error copy text (handled by `03-validation-copy`).
 - [deferred] English (`en`) locale file — separate future briefset.
+- [deferred] Hardcoded-string ESLint rule — separate tooling plan.
 
 ## Related Files / Entry Points
 - `src/checkout/PaymentForm.tsx` — inline English error labels lines 42-78.
 - `src/i18n/messages.ko.json` — duplicate-key collapse target.
 - `src/i18n/index.ts` — barrel re-export.
 - `src/checkout/Cart.tsx`, `src/checkout/CartItem.tsx` — consumers needing key swap.
+
+## Execution Plan
+### Stage 1 — Lock rendered-copy contract
+- Starts when: Existing checkout copy, key consumers, and child ownership confirmed.
+- Work: Pin Korean rendered-copy contract and map legacy forms before edits.
+- No-op when: `cart.*` and `payment.err.*` already canonical, all checkout consumers resolve them, and current rendered-copy checks pass without edits.
+- No-op handoff: Children 02 and 03 receive unchanged-state evidence at `docs/briefs/handoffs/checkout-i18n/message-keys.md` and continue from verified placeholders.
+- Deliverable: Verified behavior baseline and namespace migration map at `docs/briefs/handoffs/checkout-i18n/message-keys.md`; Format: `Namespaces`, `Placeholders`, and `Evidence` headings.
+- Verify: `rg 'payment_err_|payment\.err\.|cart\.' src/checkout src/i18n/messages.ko.json`; Inputs: all checkout consumers plus complete Korean message file; Expected: every legacy key classified and every canonical namespace has recorded consumer or placeholder.
+- Ends when:
+  - [ ] Every legacy key maps to consumer or explicit removal target.
+- Handoff: Stage 2 receives behavior baseline and migration map from `docs/briefs/handoffs/checkout-i18n/message-keys.md`.
+- Replan when: Legacy key is used outside checkout or carries copy owned by child 02/03.
+
+### Stage 2 — Normalize shared key surface
+- Starts when: Stage 1 provides migration map and behavior baseline.
+- Work: Produce stable `cart.*` and `payment.err.*` namespaces without copy change.
+- Deliverable: Normalized namespaces and placeholders recorded at `docs/briefs/handoffs/checkout-i18n/message-keys.md` for Wave 2.
+- Verify: `rg 'payment_err_' src/checkout src/i18n/messages.ko.json`; Inputs: all migrated checkout consumers and complete Korean message file; Expected: exit 1 with non-empty target file set, while canonical `cart.*` and `payment.err.*` keys remain resolvable.
+- Ends when:
+  - [ ] Checkout consumers resolve normalized keys and Korean copy stays unchanged.
+- Handoff: Parent Wave 2 receives stable namespaces, placeholders, and verification evidence from `docs/briefs/handoffs/checkout-i18n/message-keys.md`.
+- Replan when: Normalization requires copy change or cross-locale contract change.
 
 ## Side Effect Checkpoints
 - [ ] All existing checkout E2E tests still pass without copy assertions failing.
@@ -233,7 +256,7 @@ refactor
 - [ ] Placeholder keys for `cart.*` and `payment.err.*` exist (empty strings allowed) so children 02 and 03 can fill them without edits to 01's surface.
 
 ## Open Questions
-- Should an ESLint rule that forbids hardcoded JSX strings block this brief, or be deferred to a follow-up?
+- None — no user-owned decision remains; lint enforcement is deferred as separate tooling work.
 ```
 
 (Children 02 and 03 follow the same template; omitted here for brevity.
@@ -241,9 +264,12 @@ Both contain a populated `Side Effect Checkpoints` and child-scoped
 `Acceptance Criteria`, and — per decision row 8 — both close their
 `Open Questions` with the reasoned `- None — <reason>` form, e.g.
 `- None — Stage 4 resolved scope and key ownership for this child; no
-user-owned decision remains.` Child 03, being a `fix`, also carries a
-populated `## Reproduction` section per the type-conditional rule. Both
-bodies are in caveman full mode like the two files shown above.)
+user-owned decision remains.` Their first-stage `Starts when` repeats
+`docs/briefs/handoffs/checkout-i18n/message-keys.md`; every stage has
+`Verify` / `Inputs` / `Expected`; every Stage 1 has paired no-change
+fields. Child 03, being a `fix`, also carries a populated
+`## Reproduction` section per the type-conditional rule. Both bodies
+are in caveman full mode like the two files shown above.)
 
 ---
 
@@ -262,11 +288,10 @@ scheduling:
     inside the `cart.*` key namespace.
   - Agent B picks up child 03 (`fix-...03-validation-copy`) and works
     only inside the `payment.err.*` key namespace.
-  - Both touch `src/i18n/messages.ko.json` and `src/i18n/index.ts` —
-    the parent's `Conflict Hotspots` section tells them to commit
-    small, key-scoped changes and rebase rather than long-lived
-    branches. Neither agent needs to coordinate with the other beyond
-    that rule.
+  - Both touch `src/i18n/messages.ko.json`, but child 02 owns `cart.*`
+    and child 03 owns `payment.err.*`; neither edits `src/i18n/index.ts`
+    after child 01 establishes exports. Parent pairwise hotspot rule
+    makes parallel boundary and rebase join explicit.
 
 A coding agent picking up child 01 cold should:
 
@@ -313,9 +338,12 @@ Validating 3 child brief(s)...
   ✓ Section `## Open Questions` present.
   ✓ `## Child Briefs` uses `- [ ]` checklist format.
   ✓ `## Global Acceptance Criteria` uses `- [ ]` checklist format.
+  ✓ `## Execution Order` references every child exactly once with a concrete deliverable location.
+  ✓ `## Dependencies` defines 2 addressable handoff edge(s) with format and verification signals.
   ✓ child `2026-04-30-refactor-checkout-i18n-01-message-keys.md`: structural checks OK.
   ✓ child `2026-04-30-feat-checkout-i18n-02-cart-copy.md`: structural checks OK.
   ✓ child `2026-04-30-fix-checkout-i18n-03-validation-copy.md`: structural checks OK.
+  ✓ Every dependency deliverable path is repeated in its producer and successor child execution plan.
 
 PASS - structural checks OK (0 warning(s)).
 ```

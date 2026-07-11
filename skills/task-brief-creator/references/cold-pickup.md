@@ -13,6 +13,20 @@ Free-form prose is not accepted — the report is parsed deterministically.
 verdict: clean | needs_changes | blocked
 first_actions:
   - <optional first read/search/hypothesis, for orientation only>
+execution_reconstruction:
+  first_stage: <stage or child that starts first and its precondition>
+  ordered_route:
+    - <stage or child order, including parallel joins>
+  deliverables_and_handoffs:
+    - <deliverable passed from one stage or child to the next, including path and minimum format when declared>
+  verification_signals:
+    - <action, concrete input, and expected signal, or None — <reason>>
+  no_change_routes:
+    - <no-change condition, evidence location, and continue/skip/replan route, or None — <reason>>
+  replan_boundaries:
+    - <condition that changes the route, or None — <reason>>
+  completion_basis:
+    - <whole-work acceptance basis after stages and side-effect checks>
 ask_backs:
   - id: a1
     question: <what it would ask the requester before starting>
@@ -30,14 +44,23 @@ Rules enforced on the sub-agent:
 - Every `ask_backs[*]` and `missing_concerns[*]` **must include a direct-quote `evidence`**. Paraphrases are not accepted; if no quote applies, drop the item.
 - Every `ask_backs[*]` must classify `source_of_uncertainty`:
   - `user_input_ambiguity` — the input is ambiguous; the brief picked one interpretation but others are equally reasonable.
-  - `unverifiable_fact` — an external fact (API behavior, library version, data shape) the sub-agent cannot confirm from the two inputs alone.
+  - `unverifiable_fact` — an external fact (API behavior, library version, data shape) the sub-agent cannot confirm from the provided artifacts alone.
   - `minor_default` — a reasonable default for something the user did not specify; alternative values would not change the brief's direction.
 - `first_actions` is advisory only. It never determines pass/fail by itself; the pass criteria are no unresolved ask-backs, no missing concerns, no need to re-interview, and enough completion criteria to know when the work is done.
+- `execution_reconstruction` is required.
+  A clean report must recover the first stage, intended order, stage or child deliverables, addressable handoffs, verification inputs and expected signals, no-change routes, failed-proof actions, replan boundaries, and whole-work completion basis from the saved plan.
+  For a briefset parent, it reconstructs child relationships from the parent; for a child, it reconstructs internal stages from that child's `Execution Plan`.
+  When a plan has no no-change route or no explicit verification signal, use a reasoned `None` entry instead of omitting the field.
+- Briefset scope is asymmetric.
+  The parent pass treats the parent plus every referenced child as one set and checks full-input coverage.
+  A child pass uses the supplied parent only to recover that child's assigned scope and relevant shared constraints, then checks the target child against that slice.
+  Sibling-owned concerns are not missing from the target child and must never be patched into it.
 - `verdict: clean` is only valid when `ask_backs` and `missing_concerns` are both empty.
 - Sub-agent `verdict: clean` maps to the Stage 6 termination label `clean_pass`.
 - Do **not** emit a numeric confidence score, similarity ratio, or any other LLM-rated number. Self-rated numbers are unreliable in this context — use the qualitative verdict only.
-- If the original input included a source-of-truth checklist, TODO file, review rubric, or audit document, a clean verdict requires item-level coverage.
-  Each source item must be represented in the brief, explicitly deferred / out of scope, or preserved as an Open Question.
+- If the original input included a source-of-truth checklist, TODO file, review rubric, or audit document, a single-plan or briefset-parent clean verdict requires item-level coverage across the target artifact.
+  Each source item must be represented, explicitly deferred / out of scope, or preserved as an Open Question.
+  A briefset-child pass applies this rule only to source items allocated to that child by the parent; sibling-owned items are out of the child pass.
   Representative theme coverage is not clean.
 
 ## Pass Bookkeeping and Rollback
@@ -61,7 +84,7 @@ Evaluated in priority order at the end of every pass:
 
 Regression is evaluated first because rolling back must outrank optimistic "one more pass might help" instinct. Hard cap is the fallback — not a preferred outcome.
 
-**Pass condition (normal termination):** trigger 4 (Clean pass). Triggers 1, 2, 3, 5, 6 stop the loop but signal residual concerns that Stage 6 must surface.
+**Pass condition (normal termination):** trigger 4 (Clean pass), with a complete execution reconstruction. Triggers 1, 2, 3, 5, 6 stop the loop but signal residual concerns that Stage 6 must surface.
 
 ## Routing `ask_backs`
 
@@ -69,12 +92,12 @@ Classify before deciding to patch:
 
 | `source_of_uncertainty` | `affects_direction` | Action |
 |---|---|---|
-| `user_input_ambiguity` | `true` | Surface in `Open Questions` for the user — chat-only while the brief is in flight, decision-table row when already saved. Never invent the answer in `Edit`. |
-| `user_input_ambiguity` | `false` | State the default assumption in the relevant section; patch in place. |
-| `unverifiable_fact` | (any) | Main verifies directly (codebase check, doc read) or rewrites the bullet as a hedge. **Never ask the user** — this is the main agent's job. |
-| `minor_default` | (any) | Patch in place with the assumption stated. |
+| `user_input_ambiguity` | `true` | If a safe fallback exists, store it in the structured non-blocking `Open Questions` form and name the reconfirm milestone. If no safe fallback exists, mark the plan blocked and surface the missed Stage 4 halt condition; never invent the answer in `Edit`. |
+| `user_input_ambiguity` | `false` | State the bounded default in `Worker decision`, `Constraints`, or the relevant stage; patch in place. |
+| `unverifiable_fact` | (any) | Main verifies directly, adds an investigation stage, or rewrites the bullet as a hedge with `Replan when`. **Never ask the user** — this is the author/worker's job. |
+| `minor_default` | (any) | Patch in place as a bounded `Worker decision` or stated constraint. |
 
-**Disagreement vs drift.** The sub-agent sees the original input and the brief but not the Stage 3 register or Stage 4 decisions, so it cannot know which items the user locked.
+**Disagreement vs drift.** The sub-agent sees the original input and its target artifact(s), but not the Stage 3 register or Stage 4 decisions, so it cannot know which items the user locked.
 Before applying the routing table above, if an ask-back's subject matches the `내용` of a row in the Stage 4 decision table the user already answered, treat it as **disagreement** — chat-only comment, no patch.
 Otherwise route per the table.
 
@@ -90,7 +113,8 @@ Classify each item before patching:
 
 The main agent owns this routing. The sub-agent only reports the missing concern with evidence.
 Never silently drop an input concern merely because the sub-agent did not propose a patch.
-When source-of-truth input exists, route omitted source items even if the sub-agent reports only a representative sample.
+If reconstruction exposes a missing stage deliverable, handoff path/format, verification input/signal, no-change route, failed-proof action, replan boundary, or whole-work completion basis, patch the authoritative parent relationship section or child `Execution Plan` before the next pass.
+When source-of-truth input exists, route omitted source items even if the sub-agent reports only a representative sample; for a briefset child, route only the items that the parent assigns to that child.
 Never invent new Acceptance Criteria, Side Effect Checkpoints, or Out-of-Scope guardrails that are not implied by the input, codebase review, or a user decision.
 
 ## Override Trigger Phrases
@@ -116,7 +140,7 @@ Never invent new Acceptance Criteria, Side Effect Checkpoints, or Out-of-Scope g
 - Force ON (user override on trivial signals) — `cold-pickup forced by user over trivial signals (single-brief, stage-4-rows=0, open-questions=none, type=<type>); <termination trigger> after <N> pass(es)`.
 - Default gated run (auto-ON fired) — `cold-pickup <termination trigger> after <N> pass(es)` (no extra prefix — same shape as before).
 
-**Snapshot semantics.** Stage 4 always runs as a user decision table (see `## Modes` in SKILL.md), so `stage-4-rows=0` in the auto-skip snapshot always means *Stage 4 ran and produced no user-decision rows*, never "Stage 4 was skipped". Likewise `open-questions=none` means the `Open Questions` section consists solely of `- None — <reason>`. And `type=<type>` in an auto-skip snapshot is always a type *outside* `{fix, perf, refactor}` — if it were inside, that trigger would have fired and the run would not have been skipped.
+**Snapshot semantics.** Stage 4 always runs an ownership pass and emits the decision table only when user-owned rows remain, so `stage-4-rows=0` means the pass produced no user-decision rows. Likewise `open-questions=none` means the `Open Questions` section consists solely of `- None — <reason>`. And `type=<type>` in an auto-skip snapshot is always a type *outside* `{fix, perf, refactor}` — if it were inside, that trigger would have fired and the run would not have been skipped.
 
 ## Briefset Cost and Sampling Fallback
 
@@ -135,6 +159,6 @@ Per-child cold-pickup status is collapsed to one summary line plus details only 
 ## Sub-Agent Unavailable Fallback
 
 If the host environment cannot spawn sub-agents, do not silently skip a gated-ON run.
-This fallback applies only to Stage 5.7 cold-pickup sub-agent verification; it does not replace Stage 5.5 downstream interpretation or Stage 5.6 content self-check.
+This fallback applies only to Stage 5.7 cold-pickup sub-agent verification; it does not replace Stage 5.5 downstream execution reconstruction or Stage 5.6 content/execution self-check.
 Record Stage 5.7 as unavailable, re-run the Stage 5.6 self-check with fresh eyes against only the original input plus the saved brief, then proceed to Stage 6.
 Report `cold-pickup unavailable (no sub-agent support); strengthened self-check substituted` in the Stage 6 banner.

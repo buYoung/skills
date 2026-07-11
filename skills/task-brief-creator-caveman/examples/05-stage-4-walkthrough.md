@@ -88,13 +88,9 @@ shows they are only referenced inside `useAuth.ts`.
 
 | 순번 | 내용 | 수정 추천안 | 근거 |
 |---|---|---|---|
-| 1 | Work type to write into the brief | Keep `refactor`. | The input asks to tidy the hook and bound dependency risk, with no requested behavior change. |
-| 2 | Behavior Contract source | Use the 23 existing `src/hooks/__tests__/useAuth.test.ts` cases as the locked behavior contract. | Codebase review shows these cases cover login, logout, refresh, selector memoization, and error states. |
-| 3 | `useAuthSelector` public-surface status | Treat `useAuthSelector` as public and keep it in the Behavior Contract. | It is imported by 4 dashboard components for memoized role-based rendering. Internalizing it would expand scope into consumer migration. |
-| 4 | `AuthContext.tsx` coupling | Freeze `AuthContext.tsx`; refactor only `useAuth.ts` while preserving the import surface. | The file is tightly coupled through reducer/dispatch. User prefers a narrow hook-only brief and no separate context follow-up. |
-| 5 | Acceptance Criteria wording | Require all 23 existing tests green, unchanged export signatures, zero `AuthContext.tsx` diff, no consumer-site edits, and a reviewer-readable internal organization diff in `useAuth.ts`. | These criteria preserve behavior while allowing internal cleanup. Line-count reduction is not a reliable refactor quality signal. |
+| 1 | `AuthContext.tsx` scope boundary | Freeze `AuthContext.tsx`; refactor only `useAuth.ts` while preserving the import surface. | The file is tightly coupled through reducer/dispatch, and crossing that boundary changes the requested scope. |
 
-User: approve rows 1-3 and 5; for row 4 choose "freeze `AuthContext.tsx`."
+User: approve row 1 and freeze `AuthContext.tsx`.
 
 ### Termination
 
@@ -114,11 +110,11 @@ User: approve rows 1-3 and 5; for row 4 choose "freeze `AuthContext.tsx`."
 refactor
 
 ## Current State (As-Is)
-- `src/hooks/useAuth.ts` export 7 named values (`useAuth`, `AuthState`, `AuthAction`, `loginWithCredentials`, `logout`, `refreshSession`, `useAuthSelector`); 14 component files depend on surface.
-- 3 file-internal helpers (`_validateToken`, `_normalizeRole`, `_decodeJwt`) have no reach outside `useAuth.ts` (verified by repo-wide search) but currently sit alongside public exports without grouping.
-- `useAuthSelector` imported in 4 dashboard components; treated as part of public contract.
-- `src/hooks/__tests__/useAuth.test.ts` carry 23 cases covering login / logout / refresh / selector memoization; this is de facto behavior specification.
-- `src/contexts/AuthContext.tsx` tightly coupled to `useAuth` via reducer/dispatch; explicitly out of scope for this brief.
+- [confirmed] `src/hooks/useAuth.ts` export 7 named values; 14 component files depend on surface — Evidence: exports plus repo import search.
+- [confirmed] Three internal helpers have no reach outside `useAuth.ts` — Evidence: repo-wide symbol search.
+- [confirmed] `useAuthSelector` imported in 4 dashboard components — Evidence: named-import search.
+- [confirmed] `src/hooks/__tests__/useAuth.test.ts` carry 23 behavior cases — Evidence: existing test declarations.
+- [confirmed] `src/contexts/AuthContext.tsx` coupled through reducer/dispatch and frozen by Stage 4 scope decision — Evidence: provider imports and approved row.
 
 ## Behavior Contract
 - Locked: every case in `src/hooks/__tests__/useAuth.test.ts` (all 23 tests).
@@ -148,6 +144,26 @@ refactor
 - `src/contexts/AuthContext.tsx` — frozen; reference only.
 - `src/components/dashboard/` — imports `useAuthSelector`; do not edit.
 
+## Execution Plan
+### Stage 1 — Lock behavior and export baseline
+- Starts when: Existing hook suite, export surface, and frozen consumer files available.
+- Work: Verify behavior contract and record public/internal boundary before edits.
+- Deliverable: Green baseline and export/consumer map constraining refactor.
+- Ends when:
+  - [ ] All 23 behavior cases pass and 7-export surface is recorded.
+- Handoff: Stage 2 receives verified baseline and public/internal boundary.
+- Replan when: Baseline fails or internal helper has unrecorded external consumer.
+
+### Stage 2 — Reorganize hook internals
+- Starts when: Stage 1 provides verified baseline and boundary map.
+- Work: Improve internal organization while preserving locked exports, behaviors, and frozen files.
+- Deliverable: Focused `useAuth.ts` refactor ready for contract verification.
+- Ends when:
+  - [ ] Internal organization goal met without edits outside `useAuth.ts`.
+- Handoff: Overall verification receives focused refactor and original baseline evidence.
+- Replan when: Cleanup requires `AuthContext.tsx`, consumer, or export-surface change.
+- Worker decision: Rename, merge, or regroup three internal helpers inside locked behavior contract.
+
 ## Side Effect Checkpoints
 - [ ] No diff in `src/contexts/AuthContext.tsx` (`git diff --stat` empty).
 - [ ] No diff in any of 14 importing component files (`git diff src/components`).
@@ -167,13 +183,14 @@ refactor
 
 ---
 
-## Stage 5.5 — Downstream Interpretation Check
+## Stage 5.5 — Downstream Execution-Reconstruction Check
 
 After structural validation passes, a sub-agent receives a natural
-work-start request with only the saved brief path. The sub-agent explains
-that it would refactor `useAuth` internals while preserving the exported
-surface and avoiding `AuthContext.tsx`. That interpretation matches the
-user request and Stage 4 decisions, so no patch is needed.
+work-start request with only the saved brief path. The sub-agent recovers
+Stage 1's behavior/export baseline, Stage 2's bounded refactor, the handoff
+into overall verification, and the replan boundary around frozen files.
+That reconstruction matches the user request and Stage 4 decisions, so no
+patch is needed.
 
 ---
 
@@ -182,7 +199,7 @@ user request and Stage 4 decisions, so no patch is needed.
 Gate evaluation: work type is `refactor` — type ∈ {fix, perf, refactor}
 fires the auto-ON gate regardless of input simplicity (the 5
 user-decision rows from Stage 4 would fire it independently). The
-structural validator passed in Stage 5 and downstream interpretation
+structural validator passed in Stage 5 and downstream execution reconstruction
 aligned in Stage 5.5, so the pass runs.
 
 Pass 1 — the saved brief is snapshotted, then a sub-agent receives
@@ -211,8 +228,8 @@ treated as register drift and rewritten in normal prose under the
 Auto-Clarity carve-out — never matched against a Stage 4 row as
 disagreement.
 
-Stage 6 banner (Korean, because the chat is Korean — validator,
-downstream interpretation, self-check, and cold-pickup reported together):
+Stage 6 banner (Korean, because the chat is Korean — structural validation
+is reported separately from execution reconstruction, self-check, and cold-pickup):
 
 > 저장 완료 — `docs/briefs/2026-05-04-refactor-useauth-hook.md`
 > (`refactor`: Tidy `useAuth` hook internals while freezing public
@@ -276,7 +293,7 @@ brief if it is ever needed.
   Auto-Clarity carve-out, never caveman-rewritten.
 - **Why this passed the structural validator** — Stage 4 is a
   behavior variant of the brief-authoring pipeline, not an output
-  variant. The saved brief has the same eight required H2 sections
+  variant. The saved plan has the same nine required H2 sections
   plus the type-conditional `Behavior Contract` for `refactor`, its
   `Out of Scope` bullets carry `[hard]` / `[deferred]` classification,
   and `Open Questions` closes with the reasoned `- None — <reason>`
@@ -284,7 +301,7 @@ brief if it is ever needed.
   the bullets were authored — or that the body register is caveman —
   only that the saved artifact meets the template contract.
 - **Why the user's "Context 동결" answer reshaped Out of Scope** —
-  row 4 is a user-owned scope decision, so the saved brief reflects
+  row 1 is a user-owned scope decision, so the saved brief reflects
   that answer by freezing `AuthContext.tsx` and keeping the work inside
   `useAuth.ts`.
 - **Budget accounting** — Stage 3 used ~6 reads / 4 queries; the

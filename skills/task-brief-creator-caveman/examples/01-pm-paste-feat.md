@@ -65,23 +65,21 @@ The skill first uses the Stage 3 codebase review to resolve technical
 facts. It asks the user only for decisions that remain user-owned:
 product intent, scope boundaries, acceptance thresholds, and risk
 tolerance.
+The author selects `feat` from the explicit new capability and derives the side-effect checks from the reviewed integrations.
 
 | 순번 | 내용 | 수정 추천안 | 근거 |
 |---|---|---|---|
-| 1 | Work type to write into the brief | Keep `feat`. | The PM input adds a new Settings row and a user-visible dark-mode capability. This is not only styling or internal plumbing. |
-| 2 | Theme selector shape | Use System / Light / Dark, default = System. | The input says default should follow the OS theme, and the open question asks whether System should be explicit. An explicit System option prevents hidden behavior. |
-| 3 | Scope boundary for existing theme consumers | Add an Out of Scope line: do not modify existing `useTheme()` consumers outside Settings. | Probe found 17 `useTheme()` consumers outside Settings and no dark-aware variants. Without this guardrail, a downstream agent may widen the diff into unrelated screens. |
-| 4 | Acceptance criterion for first paint | Include "when pref = System, active theme matches OS preference on first paint." | Stage 3 found no OS-theme detection currently wired. The first-paint case is the likely regression point for the new System default. |
-| 5 | Side effect checkpoints | Keep checkpoints for Compact mode, disabled flag state, and OS theme switching while pref = System. | Those are the adjacent behaviors most likely to regress based on `SettingsScreen.tsx`, `flags.ts`, and the missing OS-listener path. |
+| 1 | Theme selector shape | Use System / Light / Dark, default = System. | The input says default should follow the OS theme, and the open question asks whether System should be explicit. An explicit System option prevents hidden behavior. |
+| 2 | Scope boundary for existing theme consumers | Add an Out of Scope line: do not modify existing `useTheme()` consumers outside Settings. | Probe found 17 `useTheme()` consumers outside Settings and no dark-aware variants. Without this guardrail, a downstream agent may widen the diff into unrelated screens. |
+| 3 | Acceptance criterion for first paint | Include "when pref = System, active theme matches OS preference on first paint." | Stage 3 found no OS-theme detection currently wired. The first-paint case is the likely regression point for the new System default. |
 
-User: approve rows 1-5.
+User: approve rows 1-3.
 
 ### Termination
 
 All user-owned decisions are decided. Technical facts resolved by the
-codebase review are not re-asked. One residual implementation tradeoff
-still carries forward to `Open Questions`: per-platform OS-theme listener
-teardown.
+codebase review are not re-asked. The listener-lifecycle choice is bounded
+as a reversible `Worker decision` in Stage 1.
 
 ---
 
@@ -94,9 +92,9 @@ teardown.
 feat
 
 ## Current State (As-Is)
-- `ThemeProvider` expose only `lightTheme`; `useTheme()` always return it.
-- Settings → Appearance has one row (`Compact mode`); pattern set for adding more.
-- No OS-theme detection wired anywhere in codebase.
+- [confirmed] `ThemeProvider` expose only `lightTheme`; `useTheme()` always return it — Evidence: `src/theme/ThemeProvider.tsx` provider value.
+- [confirmed] Settings → Appearance has one row (`Compact mode`) — Evidence: `SettingsScreen` Appearance section.
+- [confirmed] No OS-theme detection wired — Evidence: repo search for `matchMedia` and `Appearance.getColorScheme` found no theme integration.
 
 ## Desired Outcome (To-Be)
 - Settings → Appearance show Theme row with three options: System / Light / Dark (default = System).
@@ -125,6 +123,26 @@ feat
 - `src/storage/userPrefs.ts` — `useUserPref` hook for persistence.
 - `src/feature-flags/flags.ts` — add `flag.darkMode`.
 
+## Execution Plan
+### Stage 1 — Establish theme preference contract
+- Starts when: Existing provider, preference hook, and flag pattern confirmed.
+- Work: Establish gated System / Light / Dark state preserving old light-only path when disabled.
+- Deliverable: Persisted preference and provider contract ready for Settings surface.
+- Ends when:
+  - [ ] Three values, System default, and disabled-flag behavior share one stable contract.
+- Handoff: Stage 2 receives persisted preference and provider contract.
+- Replan when: Existing consumers require contract change outside Settings-only scope.
+- Worker decision: Attach OS-theme listener only while System active unless provider lifecycle makes always-on listener simpler without behavior change.
+
+### Stage 2 — Integrate Settings experience
+- Starts when: Stage 1 provides persisted preference and provider contract.
+- Work: Expose three-option Theme row and connect gated provider behavior.
+- Deliverable: Integrated Settings-only dark-mode experience ready for verification.
+- Ends when:
+  - [ ] Theme row persists changes and updates Settings without reload.
+- Handoff: Overall verification receives integrated experience and persisted state.
+- Replan when: First-paint OS detection cannot avoid light-theme flash inside provider boundary.
+
 ## Side Effect Checkpoints
 - [ ] Existing `Compact mode` toggle in Settings → Appearance still toggle and persist.
 - [ ] With `flag.darkMode = false`, Settings UI identical to before this change (no Theme row visible).
@@ -137,7 +155,7 @@ feat
 - [ ] Production builds with `flag.darkMode = false`: no dark-mode code paths reachable from UI.
 
 ## Open Questions
-- Should the per-platform OS-theme listener be torn down when the user's preference leaves `System`, or stay always-on? (Keeping it on is cheap; deferring this to reviewer judgment.)
+- None — no user-owned decision remains; listener lifecycle is bounded Worker decision in Stage 1.
 ```
 
 ---
@@ -149,8 +167,8 @@ In a live run, Stage 5.5, Stage 5.6, and Stage 5.7 still run after the
 file is written and structurally validated.
 Because Stage 4 produced user-decision rows, Stage 5.7 cold-pickup is
 auto-ON unless the user explicitly disables it; the final Stage 6 banner
-would report the structural validator, downstream interpretation,
-content self-check, caveman parity, and cold-pickup outcome together.
+would report structural validation separately from execution reconstruction,
+content/execution self-check, caveman parity, and cold-pickup outcome.
 
 ## Picked Up Cold — Coding Agent's First Actions
 
@@ -190,9 +208,8 @@ brief locked it down.
   exists** — it was not in the PM input, but it is the kind of
   measurable end-state criterion that prevents a downstream agent from
   declaring "done" while the experience is broken. Stage 3 surfaced the
-  missing OS-theme detection, and decision-table row 4 turned that gap
+  missing OS-theme detection, and decision-table row 3 turned that gap
   into the first-paint criterion the user approved.
-- **Why the Open Question stayed in** — the listener-teardown question is
-  a real tradeoff with no clear right answer from the brief alone.
-  Leaving it in `Open Questions` is correct; pushing the user for a
-  decision would be premature.
+- **Why the listener choice is not an Open Question** — teardown policy is
+  a reversible implementation choice. Stage 1 gives the worker a bounded
+  default and a replan boundary instead of delegating it to a reviewer.

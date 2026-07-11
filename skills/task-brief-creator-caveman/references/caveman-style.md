@@ -8,7 +8,7 @@ Where caveman's defaults would risk technical ambiguity in a brief, this documen
 
 **Caveman is a register transform, not a content reduction.** Every rule below applies to *how* prose is written (articles, fillers, phrasing, sentence shape).
 None of them apply to *what* the brief contains.
-Bullet count, enumerate depth, the number of distinct concerns surfaced per section, and the coverage of input items are identical to a normal-mode brief written from the same input.
+Bullet count, enumerate depth, `Execution Plan` stage count, required field count/order, nested `Ends when` checklist depth, number of distinct concerns per section, and input coverage are identical to a normal-mode plan written from the same input.
 If a caveman rule below would force you to drop a fact, a bullet, or a distinct concern to satisfy a register goal, the rule yields — correctness and completeness always beat compression.
 
 ---
@@ -80,12 +80,18 @@ Inside the brief, these substrings are **never** caveman-rewritten:
 | `# [<type>] <title>` line | Title format is contract. |
 | `## ` and `### ` section headers | Validator parses these. |
 | `## Work Type` value (`feat`, `refactor`, …) | Validator parses this. |
+| `[confirmed]` / `[inferred]`, `Evidence:`, `Confirm by:` tokens | Evidence classification and locator contract. |
+| `### Stage N — <name>` and execution field labels, including briefset `No-op when`, `No-op handoff`, `Verify`, `Inputs`, and `Expected` | Validator and worker parse stage order, verification, and handoff grammar. |
+| Indentation under `- Ends when:` | Preserves stage-local completion checklist depth. |
 | `- N/A — <reason>` escape hatch token | The literal `N/A —` is a contract token; the reason after the em dash is caveman. |
 | The `(proposed)` marker on entry-point bullets | Validator parses this. |
 | Checklist marker `- [ ]` / `- [x]` | Validator parses this. |
 | Entire `## Open Questions` section body | Questions are read by humans deciding what to clarify; full prose preserves nuance and avoids ambiguous fragments. |
 
 Step-order-sensitive content stays in normal prose when fragment-style compression would obscure the order:
+
+- `## Execution Plan` field values — keep precondition, deliverable, handoff recipient, and replan condition explicit.
+  Caveman may shorten value prose, but must not merge fields, remove stages, flatten `Ends when`, reorder stages, drop paths/commands/inputs/expected signals, or hide what next stage receives.
 
 - `## Reproduction` numbered step list — write each step as a clear fragment but never collapse two steps' conjunctions into one bullet.
   If a sequence requires `then` / `next` / `before` / `after` to remain unambiguous, keep those words.
@@ -118,6 +124,9 @@ Each bullet is one fragment describing today's behavior.
 
 - Normal: `LoginForm validates email only on blur — users do not see the error until they try to submit.`
 - Caveman: `` `LoginForm` email validate on blur only. User no see error till submit. ``
+
+Every load-bearing bullet still starts with `[confirmed]` or `[inferred]`.
+Keep stable evidence locator or `Confirm by:` probe explicit even when surrounding prose is terse.
 
 ### `## Desired Outcome (To-Be)`
 
@@ -175,6 +184,41 @@ The one-line purpose after the em dash is caveman.
 - OK: `` `src/auth/LoginForm.tsx` — email validate logic live here. ``
 - OK: `PR #128 — last year Tauri v1 attempt; ref prior constraints.`
 
+### `## Execution Plan`
+
+Stage grammar is a contract, not prose decoration.
+Preserve every stage and use exact labels in exact order:
+
+```markdown
+### Stage N — <name>
+- Starts when: <precondition>
+- Work: <bounded outcome>
+- Deliverable: <artifact or state handed forward>
+- Ends when:
+  - [ ] <stage completion criterion>
+- Handoff: <next stage or overall verification, including what it receives>
+- Replan when: <condition, or None — <reason>>
+```
+
+Optional `- Worker decision:` stays separate and only holds bounded reversible choice.
+Briefset children also preserve these fixed-position fields exactly:
+
+```markdown
+- No-op when: <observable condition, or None — <reason>>
+- No-op handoff: <recipient and evidence path, or None — <reason>>
+- Verify: `<command or bounded inspection>`; Inputs: <concrete input>; Expected: <observable signal>
+```
+
+Paths, commands, input identity, expected exit/output/state, and whether successors continue, skip, or replan are Auto-Clarity content; never shorten them away.
+
+- Caveman OK: `- Work: Build stable theme preference contract; no consumer API change.`
+- Caveman OK: `- Handoff: Stage 2 receive preference contract and provider capability state.`
+- Bad: `- Work/Handoff: Build theme then UI.` (merged fields; lost deliverable and recipient.)
+- Bad: `- Done: tests pass.` (wrong field and flattened `Ends when` checklist.)
+
+Auto-Clarity applies when compression obscures time, ownership, or transfer.
+Keep normal prose for field value if worker could misread what starts now, what finishes stage, what next stage receives, or what discovery forces replanning.
+
 ### `## Side Effect Checkpoints`
 
 Checklist items.
@@ -195,15 +239,13 @@ Measurability survives caveman; vagueness does not become OK.
 
 ### `## Open Questions`
 
-**Normal prose only — caveman does not apply to this section.** Open Questions surface ambiguity that the downstream agent (or a human reviewer) must resolve.
+**Normal prose only — caveman does not apply to this section.** Open Questions contain only non-blocking user-owned decisions with safe defaults.
 Compressing the question text risks losing the nuance that makes the question answerable.
 Write each bullet as a complete, naturally phrased question.
 Identifiers, paths, and quoted strings still stay verbatim per the standard carve-outs.
 
-- OK: `- Are the 5 default key combos finalized by product, or should the implementer propose a draft?`
-- OK: `- Linux is unsupported — should the Settings section be hidden, or rendered disabled with an explanation?`
-- Avoid: `- 5 default key combos finalized, or propose draft?` (caveman fragment; ambiguous antecedent.)
-- Avoid: `- Linux unsupported: hide section, or show disabled?` (telegraphic; loses the "with an explanation" branch.)
+- OK: `- [non-blocking] Should Linux show a disabled Settings section? — Default: hide unsupported section; Reconfirm before: Linux release scope is approved.`
+- Avoid: `- Linux unsupported: hide or disable?` (missing normal prose, safe default, and reconfirm milestone.)
 
 ---
 
@@ -235,5 +277,7 @@ The caveman version drops 17 words.
 - **Caveman of paths.** `` `LoginForm` `` instead of `` `src/auth/LoginForm.tsx` `` → wrong; the entry point loses its routing power.
 - **Caveman of order-sensitive multi-step repro.** `migrate drop column backup` → wrong; collapses three steps into ambiguity.
   Keep the conjunctions.
+- **Caveman of execution structure.** `Stage 1 build, Stage 2 check` → wrong; drops required fields, deliverables, nested completion checks, handoffs, and replan boundaries.
+  Preserve full stage grammar and apply caveman only to field values.
 - **Switching to `ultra` or `wenyan`.** Out of scope for this skill.
   Stay in `full`.

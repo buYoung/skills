@@ -44,20 +44,16 @@ Inline `rg` / `Read`, ~5 reads / 6 greps:
 
 Stage 3 already pins the suspected interaction site. Stage 4 asks for
 the remaining user-owned decisions needed to make a `fix` brief safe:
-reproduction evidence, scope boundaries, and the treatment of one
-reviewer-owned unknown.
+reproduction evidence, scope boundaries, and permission for new regression coverage.
+The author selects `fix` from the explicit defect and routes patch-versus-remove into Stage 1 evidence plus a bounded Worker decision.
 
 | 순번 | 내용 | 수정 추천안 | 근거 |
 |---|---|---|---|
-| 1 | Work type to write into the brief | Keep `fix`. | The input names a defect: login rejects valid credentials on iOS Safari. |
-| 2 | Reproduction detail | Provide the observed environment so it can be pinned in `## Reproduction`: exact iOS Safari version and device, the failing test account (no literal password — name where the secret lives), the observed error surface, and how often it reproduces. | `fix` briefs need a reproducible failing state before implementation. The codebase can identify the likely validation site, but only the user can supply the observed environment, account, and frequency. |
-| 3 | Out of Scope boundary | Lock both the broader validation-chain refactor and the `/api/login` request/response contract out of scope. | Stage 3 found both adjacent to the suspected line. Touching them would widen the defect fix into unrelated behavior change. |
-| 4 | Acceptance criteria ordering | Because the user allows a new regression test for this fix, require a red Cypress reproduction first, then the fix, then iOS Safari manual verification and full suite pass. | Reproduction-first criteria make the defect non-regression explicit for downstream agents, while still respecting the rule that new tests need user or repo permission. |
-| 5 | Side effect checkpoints | Keep checks for the existing valid-login case, URL-significant password characters, and the PR #211 motivation. | `%`, `+`, and `&` share the same risk surface as `@` because `decodeURIComponent` is the suspected interaction site. |
-| 6 | PR #211 remove-vs-patch decision | Carry this as an `Open Questions` item for the reviewer instead of deciding it in the brief. | The original motivation is not recoverable from the current input or code probe, and the downstream reviewer owns whether the cleanup remains necessary. |
+| 1 | Reproduction detail | Provide the observed environment so it can be pinned in `## Reproduction`: exact iOS Safari version and device, the failing test account (no literal password — name where the secret lives), the observed error surface, and how often it reproduces. | `fix` plans need a reproducible failing state before implementation. The codebase can identify the likely validation site, but only the user can supply the observed environment, account, and frequency. |
+| 2 | Out of Scope boundary | Lock both the broader validation-chain refactor and the `/api/login` request/response contract out of scope. | Stage 3 found both adjacent to the suspected line. Touching them would widen the defect fix into unrelated behavior change. |
+| 3 | Regression coverage permission | Allow one Cypress case that proves the failure before the fix and passes afterward. | Repository policy requires user permission before adding a new test case. |
 
-User: approve rows 1 and 3-6, including the new Cypress regression case
-in row 4; for row 2 the user supplies the values —
+User: approve rows 2-3; for row 1 the user supplies the values —
 iOS Safari 17 on iPhone 14 via BrowserStack, QA account
 `qa+iossafari@example.com` whose password contains `@` (stored in the
 1Password item "QA iOS Safari"), "invalid credentials" toast, 5/5
@@ -67,9 +63,8 @@ and the current production build.
 ### Termination
 
 All user-owned decisions are decided. `Reproduction` is pinned from the
-user's row-2 answer, and the reviewer-owned PR #211 decision is
-explicitly carried forward as an `Open Questions` item. Stage 5
-follows.
+user's row-1 answer, while PR #211 investigation becomes Stage 1 work with
+a bounded Worker decision. Stage 5 follows.
 
 ---
 
@@ -82,8 +77,8 @@ follows.
 fix
 
 ## Current State (As-Is)
-- The login flow rejects valid credentials on iOS Safari when the password contains `@`; the same credentials succeed in every other tested browser.
-- `validatePassword()` in `src/auth/validation.ts` calls `decodeURIComponent` on the raw input — likely interaction site (per Stage 3 review).
+- [confirmed] The login flow rejects valid credentials on iOS Safari when the password contains `@`; the same credentials succeed in every other tested browser — Evidence: the pinned BrowserStack reproduction below.
+- [inferred] `validatePassword()` calling `decodeURIComponent` on raw input is the likely interaction site — Confirm by: compare the pinned failure before and after isolating that step and inspect PR #211's contract.
 
 ## Reproduction
 - Steps: open `/login` on iOS Safari 17, enter the known-valid QA account `qa+iossafari@example.com` whose password contains `@` (password: see 1Password item "QA iOS Safari"), tap "Log in".
@@ -112,6 +107,26 @@ fix
 - `cypress/e2e/login.cy.ts` — add the regression case here.
 - PR #211 — introduced the `decodeURIComponent` cleanup; check the original motivation before removing it outright.
 
+## Execution Plan
+### Stage 1 — Pin the failure and validation contract
+- Starts when: The documented BrowserStack environment and referenced QA credential are available.
+- Work: Reproduce the failure and establish which input contract PR #211 intended to preserve.
+- Deliverable: A pinned failing case plus evidence that identifies the smallest compatible correction boundary.
+- Ends when:
+  - [ ] The documented failure reproduces on unfixed code and the PR #211 motivation is recorded.
+- Handoff: Stage 2 receives the pinned failure and compatibility boundary.
+- Replan when: The failure does not reproduce or evidence points outside `validatePassword()`.
+- Worker decision: Patch or remove the decoding step according to the pinned evidence, provided URL-significant passwords and the login API contract remain compatible.
+
+### Stage 2 — Correct and verify the login path
+- Starts when: Stage 1 provides a pinned failure and compatibility boundary.
+- Work: Apply the bounded validation correction and exercise the user-approved regression coverage.
+- Deliverable: A corrected login path with red-to-green regression evidence and cross-browser results.
+- Ends when:
+  - [ ] The pinned iOS Safari case passes and adjacent URL-significant password cases remain valid.
+- Handoff: Overall verification receives the corrected path, regression evidence, and compatibility results.
+- Replan when: The smallest compatible correction requires changing the `/api/login` contract or validation-chain structure.
+
 ## Side Effect Checkpoints
 - [ ] Existing `valid login` Cypress case still passes (no regression on the happy path).
 - [ ] Passwords containing other URL-significant characters (`%`, `+`, `&`) still validate correctly on all browsers.
@@ -124,7 +139,7 @@ fix
 - [ ] Full Cypress suite stays green.
 
 ## Open Questions
-- Is the `decodeURIComponent` step in PR #211 still needed for any input it actually defends against, or can it be removed entirely instead of patched? Defer to PR review if unclear.
+- None — no user-owned decision remains; patch-versus-remove is bounded by Stage 1 evidence and compatibility constraints.
 ```
 
 ---
@@ -135,9 +150,9 @@ This example focuses on the saved brief shape.
 In a live run, Stage 5.5, Stage 5.6, and Stage 5.7 still run after the
 file is written and structurally validated.
 Because the work type is `fix`, Stage 5.7 cold-pickup is auto-ON even if
-the input is short; the final Stage 6 banner would report the structural
-validator, downstream interpretation, content self-check, and
-cold-pickup outcome together.
+the input is short; the final Stage 6 banner would report structural
+validation separately from execution reconstruction, content/execution
+self-check, and cold-pickup outcome.
 
 ## Picked Up Cold — Coding Agent's First Actions
 
@@ -155,7 +170,7 @@ scope. From the brief alone:
    before patching.
 3. Open `src/auth/validation.ts:34` (named in `Related Files / Entry
    Points` with the suspected interaction site already noted) and read
-   PR #211's motivation before patching, per the open question.
+   PR #211's motivation before patching, as required by Stage 1's investigation and bounded `Worker decision`.
 4. Patch the offending step. The new Cypress case must flip green; full
    suite stays green (per `Acceptance Criteria` and `Side Effect
    Checkpoints`).
@@ -183,12 +198,10 @@ names the account and where its password lives.
   credentials; the brief references the secret's location instead. The
   load-bearing fact for this bug — the password contains `@` — is stated
   explicitly, so nothing the downstream agent needs is lost.
-- **Why Open Questions kept the "remove vs. patch" question** — the
-  brief writer does not have authority to decide whether PR #211's
-  defensive code is still needed. Leaving the question open lets the
-  downstream agent (or PR reviewer) make the call with full context,
-  rather than the brief committing to a path the original author may
-  push back on.
+- **Why "remove vs. patch" is not an Open Question** — PR #211 evidence
+  makes this a technical investigation followed by a reversible worker
+  choice. Stage 1 bounds the decision with compatibility checks and a
+  replan condition.
 - **Why the four-anchor check passed despite a one-line input** — PROBLEM
   (login fails), GOAL (login should succeed) is implicit, SCOPE (login
   flow on iOS Safari with `@` in password — narrow), TARGET (the auth

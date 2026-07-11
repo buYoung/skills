@@ -65,9 +65,9 @@ Decision table closed. Move to Stage 5.
 feat
 
 ## Current State (As-Is)
-- Key bindings in `src/hotkeys/useHotkey.ts` fire only while app window has focus.
-- App in background → shortcut no register. User must focus window first.
-- No persistent shortcut-editing UI in Settings.
+- [confirmed] Key bindings in `src/hotkeys/useHotkey.ts` fire only while app focused — Evidence: `useHotkey()` registration branch.
+- [confirmed] Background shortcut no register — Evidence: current manual hotkey scenario.
+- [confirmed] No persistent shortcut-editing UI — Evidence: Settings route and preference search.
 
 ## Desired Outcome (To-Be)
 - OS-level global shortcut invoke app action even while app backgrounded.
@@ -95,6 +95,34 @@ feat
 - `src/settings/SettingsScreen.tsx` (proposed) — new shortcut-editing section host.
 - PR #128 — last year Tauri v1 attempt; PR desc capture prior constraints worth ref.
 
+## Execution Plan
+### Stage 1 — Stabilize shortcut contract
+- Starts when: Existing in-app actions, platform support, and five draft defaults confirmed.
+- Work: Establish global registration contract without changing in-app action semantics.
+- Deliverable: Shortcut contract and platform capability state ready for Settings.
+- Ends when:
+  - [ ] Five actions have stable ids, draft defaults, and failure reporting.
+- Handoff: Stage 2 receives shortcut contract and capability state.
+- Replan when: Tauri v2 cannot preserve action contract on Windows or macOS.
+
+### Stage 2 — Expose editable shortcuts
+- Starts when: Stage 1 provides contract and capability state.
+- Work: Add persistent Settings editing with required unsupported-platform behavior.
+- Deliverable: Integrated Settings surface and persisted shortcut state.
+- Ends when:
+  - [ ] Supported shortcut edits apply without restart; Linux disabled state remains safe.
+- Handoff: Stage 3 receives integrated surface and persisted state.
+- Replan when: Registration and persistence cannot update atomically.
+
+### Stage 3 — Verify platform behavior
+- Starts when: Integrated surface available in Windows, macOS, and Linux builds.
+- Work: Verify foreground compatibility, background invoke, permission timing, failure handling, and unsupported state.
+- Deliverable: Platform evidence ready for whole-work acceptance evaluation.
+- Ends when:
+  - [ ] Required platform scenarios and side-effect checkpoints have results.
+- Handoff: Overall verification receives implementation and platform evidence.
+- Replan when: Platform limitation requires user-visible behavior outside approved scope.
+
 ## Side Effect Checkpoints
 - [ ] Existing in-app hotkey still fire when window focused (no regression).
 - [ ] macOS accessibility permission prompt appear once, on first hotkey use, not at app launch.
@@ -108,8 +136,8 @@ feat
 - [ ] Linux: Settings section render disabled with tooltip "global hotkey unsupported on this system" when plugin reports unavailable.
 
 ## Open Questions
-- Are the 5 default key combos finalized by product, or is the implementer proposing a draft that product confirms before merge? (Current assumption: implementer proposes the draft and product confirms before merge.)
-- Should conflict detection against OS-default shortcuts be in scope for this brief, or deferred to a follow-up?
+- [non-blocking] Are the five default key combinations final, or should the implementer propose a draft? — Default: use the documented draft; Reconfirm before: merge approval.
+- [non-blocking] Should OS-default shortcut conflict detection enter this plan? — Default: defer it to a follow-up; Reconfirm before: Stage 2 scope is frozen.
 ```
 
 Validator: passes structurally (`-v` not needed for this run, no
@@ -123,7 +151,7 @@ check.
 
 > Saved — `docs/briefs/2026-05-05-feat-global-hotkey-system.md`
 > (`feat`: Global hotkey system; structural validation passed;
-> downstream interpretation aligned; content self-check passed — major
+> execution reconstruction aligned; content/execution self-check passed — major
 > input concerns reflected, caveman parity held;
 > cold-pickup `clean_pass` after 1 pass — no ask-backs, no missing
 > concerns, no over-terse bullets). Body is in caveman full mode per
