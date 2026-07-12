@@ -1,111 +1,78 @@
 ---
 name: react-vite-guide
-description:
-  React 19 + Vite SPA development guidelines. Use PROACTIVELY when writing,
-  reviewing, or refactoring any React component — even if the user doesn't
-  explicitly ask for best practices. Covers composition patterns (compound
-  components, boolean prop elimination, state lifting, context providers),
-  performance optimization (React.lazy, Suspense, code splitting, useMemo,
-  useCallback, memo, re-render prevention, bundle size reduction), and web
-  interface best practices (accessibility, ARIA, forms, animation, dark mode).
-  Triggers on any work involving useState, useEffect, useRef, useMemo,
-  useCallback, useTransition, useContext, use(), React.lazy, Suspense, SWR,
-  React Router, Vite config, import.meta.env, manualChunks, rollupOptions,
-  Tailwind CSS, CSS Modules, or barrel file imports. Also triggers on
-  performance debugging, re-render issues, bundle analysis, code splitting
-  decisions, component architecture discussions, state management patterns,
-  or new feature development in React + Vite projects.
+description: >
+  Use for implementation, review, refactoring, migration, or diagnosis in a
+  React 18 or React 19 project built with Vite 7 when the task requires React
+  design judgment, version compatibility, or a Vite client build decision.
+  The primary scope is browser-rendered CSR SPA/MPA and Vite client builds
+  embedded in an existing backend. Do not use by default for non-Vite React,
+  React 17 or earlier, React 20 or later, Vite 6 or earlier, Vite 8 or later,
+  framework-owned SSR/RSC/server functions, or isolated copy and styling work.
 license: MIT
 ---
 
-# React 19 + Vite Guide
+# React + Vite Execution Router
 
-Comprehensive guidelines for building React 19 SPA applications with Vite. Combines composition patterns, performance optimization, and web interface best practices into a single reference optimized for AI agent workflows.
+## Scope and Classification
 
-## Tech Stack
+Apply only to CSR SPA/MPA or an existing backend's Vite client. Stop on SSR, hydration architecture, RSC, or server-function ownership.
 
-- **React 19** — `use()`, ref as prop, React Compiler support
-- **Vite** — `React.lazy()` + dynamic `import()`, env variables, HMR
-- **TypeScript** — strict mode recommended
-- **Pure SPA (CSR)** — no SSR, no hydration concerns
+Record once: `request_mode` (`implement|review|migrate|diagnose`), mutation authority, requested outcome, resolved React/Vite versions, React 19.2 gate, app/library/mixed consumers, CSR boundary, and the first observed work signal. Do not infer unresolved or mixed versions.
 
-## Capability Index
+Only when the signal is Vite work, also collect the actual Node version plus CI/runtime evidence. Continue to the selected Vite leaf only when Vite is in that leaf's supported source/target boundary and Node satisfies `(major == 20 and minor >= 19)`, `(major == 22 and minor >= 12)`, or `major > 22`; otherwise return a blocked record before reading a leaf. Pass this preflight evidence unchanged.
 
-### 1. Composition Patterns (references/composition-patterns.md)
+## Conditional Table of Contents
 
-Component architecture and state management patterns for scalable React apps.
+Choose exactly one initial leaf closest to the requested outcome. Read another leaf only when the first leaf returns it.
 
-| Priority | Category | Impact |
-|----------|----------|--------|
-| 1 | Component Architecture | HIGH |
-| 2 | State Management | MEDIUM |
-| 3 | Implementation Patterns | MEDIUM |
-| 4 | React 19 APIs | MEDIUM |
+| Initial signal or task | Initial leaf |
+|---|---|
+| Component size/separation/composition, feature folders, export/import, public API | [React structure and public API](references/react-structure-public-api.md) |
+| Custom Hook extraction, duplicate lifecycle, unnecessary Effect, subscription/timer/browser API | [React Hooks and Effects](references/react-hooks-effects.md) |
+| State lift/down, reducer/Context/store, URL state, server-data owner, request lifetime | [React state and data](references/react-state-data.md) |
+| Rerender, memoization, Profiler, performance claim, Compiler-related optimization | [React render performance](references/react-render-performance.md) |
+| Lazy/Suspense, loading/background/empty/error, Error Boundary, retry/reset | [React async UI](references/react-async-ui.md) |
+| Already-owned control/navigation semantics, keyboard/focus/name, announcement, reduced motion | [React accessibility](references/react-accessibility.md) |
+| React 18 root/unmount warning, ref/Context syntax, React 18 Compiler compatibility | [React 18 runtime compatibility](references/react-18-runtime-compatibility.md) |
+| Explicit React 18→19 departure audit | [React 18 to 19 migration](references/react-18-to-19-migration.md) |
+| React 19 migration arrival validation with normalized departure evidence already present | [React 19 migration](references/react-19-migration.md) |
+| React 19 ref/provider, `Activity`, `useEffectEvent` | [React 19 component APIs](references/react-19-component-apis.md) |
+| React 19 form submission/mutation owner, Action API, or `use(Context|Promise)` | [React 19 Actions and async APIs](references/react-19-actions-async.md) |
+| Compiler performance/optimization without normalized baseline | [React render performance](references/react-render-performance.md) |
+| Vite 7 entry/dev/proxy, env/mode, asset URL/public/query | [Vite 7 client runtime](references/vite-7-client-runtime.md) |
+| Vite 7 dynamic import/chunk/import graph, `manualChunks`, plugin | [Vite 7 build and plugins](references/vite-7-build-plugins.md) |
+| Vite 7 subpath, cache headers, stale chunk, reload recovery | [Vite 7 deployment](references/vite-7-deployment.md) |
+| Explicit Vite 6→7 migration | [Vite 6 to 7 migration](references/vite-6-to-7-migration.md) |
 
-Key topics:
-- Boolean prop proliferation vs composition alternatives
-- Compound components with shared context
-- State management decoupled from UI via providers
-- Generic context interfaces (state/actions/meta)
-- State lifted into providers for sibling access
-- Explicit component variants vs boolean modes
-- Children vs render props
-- React 19: `use()` replaces `useContext()`, ref as regular prop
+## Minimal Execution Loop
 
-### 2. Performance Optimization (references/performance-optimization.md)
+1. Run the selected leaf with the common inputs.
+2. Collect its decision record. Pass `handoff_evidence` unchanged to its exact `next_reference`.
+3. A leaf handoff must be `none`, an exact relative `.md` path, or `return_to_caller`. Resolve `return_to_caller` only from the exact caller path in received evidence; local compare/reverify stays inside the current leaf.
+4. Do not revisit an owner already decided unless new evidence is returned.
+5. Stop on a handoff cycle, version/scope mismatch, missing required evidence, failed verification, breaking public decision without approval, or mutation beyond authority.
+6. Finish when `next_reference` is `none` and the request-mode completion rule is met.
 
-Performance optimization patterns adapted for Vite + React 19 SPA. Next.js-specific patterns removed; Vite equivalents provided.
+## Common Decision Record
 
-| Priority | Category | Impact |
-|----------|----------|--------|
-| 1 | Async Optimization | CRITICAL |
-| 2 | Bundle Size | CRITICAL |
-| 3 | Client-Side Data Fetching | MEDIUM-HIGH |
-| 4 | Re-render Optimization | MEDIUM |
-| 5 | Rendering Performance | MEDIUM |
-| 6 | JavaScript Performance | LOW-MEDIUM |
-| 7 | Advanced Patterns | LOW |
+```yaml
+reference: <leaf filename>
+task_branch: <executed responsibility>
+inputs_observed: [<paths, owners, symptoms, measurements>]
+decision: <selection or not-applied>
+actions_or_findings: [<authorized changes or read-only findings>]
+verification:
+  status: passed | failed | not-run | blocked
+  evidence: <result or reason>
+stop_reason: <none or reason>
+next_reference: <none or relative leaf path>
+handoff_evidence: [<evidence the next leaf can reuse>]
+```
 
-Key topics:
-- `Promise.all()` and dependency-based parallelization
-- `React.lazy()` + `Suspense` for code splitting (Vite)
-- Barrel file import cost and direct imports
-- Hover/focus preloading for perceived speed
-- SWR for client-side data deduplication
-- Functional `setState`, lazy state initialization
-- `useTransition` for non-urgent updates
-- `content-visibility: auto` for long lists
-- `useRef` for transient values
-- Module-level caching patterns
+## Complete or Stop
 
-### 3. Web Interface (references/web-interface.md)
+- `review`: finish with evidence-backed findings and risks; no mutation is required.
+- `diagnose`: finish with root cause, affected owner, and verification evidence.
+- `implement|migrate`: finish with authorized changes and proportionate verification.
 
-UI/UX patterns for accessibility, forms, animation, performance, and content quality.
-
-| Category | Focus |
-|----------|-------|
-| Accessibility | ARIA, semantic HTML, keyboard handlers |
-| Focus States | `focus-visible`, no bare `outline-none` |
-| Forms | `autocomplete`, correct `type`, paste allowed |
-| Animation | `prefers-reduced-motion`, compositor-only props |
-| Typography | Ellipsis, curly quotes, `tabular-nums` |
-| Content Handling | Truncation, empty states, long content |
-| Images | Explicit dimensions, lazy loading |
-| Performance | Virtualization, no layout reads in render |
-| Navigation & State | URL reflects state, deep-linkable UI |
-| Touch & Interaction | `touch-action`, `overscroll-behavior` |
-| Dark Mode | `color-scheme`, `theme-color` meta |
-| Locale & i18n | `Intl.DateTimeFormat`, `Intl.NumberFormat` |
-
-### 4. Vite-Specific Patterns (references/vite-specific.md)
-
-Vite-specific configuration, conventions, and optimization patterns.
-
-Key topics:
-- Dynamic imports and code splitting with Vite
-- Environment variables (`import.meta.env`)
-- Vite plugin ecosystem (React SWC/Babel)
-- Build optimization (`manualChunks`, `rollupOptions`)
-- Alias and path resolution
-- CSS Modules / Tailwind CSS integration
-
+Return the classification, visited leaves, decision records, stopped/non-applied branches, and remaining unverified risks. A blocked or failed leaf cannot be reported as passed.
