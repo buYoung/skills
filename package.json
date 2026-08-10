@@ -1,6 +1,6 @@
 {
   "name": "skills",
-  "version": "1.6.0",
+  "version": "1.7.0",
   "private": true,
   "description": "A collection of AI agent skills for efficient developer–AI collaboration. Each skill provides structured capabilities (SKILL.md + references/) that AI coding assistants can leverage to perform specific tasks.",
   "scripts": {

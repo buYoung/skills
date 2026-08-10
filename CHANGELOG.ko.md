@@ -6,6 +6,25 @@
 
 ## [Unreleased]
 
+## [1.7.0] - 2026-08-10
+
+### 추가
+
+- `react-guide`와 Vite v8을 지원하는 `vite-guide` skill 추가
+
+### 개선
+
+- `task-brief-creator`를 명확한 작업 지시서 생성 도구로 개선
+- `typst-creator`에 Typst 0.13, 0.14, 0.15 지원 추가로 호환성 개선
+
+### 수정
+
+- `iterative-self-review`가 자동 호출되지 않도록 description 수정
+
+### 제거
+
+- `react-vite-guide`와 오래된 React composition·performance optimization reference 제거
+
 ## [1.6.0] - 2026-07-06
 
 ### 추가

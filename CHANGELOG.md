@@ -6,6 +6,25 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [1.7.0] - 2026-08-10
+
+### Added
+
+- Added separate `react-guide` and `vite-guide` skills, with Vite v8 support.
+
+### Improved
+
+- Improved `task-brief-creator` to produce definitive work instructions instead of ambiguous handovers.
+- Improved the Typst skill with support for versions 0.13, 0.14, and 0.15.
+
+### Fixed
+
+- Fixed `iterative-self-review` so it no longer activates automatically.
+
+### Removed
+
+- Removed the retired `react-vite-guide` skill and outdated React composition and performance references.
+
 ## [1.6.0] - 2026-07-06
 
 ### Added
