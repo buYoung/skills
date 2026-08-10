@@ -22,7 +22,7 @@ Collect resolved Vite 7 source and Vite 8 target, common validated Node prefligh
 | Unsupported esbuild transform/minify feature or Rolldown output/hook | blocking | Select a documented replacement or stop | none |
 | CJS default import, main-field, external `require`, UMD/IIFE, or JS API error shape is used | semantic audit | Verify the exact consumer before declaring arrival | none |
 | Vite 8 object `manualChunks` or deprecated function form remains | native splitting migration | Replace evidenced need with Rolldown `codeSplitting`; remeasure output | [build/plugins](vite-build-plugins.md) |
-| UI-framework plugin major/config is separately implicated | integration handoff | Keep Vite core arrival reversible; preserve exact framework/plugin/config evidence | `react-vite-guide` when React |
+| UI-framework plugin major/config is separately implicated | plugin handoff | Keep Vite core arrival reversible; preserve exact framework/plugin/config evidence | [build/plugins](vite-build-plugins.md) |
 | Entry/env/asset/diagnostics remains after arrival | owner handoff | Preserve version and arrival evidence | [client runtime](vite-client-runtime.md) |
 | Deployment remains after arrival | owner handoff | Preserve topology and arrival evidence | [deployment](vite-deployment.md) |
 
@@ -36,10 +36,10 @@ Stop on unsupported Node/browser contract, incompatible plugin or framework owne
 
 ## Verify
 
-Run the existing install/dependency, dev, production build, and applicable preview/deployment paths. Compare entry/HMR, dependency optimization, dynamic imports/chunks, JS and CSS output/minification, CJS imports, workers/library formats when present, plugin hooks, source maps, and framework-plugin smoke behavior. Specialized framework compiler/runtime evidence remains an integration handoff. Do not declare Vite 8 arrival from a successful config load alone.
+Run the existing install/dependency, dev, production build, and applicable preview/deployment paths. Compare entry/HMR, dependency optimization, dynamic imports/chunks, JS and CSS output/minification, CJS imports, workers/library formats when present, plugin hooks, source maps, and framework-plugin smoke behavior. Specialized framework compiler/runtime semantics require caller-owned evidence before adapter validation. Do not declare Vite 8 arrival from a successful config load alone.
 
 ## Return and Handoff
 
-Return the migration path, itemized inventory, exact versions, dependency/config stages, verification, rollback point, and compatibility debt. After arrival, route only unresolved Vite owner work to [client runtime](vite-client-runtime.md), [build/plugins](vite-build-plugins.md), or [deployment](vite-deployment.md). A React plugin seam uses `next_skill: react-vite-guide`; another framework returns its integration-owner need.
+Return the migration path, itemized inventory, exact versions, dependency/config stages, verification, rollback point, and compatibility debt. After arrival, route only unresolved Vite owner work to [client runtime](vite-client-runtime.md), [build/plugins](vite-build-plugins.md), or [deployment](vite-deployment.md). Framework-specific semantics return as external owner requirements.
 
 Fact sources: [Vite 8 announcement](https://vite.dev/blog/announcing-vite8) and [Vite 8 migration](https://vite.dev/guide/migration).

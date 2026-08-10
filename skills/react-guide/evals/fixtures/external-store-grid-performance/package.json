@@ -1,0 +1,9 @@
+{
+  "name": "external-store-grid-fixture",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "react": "19.2.0",
+    "react-dom": "19.2.0"
+  }
+}

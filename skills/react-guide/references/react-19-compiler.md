@@ -16,7 +16,7 @@ Collect resolved React 19, Compiler version, mode, target/runtime, build-integra
 |---|---|---|---|
 | Existing compatible config | retain | No incidental changes | return_to_caller |
 | Evidenced compatibility mismatch | minimal fix | Change only mismatch | return_to_caller |
-| React config is valid but a resolved Vite adapter is incompatible | integration handoff | Preserve mode/options/diagnostics without changing adapter here | `react-vite-guide` |
+| React config is valid but the build adapter is incompatible | external build handoff | Preserve mode/options/diagnostics without changing adapter here | external build owner |
 | Performance caller lacks baseline/task | blocked | Do not enable/remove memoization | return_to_caller |
 | Unsupported plugin/runtime or build fails | rollback/stop | Restore prior config | return_to_caller |
 
@@ -34,6 +34,6 @@ Run existing production build and diagnostics, exercise behavior, and return res
 
 ## Return and Handoff
 
-Return compatibility/config/diagnostic evidence to [render performance](react-render-performance.md) or the exact caller. A resolved Vite adapter mismatch returns `next_skill: react-vite-guide`.
+Return compatibility/config/diagnostic evidence to [render performance](react-render-performance.md) or the exact caller. Return adapter mismatches as external build-owner requirements.
 
 Fact sources: [React Compiler introduction](https://react.dev/learn/react-compiler/introduction) and [Compiler installation](https://react.dev/learn/react-compiler/installation).

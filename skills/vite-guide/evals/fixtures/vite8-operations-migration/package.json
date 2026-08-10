@@ -1,0 +1,15 @@
+{
+  "name": "operations-console",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "5.1.4",
+    "vite": "7.2.2"
+  },
+  "overrides": {
+    "vite": "npm:rolldown-vite@7.2.2"
+  }
+}

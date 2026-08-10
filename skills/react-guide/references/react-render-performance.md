@@ -40,6 +40,6 @@ Repeat the same interaction/metric/environment, then check correctness. Compiler
 
 ## Return and Handoff
 
-Return baseline, hypothesis, change/finding, comparison, correctness, and keep/rollback. Allowed internal leaves are [structure/public API](react-structure-public-api.md), [async UI](react-async-ui.md), [React 18 runtime](react-18-runtime-compatibility.md), and [React 19 Compiler](react-19-compiler.md). After an async boundary decision under resolved Vite, use `next_skill: react-vite-guide` with the fixed interaction and metric.
+Return baseline, hypothesis, change/finding, comparison, correctness, and keep/rollback. Allowed internal leaves are [structure/public API](react-structure-public-api.md), [async UI](react-async-ui.md), [React 18 runtime](react-18-runtime-compatibility.md), and [React 19 Compiler](react-19-compiler.md). A chunk claim requires external build output for the same fixed interaction and metric before keep/rollback.
 
 Fact sources: [React Profiler](https://react.dev/reference/react/Profiler) and [React 19.2 Performance Tracks](https://react.dev/blog/2025/10/01/react-19-2#performance-tracks).

@@ -17,11 +17,9 @@ Receive the common Vite preflight record and exact Vite major/minor, then collec
 | Base mismatch | base correction | Fix `base`/`BASE_URL` owner | none |
 | Old chunks retained/versioned | no reload recovery | Preserve model | none |
 | Old chunks removed/reproduced, no additional UI work | coordinated recovery | Pair preload-error handling with current-HTML cache | none |
-| Old chunks removed, reproduced, and user-visible recovery is needed under React | integration handoff | Preserve topology/cache/reload evidence | `react-vite-guide` |
-| Old chunks removed, reproduced, and another framework owns visible recovery | framework handoff | Preserve topology/cache/reload evidence | none |
+| Old chunks removed, reproduced, and user-visible recovery is needed | framework handoff | Preserve topology/cache/reload evidence | external framework owner |
 | Loop/work policy undefined | blocked | Do not add global reload | none |
-| Focus/announcement needed under React | integration handoff | Preserve failure/recovery evidence | `react-vite-guide` |
-| Focus/announcement needed under another framework | framework handoff | Preserve failure/recovery evidence | none |
+| Focus/announcement behavior is needed | framework handoff | Preserve failure/recovery evidence | external framework owner |
 
 ## Actions and Prohibitions
 
@@ -37,6 +35,6 @@ Verify direct/refresh routes at base, cache headers, already-open old client, on
 
 ## Return and Handoff
 
-Return deployment reproduction/cache/reload evidence. For React 18/19 UI recovery, use `next_skill: react-vite-guide`; for another framework, return its framework-owner need without inventing UI semantics.
+Return deployment reproduction/cache/reload evidence. Return visible recovery, focus, and announcement needs to the external framework owner without inventing UI semantics.
 
 Fact sources: [Vite 7 static deployment](https://v7.vite.dev/guide/static-deploy) and [Vite 8 static deployment](https://vite.dev/guide/static-deploy).

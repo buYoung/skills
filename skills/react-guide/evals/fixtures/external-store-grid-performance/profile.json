@@ -1,0 +1,7 @@
+{
+  "interaction": "server price update for row-0042",
+  "rowCount": 10000,
+  "renderedRows": 10000,
+  "commitDurationMs": 184,
+  "environment": "production profiling build, fixed dataset"
+}

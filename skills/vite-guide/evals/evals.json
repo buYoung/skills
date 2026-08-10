@@ -1,0 +1,76 @@
+{
+  "skill_name": "vite-guide",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Complete change request OPS-731 using TASK.md and MIGRATION_LOG.md. Vite core arrival is authorized, but dependency and ownership limits in the evidence are binding. Produce the narrowest reversible migration, do not install dependencies, and write REPORT.md with the compatibility inventory, stage boundaries, verification, debt, and rollback points.",
+      "expected_output": "A native Vite 8 migration that preserves deployment, output intent, diagnostics, browser support, and compatible plugins while removing temporary or incompatible Vite 7-era configuration.",
+      "expectations": [
+        "Stable Vite 8 replaces the temporary override and Node floor is preserved",
+        "plugin-react remains on v5 during Vite core arrival",
+        "Deployment and diagnostics contracts are preserved",
+        "Dependency optimization is expressed through the Vite 8 native bundler while keeping the exclusion",
+        "The legacy output split is represented through the Vite 8 native output model",
+        "React runtime keeps precedence over the remaining cross-platform vendor group",
+        "Esbuild-only minification and the temporary package alias are gone",
+        "Plugin implementation and ordering remain unchanged",
+        "The report derives a staged compatibility inventory without claiming unrun arrival checks"
+      ],
+      "files": [
+        "evals/fixtures/vite8-operations-migration/TASK.md",
+        "evals/fixtures/vite8-operations-migration/MIGRATION_LOG.md",
+        "evals/fixtures/vite8-operations-migration/package.json",
+        "evals/fixtures/vite8-operations-migration/vite.config.mjs",
+        "evals/fixtures/vite8-operations-migration/build/auditPlugin.mjs"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Resolve incident DEP-209 using TASK.md and OWNERSHIP.md. Coordinate the layers you are authorized to change, preserve caller work during recovery, do not install dependencies, and write REPORT.md with the failure chain, verification limits, rollback, and any required handoff.",
+      "expected_output": "The backend subpath, cache lifetimes, and stale-client recovery form one bounded deployment contract that protects unsaved work and respects the framework ownership boundary.",
+      "expectations": [
+        "Vite base matches the backend /console/ mount",
+        "Hashed assets remain under assets/",
+        "Current HTML is not stored while hashed assets remain immutable",
+        "Backend fallback still resolves to /console/index.html",
+        "A stale preload failure is intercepted and automatic recovery is bounded across reloads",
+        "Unsaved work blocks automatic recovery and produces a framework-owner request",
+        "The recovery guard is cleared or rotated after successful boot",
+        "Framework-owned React code remains untouched",
+        "The report records actual-topology verification, rollback, and framework-owner needs"
+      ],
+      "files": [
+        "evals/fixtures/backend-subpath-stale-chunk/TASK.md",
+        "evals/fixtures/backend-subpath-stale-chunk/OWNERSHIP.md",
+        "evals/fixtures/backend-subpath-stale-chunk/package.json",
+        "evals/fixtures/backend-subpath-stale-chunk/vite.config.mjs",
+        "evals/fixtures/backend-subpath-stale-chunk/deploy/nginx.conf",
+        "evals/fixtures/backend-subpath-stale-chunk/src/bootstrap.mjs",
+        "evals/fixtures/backend-subpath-stale-chunk/src/App.jsx"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Repair build change COMP-118 using TASK.md and COMPILER_CONTRACT.md. The plugin major upgrade is authorized, but Compiler semantics and React source remain caller-owned. Resolve the Vite-side integration without installing dependencies, and write REPORT.md with compatibility gates, ordering rationale, staged verification, and rollback points.",
+      "expected_output": "A Vite 8-compatible React plugin chain that keeps Fast Refresh and the caller's Compiler contract through the supported external transformation path without rewriting React source.",
+      "expectations": [
+        "Vite 8 and Node 22.12 remain fixed while plugin-react reaches v6",
+        "The supported external Babel adapter is declared",
+        "The plugin package's Compiler bridge and the external transformer are used",
+        "React Refresh no longer owns the removed inline transformation option",
+        "The external adapter preserves the caller-owned Compiler target and mode",
+        "Virtual flags, React Refresh, and Compiler transformation retain semantic order",
+        "Existing Vite diagnostics/build and virtual plugin contracts are preserved",
+        "React-owned source and memoization remain untouched",
+        "The report derives version gates, separate stages, verification, and rollback without performance claims"
+      ],
+      "files": [
+        "evals/fixtures/plugin-react-v6-compiler/TASK.md",
+        "evals/fixtures/plugin-react-v6-compiler/COMPILER_CONTRACT.md",
+        "evals/fixtures/plugin-react-v6-compiler/package.json",
+        "evals/fixtures/plugin-react-v6-compiler/vite.config.mjs",
+        "evals/fixtures/plugin-react-v6-compiler/src/Dashboard.jsx"
+      ]
+    }
+  ]
+}

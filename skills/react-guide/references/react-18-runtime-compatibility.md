@@ -20,12 +20,12 @@ Collect resolved `react/react-dom`, CSR entry/root calls, warnings/unmount owner
 | React 18-only app ref/Context | React 18 syntax | Use `forwardRef`, `useContext`, `.Provider` as required | none |
 | Library/mixed public consumers | preserve contract | Keep compatible surface | [structure/public API](react-structure-public-api.md) |
 | Compiler baseline/config supplied | compatibility check | Preserve React 18 target/runtime; fix evidenced mismatch | [render performance](react-render-performance.md) |
-| Existing Compiler config under a resolved Vite client needs adapter work | integration handoff | Preserve target `'18'`, `react-compiler-runtime`, and diagnostics | `react-vite-guide` |
+| Existing Compiler config needs build-adapter work | external build handoff | Preserve target `'18'`, `react-compiler-runtime`, options, and diagnostics | external build owner |
 | Compiler baseline/config absent | blocked | Do not enable/remove memoization | [render performance](react-render-performance.md) |
 
 ## Actions and Prohibitions
 
-Change entry lifecycle or implementation/types atomically. Preserve Compiler target/runtime and pass build-adapter evidence to its integration owner instead of deciding it here. Do not introduce React 19 syntax, hydration handling, partial root conversion, incidental Compiler enablement, or bulk memoization removal.
+Change entry lifecycle or implementation/types atomically. Preserve Compiler target/runtime and pass build-adapter evidence to its build owner instead of deciding it here. Do not introduce React 19 syntax, hydration handling, partial root conversion, incidental Compiler enablement, or bulk memoization removal.
 
 ## Stop or Roll Back
 
@@ -37,6 +37,6 @@ Verify entry build/runtime, warnings, unmount, types, ref attach/cleanup, provid
 
 ## Return and Handoff
 
-Return version/syntax/compatibility evidence. Public compatibility goes to [structure/public API](react-structure-public-api.md). Compiler diagnostics return to [render performance](react-render-performance.md); a resolved Vite adapter need returns `next_skill: react-vite-guide`. Build-tool migration readiness is not decided here.
+Return version/syntax/compatibility evidence. Public compatibility goes to [structure/public API](react-structure-public-api.md). Compiler diagnostics return to [render performance](react-render-performance.md); adapter needs return as external build-owner requirements. Build-tool migration readiness is not decided here.
 
 Fact sources: [React DOM client APIs](https://react.dev/reference/react-dom/client), [Compiler target](https://react.dev/reference/react-compiler/target), and [Compiler installation](https://react.dev/learn/react-compiler/installation).

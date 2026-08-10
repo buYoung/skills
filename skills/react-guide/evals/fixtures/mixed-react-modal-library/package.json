@@ -1,0 +1,9 @@
+{
+  "name": "@acme/modal",
+  "version": "4.7.0",
+  "type": "module",
+  "peerDependencies": {
+    "react": ">=18 <20",
+    "react-dom": ">=18 <20"
+  }
+}

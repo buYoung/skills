@@ -1,0 +1,78 @@
+{
+  "skill_name": "react-guide",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Investigate and resolve incident ORD-4821 using TASK.md and the supplied repository evidence. Treat package versions, public contracts, and ownership markers as authoritative. Make the narrowest complete authorized change, do not install dependencies, and write REPORT.md with diagnosis, decisions, verification, and unresolved runtime risks.",
+      "expected_output": "The latest order selection remains authoritative across overlapping work, parent callback churn does not restart synchronization, refresh preserves editable state, failure recovery is accessible, and unrelated build ownership remains untouched.",
+      "expectations": [
+        "React 19.2 dependency contract is preserved",
+        "Audit-panel identity remains stable across workspace renders",
+        "Superseded requests cannot commit and cancellation is not shown as failure",
+        "Callback freshness does not control request synchronization lifetime",
+        "Initial load and refresh preserve distinct user-visible behavior and editable state",
+        "Error recovery is announced and exposes retry",
+        "Only React-owned incident files change",
+        "The report explains root causes and separates performed verification from runtime checks"
+      ],
+      "files": [
+        "evals/fixtures/async-order-workspace/TASK.md",
+        "evals/fixtures/async-order-workspace/OWNERSHIP.md",
+        "evals/fixtures/async-order-workspace/package.json",
+        "evals/fixtures/async-order-workspace/src/orders/OrderWorkspace.jsx",
+        "evals/fixtures/async-order-workspace/src/orders/orderApi.mjs",
+        "evals/fixtures/async-order-workspace/src/orders/OrderAuditPanel.jsx",
+        "evals/fixtures/async-order-workspace/vite.config.mjs"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Resolve the @acme/modal 4.7 regression described in TASK.md and CONSUMERS.md. The package must continue serving every listed consumer. Preserve the public contract, make only evidence-backed changes, do not install dependencies, and write REPORT.md with compatibility, lifecycle, and verification decisions.",
+      "expected_output": "The library works for React 18 and 19 consumers without changing its imports or types, keeps one correctly scoped Escape lifecycle using current caller behavior, and restores focus safely.",
+      "expectations": [
+        "The mixed React peer range remains >=18 <20",
+        "Context provision executes under the oldest supported consumer",
+        "The public dialog ref attaches under the oldest supported consumer",
+        "Escape lifecycle remains stable while observing current caller behavior",
+        "Focus is captured and restored only to a connected element",
+        "Dialog semantics and labelledBy are preserved",
+        "Named and default public exports are preserved",
+        "Runtime and declaration contracts agree on the dialog element ref",
+        "The package and consumer evidence remain unchanged",
+        "The report diagnoses compatibility and lifecycle causes without overstating verification"
+      ],
+      "files": [
+        "evals/fixtures/mixed-react-modal-library/TASK.md",
+        "evals/fixtures/mixed-react-modal-library/CONSUMERS.md",
+        "evals/fixtures/mixed-react-modal-library/package.json",
+        "evals/fixtures/mixed-react-modal-library/src/ModalContext.jsx",
+        "evals/fixtures/mixed-react-modal-library/src/Modal.jsx",
+        "evals/fixtures/mixed-react-modal-library/src/index.js",
+        "evals/fixtures/mixed-react-modal-library/src/index.d.ts"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Investigate the production profile and repair the grid regression described in TASK.md. Preserve observable behavior and public store/component contracts, respect ownership markers, do not install dependencies, and write REPORT.md that distinguishes the supplied measurement from predictions requiring a new profile.",
+      "expected_output": "A store-to-component ownership model in which structural changes update the grid and a row value change invalidates only that row, while row-local drafts and existing APIs remain intact.",
+      "expectations": [
+        "The store still notifies only the changed row subscriber",
+        "The grid shell observes only structural collection changes",
+        "Each rendered row observes only its own external snapshot",
+        "Per-row subscription identity is stable across renders",
+        "Row-local draft state is preserved",
+        "No deep-stringify workaround is introduced",
+        "Store and build ownership remain unchanged",
+        "The report identifies invalidation ownership and does not claim an unmeasured duration"
+      ],
+      "files": [
+        "evals/fixtures/external-store-grid-performance/TASK.md",
+        "evals/fixtures/external-store-grid-performance/package.json",
+        "evals/fixtures/external-store-grid-performance/profile.json",
+        "evals/fixtures/external-store-grid-performance/src/gridStore.mjs",
+        "evals/fixtures/external-store-grid-performance/src/Grid.jsx",
+        "evals/fixtures/external-store-grid-performance/vite.config.mjs"
+      ]
+    }
+  ]
+}
