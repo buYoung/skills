@@ -1,0 +1,53 @@
+{
+  "skill_name": "typst-creator",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Create a self-contained Typst source file for Typst 0.13.1. It should be a one-page experiment summary with a reversed three-item numbered list and inline JSON data decoded from bytes. Save the source as report.typ and provide a short compatibility handoff.",
+      "expected_output": "A compiling Typst 0.13.1 document that uses only 0.13-compatible APIs and reports the selected common and 0.13 references.",
+      "files": [],
+      "expectations": [
+        "The handoff resolves the exact target as Typst 0.13.1 and identifies both common topic references and the Typst 0.13 version reference.",
+        "The source uses enum reversed behavior and a top-level json(bytes(...)) call rather than a deprecated json.decode call.",
+        "The source does not use 0.14- or 0.15-only APIs such as title, frac.style, page.bleed, divider, text.variations, selector.within, list.marker-align, or range.inclusive.",
+        "The generated report.typ compiles successfully with Typst 0.13.1."
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Create a self-contained Typst 0.14.2 document called formula-note.typ. Use the 0.14 title element and show a skewed fraction. Include a short compatibility handoff and do not use features from Typst 0.15.",
+      "expected_output": "A compiling Typst 0.14.2 document that deliberately uses title and frac.style while excluding 0.15-only APIs.",
+      "files": [],
+      "expectations": [
+        "The handoff resolves the exact target as Typst 0.14.2 and identifies both common topic references and the Typst 0.14 version reference.",
+        "The source uses the Typst 0.14 title element and a fraction with style set to skewed.",
+        "The source does not use 0.15-only APIs such as page.bleed, divider, text.variations, selector.within, list.marker-align, or range.inclusive.",
+        "The generated formula-note.typ compiles successfully with Typst 0.14.2."
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Create a self-contained Typst 0.15.1 print proof named print-proof.typ. Configure 3mm page bleed, add a thematic divider, and show an inclusive numeric range. Provide a short compatibility handoff.",
+      "expected_output": "A compiling Typst 0.15.1 document using page.bleed, divider, and range.inclusive with explicit version evidence.",
+      "files": [],
+      "expectations": [
+        "The handoff resolves the exact target as Typst 0.15.1 and identifies both common topic references and the Typst 0.15 version reference.",
+        "The source configures page bleed to 3mm, calls divider, and constructs a range with inclusive: true.",
+        "The source uses forward slashes for every file path if any paths are present.",
+        "The generated print-proof.typ compiles successfully with Typst 0.15.1."
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "Create a self-contained Typst project-status.typ document in this workspace without choosing a Typst version for me. Detect the available compiler, include a divider between summary and details when supported, and provide a short compatibility handoff.",
+      "expected_output": "The skill detects the installed Typst 0.15.1 compiler, selects the 0.15 reference, and produces compiling source with transparent verification evidence.",
+      "files": [],
+      "expectations": [
+        "The handoff states that the workspace compiler was detected as Typst 0.15.1 rather than inferring a version from source syntax.",
+        "The handoff identifies both common topic references and the Typst 0.15 version reference.",
+        "The source uses divider because the detected compiler supports it.",
+        "The generated project-status.typ compiles successfully with the detected Typst 0.15.1 compiler."
+      ]
+    }
+  ]
+}

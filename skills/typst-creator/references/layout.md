@@ -1,6 +1,6 @@
-# Typst Layout Reference
+# Typst Common Layout Reference
 
-Page setup, positioning, and layout elements.
+Page setup, positioning, and layout elements shared by stable Typst 0.13.0 through 0.15.1. Read the selected file under `versions/` before using version-specific page, list, image, or export features.
 
 ## Function Parameters
 
@@ -15,10 +15,10 @@ Configures page dimensions, margins, headers, footers, and numbering. This is ty
 | `paper` | str | `"a4"` | `"a4"`, `"us-letter"`, `"a5"`, `"a3"`, etc. |
 | `width` | auto \| length | `auto` | Custom page width |
 | `height` | auto \| length | `auto` | Custom page height |
-| `margin` | auto \| relative \| dict | `auto` | Margins: single value, `(x:, y:)`, or `(top:, bottom:, left:, right:)` |
+| `margin` | auto \| relative \| dictionary | `auto` | Margins: single value, `(x:, y:)`, or `(top:, bottom:, left:, right:)` |
 | `columns` | int | `1` | Number of columns |
-| `fill` | none \| color | `none` | Background color |
-| `numbering` | none \| str \| func | `none` | Page number format: `"1"`, `"i"`, `"1 / 1"` |
+| `fill` | auto \| none \| color \| gradient \| tiling | `auto` | Page background fill; export targets interpret `auto` |
+| `numbering` | none \| str \| function | `none` | Page number format: `"1"`, `"i"`, `"1 / 1"` |
 | `number-align` | alignment | `center + bottom` | Page number alignment |
 | `header` | none \| auto \| content | `auto` | Header content |
 | `header-ascent` | relative | `30%` | Header distance from top |
@@ -26,6 +26,9 @@ Configures page dimensions, margins, headers, footers, and numbering. This is ty
 | `footer-descent` | relative | `30%` | Footer distance from bottom |
 | `background` | none \| content | `none` | Background content |
 | `foreground` | none \| content | `none` | Foreground overlay |
+| `flipped` | bool | `false` | Mirror inside/outside margins and binding |
+| `binding` | auto \| alignment | `auto` | Binding side for two-sided layout |
+| `supplement` | auto \| none \| content \| function | `auto` | Page-reference supplement |
 | `body` | content | required | Page content |
 
 ### `grid` Function
@@ -34,16 +37,16 @@ Creates flexible multi-column/row layouts. Unlike tables, grids have no default 
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
-| `columns` | auto \| int \| array | `()` | Column widths: `3`, `(1fr, 2fr)`, `(auto, 1fr)` |
-| `rows` | auto \| int \| array | `()` | Row heights |
-| `gutter` | auto \| length \| array | `0pt` | Gap between cells |
-| `column-gutter` | auto \| length \| array | `auto` | Column gap |
-| `row-gutter` | auto \| length \| array | `auto` | Row gap |
-| `fill` | none \| color \| func | `none` | Cell fill: `(x, y) => color` |
-| `align` | auto \| alignment \| func | `auto` | Cell alignment |
-| `stroke` | none \| stroke | `none` | Cell borders |
-| `inset` | relative \| dict | `0pt` | Cell padding |
-| `children` | content | required | Grid cells |
+| `columns` | auto \| int \| relative \| fraction \| array | `()` | Column widths: `3`, `(1fr, 2fr)`, `(auto, 1fr)` |
+| `rows` | auto \| int \| relative \| fraction \| array | `()` | Row heights |
+| `gutter` | auto \| int \| relative \| fraction \| array | `()` | Gap between cells |
+| `column-gutter` | auto \| int \| relative \| fraction \| array | `()` | Column gap |
+| `row-gutter` | auto \| int \| relative \| fraction \| array | `()` | Row gap |
+| `fill` | none \| color \| gradient \| tiling \| array \| function | `none` | Cell fill, including `(x, y) => color` |
+| `align` | auto \| alignment \| array \| function | `auto` | Cell alignment |
+| `stroke` | none \| stroke \| array \| dictionary \| function | `none` | Cell borders |
+| `inset` | relative \| array \| dictionary \| function | `(:)` | Cell padding |
+| `children` | content | variadic | Grid cells |
 
 ### `table` Function
 
@@ -51,14 +54,16 @@ Creates data tables with automatic borders and styling. Tables are semantic cont
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
-| `columns` | auto \| int \| array | `()` | Column widths |
-| `rows` | auto \| int \| array | `()` | Row heights |
-| `gutter` | auto \| length \| array | `0pt` | Gap between cells |
-| `fill` | none \| color \| func | `none` | Cell fill: `(x, y) => color` |
-| `align` | auto \| alignment \| func | `auto` | Cell alignment |
-| `stroke` | none \| stroke | `1pt + black` | Cell borders |
-| `inset` | relative \| dict | `5pt` | Cell padding |
-| `children` | content | required | Table cells |
+| `columns` | auto \| int \| relative \| fraction \| array | `()` | Column widths |
+| `rows` | auto \| int \| relative \| fraction \| array | `()` | Row heights |
+| `gutter` | auto \| int \| relative \| fraction \| array | `()` | Gap between cells |
+| `column-gutter` | auto \| int \| relative \| fraction \| array | `()` | Column gap |
+| `row-gutter` | auto \| int \| relative \| fraction \| array | `()` | Row gap |
+| `fill` | none \| color \| gradient \| tiling \| array \| function | `none` | Cell fill, including `(x, y) => color` |
+| `align` | auto \| alignment \| array \| function | `auto` | Cell alignment |
+| `stroke` | none \| stroke \| array \| dictionary \| function | `1pt + black` | Cell borders |
+| `inset` | relative \| array \| dictionary \| function | `5pt` | Cell padding |
+| `children` | content | variadic | Table cells |
 
 **`table.cell` Parameters:**
 
@@ -66,10 +71,15 @@ Use `table.cell` for fine control over individual cells, including spanning mult
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
+| `x` | auto \| int | `auto` | Explicit column position |
+| `y` | auto \| int | `auto` | Explicit row position |
 | `colspan` | int | `1` | Columns to span |
 | `rowspan` | int | `1` | Rows to span |
-| `fill` | auto \| none \| color | `auto` | Cell fill |
+| `fill` | auto \| none \| color \| gradient \| tiling | `auto` | Cell fill |
 | `align` | auto \| alignment | `auto` | Cell alignment |
+| `inset` | auto \| relative \| dictionary | `auto` | Cell padding override |
+| `stroke` | auto \| none \| stroke \| dictionary | `auto` | Cell border override |
+| `breakable` | auto \| bool | `auto` | Allow the cell to break across pages |
 | `body` | content | required | Cell content |
 
 ### `figure` Function
@@ -80,11 +90,13 @@ Wraps content (images, tables, code) with automatic numbering and captions. Figu
 |-----------|------|---------|-------------|
 | `body` | content | required | Figure content |
 | `caption` | none \| content | `none` | Caption text |
-| `kind` | auto \| str \| func | `auto` | Figure type: `"image"`, `"table"`, `"raw"` |
-| `supplement` | auto \| none \| content | `auto` | Reference prefix: `"Figure"`, `"Table"` |
-| `numbering` | none \| str \| func | `"1"` | Figure number format |
+| `kind` | auto \| str \| function | `auto` | Figure type: `"image"`, `"table"`, `"raw"` |
+| `supplement` | auto \| none \| content \| function | `auto` | Reference prefix: `"Figure"`, `"Table"` |
+| `numbering` | none \| str \| function | `"1"` | Figure number format |
 | `gap` | length | `0.65em` | Gap between body and caption |
 | `placement` | none \| auto \| alignment | `none` | Float placement: `auto`, `top`, `bottom` |
+| `scope` | str | `"local"` | Numbering scope |
+| `outlined` | bool | `true` | Include the figure in an outline |
 
 ### `image` Function
 
@@ -92,12 +104,14 @@ Embeds external images in the document. Supports PNG, JPG, GIF, and SVG formats 
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
-| `path` | str | required | Image file path |
-| `format` | auto \| str | `auto` | `"png"`, `"jpg"`, `"gif"`, `"svg"` |
+| `source` | str \| bytes | required | Image path string, encoded image bytes, or raw pixel bytes |
+| `format` | auto \| str \| dictionary | `auto` | Encoded format or raw-pixel `(encoding:, width:, height:)` description |
 | `width` | auto \| relative | `auto` | Image width |
-| `height` | auto \| relative | `auto` | Image height |
+| `height` | auto \| relative \| fraction | `auto` | Image height |
 | `alt` | none \| str | `none` | Alt text for accessibility |
 | `fit` | str | `"cover"` | `"cover"`, `"contain"`, `"stretch"` |
+| `scaling` | auto \| str | `auto` | Pixel scaling behavior such as `"smooth"` or `"pixelated"` |
+| `icc` | auto \| bytes | `auto` | Embedded or overridden ICC profile |
 
 ## Page Setup
 
@@ -108,10 +122,13 @@ Page configuration is typically done once at the document start. These settings 
 Set paper size and margins. Use dictionary syntax for asymmetric margins.
 
 ```typst
+#set page(paper: "a4", margin: 2cm)
+
+// Or configure horizontal and vertical margins separately.
+#set page(margin: (x: 2cm, y: 3cm))
+
+// Or configure each edge.
 #set page(
-  paper: "a4",            // or "us-letter", "a5", etc.
-  margin: 2cm,            // uniform margin
-  margin: (x: 2cm, y: 3cm),  // horizontal/vertical
   margin: (top: 3cm, bottom: 2cm, left: 2.5cm, right: 2.5cm),
 )
 ```
@@ -368,9 +385,9 @@ Apply geometric transformations to content. Useful for decorative effects or spe
 #skew(ax: 10deg)[Skewed]
 ```
 
-## Length Units
+## Length, Ratio, and Fraction Units
 
-Typst supports both absolute and relative length units. Use `em` for font-relative sizing, `fr` for flexible space distribution.
+Typst distinguishes physical/font-relative lengths from ratios and layout fractions.
 
 | Unit | Description |
 |------|-------------|
@@ -379,8 +396,11 @@ Typst supports both absolute and relative length units. Use `em` for font-relati
 | `cm` | Centimeters |
 | `in` | Inches |
 | `em` | Relative to font size |
-| `%` | Percentage of container |
-| `fr` | Fraction of remaining space |
+
+| Type | Syntax | Description |
+|---|---|---|
+| Ratio | `%` | Proportion relative to a contextual size |
+| Fraction | `fr` | Share of remaining layout space |
 
 ## Page Breaks
 

@@ -1,6 +1,6 @@
-# Typst Math Reference
+# Typst Common Math Reference
 
-Mathematical notation syntax in Typst.
+Mathematical notation syntax shared by stable Typst 0.13.0 through 0.15.1. Read the selected file under `versions/` for version-specific math parameters, layout changes, and symbol removals.
 
 ## Function Parameters
 
@@ -13,9 +13,9 @@ The wrapper for all math content. Usually implicit, but use explicitly for numbe
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
 | `block` | bool | `false` | Display as block (centered) equation |
-| `numbering` | none \| str \| func | `none` | Equation number format: `"(1)"`, `"[1]"` |
+| `numbering` | none \| str \| function | `none` | Equation number format: `"(1)"`, `"[1]"` |
 | `number-align` | alignment | `end + horizon` | Number alignment |
-| `supplement` | auto \| none \| content | `auto` | Reference prefix (e.g., "Equation") |
+| `supplement` | auto \| none \| content \| function | `auto` | Reference prefix (e.g., "Equation") |
 | `body` | content | required | Equation content |
 
 ### `mat` Function (Matrix)
@@ -24,13 +24,13 @@ Creates matrices with customizable delimiters and alignment. Rows are separated 
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
-| `delim` | none \| str | `"("` | Delimiter: `"("`, `"["`, `"{"`, `"|"`, `"||"` |
+| `delim` | none \| str \| symbol \| array | `("(", ")")` | Delimiter pair |
 | `align` | alignment | `center` | Cell alignment |
-| `augment` | none \| int \| dict | `none` | Augmentation line position |
+| `augment` | none \| int \| dictionary | `none` | Augmentation line position |
 | `gap` | relative | `0pt` | Gap between cells |
 | `row-gap` | relative | `0.2em` | Gap between rows |
 | `column-gap` | relative | `0.5em` | Gap between columns |
-| `rows` | content | required | Matrix rows (`;` separated) |
+| `rows` | array | variadic | Matrix rows (`;` separated) |
 
 ### `vec` Function (Vector)
 
@@ -38,10 +38,10 @@ Creates column vectors. Elements are stacked vertically with configurable delimi
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
-| `delim` | none \| str | `"("` | Delimiter: `"("`, `"["`, `"{"`, `"|"`, `"||"` |
+| `delim` | none \| str \| symbol \| array | `("(", ")")` | Delimiter pair |
 | `align` | alignment | `center` | Element alignment |
 | `gap` | relative | `0.2em` | Gap between elements |
-| `children` | content | required | Vector elements (`,` separated) |
+| `children` | content | variadic | Vector elements (`,` separated) |
 
 ### `frac` Function (Fraction)
 
@@ -58,10 +58,10 @@ Creates piecewise function definitions with conditions. Each case is separated b
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
-| `delim` | str | `"{"` | Delimiter |
+| `delim` | none \| str \| symbol \| array | `("{", "}")` | Delimiter pair |
 | `reverse` | bool | `false` | Place delimiter on right |
 | `gap` | relative | `0.2em` | Gap between rows |
-| `children` | content | required | Case rows (`,` separated) |
+| `children` | content | variadic | Case rows (`,` separated) |
 
 ### `cancel` Function
 
@@ -70,11 +70,11 @@ Draws a strikethrough line through content, commonly used to show cancellation i
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
 | `body` | content | required | Content to cancel |
-| `length` | relative | `100% + 3pt` | Line length |
+| `length` | relative | version-dependent | Line length; consult the selected version reference |
 | `inverted` | bool | `false` | Invert line angle |
 | `cross` | bool | `false` | Draw X instead of line |
-| `angle` | auto \| angle | `auto` | Line angle |
-| `stroke` | stroke | `0.5pt` | Line stroke |
+| `angle` | auto \| angle \| function | `auto` | Line angle |
+| `stroke` | stroke | version-dependent | Line stroke; consult the selected version reference |
 
 ### `accent` Function
 
@@ -84,11 +84,11 @@ Places diacritical marks above mathematical symbols. Use for vectors, estimates,
 |-----------|------|---------|-------------|
 | `base` | content | required | Base content |
 | `accent` | str \| content | required | Accent: `hat`, `tilde`, `macron`, `dot`, `dot.double`, `arrow` |
-| `size` | auto \| relative | `auto` | Accent size |
+| `size` | relative | `100% + 0pt` | Accent size |
 
 ## Math Mode Entry
 
-The presence of spaces after `$` determines whether math renders inline or as a centered block. This is the most important distinction for equation layout.
+Spaces immediately inside both delimiters determine whether math renders inline or as a centered block. Block math has a space after the opening `$` and before the closing `$`.
 
 | Type | Syntax | Result |
 |------|--------|--------|
@@ -176,7 +176,7 @@ $mat(delim: "[",
 
 ## Brackets and Delimiters
 
-Use `lr()` for auto-scaling delimiters that grow with content. Special functions like `abs()`, `norm()`, `floor()`, and `ceil()` provide semantic delimiters.
+Matched delimiters scale automatically. Use `lr()` for asymmetric or custom delimiter pairs and explicit size control. Special functions like `abs()`, `norm()`, `floor()`, and `ceil()` provide semantic delimiters.
 
 ```typst
 $(a + b)$           // parentheses
@@ -189,7 +189,7 @@ $floor(x)$          // floor
 $ceil(x)$           // ceiling
 ```
 
-## Greek Letters
+## Common Greek Letters
 
 Greek letters are written by name without any prefix. Lowercase names produce lowercase letters; capitalize the first letter for uppercase.
 
@@ -218,8 +218,8 @@ Common mathematical operators and symbols. Use these names directly in math mode
 $+$, $-$, $times$, $div$
 $=$, $!=$, $<$, $>$, $<=$, $>=$
 $approx$, $equiv$, $prop$
-$in$, $not in$, $subset$, $supset$
-$union$, $sect$               // set operations
+$in$, $in.not$, $subset$, $supset$
+$union$, $inter$              // set operations
 $and$, $or$, $not$            // logical
 $forall$, $exists$            // quantifiers
 $infinity$, $emptyset$
@@ -282,7 +282,7 @@ Show algebraic cancellation or struck-out terms. Useful for demonstrating simpli
 
 ```typst
 $cancel(x)$           // strikethrough
-$cancel(x, cross: true)$  // X mark
+$cancel(x, cross: #true)$ // X mark
 ```
 
 ## Spacing in Math

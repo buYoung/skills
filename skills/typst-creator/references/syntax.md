@@ -1,6 +1,6 @@
-# Typst Syntax Reference
+# Typst Common Syntax Reference
 
-Typst has three syntactical modes: Markup, Math, and Code.
+Typst has three syntactical modes: Markup, Math, and Code. This file contains syntax shared by stable Typst 0.13.0 through 0.15.1. Read the selected file under `versions/` before using version-specific elements, parameters, or behavior.
 
 ## Function Parameters
 
@@ -8,15 +8,15 @@ These tables provide quick reference for the most commonly used markup functions
 
 ### `heading` Function
 
-Defines document structure with hierarchical sections. The number of `=` signs determines the heading level.
+Defines document structure with hierarchical sections. The number of `=` signs determines relative depth; the effective level is derived from depth and offset.
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
-| `level` | auto \| int | `auto` | Heading level (1-6), auto-detected from `=` count |
-| `depth` | int | - | (read-only) Nesting depth relative to `offset` |
-| `offset` | int | `0` | Starting level offset for numbering |
-| `numbering` | none \| str \| func | `none` | Number format: `"1."`, `"1.1"`, `"I.a"` |
-| `supplement` | auto \| none \| content | `auto` | Reference prefix (e.g., "Section") |
+| `level` | auto \| int | `auto` | Effective heading level |
+| `depth` | int | `1` | Nesting depth relative to `offset` |
+| `offset` | int | `0` | Offset used to derive the effective level |
+| `numbering` | none \| str \| function | `none` | Number format: `"1."`, `"1.1"`, `"I.a"` |
+| `supplement` | auto \| none \| content \| function | `auto` | Reference prefix (e.g., "Section") |
 | `outlined` | bool | `true` | Include in outline |
 | `bookmarked` | auto \| bool | `auto` | Include in PDF bookmarks |
 | `hanging-indent` | auto \| length | `auto` | Indent for wrapped lines |
@@ -29,11 +29,11 @@ Creates unordered lists with customizable bullet markers. Use `-` in markup mode
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
 | `tight` | bool | `true` | Reduce spacing between items |
-| `marker` | content \| array \| func | `[•]` | Bullet marker(s) per level |
+| `marker` | content \| array \| function | `([•], [‣], [–])` | Bullet marker(s) per level |
 | `indent` | length | `0pt` | Indent from left |
 | `body-indent` | length | `0.5em` | Gap between marker and text |
-| `spacing` | auto \| relative | `auto` | Space between items |
-| `children` | content | required | List items |
+| `spacing` | auto \| length | `auto` | Space between items |
+| `children` | content | variadic | List items |
 
 ### `enum` Function (Numbered List)
 
@@ -42,13 +42,15 @@ Creates ordered lists with automatic numbering. Use `+` in markup mode. Supports
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
 | `tight` | bool | `true` | Reduce spacing between items |
-| `numbering` | str \| func | `"1."` | Number format: `"1."`, `"a)"`, `"(i)"` |
-| `start` | int | `1` | Starting number |
+| `numbering` | str \| function | `"1."` | Number format: `"1."`, `"a)"`, `"(i)"` |
+| `start` | auto \| int | `auto` | Starting number; automatic behavior accounts for reversed lists |
 | `full` | bool | `false` | Show full numbering (e.g., "1.1.1") |
+| `reversed` | bool | `false` | Count downward from the start value |
+| `number-align` | alignment | version-dependent | Number alignment; consult the selected version reference for vertical behavior |
 | `indent` | length | `0pt` | Indent from left |
 | `body-indent` | length | `0.5em` | Gap between number and text |
-| `spacing` | auto \| relative | `auto` | Space between items |
-| `children` | content | required | List items |
+| `spacing` | auto \| length | `auto` | Space between items |
+| `children` | content \| array | variadic | Numbered list items |
 
 ### `raw` Function (Code Block)
 
@@ -60,18 +62,18 @@ Displays text exactly as written without interpretation. Use backticks in markup
 | `block` | bool | `false` | Display as block (true for fenced blocks) |
 | `lang` | none \| str | `none` | Language for syntax highlighting |
 | `align` | alignment | `start` | Text alignment |
-| `syntaxes` | str \| array | `()` | Additional syntax definition files |
-| `theme` | auto \| str \| none | `auto` | Syntax highlighting theme |
+| `syntaxes` | str \| bytes \| array | `()` | Additional syntax definition files or encoded definitions |
+| `theme` | auto \| str \| bytes \| none | `auto` | Syntax highlighting theme or encoded theme |
 | `tab-size` | int | `2` | Tab width in spaces |
 
 ### `link` Function
 
-Creates clickable hyperlinks to URLs, labels, or document locations. URLs are automatically detected in markup mode.
+Creates clickable hyperlinks to URLs, labels, or document locations. Text beginning with `http://` or `https://` is automatically linked in markup mode.
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
-| `dest` | str \| label \| location \| dict | required | URL, label, or location |
-| `body` | auto \| content | `auto` | Link text (auto shows URL) |
+| `dest` | str \| label \| location \| dictionary | required | URL, label, or location |
+| `body` | content | conditional | Link text; only URL-string destinations can omit it |
 
 ### `ref` Function
 
@@ -80,7 +82,8 @@ Creates cross-references to labeled elements like headings, figures, or equation
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
 | `target` | label | required | Target label |
-| `supplement` | auto \| none \| content | `auto` | Reference prefix |
+| `supplement` | auto \| none \| content \| function | `auto` | Reference prefix |
+| `form` | str | `"normal"` | `"normal"` or `"page"` |
 
 ## Mode Switching
 
@@ -221,13 +224,18 @@ Use backslash to escape special characters that would otherwise be interpreted a
 
 ## Symbol Shorthands
 
-Typst provides convenient shortcuts for commonly used typographic symbols. These work in both markup and math modes.
+Shorthand meaning depends on the active mode.
 
-| Symbol | Shorthand |
-|--------|-----------|
+| Markup result | Shorthand |
+|---|---|
 | Non-breaking space | `~` |
 | Em dash | `---` |
 | En dash | `--` |
+| Ellipsis | `...` |
+
+| Math result | Shorthand |
+|---|---|
+| Tilde relation | `~` |
 | Ellipsis | `...` |
 | Arrow right | `->` |
 | Arrow left | `<-` |

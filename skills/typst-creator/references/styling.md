@@ -1,6 +1,6 @@
-# Typst Styling Reference
+# Typst Common Styling Reference
 
-Typst uses set rules and show rules for styling documents.
+Typst uses set rules and show rules for styling documents. This file contains styling patterns shared by stable Typst 0.13.0 through 0.15.1. Read the selected file under `versions/` before using version-specific properties such as Typst 0.15 variable-font variations.
 
 ## Function Parameters
 
@@ -12,10 +12,10 @@ Controls typography including font family, size, color, and language settings. T
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
-| `font` | str \| array | `"libertinus serif"` | Font family or priority list |
+| `font` | str \| array \| dictionary | `"libertinus serif"` | Font family, descriptor, or priority list |
 | `size` | length | `11pt` | Font size |
-| `fill` | color | `black` | Text color |
-| `weight` | int \| str | `"regular"` | `"thin"`, `"light"`, `"regular"`, `"medium"`, `"bold"`, or 100-900 |
+| `fill` | color \| gradient \| tiling | `black` | Text fill |
+| `weight` | int \| str | `"regular"` | Named weight from `"thin"` through `"black"` (including `"extralight"`, `"semibold"`, and `"extrabold"`), or 100-900 |
 | `style` | str | `"normal"` | `"normal"`, `"italic"`, `"oblique"` |
 | `lang` | str | `"en"` | Language code (e.g., `"ko"`, `"ja"`, `"zh"`) |
 | `region` | str \| none | `none` | Region code (e.g., `"KR"`, `"US"`) |
@@ -35,7 +35,7 @@ Controls paragraph-level formatting including line spacing, justification, and i
 | `spacing` | length | `1.2em` | Paragraph spacing (between paragraphs) |
 | `justify` | bool | `false` | Justify text |
 | `linebreaks` | auto \| str | `auto` | `"simple"`, `"optimized"` |
-| `first-line-indent` | length | `0pt` | First line indentation |
+| `first-line-indent` | length \| dictionary | `(amount: 0pt, all: false)` | Indent amount or `(amount:, all:)` configuration |
 | `hanging-indent` | length | `0pt` | Hanging indent for subsequent lines |
 | `body` | content | required | Paragraph content |
 
@@ -46,19 +46,19 @@ Creates block-level containers with visual styling options like backgrounds, bor
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
 | `width` | auto \| relative | `auto` | Block width |
-| `height` | auto \| relative | `auto` | Block height |
-| `fill` | none \| color | `none` | Background color |
-| `stroke` | none \| stroke | `none` | Border stroke |
-| `radius` | relative \| dict | `(:)` | Corner radius |
-| `inset` | relative \| dict | `(:)` | Inner padding |
-| `outset` | relative \| dict | `(:)` | Outer expansion |
-| `spacing` | relative | `1.2em` | Spacing around block (sets above & below) |
-| `above` | auto \| relative | `auto` | Spacing above |
-| `below` | auto \| relative | `auto` | Spacing below |
+| `height` | auto \| relative \| fraction | `auto` | Block height |
+| `fill` | none \| color \| gradient \| tiling | `none` | Background fill |
+| `stroke` | none \| length \| color \| gradient \| stroke \| tiling \| dictionary | `(:)` | Border stroke |
+| `radius` | relative \| dictionary | `(:)` | Corner radius |
+| `inset` | relative \| dictionary | `(:)` | Inner padding |
+| `outset` | relative \| dictionary | `(:)` | Outer expansion |
+| `spacing` | auto \| relative \| fraction | `1.2em` | Spacing around block (sets above & below) |
+| `above` | auto \| relative \| fraction | `auto` | Spacing above |
+| `below` | auto \| relative \| fraction | `auto` | Spacing below |
 | `breakable` | bool | `true` | Allow page breaks |
 | `clip` | bool | `false` | Clip overflow content |
 | `sticky` | bool | `false` | Stick to next block |
-| `body` | content | `none` | Block content |
+| `body` | none \| content | `none` | Block content |
 
 ## Set Rules
 
@@ -67,7 +67,7 @@ Set rules apply default property values to all instances of an element within a 
 ### Syntax
 
 ```typst
-#set element(property: value)
+#set text(fill: blue)
 ```
 
 ### Common Set Rules
@@ -183,7 +183,7 @@ A typical document preamble combines set rules and show rules to establish consi
 )
 
 #set text(
-  font: "Noto Sans KR",
+  font: "Noto Sans KR", // Requires this font to be installed or provided.
   size: 10pt,
   lang: "ko",
 )
@@ -212,6 +212,6 @@ To achieve a classic academic paper appearance similar to LaTeX defaults, use th
   justify: true,
 )
 #set text(font: "New Computer Modern")
-#show raw: set text(font: "New Computer Modern Mono")
+#show raw: set text(font: "DejaVu Sans Mono")
 #show heading: set block(above: 1.4em, below: 1em)
 ```
