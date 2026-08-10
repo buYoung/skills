@@ -1,6 +1,6 @@
 ---
 name: orchestration
-description: "Orchestrate a large task as a manager-run sequence of isolated sub-agent phases when the user explicitly invokes this skill or asks for this. The main agent decomposes the task into phases of different kinds, picks the topology that fits (linear pipeline, parallel fan-out, dependency DAG, or iterative loop), assigns each phase a capability-by-deliberation tier, and runs each as a fresh isolated sub-agent exchanging file paths only -- never doing phase work itself. It proves any expensive step cheaply before committing, and halts for the user at up to two points: go/no-go before that commitment, and accept/reject on review findings. Runs are resumable by run id; a changed condition re-versions the prior run. For large heterogeneous work: research sweeps, multi-variant runs, migrations, audits. Explicit-invocation only. Not for single-artifact build-review-improve loops (use delegated-review-loop) or single-answer blind verification (use iterative-self-review)."
+description: "Use only when the user explicitly invokes this skill."
 ---
 
 # Orchestration
