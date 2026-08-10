@@ -6,7 +6,7 @@ Read only for resolved React 18 root/unmount warnings, ref/Context syntax, or Re
 
 ## Collect Inputs
 
-Collect resolved `react/react-dom`, CSR entry/root calls, warnings/unmount owner, app/library/mixed consumers, supported range, public ref/Context contract, types, and—only from performance handoff—Compiler target/runtime/plugin/diagnostics and baseline.
+Collect resolved `react/react-dom`, CSR entry/root calls, warnings/unmount owner, app/library/mixed consumers, supported range, public ref/Context contract, and types. For Compiler work, require performance or explicit compatibility caller evidence, then collect Compiler target/runtime, build-integration identity, diagnostics, and rollback point.
 
 ## Decision Sequence and Table
 
@@ -20,11 +20,12 @@ Collect resolved `react/react-dom`, CSR entry/root calls, warnings/unmount owner
 | React 18-only app ref/Context | React 18 syntax | Use `forwardRef`, `useContext`, `.Provider` as required | none |
 | Library/mixed public consumers | preserve contract | Keep compatible surface | [structure/public API](react-structure-public-api.md) |
 | Compiler baseline/config supplied | compatibility check | Preserve React 18 target/runtime; fix evidenced mismatch | [render performance](react-render-performance.md) |
+| Existing Compiler config under a resolved Vite client needs adapter work | integration handoff | Preserve target `'18'`, `react-compiler-runtime`, and diagnostics | `react-vite-guide` |
 | Compiler baseline/config absent | blocked | Do not enable/remove memoization | [render performance](react-render-performance.md) |
 
 ## Actions and Prohibitions
 
-Change entry lifecycle or implementation/types atomically. Do not introduce React 19 syntax, hydration handling, partial root conversion, incidental Compiler enablement, or bulk memoization removal.
+Change entry lifecycle or implementation/types atomically. Preserve Compiler target/runtime and pass build-adapter evidence to its integration owner instead of deciding it here. Do not introduce React 19 syntax, hydration handling, partial root conversion, incidental Compiler enablement, or bulk memoization removal.
 
 ## Stop or Roll Back
 
@@ -36,6 +37,6 @@ Verify entry build/runtime, warnings, unmount, types, ref attach/cleanup, provid
 
 ## Return and Handoff
 
-Return version/syntax/compatibility evidence. Public compatibility goes to [structure/public API](react-structure-public-api.md); Compiler diagnostics return to [render performance](react-render-performance.md). Migration readiness is not decided here.
+Return version/syntax/compatibility evidence. Public compatibility goes to [structure/public API](react-structure-public-api.md). Compiler diagnostics return to [render performance](react-render-performance.md); a resolved Vite adapter need returns `next_skill: react-vite-guide`. Build-tool migration readiness is not decided here.
 
-Fact sources: [React DOM client APIs](https://react.dev/reference/react-dom/client) and [Compiler target](https://react.dev/reference/react-compiler/target).
+Fact sources: [React DOM client APIs](https://react.dev/reference/react-dom/client), [Compiler target](https://react.dev/reference/react-compiler/target), and [Compiler installation](https://react.dev/learn/react-compiler/installation).

@@ -6,7 +6,7 @@ Read for resolved React 19 ref prop/provider syntax or React 19.2 `Activity`/`us
 
 ## Collect Inputs
 
-Collect resolved major/minor, app/library/mixed consumers, supported range, public contract, ref/provider call sites/types, and state/Effect owner evidence for 19.2 features.
+Collect resolved major/minor, app/library/mixed consumers, supported range, public contract, ref/provider call sites/types, and state/Effect owner evidence for 19.2 features. For `useEffectEvent`, also collect the existing `eslint-plugin-react-hooks` version/config evidence without creating new lint setup.
 
 ## Decision Sequence and Table
 
@@ -25,7 +25,7 @@ Collect resolved major/minor, app/library/mixed consumers, supported range, publ
 
 ## Actions and Prohibitions
 
-Change implementation/types together. Do not universally replace compatibility APIs, use Effect Event to suppress synchronization, pass it outside the Effect, or use gated APIs without a resolved minor.
+Change implementation/types together. A `useEffectEvent` change must preserve compatible Hooks lint behavior; update an existing lint dependency/config only within authority. Do not universally replace compatibility APIs, use Effect Event to suppress synchronization, pass it outside the Effect, create lint setup incidentally, or use gated APIs without a resolved minor.
 
 ## Stop or Roll Back
 
@@ -33,7 +33,7 @@ Stop on unknown consumer range, unapproved break, unsupported minor/tooling, or 
 
 ## Verify
 
-Verify types, ref attach/cleanup, provider scope/update, consumers, Activity state/lifecycle, or Effect synchronization as selected.
+Verify types, ref attach/cleanup, provider scope/update, consumers, Activity state/lifecycle, or Effect synchronization as selected. For `useEffectEvent`, run the existing Hooks lint path when available and confirm it does not add the Effect Event to the dependency list.
 
 ## Return and Handoff
 

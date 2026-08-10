@@ -6,7 +6,7 @@ Read for rerender diagnosis, subscription breadth, `memo`/`useMemo`/`useCallback
 
 ## Collect Inputs
 
-Fix the user interaction, symptom, metric, environment/data, baseline, prop/reference changes, calculation cost, subscription breadth, current memoization/Compiler status, hypothesis, and rollback point.
+Fix the user interaction, symptom, metric, environment/data, resolved React minor, baseline, prop/reference changes, calculation cost, subscription breadth, current memoization/Compiler status, hypothesis, and rollback point.
 
 ## Decision Sequence and Table
 
@@ -17,6 +17,7 @@ Fix the user interaction, symptom, metric, environment/data, baseline, prop/refe
 | State owner or broad subscription causes work | root-cause fix | Do not add memoization | [state/data](react-state-data.md) |
 | Effect lifecycle causes work | root-cause fix | Do not add memoization | [Hooks/Effects](react-hooks-effects.md) |
 | No measured bottleneck | no memo | Return non-application finding | none |
+| React 19.2+ scheduling/component work is unclear | performance tracks | Capture Scheduler and Components tracks before selecting a code change | none |
 | Stable props, costly child render | `memo` | Memoize narrow child; compare locally | none |
 | Costly pure calculation | `useMemo` | Cache calculation; compare locally | none |
 | Measured identity contract | `useCallback` | Stabilize callback; compare locally | none |
@@ -27,7 +28,7 @@ Fix the user interaction, symptom, metric, environment/data, baseline, prop/refe
 
 ## Actions and Prohibitions
 
-Use React Profiler for render work, browser Performance for main thread/layout, Network for requests, and existing production bundle output for chunks. Do not add performance-only memoization without baseline, suppress Effect dependencies, bulk-remove memoization because Compiler exists, change comparison conditions, or add analyzer dependencies.
+Use React Profiler for render work, React 19.2+ Performance Tracks for priority/component/effect timing, browser Performance for main thread/layout, Network for requests, and existing production bundle output for chunks. Do not add performance-only memoization without baseline, infer React scheduling from a generic flame chart alone when React tracks are available, suppress Effect dependencies, bulk-remove memoization because Compiler exists, change comparison conditions, or add analyzer dependencies.
 
 ## Stop or Roll Back
 
@@ -39,6 +40,6 @@ Repeat the same interaction/metric/environment, then check correctness. Compiler
 
 ## Return and Handoff
 
-Return baseline, hypothesis, change/finding, comparison, correctness, and keep/rollback. Allowed leaves: [structure/public API](react-structure-public-api.md), [async UI](react-async-ui.md), [React 18 runtime](react-18-runtime-compatibility.md), [React 19 Compiler](react-19-compiler.md), or [Vite build/plugins](vite-7-build-plugins.md) after an async boundary decision.
+Return baseline, hypothesis, change/finding, comparison, correctness, and keep/rollback. Allowed internal leaves are [structure/public API](react-structure-public-api.md), [async UI](react-async-ui.md), [React 18 runtime](react-18-runtime-compatibility.md), and [React 19 Compiler](react-19-compiler.md). After an async boundary decision under resolved Vite, use `next_skill: react-vite-guide` with the fixed interaction and metric.
 
-Fact source: [React Profiler](https://react.dev/reference/react/Profiler).
+Fact sources: [React Profiler](https://react.dev/reference/react/Profiler) and [React 19.2 Performance Tracks](https://react.dev/blog/2025/10/01/react-19-2#performance-tracks).

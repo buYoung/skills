@@ -18,9 +18,9 @@ Collect resolved Vite 6 source, target authorization, the common validated targe
 | Target-runtime evidence absent/blocked | blocking | Stop before config edits | none |
 | Removed/deprecated config/API | fail/not-applicable | Migrate authorized blocker; reverify locally | none |
 | Plugin compatibility unknown/fails | blocking | Do not continue | none |
-| Entry/env remains after arrival | owner handoff | Preserve evidence | [client runtime](vite-7-client-runtime.md) |
-| Chunk/plugin remains after arrival | owner handoff | Preserve evidence | [build/plugins](vite-7-build-plugins.md) |
-| Deployment remains after arrival | owner handoff | Preserve evidence | [deployment](vite-7-deployment.md) |
+| Entry/env remains after arrival | owner handoff | Preserve evidence | [client runtime](vite-client-runtime.md) |
+| Chunk/plugin remains after arrival | owner handoff | Preserve evidence | [build/plugins](vite-build-plugins.md) |
+| Deployment remains after arrival | owner handoff | Preserve evidence | [deployment](vite-deployment.md) |
 
 ## Actions and Prohibitions
 
@@ -36,6 +36,6 @@ Run existing dev/build and applicable preview/deployment checks. Declare Vite 7 
 
 ## Return and Handoff
 
-Return itemized arrival evidence. After pass, route only unresolved owner work to [client runtime](vite-7-client-runtime.md), [build/plugins](vite-7-build-plugins.md), or [deployment](vite-7-deployment.md); otherwise `next_reference: none`.
+Return itemized arrival evidence. After pass, route only unresolved owner work to [client runtime](vite-client-runtime.md), [build/plugins](vite-build-plugins.md), or [deployment](vite-deployment.md); otherwise `next_reference: none`.
 
-Fact source: [Vite migration guide](https://vite.dev/guide/migration.html).
+Fact source: [Vite 7 migration guide](https://v7.vite.dev/guide/migration).
