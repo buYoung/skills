@@ -6,6 +6,14 @@
 
 ## [Unreleased]
 
+### 추가
+
+- 사람이 읽기 좋은 구조화 문서를 위한 `document-writing` skill 추가 — 9개 문서 유형 라우팅, 점진적 reference 로딩, 근거 기반 편집, FDD 구조 검증 지원
+
+### 제거
+
+- `feature-design-doc`의 생성·갱신·사실 확인·정규화·템플릿·검증기 계약을 `document-writing`으로 통합하고 독립 패키지 제거
+
 ## [1.7.1] - 2026-08-10
 
 ### 수정

@@ -1,0 +1,123 @@
+{
+  "skill_name": "document-writing",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "신규 입사한 PM과 고객지원 담당자가 idempotency key를 한 번 읽고 이해할 수 있도록 한국어 내부 문서를 작성해줘. 독자는 HTTP 기본 개념은 알지만 분산 시스템 경험은 없다. 확인된 사실은 다음과 같다: 클라이언트는 POST 요청에 키를 보낸다. 서버는 최초 응답을 24시간 저장한다. 같은 키와 같은 요청 본문이면 최초 응답을 반환한다. 같은 키와 다른 요청 본문이면 409를 반환한다. 이 기능이 네트워크 재시도를 자동으로 수행하지는 않는다. 클라이언트는 논리적 작업마다 새 UUID를 생성해야 한다. 결제 버튼을 두 번 누른 사례에서 같은 UUID를 사용해 보호되는 경우, 클릭마다 새 UUID를 만들어 보호되지 않는 경우, 같은 UUID에 다른 본문을 사용해 409가 발생하는 경우를 대비해 설명해라.",
+      "expected_output": "비전문 독자가 개념과 한계를 빠르게 이해하고 세 가지 결제 경계를 구분할 수 있는 한국어 설명형 개요.",
+      "files": [],
+      "expectations": [
+        "The artifact is an explanatory overview selected from reader intent, not a reference catalog, action guide, or FDD.",
+        "The opening lets the target reader explain what an idempotency key prevents, when the key is reused, and that it does not perform retries.",
+        "The document accurately includes the 24-hour retention, same-key same-body replay, same-key different-body 409, and one-UUID-per-logical-operation rules.",
+        "The duplicate-payment example explicitly contrasts protected same-UUID use, unprotected new-UUID use, and same-UUID different-body misuse.",
+        "The Korean prose introduces the established Korean term with the English term once and preserves POST, UUID, and 409 canonically."
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "처음 합류한 개발자가 로컬 API 서버를 그대로 따라 실행하고 각 단계의 성공 여부를 확인할 수 있도록 한국어 문서를 작성해줘. 사전 조건은 Node.js 22 이상, Docker, Git이다. 순서는 저장소 준비 후 .env.example을 .env로 복사하고, docker compose up -d postgres, npm ci, npm run dev를 실행한다. 정상 로그는 'Server running on http://localhost:3000'이고, GET /health의 정상 응답은 {\"status\":\"ok\"}다. 흔한 문제는 포트 3000 사용 중과 DB connection failed 두 가지다. 확인되지 않은 명령은 새로 만들지 마라.",
+      "expected_output": "정상 시작점에서 목표·사전조건·순서·정상 결과·완료 확인을 제공하는 한국어 Action guide.",
+      "files": [],
+      "expectations": [
+        "The artifact is an action guide selected from the normal starting state, not a troubleshooting runbook or reference.",
+        "Prerequisites appear before ordered actions and include Node.js 22+, Docker, and Git.",
+        "The guide includes the supplied docker compose, npm ci, and npm run dev commands but keeps the unverified .env copy action in prose without deriving cp or another command.",
+        "The exact server log and health response appear as observable success checks.",
+        "The reader can follow the order without hidden prerequisites and can handle only the two supplied local problems."
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "관리자 웹 대시보드의 Saved Search Filters v1.0에 대해 구현자가 현재 결정 원본으로 사용할 문서를 한국어 본문으로 작성해줘. 주 사용자는 반복적으로 같은 사용자 검색을 수행하는 워크스페이스 관리자이며 현재는 매번 필터를 다시 설정해야 한다. 사용자는 현재 필터 조합을 이름과 함께 저장하고 목록에서 적용·이름 변경·삭제할 수 있다. 필터는 사용자와 워크스페이스별로 서버에 JSON으로 저장하며 최대 20개다. 이름은 같은 사용자·워크스페이스 안에서 대소문자를 구분하지 않고 고유해야 하며 중복 이름은 거부한다. 소유자만 자신의 필터를 볼 수 있다. 저장 후 검색 조건의 필드가 제거되면 유효한 조건만 적용하고 부분 적용 안내를 보여준다. v1.0에서 공유 필터, 기본 필터 지정, 사용자 지정 정렬은 제외한다. localStorage 방식은 여러 기기에서 사용할 수 없어 제외했고 워크스페이스 공유 방식은 권한과 소유권 복잡성 때문에 제외했다. 보안은 기존 관리자 인증을 사용하고 모든 조회·변경에서 소유권을 검사한다. 개인정보 원문은 저장하지 않고 필드와 연산자, 검색값만 저장한다. 저장·적용·부분 적용·삭제 결과를 관측할 수 있어야 한다. 키보드만으로 목록 작업이 가능해야 하고 이름과 안내 문구는 유니코드 및 번역을 지원해야 한다. 단일 웹 플랫폼이지만 새 영속 데이터 모델과 권한 검사가 있다. 구현 작업 목록이나 파일·함수 이름은 포함하지 마라.",
+      "expected_output": "단일 기능의 설계 결정 원본으로 라우팅되어 full FDD 계약을 따르고 의미 중복을 줄인 완성형 문서.",
+      "files": [],
+      "expectations": [
+        "The artifact is routed to Feature Design Doc from semantic intent and passes the bundled validator in strict mode with the full profile.",
+        "All required numbered sections and six cross-cutting concerns are present.",
+        "Ownership, 20-item limit, case-insensitive uniqueness, server-side JSON persistence, and partial application have clear canonical owning sections.",
+        "Flows, Scope, Cross-cutting Concerns, and Result Semantics project only their responsibility instead of fully restating exact policy rules and rationale.",
+        "The v1.0 exclusions and both evidence-backed rejected alternatives appear in the correct responsibilities.",
+        "The document contains no implementation task sequence, source file path, function name, or PR breakdown."
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "SDK 구현자가 작업 중 바로 찾을 수 있도록 idempotency key의 적용 범위, 키 형식, 24시간 보관, 키와 요청 본문 조합별 서버 응답, 409 조건을 항목과 표 중심으로 한국어로 정리해줘. idempotency key는 POST 요청에 적용되며 자동 재시도를 수행하지 않는다. 같은 논리 작업은 같은 UUID를 재사용하고 새 논리 작업은 새 UUID를 사용한다. 구현자가 특정 조건을 비순차적으로 조회할 수 있어야 하며 개념 소개나 설치 절차보다 정확한 계약이 중요하다.",
+      "expected_output": "정확한 항목과 반복 필드로 비순차 조회가 가능한 Reference or specification.",
+      "files": [],
+      "expectations": [
+        "The artifact is a reference or specification, not an explanatory overview, action guide, or FDD.",
+        "Scope, terminology, and contract items are organized for non-linear lookup.",
+        "The exact 24-hour, UUID, replay, 409, and no-automatic-retry rules are present without contradiction.",
+        "A reader can find same-key/same-body and same-key/different-body outcomes from a table or equivalent repeated contract structure.",
+        "Canonical tokens such as idempotency key, UUID, POST, and 409 are preserved consistently."
+      ]
+    },
+    {
+      "id": 5,
+      "prompt": "4주간 고객지원 AI 보조 도구 시범 운영 결과를 바탕으로 경영진이 전사 확대 예산을 승인할지 결정할 수 있는 문서를 작성해줘. 시범 운영은 상담원 20명, 평균 처리시간 12% 감소, CSAT 3포인트 상승, 초기 교육 8시간, 라이선스는 상담원당 월 25달러다. 선택지는 현상 유지, 100명으로 확대, 4주 추가 시범 운영이다. 개인정보 검토는 완료되지 않았고 확대 시 가장 큰 위험이다. 동일한 판단 기준으로 선택지를 비교하고 마지막에 승인할 구체적 결정을 요청해줘.",
+      "expected_output": "권장안과 결정 요청, 공정한 대안 비교, 비용·효과·위험을 갖춘 Proposal.",
+      "files": [],
+      "expectations": [
+        "The artifact is a proposal centered on a concrete approval decision, not merely an analysis report.",
+        "The recommendation and requested decision are visible near the opening.",
+        "All three options are compared against consistent criteria including evidence, cost, and privacy risk.",
+        "Facts, estimates, assumptions, and recommendation are distinguishable.",
+        "The ending states the exact decision or commitment required."
+      ]
+    },
+    {
+      "id": 6,
+      "prompt": "4주간 고객지원 AI 보조 도구 시범 운영에서 확인된 성과와 부작용을 경영진이 이해할 수 있도록 작성해줘. 상담원 20명이 참여했고 평균 처리시간은 12% 감소했으며 CSAT는 3포인트 상승했다. 초기 교육에는 8시간이 들었고 라이선스는 상담원당 월 25달러다. 개인정보 검토는 아직 완료되지 않았다. 확인된 사실, 해석, 한계, 추가로 확인할 사항을 구분하고 예산 승인이나 특정 선택을 요구하지 마라.",
+      "expected_output": "질문·범위·근거·발견·해석·한계를 분리한 Analysis report.",
+      "files": [],
+      "expectations": [
+        "The artifact is an analysis report, not a proposal or chronological record.",
+        "Scope and evidence are stated before findings and interpretation.",
+        "Observed facts, interpretation, and limitations are visibly separated.",
+        "The document does not request approval or present a recommendation as predetermined.",
+        "The opening summarizes what the pilot shows without overstating the evidence."
+      ]
+    },
+    {
+      "id": 7,
+      "prompt": "10월부터 모든 엔지니어에게 반복 적용할 production access 기준을 작성해줘. 접근은 on-call engineer와 incident commander만 요청할 수 있고 manager 승인과 보안팀 기록이 필요하다. 기본 유효시간은 30분이며 고객 데이터 다운로드와 자격 증명 공유는 금지한다. SEV-1에서는 incident commander가 긴급 접근을 승인할 수 있지만 24시간 안에 사후 검토가 필요하다. 위반은 보안팀에 보고하며 정책 소유자는 Platform Security다. 시행일과 예외 승인 권한이 분명해야 한다.",
+      "expected_output": "지속적 의무·허용·금지·예외·책임을 정의하는 Policy or rules.",
+      "files": [],
+      "expectations": [
+        "The artifact is a durable policy or rules document, not a one-time access guide.",
+        "Scope, covered roles, owner, and effective date are explicit.",
+        "Required, permitted, and prohibited behavior use consistent normative language.",
+        "The SEV-1 exception, approving authority, and 24-hour review are explicit.",
+        "Reporting and violation handling are discoverable without reading a procedure."
+      ]
+    },
+    {
+      "id": 8,
+      "prompt": "어제까지 실행되던 로컬 API가 오늘 DB connection failed로 시작되지 않는다. 당직자가 먼저 안전한 상태를 확인하고 원인을 좁혀 복구한 뒤 검증하거나 상향 보고할 수 있도록 한국어로 작성해줘. 확인 가능한 사실은 Docker와 postgres 컨테이너가 정상 실행 중이어야 하고 저장소 루트에 .env가 있어야 하며 정상 복구 후 'Server running on http://localhost:3000' 로그와 GET /health의 {\"status\":\"ok\"} 응답이 보여야 한다는 것이다. 확인되지 않은 명령은 만들지 말고, 분기 조건·중단 조건·복구 확인·상향 보고 시 첨부할 증거를 포함해라.",
+      "expected_output": "비정상 시작점에서 증상·진단 분기·복구·검증·에스컬레이션을 제공하는 Troubleshooting runbook.",
+      "files": [],
+      "expectations": [
+        "The artifact is a troubleshooting runbook, not a normal setup guide or incident report.",
+        "It starts from the observed failure and orders low-risk checks before recovery actions.",
+        "Diagnostic branches use observable conditions and do not invent shell commands.",
+        "Recovery is verified with the exact server log and health response.",
+        "Stop and escalation conditions identify the evidence to preserve."
+      ]
+    },
+    {
+      "id": 9,
+      "prompt": "다음 장애 회의 메모를 나중에 참석하지 않은 사람이 사실대로 재구성할 수 있도록 한국어로 정리해줘. 원인 분석이나 새로운 권고는 추가하지 마라. 09:02 모니터링이 API 5xx 증가 감지. 09:05 온콜 Mina가 incident 시작. 09:12 Ravi가 직전 배포와 시간상 연관이 있다고 말했지만 원인으로 확정하지 않음. 09:18 Mina가 롤백 결정. 09:26 5xx 정상화. 09:35 팀이 로그 보존과 배포 변경점 확인에 합의. 담당자는 Ravi, 기한은 금요일. 개인정보 노출은 확인되지 않았고 보안팀 확인은 아직 열려 있다. 참석자는 Mina, Ravi, Jisoo다.",
+      "expected_output": "사건 메타데이터·연대기·결정·액션·미해결 사항을 보존하는 Record or meeting notes.",
+      "files": [],
+      "expectations": [
+        "The artifact is a record or meeting notes, not an analysis report or proposal.",
+        "Participants, timeline, decision, action owner and due date, and open security check are explicit.",
+        "The document preserves that deployment correlation was not confirmed as cause.",
+        "No new root-cause analysis, recommendation, owner, or deadline is invented.",
+        "An absent reader can reconstruct the event sequence and distinguish facts, agreement, and open questions."
+      ]
+    }
+  ]
+}

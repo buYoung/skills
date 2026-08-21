@@ -1,6 +1,6 @@
 ---
 doc-type: Feature Design Doc
-profile: full # full | compact — see SKILL.md "Profiles"
+profile: full # full | compact — see feature-design-doc-create.md
 feature-name: [kebab-case-feature-name]
 status: active # active | superseded
 created: [YYYY-MM-DD]

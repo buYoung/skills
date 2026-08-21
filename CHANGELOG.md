@@ -6,6 +6,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+### Added
+
+- Added `document-writing` for human-readable structured documents with nine routed document types, progressively loaded references, source-grounded editing, and FDD structural validation.
+
+### Removed
+
+- Removed the standalone `feature-design-doc` package after merging its create, update, fact-check, normalize, template, and validator contracts into `document-writing`.
+
 ## [1.7.1] - 2026-08-10
 
 ### Fixed

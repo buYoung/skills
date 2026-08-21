@@ -1,0 +1,82 @@
+[
+  {
+    "query": "신규 입사한 PM과 CS 팀이 결제 API의 idempotency key를 한 번 읽고 이해할 수 있게, 중복 결제 사례와 24시간 제한까지 팀 위키용 문서로 정리해줘.",
+    "should_trigger": true
+  },
+  {
+    "query": "Saved Search Filters v1.0의 사용자 흐름, 이름 충돌 정책, 20개 제한, 소유권, 부분 적용 규칙을 다음 구현 세션의 결정 원본으로 남겨줘. 코딩 작업 목록은 빼고.",
+    "should_trigger": true
+  },
+  {
+    "query": "어제까지 되던 로컬 API가 오늘 DB connection failed로 안 떠. 온콜이 원인을 좁히고 복구·검증·에스컬레이션할 때 그대로 보는 문서를 만들어줘.",
+    "should_trigger": true
+  },
+  {
+    "query": "SDK 개발자가 바로 찾을 수 있도록 POST idempotency key의 UUID 규칙, 24시간 보관, 본문 조합별 응답과 409 조건을 표 중심으로 정리해줘.",
+    "should_trigger": true
+  },
+  {
+    "query": "4주간 고객지원 AI 보조 도구 시범 운영 결과를 근거·해석·한계로 나눠 경영진이 이해할 수 있는 분석 문서를 작성해줘. 승인 요청은 넣지 마.",
+    "should_trigger": true
+  },
+  {
+    "query": "고객지원 AI 도구를 100명으로 확대할지 경영진 결정을 받아야 해. 현상 유지와 추가 시범, 전사 확대를 같은 기준으로 비교한 승인 문서를 써줘.",
+    "should_trigger": true
+  },
+  {
+    "query": "10월부터 반복 적용할 production access 기준을 문서화해줘. 허용 역할, manager 승인, 30분 제한, 금지 행위, SEV-1 예외, 위반 보고까지 포함해야 해.",
+    "should_trigger": true
+  },
+  {
+    "query": "어제 장애 회의 메모를 참석하지 않은 사람도 재구성할 수 있게 시간순 사건, 발언자, 결정, 담당자, 열린 질문으로 정리해줘. 원인 추론은 추가하지 마.",
+    "should_trigger": true
+  },
+  {
+    "query": "docs/operations/access-policy.md를 읽고 예외 승인자가 바뀐 내용을 반영해줘. 기존 코드 블록과 개정 이력은 보존하고 문서 전체 일관성도 검토해줘.",
+    "should_trigger": true
+  },
+  {
+    "query": "이 조사 메모가 너무 산만해. 기술 리더가 읽을 수 있는 하나의 구조화된 문서로 다시 써주고, 결론·근거·예외를 훑어볼 수 있게 배치해줘.",
+    "should_trigger": true
+  },
+  {
+    "query": "로그인 기능 구현을 세 PR로 나눠 coding agent가 바로 실행할 수 있는 implementation plan과 체크리스트를 docs/briefs에 만들어줘.",
+    "should_trigger": false
+  },
+  {
+    "query": "이 저장소 구조를 분석해서 표준 AGENTS.md를 새로 만들고 ownership map과 작업 규칙을 포함해줘.",
+    "should_trigger": false
+  },
+  {
+    "query": "분기 실적 발표용 12장짜리 PowerPoint deck을 만들어줘. 회사 템플릿 색상과 차트를 사용해야 해.",
+    "should_trigger": false
+  },
+  {
+    "query": "첨부된 DOCX의 내용은 바꾸지 말고 표 너비, 머리글, 페이지 나눔만 고쳐서 다시 저장해줘.",
+    "should_trigger": false
+  },
+  {
+    "query": "이 문장만 자연스럽게 고쳐줘: 우리 서비스는 고객들에게 더 나은 경험을 제공하고 있습니다.",
+    "should_trigger": false
+  },
+  {
+    "query": "현재 브랜치의 인증 코드를 OWASP 기준으로 보안 감사하고 취약점별 심각도와 코드 위치를 보고해줘.",
+    "should_trigger": false
+  },
+  {
+    "query": "Confluence 요구사항을 Epic 하나와 Jira 구현 티켓 8개로 쪼개서 백로그를 생성해줘.",
+    "should_trigger": false
+  },
+  {
+    "query": "고객지원 챗봇에 넣을 production system prompt와 분류기 prompt를 작성하고 eval 기준도 설계해줘.",
+    "should_trigger": false
+  },
+  {
+    "query": "이 Markdown은 완성됐어. 내용과 구조는 건드리지 말고 A4 PDF로 렌더링해서 파일만 만들어줘.",
+    "should_trigger": false
+  },
+  {
+    "query": "첨부한 회의록을 세 문장으로만 요약해서 여기 채팅에 답해줘. 파일이나 문서는 만들 필요 없어.",
+    "should_trigger": false
+  }
+]

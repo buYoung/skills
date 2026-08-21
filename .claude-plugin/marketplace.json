@@ -11,7 +11,7 @@
 	"plugins": [
 		{
 			"name": "document-skills",
-			"description": "Collection of document and configuration skills including AGENTS.md generation, JetBrains VM options guidance, system prompt generation, Typst document creation, and structured task-brief composition",
+			"description": "Collection of document and configuration skills including human-readable document writing, AGENTS.md generation, JetBrains VM options guidance, system prompt generation, Typst document creation, and structured task-brief composition",
 			"source": "./",
 			"strict": false,
 			"skills": [
@@ -20,7 +20,8 @@
 				"./skills/system-prompt-creator",
 				"./skills/typst-creator",
 				"./skills/task-brief-creator",
-				"./skills/task-brief-creator-caveman"
+				"./skills/task-brief-creator-caveman",
+				"./skills/document-writing"
 			]
 		},
 		{

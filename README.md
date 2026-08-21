@@ -15,7 +15,6 @@ Some skills require external tools to be installed:
 | jetbrains-vmoptions | None |
 | kysely-converter | None |
 | code-review | None |
-| doc-coauthoring | None |
 | typst-creator | None |
 | code-security-audit | None |
 | system-prompt-creator | None |
@@ -23,6 +22,7 @@ Some skills require external tools to be installed:
 | release-it | None |
 | task-brief-creator | None |
 | task-brief-creator-caveman | None |
+| document-writing | Python 3.9+ for FDD structural validation |
 
 ## 🚀 Available Skills
 
@@ -39,6 +39,7 @@ Only skills that have been personally tested and approved by the user are listed
 | [task-brief-creator](skills/task-brief-creator/) | Generates executable implementation work plans at `docs/briefs/` for one coding agent to author and another to execute. Nine required sections include an `Execution Plan` with ordered stages, deliverables, handoffs, replan boundaries, and stage-level completion distinct from whole-work acceptance. Technical decisions stay with the plan author or worker; only non-blocking user-owned decisions with a safe default remain in `Open Questions`. Briefset mode coordinates multiple execution contexts. Halts on vague input. Manual trigger only. |
 | [code-security-audit](skills/code-security-audit/) | Performs OWASP-based code security audits on any codebase. Analyzes source code against ASVS 5.0.0 verification requirements, API Security Top 10 2023 risk patterns, OWASP CheatSheet secure coding practices, and WSTG testing methodologies. |
 | [release-it](skills/release-it/) | release-it configuration, setup, and plugin development. Analyzes project context (package.json, git remote, existing CI) to propose tailored release configs. Covers hooks, CLI workflows, pre-release, npm publishing, GitHub/GitLab releases, official plugins, and custom plugin development. |
+| [document-writing](skills/document-writing/) | Creates, updates, reviews, and fact-checks human-readable structured documents through nine routed types: explanatory overviews, action guides, references/specifications, proposals, analysis reports, policies, troubleshooting runbooks, records/meeting notes, and Feature Design Docs. |
 
 ## 🧪 Skills Waiting for Review
 
@@ -48,7 +49,6 @@ These skills are currently under evaluation and will be promoted to **Available 
 |-------|-------------|
 | [biz-opportunity-scout](skills/biz-opportunity-scout/) | Identify and validate profitable business opportunities by analyzing TAM/SAM/SOM, unit economics, competitive landscape, and PMF indicators with HTML report generation |
 | [code-review](skills/code-review/) | Performs production-ready code reviews on git changes. Supports commit/range/file-scoped analysis, impact assessment, breaking-change detection, confidence-aware finding classification, and risk-weighted verdict generation. |
-| [doc-coauthoring](skills/doc-coauthoring/) | Guide users through a structured 3-stage workflow for co-authoring documentation through Context Gathering, Refinement & Structure, and Reader Testing. |
 | [react-guide](skills/react-guide/) | Build-tool-independent React 18/19 CSR execution router for structure, Hooks/Effects, state/data, performance, async UI, accessibility, migrations, version compatibility, and React Compiler behavior. |
 | [vite-guide](skills/vite-guide/) | UI-framework-independent Vite 7/8 client execution router for runtime, env/assets, Rollup/Rolldown builds, plugins, deployment recovery, performance, and Vite 6→7→8 migrations. |
 | [veo-prompt-director](skills/veo-prompt-director/) | Generates structured Google Veo 3.1 video prompts by collecting user input for subject, action, style, cinematography, and audio. Guides users through the Universal Prompt Formula to produce camera-ready prompts. |
@@ -131,6 +131,17 @@ Add the desired skill to your AI Agent (Claude Code, Codex, OpenCode, Gemini, et
 - "Create AGENTS.md for this project"
 - "Generate AGENTS.md --root-only"
 - $agents-md-generator --package my-package
+
+### document-writing
+
+Use natural-language intent; the skill selects one document type and loads only its routed references.
+
+#### Examples
+
+- "Explain idempotency keys to PM and customer support readers."
+- "Write a runbook for diagnosing and recovering from DB connection failures."
+- "Document this feature's behavior and policy decisions as the implementation decision source."
+- "$document-writing review docs/operations/access-policy.md"
 
 ### skill-creator (Claude Built-in)
 

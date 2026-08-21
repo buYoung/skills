@@ -90,3 +90,6 @@ __pycache__/
 
 # delegated-review-loop session scratch
 .agents/
+
+# document-writing evaluation workspace
+/skills/document-writing-workspace/
