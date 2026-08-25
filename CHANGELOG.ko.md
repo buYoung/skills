@@ -8,7 +8,7 @@
 
 ### 추가
 
-- 사람이 읽기 좋은 구조화 문서를 위한 `document-writing` skill 추가 — 9개 문서 유형 라우팅, 점진적 reference 로딩, 근거 기반 편집, FDD 구조 검증 지원
+- 사람이 읽기 좋은 구조화 문서를 위한 `document-writing` skill 추가 — 10개 문서 유형 라우팅, 점진적 reference 로딩, 근거 기반 편집, FDD 구조 검증 지원. Design System Document는 제품 UI용 `default`와 앱·게임 상점 시각 자산용 `app-store-page` prebuilt를 분리하고, 지정된 상점마다 현재 공식 자료를 조사한 전용 시각 자산 계약을 제공
 
 ### 제거
 

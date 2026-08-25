@@ -8,7 +8,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Added
 
-- Added `document-writing` for human-readable structured documents with nine routed document types, progressively loaded references, source-grounded editing, and FDD structural validation.
+- Added `document-writing` for human-readable structured documents with ten routed document types, progressively loaded references, source-grounded editing, and FDD structural validation. Design System Documents provide separate `default` product UI and `app-store-page` storefront visual asset prebuilts; named app or game storefronts receive current first-party research and separate visual asset contracts.
 
 ### Removed
 

@@ -39,7 +39,7 @@ Only skills that have been personally tested and approved by the user are listed
 | [task-brief-creator](skills/task-brief-creator/) | Generates executable implementation work plans at `docs/briefs/` for one coding agent to author and another to execute. Nine required sections include an `Execution Plan` with ordered stages, deliverables, handoffs, replan boundaries, and stage-level completion distinct from whole-work acceptance. Technical decisions stay with the plan author or worker; only non-blocking user-owned decisions with a safe default remain in `Open Questions`. Briefset mode coordinates multiple execution contexts. Halts on vague input. Manual trigger only. |
 | [code-security-audit](skills/code-security-audit/) | Performs OWASP-based code security audits on any codebase. Analyzes source code against ASVS 5.0.0 verification requirements, API Security Top 10 2023 risk patterns, OWASP CheatSheet secure coding practices, and WSTG testing methodologies. |
 | [release-it](skills/release-it/) | release-it configuration, setup, and plugin development. Analyzes project context (package.json, git remote, existing CI) to propose tailored release configs. Covers hooks, CLI workflows, pre-release, npm publishing, GitHub/GitLab releases, official plugins, and custom plugin development. |
-| [document-writing](skills/document-writing/) | Creates, updates, reviews, and fact-checks human-readable structured documents through nine routed types: explanatory overviews, action guides, references/specifications, proposals, analysis reports, policies, troubleshooting runbooks, records/meeting notes, and Feature Design Docs. |
+| [document-writing](skills/document-writing/) | Creates, updates, reviews, and fact-checks human-readable structured documents through ten routed types: explanatory overviews, action guides, references/specifications, proposals, analysis reports, policies, troubleshooting runbooks, records/meeting notes, Feature Design Docs, and Design System Documents. The latter provides `default` and `app-store-page` prebuilts; named app or game storefronts receive current first-party research and separate visual asset contracts. |
 
 ## 🧪 Skills Waiting for Review
 
@@ -134,13 +134,16 @@ Add the desired skill to your AI Agent (Claude Code, Codex, OpenCode, Gemini, et
 
 ### document-writing
 
-Use natural-language intent; the skill selects one document type and loads only its routed references.
+Use natural-language intent; the skill selects one of ten document types and loads only its routed references. Design System Documents select either the product UI `default` prebuilt or the app/game storefront visual asset `app-store-page` prebuilt. Each named storefront is researched from current first-party material and receives one canonical store file.
 
 #### Examples
 
 - "Explain idempotency keys to PM and customer support readers."
 - "Write a runbook for diagnosing and recovering from DB connection failures."
 - "Document this feature's behavior and policy decisions as the implementation decision source."
+- "Create a platform-neutral product UI design system under docs/design-system."
+- "Document a Google Play store-listing visual asset system without creating the assets."
+- "Research Microsoft Store and Steam visual asset requirements and document each storefront separately."
 - "$document-writing review docs/operations/access-policy.md"
 
 ### skill-creator (Claude Built-in)

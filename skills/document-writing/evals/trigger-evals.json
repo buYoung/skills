@@ -78,5 +78,37 @@
   {
     "query": "첨부한 회의록을 세 문장으로만 요약해서 여기 채팅에 답해줘. 파일이나 문서는 만들 필요 없어.",
     "should_trigger": false
+  },
+  {
+    "query": "웹과 모바일 제품에서 함께 사용할 디자인시스템 문서를 만들어줘. foundations, semantic tokens, components, patterns, content, accessibility, governance의 정본을 나누고 플랫폼 차이는 별도 문서로 관리해야 해.",
+    "should_trigger": true
+  },
+  {
+    "query": "App Store와 Google Play 상점페이지의 아이콘, 스크린샷, 미리보기, feature graphic, localization, 전달 규칙이 일관되도록 시각 자산 디자인시스템 문서로 정리해줘. 실제 이미지는 만들지 마.",
+    "should_trigger": true
+  },
+  {
+    "query": "React로 디자인시스템 컴포넌트 라이브러리를 구현해줘. Button, Dialog, Select 코드를 만들고 Storybook에 연결해서 테스트까지 실행해.",
+    "should_trigger": false
+  },
+  {
+    "query": "첨부한 앱 화면을 사용해서 App Store 스크린샷 6장과 Google Play feature graphic을 실제 이미지 파일로 디자인해줘.",
+    "should_trigger": false
+  },
+  {
+    "query": "결제 플랫폼의 서비스 경계, 이벤트 흐름, 데이터 저장소, 장애 격리 전략을 다루는 시스템 아키텍처 설계 문서를 작성해줘.",
+    "should_trigger": false
+  },
+  {
+    "query": "MS Store의 MSIX 앱 아이콘, 스크린샷, trailer와 artwork 규칙을 현재 Microsoft 공식 문서에서 조사해 상점 전용 시각 자산 디자인시스템 문서로 정리해줘. 실제 파일은 만들지 마.",
+    "should_trigger": true
+  },
+  {
+    "query": "Steam 상점페이지의 capsule, screenshots, trailers, thumbnails가 일관되도록 공식 Steamworks 규격을 조사한 시각 자산 디자인시스템 문서를 작성해줘.",
+    "should_trigger": true
+  },
+  {
+    "query": "우리 게임의 Steam header capsule, main capsule, 스크린샷 5장과 trailer thumbnail을 실제 이미지 파일로 디자인해서 납품해줘.",
+    "should_trigger": false
   }
 ]

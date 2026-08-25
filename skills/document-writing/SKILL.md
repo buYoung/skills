@@ -1,6 +1,6 @@
 ---
 name: document-writing
-description: Create, update, rewrite, review, fact-check, or normalize human-readable structured documents. Use whenever the user asks to write, draft, organize, revise, or assess an explanatory overview, action guide, reference or specification, proposal, analysis report, policy, troubleshooting runbook, record or meeting notes, or a Feature Design Doc (FDD), including informal requests such as "write this up", "문서로 정리해줘", "가이드 써줘", "보고서 만들어줘", "기능 문서", or "FDD". Identify the target artifact rather than matching keywords, route to exactly one document type, and load only that type's references. Do not use for implementation plans, task briefs, tickets, source-code changes, or a short answer that does not need a durable document.
+description: Create, update, rewrite, review, fact-check, or normalize human-readable structured documents. Use whenever the user asks to write, draft, organize, revise, or assess an explanatory overview, action guide, reference or specification, proposal, analysis report, policy, troubleshooting runbook, record or meeting notes, Feature Design Doc (FDD), or Design System Document for product UI or app/game storefront visual assets, including informal requests such as "write this up", "문서로 정리해줘", "가이드 써줘", "보고서 만들어줘", "기능 문서", "FDD", or "디자인시스템 문서". Identify the target artifact rather than matching keywords, route to exactly one document type, and load only that type's references. Do not use for implementation plans, task briefs, tickets, system or architecture design docs, source-code changes, UI or visual asset production, or a short answer that does not need a durable document.
 ---
 
 # Document Writing
@@ -9,7 +9,7 @@ Create documents that help a specific reader understand, act, decide, comply, re
 
 ## Scope
 
-This skill supports nine target document types:
+This skill supports ten target document types:
 
 1. Explanatory overview
 2. Action guide
@@ -20,6 +20,7 @@ This skill supports nine target document types:
 7. Troubleshooting runbook
 8. Record or meeting notes
 9. Feature Design Doc (FDD)
+10. Design System Document
 
 The document type describes the artifact being created or assessed. Words appearing only as the subject do not select a type. For example, "write a guide to authoring FDDs" targets a guide, while "write an FDD for saved filters" targets an FDD.
 
@@ -55,8 +56,24 @@ If an explicit label conflicts with the requested outcome and the choice materia
 | Troubleshooting runbook | Diagnose and recover from an abnormal state | The reader is following a normal installation or usage path | [troubleshooting-runbook-overview.md](references/document-types/troubleshooting-runbook/troubleshooting-runbook-overview.md) |
 | Record or meeting notes | Reconstruct past events, statements, agreements, and chronology | The document interprets evidence as a report or defines current product design | [record-minutes-overview.md](references/document-types/record-minutes/record-minutes-overview.md) |
 | Feature Design Doc | Use one product feature's behavior, flows, policies, scope, and alternatives as a design decision source for implementation | The artifact is a feature introduction, guide, interface specification, performance report, or build-approval proposal | [feature-design-doc-overview.md](references/document-types/feature-design-doc/feature-design-doc-overview.md) |
+| Design System Document | Use a durable source for product UI foundations, tokens, components, and patterns, or for app/game digital storefront visual asset rules | The user wants UI code, a mockup, generated images or assets, or a system or architecture design | [design-system-overview.md](references/document-types/design-system/design-system-overview.md) |
 
-### 4. Apply the FDD gate
+### 4. Apply the Design System Document gate and select one prebuilt
+
+Select Design System Document only when the requested artifact governs reusable visual or interaction decisions across product UI or an app/game digital storefront's listing assets. A request to implement UI, create a mockup, generate images, or produce the icon, screenshots, preview video, capsule, hero, feature graphic, or promotional assets themselves is a production task, not this document type.
+
+When this type is selected, choose exactly one prebuilt from semantic intent:
+
+| Prebuilt ID | Select when the document governs | Default output root |
+| --- | --- | --- |
+| `default` | Product UI foundations, tokens, components, content, accessibility, and patterns | `docs/design-system` |
+| `app-store-page` | An app or game storefront listing's icons, screenshots, previews or trailers, capsules, heroes, feature graphics, and other visual assets | `docs/design-system-visual-assets` |
+
+The requested output path never changes the prebuilt. Resolve the root in this order: a user-specified path, the location of the existing document set being changed or reviewed, then the selected prebuilt's default output root. Read only the selected prebuilt reference; do not load the other prebuilt for comparison or inspiration.
+
+For `app-store-page`, every explicitly named storefront requires current first-party research and one storefront-specific document. Normalize and deduplicate aliases, identify any product or package branch that materially changes the requirements, then create or update one `stores/<canonical-store-name>.md` per storefront. A storefront name does not turn an asset-production request into a document request.
+
+### 5. Apply the FDD gate
 
 Select FDD only when all of these are true:
 
@@ -66,7 +83,7 @@ Select FDD only when all of these are true:
 
 The word "feature" or "FDD" appearing as background is not enough. If the artifact teaches how to write an FDD, route to a guide. If it lists an API contract for a feature, route to reference or specification.
 
-### 5. Resolve generic boundary cases
+### 6. Resolve generic boundary cases
 
 When no explicit target type settles the choice, use the reader's final action:
 
@@ -78,10 +95,11 @@ When no explicit target type settles the choice, use the reader's final action:
 - Comply with durable rules: policy or rules
 - Recover from failure: troubleshooting runbook
 - Reconstruct the past: record or meeting notes
+- Govern reusable product UI or app/game storefront visual asset decisions: Design System Document
 
 Recommendations do not automatically make a report a proposal. Steps do not automatically make a policy a guide. Choose the type that controls why the document exists.
 
-### 6. Load references progressively
+### 7. Load references progressively
 
 After routing:
 
@@ -93,13 +111,13 @@ After routing:
 
 For all substantial creation, rewrite, or review work, read [human-readable-writing.md](references/shared/human-readable-writing.md). Read [source-grounding.md](references/shared/source-grounding.md) only when factual claims require sources or verification. Read [existing-document-edits.md](references/shared/existing-document-edits.md) only when modifying or reviewing an existing document.
 
-### 7. Gather context before drafting
+### 8. Gather context before drafting
 
 Establish the audience, intended outcome, authoritative inputs, constraints, and output destination. Infer what is safely recoverable from supplied material or the repository. Ask only when an unresolved choice would materially change the document's scope, behavior, or tradeoffs.
 
 Do not invent missing decisions or facts. Mark unresolved content explicitly when no live user can answer.
 
-### 8. Draft and verify
+### 9. Draft and verify
 
 Follow the selected references. Use their structure as a reader-centered default, not as filler. Generic document types may omit sections that do not help the reader. FDD follows its stricter profile and validator contract.
 
@@ -115,7 +133,7 @@ Before delivery, confirm:
 
 ## File output and collision rules
 
-- Use a user-specified path when provided.
+- Resolve a type-specific output destination in this order: a user-specified path, the existing target's location, then the selected type or prebuilt's default location.
 - Inspect an existing target before writing.
 - Update the established artifact only when the request is an update or the selected reference defines in-place lifecycle behavior.
 - Do not silently overwrite a different document.
