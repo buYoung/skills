@@ -1,4 +1,4 @@
-# codemap-config-version: 3
+# codemap-config-version: 5
 # codemap-search repo-local config. Optional: with every key commented out (the state
 # below), this file reproduces the built-in behavior exactly. Uncomment and edit a line to
 # override its default. Resolution precedence is per key: repo > global > built-in default.
@@ -99,5 +99,26 @@
 # true: create missing `.codemap/config.toml` and append commented blocks for new settings.
 # false: never writes `.codemap/config.toml` automatically; existing config is still read.
 # Existing-file schema sync adds new settings as commented blocks, not active values.
+# Markdown 문서(`.md`, `.mdx`)를 색인 기반 탐색에 포함합니다.
+# false이면 search/overview/codemap에서 제외하지만 직접 read/parse/find/grep은 유지됩니다.
+# [language_support]
+# 셸 스크립트
+# `.sh`, `.bash`, `.zsh`를 포함합니다.
+# false여도 직접 read/parse/find/grep은 계속 허용합니다.
+# is_shell_support_enabled = false
+# 인프라 정의
+# HCL/Terraform(`.hcl`, `.tf`, `.tfvars`), Dockerfile, Nix(`.nix`)를 포함합니다.
+# false여도 직접 read/parse/find/grep은 계속 허용합니다.
+# is_infrastructure_support_enabled = false
+# 인터페이스 정의
+# Protocol Buffers(`.proto`)와 GraphQL(`.graphql`, `.gql`)을 포함합니다.
+# false여도 직접 read/parse/find/grep은 계속 허용합니다.
+# is_interface_support_enabled = false
+# 빌드 정의
+# Makefile과 `.mk`, CMakeLists.txt와 `.cmake`, BUILD·BUILD.bazel과 `.bzl`을 포함합니다.
+# false여도 직접 read/parse/find/grep은 계속 허용합니다.
+# is_build_support_enabled = false
+# is_document_support_enabled = false
+
 # [update]
 # config_auto_update = true
