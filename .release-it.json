@@ -1,9 +1,11 @@
 {
   "$schema": "https://unpkg.com/release-it@20/schema/release-it.json",
   "hooks": {
+    "before:init": "pnpm run validate:document-writing -- --require-production-ready && pnpm run test:document-writing-validators",
     "after:bump": [
       "node scripts/release/bump-marketplace.js ${version}",
-      "node scripts/release/write-changelog.js ${latestTag} ${version}"
+      "node scripts/release/write-changelog.js ${latestTag} ${version}",
+      "pnpm run validate:document-writing -- --expected-version ${version} --require-production-ready"
     ]
   },
   "git": {

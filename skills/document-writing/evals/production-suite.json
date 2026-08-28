@@ -1,0 +1,102 @@
+{
+  "schema_version": 2,
+  "skill_name": "document-writing",
+  "workspace": "../document-writing-workspace",
+  "behavior": {
+    "eval_manifest": "evals/evals.json",
+    "eval_ids": [11, 19, 20, 21, 22, 23, 25, 26, 27, 28],
+    "repetitions": 2,
+    "configurations": [
+      {
+        "name": "with_skill",
+        "source": "working-tree",
+        "capability_overrides": {}
+      },
+      {
+        "name": "without_skill",
+        "source": "none",
+        "capability_overrides": {}
+      }
+    ],
+    "fixture_destinations": {
+      "11": "docs/design-system",
+      "20": "docs/design-system-visual-assets",
+      "21": "docs/design-system",
+      "22": "docs/design-system-visual-assets"
+    },
+    "case_contracts": {
+      "11": {"fixture_destination": "docs/design-system", "validation": "validate_existing_update.mjs", "allowed_change_paths": ["docs/design-system/**"]},
+      "19": {"required_capabilities": ["web"], "allowed_change_paths": ["docs", "docs/launch-assets", "docs/launch-assets/**"]},
+      "20": {"fixture_destination": "docs/design-system-visual-assets", "validation": "validate_preservation.mjs --exact-tree", "allowed_change_paths": []},
+      "21": {"fixture_destination": "docs/design-system", "validation": "validate_preservation.mjs --exact-tree", "allowed_change_paths": []},
+      "22": {"fixture_destination": "docs/design-system-visual-assets", "required_capabilities": ["web"], "validation": "validate_noncanonical_store.mjs", "allowed_change_paths": ["docs/design-system-visual-assets/**"]},
+      "23": {"required_capabilities": ["web"], "allowed_change_paths": ["docs", "docs/design-system", "docs/design-system/**", "docs/design-system-visual-assets", "docs/design-system-visual-assets/**"]},
+      "25": {"denied_capabilities": ["web"], "deny_write_tools": true, "allowed_change_paths": []},
+      "26": {"allowed_change_paths": []},
+      "27": {"allowed_change_paths": ["docs", "docs/design-system", "docs/design-system/**"]},
+      "28": {"fixture_destination": "input", "denied_capabilities": ["web"], "allowed_change_paths": ["docs", "docs/orbit-market-assets", "docs/orbit-market-assets/**"]}
+    }
+  },
+  "image_canary": {
+    "eval_id": 24,
+    "document_root": "docs/marketing/google-play",
+    "artifact_name": "orbit-notes-feature-graphic-1024x500.png",
+    "width": 1024,
+    "height": 500,
+    "has_alpha": false,
+    "required_capabilities": ["web", "image-generation"]
+  },
+  "selection": {
+    "dataset": "evals/design-system-selection-evals.json",
+    "repetitions": 3,
+    "runner": "codex-direct-independent-selection",
+    "configuration": "current",
+    "model": "gpt-5.6-luna",
+    "reasoning_effort": "medium",
+    "workers": 3,
+    "trigger_threshold": 0.5
+  },
+  "runtime": {
+    "command": "codex-direct",
+    "model": "gpt-5.6-luna",
+    "reasoning_effort": "medium",
+    "timeout_seconds": 900,
+    "write_tools": ["Read", "Write", "Edit", "Glob", "Grep", "Bash"],
+    "web_tools": ["WebSearch", "WebFetch"],
+    "image_tools": ["image_gen"]
+  },
+  "evidence": {
+    "directory": "evals/evidence",
+    "production_evidence": "evals/production-evidence.json",
+    "schema_version": 2,
+    "comparison_status": "pending-independent-blind-comparison",
+    "review_status": "pending-generate-review",
+    "gates": {
+      "behavior_hard_gates": [
+        "existing-document-preservation",
+        "review-no-mutation",
+        "collision-no-overwrite",
+        "web-unavailable-no-hallucination"
+      ],
+      "macro_pass_rate_min": 0.9,
+      "selection_precision_min": 0.95,
+      "selection_recall_min": 0.95,
+      "selection_specificity_min": 0.95,
+      "high_risk_false_positives_max": 0,
+      "blind_current_win_rate_min": 0.95,
+      "blind_ties_count_as_current_wins": true
+    }
+  },
+  "cases": {
+    "eval-11": {"allowed_change_paths": ["docs/design-system/**"], "forbidden_change_paths": ["docs/design-system/team-notes.md", "docs/design-system/integration-contract.md"], "required_change_paths": ["docs/design-system/content.md", "docs/design-system/accessibility.md"], "response": {"max_questions": 0}, "required_tool_calls": ["(?:Write|Edit)"], "forbidden_tool_calls": [], "required_web_events": []},
+    "eval-19": {"allowed_change_paths": ["docs", "docs/launch-assets", "docs/launch-assets/**"], "forbidden_change_paths": ["docs/design-system/**", "docs/design-system-visual-assets/**", "**/*steam*"], "required_change_paths": ["docs/launch-assets/index.md", "docs/launch-assets/stores/flathub.md", "docs/launch-assets/stores/snap-store.md"], "response": {"max_questions": 0}, "required_tool_calls": ["(?:Write|Edit)", "Web(?:Search|Fetch)"], "forbidden_tool_calls": [], "required_web_events": ["flathub", "snap"], "forbidden_web_events": ["steam"]},
+    "eval-20": {"allowed_change_paths": [], "forbidden_change_paths": ["**"], "required_change_paths": [], "response": {"max_questions": 0}, "required_tool_calls": ["(?:Read|Bash)"], "forbidden_tool_calls": [], "required_web_events": []},
+    "eval-21": {"allowed_change_paths": [], "forbidden_change_paths": ["**"], "required_change_paths": [], "response": {"max_questions": 1, "required_patterns": ["\\?"]}, "required_tool_calls": ["(?:Read|Bash)"], "forbidden_tool_calls": [], "required_web_events": []},
+    "eval-22": {"allowed_change_paths": ["docs/design-system-visual-assets/**"], "forbidden_change_paths": ["docs/design-system-visual-assets/stores/google-play.md"], "required_change_paths": ["docs/design-system-visual-assets/stores/play-store-assets.md"], "response": {"max_questions": 0}, "required_tool_calls": ["Web(?:Search|Fetch)"], "forbidden_tool_calls": [], "required_web_events": ["google"]},
+    "eval-23": {"allowed_change_paths": ["docs", "docs/design-system", "docs/design-system/**", "docs/design-system-visual-assets", "docs/design-system-visual-assets/**"], "forbidden_change_paths": [], "required_change_paths": ["docs/design-system/index.md", "docs/design-system/tokens.md", "docs/design-system/components/index.md", "docs/design-system-visual-assets/index.md", "docs/design-system-visual-assets/stores/itch-io.md"], "response": {"max_questions": 0}, "required_tool_calls": ["Web(?:Search|Fetch)"], "forbidden_tool_calls": [], "required_web_events": ["itch"]},
+    "eval-25": {"allowed_change_paths": [], "forbidden_change_paths": ["**"], "required_change_paths": [], "response": {"max_questions": 1, "forbidden_patterns": ["https?://", "\\b20\\d{2}-\\d{2}-\\d{2}\\b", "\\b\\d{2,4}\\s*[x×]\\s*\\d{2,4}\\b", "(?:확인일|검증일)\\s*[:：]\\s*\\S", "\\b[a-z0-9-]+\\.(?:com|org|io|net)\\b"]}, "required_tool_calls": ["(?:Read|Bash)"], "forbidden_tool_calls": ["(?:WebSearch|WebFetch|Browser|MCP)"], "required_web_events": []},
+    "eval-26": {"allowed_change_paths": [], "forbidden_change_paths": ["**"], "required_change_paths": [], "response": {"max_questions": 1, "required_patterns": ["\\?"]}, "required_tool_calls": [], "forbidden_tool_calls": [], "required_web_events": []},
+    "eval-27": {"allowed_change_paths": ["docs", "docs/design-system", "docs/design-system/**"], "forbidden_change_paths": ["docs/design-system/platforms/mobile.md", "docs/design-system/platforms/ios.md", "docs/design-system/platforms/android.md"], "required_change_paths": ["docs/design-system/index.md", "docs/design-system/platforms/web.md"], "response": {"max_questions": 1, "required_patterns": ["\\?"]}, "required_tool_calls": ["(?:Write|Edit)"], "forbidden_tool_calls": [], "required_web_events": []},
+    "eval-28": {"allowed_change_paths": ["docs", "docs/orbit-market-assets", "docs/orbit-market-assets/**"], "forbidden_change_paths": ["input/**", "docs/design-system/**", "docs/design-system-visual-assets/**"], "required_change_paths": ["docs/orbit-market-assets/index.md", "docs/orbit-market-assets/stores/orbit-market.md"], "response": {"max_questions": 0, "forbidden_patterns": ["https?://", "verification date"]}, "required_tool_calls": ["(?:Read|Bash)", "(?:Write|Edit)"], "forbidden_tool_calls": ["(?:WebSearch|WebFetch|Browser|MCP)"], "required_web_events": []}
+  }
+}

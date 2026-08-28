@@ -1,0 +1,119 @@
+{
+  "skill_snapshot_sha256": "b53fcb14d807c2e6c56232ee375baa0bf1f2f76e7b3818af3811fc2503cfed69",
+  "current_skill_subset_sha256": "b53fcb14d807c2e6c56232ee375baa0bf1f2f76e7b3818af3811fc2503cfed69",
+  "skill_unchanged_since_snapshot": true,
+  "without_skill_isolation": [
+    {
+      "job_id": "j021",
+      "read_paths": [],
+      "passed": true
+    },
+    {
+      "job_id": "j023",
+      "read_paths": [],
+      "passed": true
+    },
+    {
+      "job_id": "j024",
+      "read_paths": [],
+      "passed": true
+    },
+    {
+      "job_id": "j025",
+      "read_paths": [],
+      "passed": true
+    },
+    {
+      "job_id": "j026",
+      "read_paths": [],
+      "passed": true
+    },
+    {
+      "job_id": "j027",
+      "read_paths": [],
+      "passed": true
+    },
+    {
+      "job_id": "j028",
+      "read_paths": [],
+      "passed": true
+    },
+    {
+      "job_id": "j029",
+      "read_paths": [],
+      "passed": true
+    },
+    {
+      "job_id": "j030",
+      "read_paths": [],
+      "passed": true
+    },
+    {
+      "job_id": "j031",
+      "read_paths": [],
+      "passed": true
+    },
+    {
+      "job_id": "j032",
+      "read_paths": [],
+      "passed": true
+    },
+    {
+      "job_id": "j033",
+      "read_paths": [],
+      "passed": true
+    },
+    {
+      "job_id": "j034",
+      "read_paths": [],
+      "passed": true
+    },
+    {
+      "job_id": "j035",
+      "read_paths": [],
+      "passed": true
+    },
+    {
+      "job_id": "j036",
+      "read_paths": [],
+      "passed": true
+    },
+    {
+      "job_id": "j037",
+      "read_paths": [],
+      "passed": true
+    },
+    {
+      "job_id": "j038",
+      "read_paths": [],
+      "passed": true
+    },
+    {
+      "job_id": "j039",
+      "read_paths": [],
+      "passed": true
+    },
+    {
+      "job_id": "j040",
+      "read_paths": [],
+      "passed": true
+    },
+    {
+      "job_id": "j041",
+      "read_paths": [],
+      "passed": true
+    }
+  ],
+  "without_skill_isolation_passed": true,
+  "discarded_runs": [
+    {
+      "job_id": "j022",
+      "reason": "worker misclassified initial fixture as evaluation contamination"
+    },
+    {
+      "comparison": "forward/comparisons.json",
+      "reason": "comparator failed to recursively inspect nested workspace/docs files"
+    }
+  ],
+  "limitation": "Filesystem isolation is enforced by opaque directories, fresh fork context, and recorded path audits, not by an OS-level per-worker sandbox with raw tool telemetry."
+}

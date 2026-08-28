@@ -4,7 +4,9 @@
   "private": true,
   "description": "A collection of AI agent skills for efficient developer–AI collaboration. Each skill provides structured capabilities (SKILL.md + references/) that AI coding assistants can leverage to perform specific tasks.",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "pnpm run validate:document-writing && pnpm run test:document-writing-validators",
+    "validate:document-writing": "python3 skills/document-writing/scripts/validate_package.py skills/document-writing",
+    "test:document-writing-validators": "python3 skills/document-writing/scripts/test_eval_validators.py",
     "release": "release-it"
   },
   "devDependencies": {

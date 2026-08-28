@@ -22,7 +22,7 @@ docs/design-system/
     └── <platform-name>.md
 ```
 
-The displayed root is replaced by the resolved output root. `platforms/` and its files are conditional. Component files exist only for components supported by the user's inputs or existing sources; do not create a literal placeholder file.
+The displayed root is replaced by the resolved output root and serves as a responsibility map, not a requirement to create empty files. Always create `index.md` for a new saved set. Create another common file only when it owns at least one supplied or verified decision, or a necessary unresolved decision readers must track. `platforms/` and component files remain conditional; never create literal placeholder files.
 
 ## File responsibilities
 

@@ -23,6 +23,8 @@ Create `platforms/<platform-name>.md` only for an explicitly supported platform 
 
 Do not add a `platforms/` document when no platform is specified.
 
+Treat collective labels such as mobile, desktop, or console as scope labels, not automatic filenames. Resolve the concrete platforms from supplied material or ask once when their differences matter. Put one direct, user-answerable either/or question in the user-facing response; recording only a decision-needed note inside `index.md` does not satisfy this clarification. Create `platforms/mobile.md` or another collective file only when the user explicitly defines that collective platform as one canonical target.
+
 ## Digital storefronts for `app-store-page`
 
 Do not apply product-platform adaptation rules to a storefront. Follow [storefront-research.md](storefront-research.md), which owns storefront naming, official research, visual-only scope, file creation, and unresolved-source behavior.

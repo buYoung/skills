@@ -1,0 +1,39 @@
+name: Validate
+
+on:
+  pull_request:
+    paths:
+      - "skills/document-writing/**"
+      - "package.json"
+      - "README.md"
+      - "CHANGELOG*.md"
+      - ".claude-plugin/marketplace.json"
+      - ".release-it.json"
+      - ".github/workflows/**"
+  push:
+    branches:
+      - main
+    paths:
+      - "skills/document-writing/**"
+      - "package.json"
+      - "README.md"
+      - "CHANGELOG*.md"
+      - ".claude-plugin/marketplace.json"
+      - ".release-it.json"
+      - ".github/workflows/**"
+
+jobs:
+  document-writing:
+    name: Validate document-writing skill
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Validate package structure and evidence contract
+        run: python3 skills/document-writing/scripts/validate_package.py skills/document-writing
+
+      - name: Run deterministic eval-validator self-tests
+        run: python3 skills/document-writing/scripts/test_eval_validators.py

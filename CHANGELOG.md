@@ -8,7 +8,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Added
 
-- Added `document-writing` for human-readable structured documents with ten routed document types, progressively loaded references, source-grounded editing, and FDD structural validation. Design System Documents provide separate `default` product UI and `app-store-page` storefront visual asset prebuilts; named app or game storefronts receive current first-party research and separate visual asset contracts.
+- Added `document-writing` for human-readable structured documents with ten routed document types, progressively loaded references, source-grounded editing, and structural validation. Design System Documents provide separate product UI and storefront visual asset output sets; any in-scope digital storefront is identified dynamically and researched from current first-party material without an allowlist. Added realistic fixture-backed behavior evals, 60 balanced selection cases, paired with-skill/without-skill runs, tool and source receipts, negative controls, blind comparison, static review, an actual PNG canary, and local/CI/release evidence validation.
 
 ### Removed
 

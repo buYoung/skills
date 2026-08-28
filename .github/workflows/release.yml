@@ -26,6 +26,14 @@ jobs:
           echo "tag=${TAG}" >> "$GITHUB_OUTPUT"
           echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
 
+      - name: Validate document-writing skill and release metadata
+        env:
+          VERSION: ${{ steps.meta.outputs.version }}
+        run: python3 skills/document-writing/scripts/validate_package.py skills/document-writing --expected-version "$VERSION" --require-production-ready
+
+      - name: Run deterministic eval-validator self-tests
+        run: python3 skills/document-writing/scripts/test_eval_validators.py
+
       - name: Verify CHANGELOG files contain this version
         env:
           VERSION: ${{ steps.meta.outputs.version }}

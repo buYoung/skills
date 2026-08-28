@@ -1,6 +1,6 @@
 ---
 name: document-writing
-description: Create, update, rewrite, review, fact-check, or normalize human-readable structured documents. Use whenever the user asks to write, draft, organize, revise, or assess an explanatory overview, action guide, reference or specification, proposal, analysis report, policy, troubleshooting runbook, record or meeting notes, Feature Design Doc (FDD), or Design System Document for product UI or app/game storefront visual assets, including informal requests such as "write this up", "문서로 정리해줘", "가이드 써줘", "보고서 만들어줘", "기능 문서", "FDD", or "디자인시스템 문서". Identify the target artifact rather than matching keywords, route to exactly one document type, and load only that type's references. Do not use for implementation plans, task briefs, tickets, system or architecture design docs, source-code changes, UI or visual asset production, or a short answer that does not need a durable document.
+description: Create, update, rewrite, review, fact-check, or normalize durable human-readable documents. Use for explanatory overviews, action guides, references or specifications, proposals, analysis reports, policies, troubleshooting runbooks, records or meeting notes, Feature Design Docs (FDDs), and Design System Documents for product UI or any digital storefront's visual assets, including the document portion of mixed document-and-production requests. Route by the requested artifact and load only its references. Do not use for implementation plans, task briefs, tickets, system or architecture design docs, source changes, pure UI or asset production, or short chat-only answers.
 ---
 
 # Document Writing
@@ -32,6 +32,8 @@ Determine whether the user wants to create, update, rewrite, review, fact-check,
 
 Review is an operation, not a proposal type. A request such as "review this policy" routes to the policy type with the review operation.
 
+Review and fact-check are non-mutating unless the user separately requests an update. They may inspect and research, but must not create, rename, or edit document files. Create, update, rewrite, and normalize are mutating operations within the requested document scope.
+
 ### 2. Identify the target artifact
 
 Use evidence in this order:
@@ -41,7 +43,7 @@ Use evidence in this order:
 3. The reader's primary outcome
 4. The content shape implied by the request
 
-If an explicit label conflicts with the requested outcome and the choice materially changes the structure, ask one concise clarification question.
+If an explicit label conflicts with the requested outcome and the choice materially changes the structure, ask one concise clarification question. Put that question directly in the user-facing response and phrase it so the user can answer the single unresolved choice; a decision note inside an artifact is not a substitute for the question.
 
 ### 3. Select exactly one document type
 
@@ -56,22 +58,26 @@ If an explicit label conflicts with the requested outcome and the choice materia
 | Troubleshooting runbook | Diagnose and recover from an abnormal state | The reader is following a normal installation or usage path | [troubleshooting-runbook-overview.md](references/document-types/troubleshooting-runbook/troubleshooting-runbook-overview.md) |
 | Record or meeting notes | Reconstruct past events, statements, agreements, and chronology | The document interprets evidence as a report or defines current product design | [record-minutes-overview.md](references/document-types/record-minutes/record-minutes-overview.md) |
 | Feature Design Doc | Use one product feature's behavior, flows, policies, scope, and alternatives as a design decision source for implementation | The artifact is a feature introduction, guide, interface specification, performance report, or build-approval proposal | [feature-design-doc-overview.md](references/document-types/feature-design-doc/feature-design-doc-overview.md) |
-| Design System Document | Use a durable source for product UI foundations, tokens, components, and patterns, or for app/game digital storefront visual asset rules | The user wants UI code, a mockup, generated images or assets, or a system or architecture design | [design-system-overview.md](references/document-types/design-system/design-system-overview.md) |
+| Design System Document | Use a durable source for product UI foundations, tokens, components, and patterns, or for any digital storefront's visual asset rules | The user wants UI code, a mockup, generated images or assets, or a system or architecture design | [design-system-overview.md](references/document-types/design-system/design-system-overview.md) |
 
-### 4. Apply the Design System Document gate and select one prebuilt
+### 4. Apply the Design System Document gate and select prebuilts per output set
 
-Select Design System Document only when the requested artifact governs reusable visual or interaction decisions across product UI or an app/game digital storefront's listing assets. A request to implement UI, create a mockup, generate images, or produce the icon, screenshots, preview video, capsule, hero, feature graphic, or promotional assets themselves is a production task, not this document type.
+Select Design System Document only when a requested artifact governs reusable visual or interaction decisions across product UI or any digital storefront's listing assets. A request whose only deliverable is UI, a mockup, images, video, or other produced assets is a production task, not this document type.
 
-When this type is selected, choose exactly one prebuilt from semantic intent:
+For each output set, choose exactly one prebuilt from semantic intent:
 
 | Prebuilt ID | Select when the document governs | Default output root |
 | --- | --- | --- |
 | `default` | Product UI foundations, tokens, components, content, accessibility, and patterns | `docs/design-system` |
-| `app-store-page` | An app or game storefront listing's icons, screenshots, previews or trailers, capsules, heroes, feature graphics, and other visual assets | `docs/design-system-visual-assets` |
+| `app-store-page` | A digital storefront listing's visual assets, using whatever asset vocabulary and media types its operator defines | `docs/design-system-visual-assets` |
 
-The requested output path never changes the prebuilt. Resolve the root in this order: a user-specified path, the location of the existing document set being changed or reviewed, then the selected prebuilt's default output root. Read only the selected prebuilt reference; do not load the other prebuilt for comparison or inspiration.
+The requested output path never changes a prebuilt. Resolve each root in this order: a user-specified directory for that set, the location of the existing document set being changed or reviewed, then the selected prebuilt's default output root. Read only the prebuilt reference for that output set.
 
-For `app-store-page`, every explicitly named storefront requires current first-party research and one storefront-specific document. Normalize and deduplicate aliases, identify any product or package branch that materially changes the requirements, then create or update one `stores/<canonical-store-name>.md` per storefront. A storefront name does not turn an asset-production request into a document request.
+If the user explicitly requests both product UI and storefront visual asset systems, split the request into two coordinated Design System Document output sets and apply `default` and `app-store-page` independently. Use their separate default roots unless the user supplies one directory for each; ask once before writing if one custom root does not establish the two destinations.
+
+For `app-store-page`, first resolve the storefronts actually included in the requested deliverable. Excluded storefronts and names used only for comparison, examples, or background are not targets. For create, update, rewrite, or normalize, follow the storefront research workflow for each in-scope target, including its explicit web-unavailable fallback, and create or update one storefront document. When both web research and the storefront identity or official material are unavailable, create no partial document: state the capability limit, request the operator identity or official guide, and leave mutable requirements unverified. For review or fact-check, research as available and report findings without changing files.
+
+When a request combines a document with actual UI, image, or video production, keep the document portion under this skill and route the production portion to the appropriate capability as a separate deliverable. Do not let either portion suppress or silently replace the other.
 
 ### 5. Apply the FDD gate
 
@@ -95,7 +101,7 @@ When no explicit target type settles the choice, use the reader's final action:
 - Comply with durable rules: policy or rules
 - Recover from failure: troubleshooting runbook
 - Reconstruct the past: record or meeting notes
-- Govern reusable product UI or app/game storefront visual asset decisions: Design System Document
+- Govern reusable product UI or digital storefront visual asset decisions: Design System Document
 
 Recommendations do not automatically make a report a proposal. Steps do not automatically make a policy a guide. Choose the type that controls why the document exists.
 
@@ -130,14 +136,19 @@ Before delivery, confirm:
 - Examples and expected results are concrete where useful.
 - No empty, duplicated, or ceremonial sections remain.
 - The result still matches the selected document type.
+- For a multi-file Design System Document, every substantive supplied decision is in the owning prebuilt file, every required owner is linked from `index.md`, and the actual changed paths match the files the completion will claim.
+- No supplied or verified value has been replaced by convention, and no unsupported value, policy, platform behavior, or storefront requirement has been added.
+- Any unresolved choice that requires the user is asked once as a direct question in the user-facing response, not left only as an internal decision note.
 
 ## File output and collision rules
 
 - Resolve a type-specific output destination in this order: a user-specified path, the existing target's location, then the selected type or prebuilt's default location.
+- A Design System Document prebuilt writes a multi-file set, so its root must be a directory. For a new set, ask once if the user provides a `.md` path instead of a directory. For an existing file inside a set, resolve and preserve its established set root.
 - Inspect an existing target before writing.
 - Update the established artifact only when the request is an update or the selected reference defines in-place lifecycle behavior.
 - Do not silently overwrite a different document.
 - Do not invent -v2, -final, or date-suffixed duplicates to avoid deciding what the canonical file is.
+- Preserve existing platform, storefront, and custom files outside the requested change scope; "not requested" does not mean "delete" or "invalidate".
 - If the user asks only for a draft in conversation, return complete Markdown without creating an unsolicited file.
 - Follow type-specific location rules when the selected reference defines them; FDD is one such type.
 
@@ -147,4 +158,4 @@ When editing, preserve fenced code blocks, paths, identifiers, exact logs, quota
 
 ## Completion
 
-Report the selected document type, the artifact produced or reviewed, validation performed, and any limitation that remains unverified. Never claim an unrun check passed.
+Before reporting completion, compare the resolved output contract and promised paths with the actual final artifact tree. Fix missing owners, links, or files first; if they cannot be produced, report the work as incomplete instead of claiming completion. Report the selected document type, the artifact produced or reviewed, validation performed, and any limitation that remains unverified. Never claim an unrun check passed.

@@ -1,0 +1,212 @@
+{
+  "schema_version": 1,
+  "total_pairs": 20,
+  "current_wins": 20,
+  "without_skill_wins": 0,
+  "ties": 0,
+  "tie_policy": "credit-current",
+  "credited_current_wins": 20,
+  "current_win_rate": 1.0,
+  "pairs": [
+    {
+      "pair_id": "p01",
+      "eval_id": 11,
+      "repetition": 1,
+      "forward_actual_winner": "current",
+      "reversed_actual_winner": "current",
+      "winner": "current",
+      "forward_reasoning": "B는 `docs/design-system/content.md`와 `accessibility.md`를 각각 정본으로 추가하고 `index.md`의 Document map과 Ownership에서 양방향 탐색과 소유권을 명시했다. 반면 A는 두 기준을 모두 `index.md`에 직접 넣어 기대한 단일 소유 파일 구조를 만들지 않았다. 양쪽 모두 `tokens.md`의 `--color-brand: #7654FF`, CSS fenced block, `https://example.invalid/acme/token-adapter`, `team-notes.md`의 `violet sunrise`, `integration-contract.md`의 `data-theme` 문장을 보존했다.",
+      "reversed_reasoning": "A는 기존 `docs/design-system`을 그대로 사용하면서 `content.md`와 `accessibility.md`를 각각 정본으로 추가하고 `index.md`에서 두 파일의 소유권을 연결했다. 반면 B는 두 기준을 모두 `index.md`에 직접 넣어 기대된 단일 소유 파일 구조를 만들지 않았다. 양쪽 모두 `tokens.md`, `team-notes.md`, `integration-contract.md`는 초기본과 바이트 차이가 없고 사본도 만들지 않았지만, A의 분리·교차참조 구조가 요청을 더 정확히 충족한다."
+    },
+    {
+      "pair_id": "p02",
+      "eval_id": 11,
+      "repetition": 2,
+      "forward_actual_winner": "current",
+      "reversed_actual_winner": "current",
+      "winner": "current",
+      "forward_reasoning": "A는 `content.md`와 `accessibility.md`를 분리하고 `index.md`의 Canonical ownership에서 각각의 책임을 연결했다. B는 콘텐츠와 접근성 전부를 `index.md`의 두 긴 섹션으로 합쳐 owning-file 요구를 놓쳤다. 두 후보 모두 `--color-brand: #7654FF`, CSS 코드 블록, Token adapter 링크, `violet sunrise`, `data-theme` 계약은 초기본과 동일하게 보존했다.",
+      "reversed_reasoning": "B는 `content.md`와 `accessibility.md`를 별도 정본으로 만들고 `index.md`에 링크와 Canonical ownership을 추가했다. A는 콘텐츠·접근성 기준을 모두 `index.md`에 직접 넣어 기대된 소유권 분리를 충족하지 못했다. 양쪽 모두 기존 토큰·코드·링크·팀 메모·연동 계약 파일을 그대로 보존했으므로 결정적 차이는 B의 문서 경계와 탐색성이다."
+    },
+    {
+      "pair_id": "p03",
+      "eval_id": 19,
+      "repetition": 1,
+      "forward_actual_winner": "current",
+      "reversed_actual_winner": "current",
+      "winner": "current",
+      "forward_reasoning": "B는 `stores/flathub.md`와 `stores/snap-store.md`를 따로 만들고 `visual-language.md`, `asset-system.md`, `screenshots-and-previews.md` 등 공통 원칙의 단일 소유 파일을 제공했다. 각 상점 파일에는 2026-08-28 확인일, 공식 자료 링크, 제품 적용 범위와 미해결 값이 있지만 운영자 정체를 명시적으로 적지는 않았다. A의 `README.md` 한 파일도 두 상점 자료와 확인일은 담지만 상점별 owning file이 없고, Snap 수치를 한 문서에 확정값처럼 밀집시켰다.",
+      "reversed_reasoning": "A는 `stores/flathub.md`와 `stores/snap-store.md`를 각각 만들고 공통 시각 원칙을 여러 소유 문서로 분리했으며, Snap 문서에서 SVG·경계값 불일치를 명시적으로 미해결 처리했다. B는 모든 내용을 `README.md` 한 파일에 모아 상점별 소유 파일이라는 기대 구조가 없고, 공식 운영자 신원도 각 상점 단위로 기록하지 않았다. A 역시 Flathub와 Snap Store의 운영자 신원을 명시하지 않아 기대사항 3 전체는 실패하지만, 적용 범위·출처·확인일·미해결 값 처리는 B보다 명료하다."
+    },
+    {
+      "pair_id": "p04",
+      "eval_id": 19,
+      "repetition": 2,
+      "forward_actual_winner": "current",
+      "reversed_actual_winner": "current",
+      "winner": "current",
+      "forward_reasoning": "A는 `stores/flathub.md`, `stores/snap-store.md`로 상점 차이를 분리하고 `asset-system.md` 한곳에 공통 시각 원칙과 매핑을 소유시켰다. `index.md`는 Steam을 포함하지 않고 비시각 listing 필드를 제외한다. B는 `README.md` 하나에 모든 내용을 합쳐 상점별 owning file 요구를 충족하지 못하며 Flathub 1000×700, Snap 40–512px 같은 값의 상태 구분도 A보다 약하다.",
+      "reversed_reasoning": "B는 공통 원칙을 `asset-system.md`에 두고 Flathub와 Snap Store를 각각 별도 파일로 관리하며, Snap 공개 안내에서 확인되지 않는 픽셀·용량을 오래된 값으로 고정하지 않았다. A는 한 `README.md`에 두 상점을 합쳐 공식명·운영자·적용성·출처·확인일을 상점별 기록한다는 구조를 충족하지 못한다. B도 Flathub 운영자 신원을 명시하지 않아 기대사항 3은 완전 통과가 아니지만, 공식 출처와 적용 범위, 필수/권장/선택 분리가 더 구체적이다."
+    },
+    {
+      "pair_id": "p05",
+      "eval_id": 20,
+      "repetition": 1,
+      "forward_actual_winner": "current",
+      "reversed_actual_winner": "current",
+      "winner": "current",
+      "forward_reasoning": "두 후보 모두 workspace 파일을 초기본과 동일하게 보존하고 `delivery-and-versioning.md`의 끊긴 링크, `1600 × 900` Galaxy Store 전용 규칙의 공통 파일 누출, `Last reviewed: 2021-06-30`을 발견했다. B는 여기에 현재 공식 자료에서 확인한 `heroImage` 1200x675 조건과 제품·국가 미확정 한계를 분리해 inspected evidence와 적용성 제한을 더 명확하게 보고했다. A도 핵심 세 결함과 영향을 정확히 보고하지만 현재 요구사항의 확인/미확인 경계는 B보다 덜 구체적이다.",
+      "reversed_reasoning": "양쪽 모두 읽기 전용을 지켜 네 초기 파일을 바꾸지 않았고, 끊긴 `delivery-and-versioning.md` 링크, 공통 파일에 누출된 Galaxy Store 전용 1600×900 규칙, 2021-06-30의 오래된 조사일을 모두 지적했다. A는 여기에 Samsung 공식 자료에서 확인한 현재 일부 값과 제품 유형·국가·기기·로케일 때문에 여전히 판정할 수 없는 범위를 분리해 기록했다. B는 제공된 세트의 문제는 정확히 짚지만 현재 운영자 요구사항을 실제로 확인한 증거와 미확인 범위의 구분이 A보다 약하다."
+    },
+    {
+      "pair_id": "p06",
+      "eval_id": 20,
+      "repetition": 2,
+      "forward_actual_winner": "current",
+      "reversed_actual_winner": "current",
+      "winner": "current",
+      "forward_reasoning": "A는 제공 파일을 변경하지 않은 채 `2021-06-30`, 공통 파일의 `1600 × 900` 누출, 누락된 `delivery-and-versioning.md`를 모두 지적하고 Samsung 현재 공식 자료와 미확정 제품·국가 조건까지 분리했다. B도 같은 세 결함을 정확히 찾았지만 현재 storefront 요구사항을 직접 확인한 증거와 적용성 경계가 없어 다음 분기 판단의 완성도가 낮다. 두 결과 모두 초기 네 파일과 바이트 단위로 동일하다.",
+      "reversed_reasoning": "양쪽 모두 원본을 전혀 변경하지 않고 오래된 2021-06-30 조사일, 공통 파일에 섞인 Galaxy Store 1600×900 규칙, 존재하지 않는 `delivery-and-versioning.md` 링크를 보고했다. B는 Samsung의 현재 Content Publish API와 Distribution Guide에서 확인한 값, 일부 국가·게임 카테고리 조건, 여전히 미확정인 제품·국가·기기 범위를 명확히 분리한다. A는 문제를 잘 식별하지만 현재 공식 자료를 열어 확인한 근거가 없어 '현재 요구사항'과 검토 증거의 구분이 B보다 덜 완전하다."
+    },
+    {
+      "pair_id": "p07",
+      "eval_id": 21,
+      "repetition": 1,
+      "forward_actual_winner": "current",
+      "reversed_actual_winner": "current",
+      "winner": "current",
+      "forward_reasoning": "양쪽 모두 `Production Access Handbook` 충돌을 정확히 식별했고 세 workspace 파일의 해시가 초기본과 동일하며 새 파일도 없다. B는 연결된 운영 문서가 있음을 함께 알리고 ‘기존 내용을 건드리거나 버전 suffix 사본을 만들지 않으려면’이라고 보존 경계를 명시한 뒤 새 디렉터리 경로 하나를 묻는다. A도 한 문장 질문이지만 같은 충돌 폴더의 `docs/design-system/ui/`를 예시로 제시해 선택 경계가 조금 덜 명료하다.",
+      "reversed_reasoning": "양쪽 모두 `Production Access Handbook` 충돌을 정확히 발견하고 파일을 하나도 변경하지 않았으며 질문도 하나만 했다. A는 기존 내용을 건드리거나 버전 suffix 사본을 만들지 않겠다는 보존 경계를 응답에 직접 명시하고 새 디렉터리 경로를 요청한다. B의 질문도 유효하지만 이미 다른 핸드북이 쓰는 `docs/design-system/` 안의 `ui/` 하위 폴더를 예시로 제안해 A보다 충돌 회피가 덜 명료하다."
+    },
+    {
+      "pair_id": "p08",
+      "eval_id": 21,
+      "repetition": 2,
+      "forward_actual_winner": "current",
+      "reversed_actual_winner": "current",
+      "winner": "current",
+      "forward_reasoning": "두 후보 모두 Production Access Handbook 충돌을 찾았고 `index.md`, `incident-exceptions.md`, `request-access.md`를 초기본과 동일하게 보존했다. A는 제품 UI 가이드가 아니라는 점, 같은 폴더의 관련 문서 존재, 보존 조건을 모두 한 문장 안에 담고 새 디렉터리를 묻는다. B는 ‘새 파일 경로’를 선택지로 제시해 다중 문서 세트의 배치 질문으로는 A보다 모호하다.",
+      "reversed_reasoning": "양쪽 모두 기존 파일을 바꾸지 않고 `Production Access Handbook` 충돌을 발견해 질문 하나만 했다. B는 `docs/design-system/index.md`가 제품 UI 가이드가 아니라는 점, 같은 폴더에 관련 문서가 있다는 점, 기존 내용을 보존한 채 새 디렉터리가 필요하다는 점을 한 질문에 모두 담았다. A도 요구를 충족하지만 버전 사본·기본 경로를 만들지 않았다는 보존 경계를 B보다 덜 직접적으로 설명한다."
+    },
+    {
+      "pair_id": "p09",
+      "eval_id": 22,
+      "repetition": 1,
+      "forward_actual_winner": "current",
+      "reversed_actual_winner": "current",
+      "winner": "current",
+      "forward_reasoning": "두 후보 모두 기존 owner인 `stores/play-store-assets.md`를 재사용하고 `index.md`, `release-coordination.md`를 초기본과 동일하게 보존했다. B는 `Research status and source`에 2026-08-28 확인일과 1차 출처를 기록하고 앱/게임·기기 지원을 unresolved applicability로 분리했으며 아이콘, feature graphic, 기기별 자산을 완결성 있게 다룬다. A는 경로는 올바르지만 문서 본문에 검증 날짜가 없고 조건부 요구와 미결정 범위 구분이 더 약하다.",
+      "reversed_reasoning": "양쪽 모두 기존 `stores/play-store-assets.md`를 그대로 재사용하고 다른 두 파일을 바꾸거나 `google-play.md`를 만들지 않았다. A는 2026-08-28 확인일, 공식 Help 출처, 필수와 추천 조건, 앱/게임 및 기기 적용성의 미확정을 모두 기록한다. B도 핵심 수치를 갱신하지만 문서 안에 확인일이 없고 적용성 분기와 필수/권장 구분이 A보다 덜 완전해 검증 메타데이터 기대를 충족하지 못한다."
+    },
+    {
+      "pair_id": "p10",
+      "eval_id": 22,
+      "repetition": 2,
+      "forward_actual_winner": "current",
+      "reversed_actual_winner": "current",
+      "winner": "current",
+      "forward_reasoning": "양쪽 모두 `stores/play-store-assets.md` 경로를 유지하고 주변 두 파일을 보존했다. A는 2026-08-28의 공식 출처 2개, 필수/권장 구분, Wear OS·TV·Automotive·XR 조건, 앱/게임과 지원 기기 미결정을 구조적으로 기록했다. B는 날짜와 핵심 아이콘·feature graphic·스크린샷 값은 담지만 기기별 분기와 명시적 미결정 범위가 빠져 업데이트 완성도가 낮다.",
+      "reversed_reasoning": "양쪽 모두 기존 Google Play 소유 파일의 이름·위치를 유지하고 다른 파일은 보존했다. B는 공식 자료 두 곳과 2026-08-28 확인일, 필수·높은 권장 구분, Wear OS·TV·Automotive·XR 조건, 앱/게임 및 지원 기기 미확정을 상세히 기록한다. A는 기본 아이콘·feature graphic·스크린샷만 갱신해 Google Play 이미지 요구사항의 현재 기기별 분기와 검증 범위가 불완전하다."
+    },
+    {
+      "pair_id": "p11",
+      "eval_id": 23,
+      "repetition": 1,
+      "forward_actual_winner": "current",
+      "reversed_actual_winner": "current",
+      "winner": "current",
+      "forward_reasoning": "B는 요청된 기본 위치인 `docs/design-system`과 `docs/design-system-visual-assets`에 두 문서 세트를 완성하고, UI 토큰·컴포넌트 계약과 itch.io 자산 규칙을 각자 소유 파일로 분리했다. `stores/itch-io.md`는 2026-08-28 공식 출처와 확인 불가한 아이콘·영상 수치를 `결정 필요`로 둔다. A도 두 산출물을 내용상 분리했지만 `docs/app-ui/README.md`와 `docs/itch-io/README.md`라는 잘못된 위치를 선택했고 근거 없는 30~90초 영상 길이를 권장했다.",
+      "reversed_reasoning": "A는 제품 UI를 `docs/design-system`에, itch.io 시각 자산을 `docs/design-system-visual-assets`에 완전한 별도 문서 세트로 만들었다. 두 세트는 상호 범위를 명시하고 UI 컴포넌트 계약과 storefront 수치를 섞지 않으며, itch.io 공식 출처·확인일·미확정 수치를 기록한다. B도 두 결과물을 만들고 내용 경계를 지키지만 요청된 기본 위치 대신 `docs/app-ui/README.md`와 `docs/itch-io/README.md`를 임의로 선택했고 제품 근거 없이 구체 토큰 값을 확정한다."
+    },
+    {
+      "pair_id": "p12",
+      "eval_id": 23,
+      "repetition": 2,
+      "forward_actual_winner": "current",
+      "reversed_actual_winner": "current",
+      "winner": "current",
+      "forward_reasoning": "A는 `docs/design-system`과 `docs/design-system-visual-assets`를 정확히 사용하고 UI foundations/tokens/components와 itch.io store/asset/screenshot 규칙을 분리했다. 제공되지 않은 브랜드 값과 favicon 규격은 미결정으로 두고 2026-08-28 공식 자료를 기록했다. B는 두 개의 완성된 문서를 만들었지만 `docs/product`와 `docs/publishing`이라는 임의 위치를 선택해 핵심 기본 경로 계약을 위반하고 일부 토큰 수치를 근거 없이 확정했다.",
+      "reversed_reasoning": "B는 `docs/design-system`과 `docs/design-system-visual-assets`에 각각 정본 문서 세트를 만들고 두 영역의 제외 범위와 상호 링크를 명확히 했다. itch.io 파일은 공식 자료·확인일·미확정 파비콘 규격을 구분하고, UI 토큰 값은 근거가 없어 미결정으로 남겼다. A는 내용상 두 문서를 구분했지만 `docs/product/app-ui-guidelines.md`와 `docs/publishing/itch-io-public-page-assets.md`라는 임의 경로를 사용하고 근거 없는 색상·간격·모션 수치를 확정했다."
+    },
+    {
+      "pair_id": "p13",
+      "eval_id": 25,
+      "repetition": 1,
+      "forward_actual_winner": "current",
+      "reversed_actual_winner": "current",
+      "winner": "current",
+      "forward_reasoning": "B는 인터넷 사용 불가와 공식 자료 미제공을 첫 문단에 기록하고 운영 주체·공식 가이드·상품 분류·지역·최신성을 요청하며, Nova 전용 파일을 만들지 않고 모든 mutable requirement를 미확정 목록으로 유지한다. A도 사이트나 수치를 발명하지 않고 확인 질문을 잘 정리했지만 ‘온라인 연구가 불가능하다’는 상태를 결과에 직접 기록하지 않았고 마지막에 여러 비율 시안 준비라는 일반 조언을 넣어 storefront 사실과 내부 준비 조언의 경계가 B보다 약하다.",
+      "reversed_reasoning": "A는 인터넷을 사용할 수 없고 공식 자료가 없다는 현재 상태를 첫 문단에 기록하며 사이트·운영자·URL·수치를 전혀 만들지 않는다. 또한 공식 운영자/Publisher Guide를 요청하고 자료 전에는 storefront 파일을 만들지 않으며 현재 요구사항이 확인되지 않았음을 상세히 남긴다. B도 추측을 피하고 확인 목록을 제공하지만 인터넷 연구 불가 상태와 현재 요구사항 미검증을 결과에 명시적으로 보고하지 않아 기대된 완료 상태가 덜 분명하다."
+    },
+    {
+      "pair_id": "p14",
+      "eval_id": 25,
+      "repetition": 2,
+      "forward_actual_winner": "current",
+      "reversed_actual_winner": "current",
+      "winner": "current",
+      "forward_reasoning": "A는 인터넷 사용 불가, 공식 자료 미제공, 운영자·URL·규격 미검증을 명시하고 Nova Market 파일을 만들지 않은 채 필요한 최소 자료 네 가지를 요청한다. B도 발명을 피하고 상세 확인 목록을 제공하지만 온라인 연구가 불가능하다는 사실을 직접 기록하지 않으며 마지막에 ‘확인 대기 문서만 작성’ 가능성을 제시해 지금 단계의 무파일 중단 경계를 약화한다.",
+      "reversed_reasoning": "B는 인터넷·공식 자료 부재, 운영 서비스·운영자·URL·규격의 미확정, storefront 파일 미생성을 모두 현재 결론에 명시하고 공식 가이드와 운영 주체를 요청한다. A도 추측을 피하고 상세 확인 목록을 제공하지만 인터넷을 쓸 수 없는 상태를 결과에 직접 기록하지 않고, 끝에는 '확인 대기 문서'를 만들 수 있다고 여지를 둔다. B가 미검증 상태와 중단 경계를 더 정확히 전달한다."
+    },
+    {
+      "pair_id": "p15",
+      "eval_id": 26,
+      "repetition": 1,
+      "forward_actual_winner": "current",
+      "reversed_actual_winner": "current",
+      "winner": "current",
+      "forward_reasoning": "B는 제품 UI 가이드가 `index.md`, `foundations.md`, `tokens.md`로 구성되는 다중 파일 세트임을 인식하고 `docs/design-system/` 또는 다른 디렉터리를 선택하는 질문 하나만 했다. A는 사용자가 제시한 모호한 단일 파일 경로에 즉시 `docs/design-system.md`를 만들고 모든 계약을 한 파일로 축약해 핵심 경로 형태와 중단 요구를 위반했다.",
+      "reversed_reasoning": "A는 제품 UI 가이드가 `index.md`, `foundations.md`, `tokens.md` 등으로 이루어진 문서 세트여서 단일 파일 경로 `docs/design-system.md`와 충돌한다고 정확히 판단하고, `docs/design-system/` 또는 다른 디렉터리를 선택하는 질문 하나만 했다. B는 요청 경로에 곧바로 단일 Markdown 파일을 만들어 다중 문서 세트 계약을 축소했고 질문도 하지 않았다. B의 본문 자체는 읽을 만하지만 경로 모호성을 해소하지 않은 구현이라 핵심 기대를 위반한다."
+    },
+    {
+      "pair_id": "p16",
+      "eval_id": 26,
+      "repetition": 2,
+      "forward_actual_winner": "current",
+      "reversed_actual_winner": "current",
+      "winner": "current",
+      "forward_reasoning": "A는 제품 UI 가이드가 `index.md`를 포함하는 문서 세트라는 점을 명시하고 `docs/design-system/` 디렉터리를 사용할지 한 문장으로 물으며 아무 파일도 만들지 않았다. B는 곧바로 `docs/design-system.md` 단일 파일을 생성해 다중 파일 세트를 축약했고 목적지 모호성을 해결하지 않았다.",
+      "reversed_reasoning": "B는 제품 UI 가이드가 디렉터리 기반 문서 세트임을 인식하고 `docs/design-system/` 생성 여부를 한 문장으로 확인했으며 아무 파일도 만들지 않았다. A는 `docs/design-system.md` 한 파일을 작성해 문서 세트를 축소하고, 경로 형태에 대한 핵심 모호성을 질문하지 않았다. A의 내용은 일반 UI 가이드로서 양호하지만 기대된 산출 계약과 중단 조건을 충족하지 않는다."
+    },
+    {
+      "pair_id": "p17",
+      "eval_id": 27,
+      "repetition": 1,
+      "forward_actual_winner": "current",
+      "reversed_actual_winner": "current",
+      "winner": "current",
+      "forward_reasoning": "B는 공통 계약을 `docs/design-system/index.md`에서 플랫폼 중립으로 유지하고 확정된 웹을 `platforms/web.md`에 보존한 뒤, 모바일 파일은 만들지 않고 iOS+Android 집합인지 내부 분류인지 한 질문으로 확인한다. A는 `product-ui-guide.md` 단일 파일을 만들고 웹 경로 계약을 놓쳤으며, 응답에서 이미 ‘웹과 모바일로 분리해 작성했다’고 완료를 주장해 미결정 adaptation 경계가 흐려졌다.",
+      "reversed_reasoning": "A는 플랫폼 중립 공통 계약을 `docs/design-system/index.md`에 두고, 확정된 웹을 `platforms/web.md`로 별도 보존했으며 모바일 파일은 만들지 않았다. 응답은 모바일이 iOS+Android 집합인지 내부 분류명인지 한 질문으로 확인한다. B는 한 `product-ui-guide.md` 안에 웹·모바일 섹션을 모두 만들어 웹의 정본 경로를 놓치고, 완료 보고에서 '웹과 모바일로 분리해 작성'했다고 해 미결정 모바일 적응을 사실상 산출된 것으로 표현한다."
+    },
+    {
+      "pair_id": "p18",
+      "eval_id": 27,
+      "repetition": 2,
+      "forward_actual_winner": "current",
+      "reversed_actual_winner": "current",
+      "winner": "current",
+      "forward_reasoning": "A는 공통 `index.md`를 플랫폼 중립으로 두고 웹만 `platforms/web.md`로 생성하며 모바일 파일을 만들지 않았다. 응답은 두 가지 모바일 의미를 직접 선택해 달라고 요청하고 입력에 없는 플랫폼 규칙을 추가하지 않았다고 명시한다. B는 단일 `product-ui-guide.md`에서 `Mobile (공통)`, `Mobile (iOS)`, `Mobile (Android)` 임시 표기와 모바일 터치·전환 관리 단위를 미리 정의해 unresolved adaptation을 사실상 구성했다.",
+      "reversed_reasoning": "B는 공통 문서 세트를 플랫폼 중립으로 유지하고 `platforms/web.md`에 확정된 웹 범위만 기록했으며, 모바일 파일은 만들지 않고 두 의미 중 선택을 요청한다. A는 단일 `product-ui-guide.md`에 `Mobile (공통)`, `Mobile (iOS)`, `Mobile (Android)` 표기와 모바일 관리 단위를 미리 정의해 미결정 분류를 완료된 적응 구조처럼 표현한다. 또한 기대된 `platforms/web.md` 경로와 사용자에게 직접 던지는 간결한 질문이 없다."
+    },
+    {
+      "pair_id": "p19",
+      "eval_id": 28,
+      "repetition": 1,
+      "forward_actual_winner": "current",
+      "reversed_actual_winner": "current",
+      "winner": "current",
+      "forward_reasoning": "B는 `Orbit Market Publishing Ltd.`를 운영자로 명시하고 supplied publisher guide를 유일한 권위 입력으로 선언하며 4:5 카드, 최대 6개 스크린샷, 선택적 15초 무음 preview와 첫 3초 결과를 여러 owning file에 정확히 배치했다. URL·검증일·픽셀·형식은 원문에 없어 unresolved로 남기고 블로그의 16:9/12장 주장을 배제했다. A도 핵심 규칙은 정확하지만 단일 `README.md`에서 운영자 정체를 누락하고 원문에 없는 요구사항의 미결정 목록도 거의 없다.",
+      "reversed_reasoning": "A는 Orbit Market Publishing Ltd. 운영자와 생산성 앱 적용 범위를 기록하고, 제공 Publisher Guide를 유일한 근거로 명시하며 온라인 검증일을 주장하지 않는다. 4:5 discovery card, 최대 6개 signed-in screenshot, 최대 15초 silent preview와 첫 3초 결과를 각 소유 문서와 점검표에 충실히 반영했다. B도 핵심 규칙과 경로는 맞지만 운영자 신원을 기록하지 않고, 원문에 없는 형식·URL·날짜가 미검증이라는 제한을 명시적으로 관리하지 않아 사실 추적성과 구조가 A보다 약하다."
+    },
+    {
+      "pair_id": "p20",
+      "eval_id": 28,
+      "repetition": 2,
+      "forward_actual_winner": "current",
+      "reversed_actual_winner": "current",
+      "winner": "current",
+      "forward_reasoning": "두 후보 모두 운영자 `Orbit Market Publishing Ltd.`, 4:5 discovery card, 최대 6개 screenshots, 선택적 15초 silent preview를 정확히 반영하고 블로그의 16:9 배너를 배제했다. A는 `stores/orbit-market.md`에 온라인 검증 불가와 no verification date, 파일 형식·용량·픽셀·로케일 미정을 명시하고 공통 자산·스크린샷·구성 소유권을 분리해 문서 세트 완성도가 높다. B의 단일 README도 사실 정확하지만 미검증 상태와 소유 구조가 덜 상세하다.",
+      "reversed_reasoning": "양쪽 모두 Publisher Guide만 사용해 운영자, 4:5 discovery card, 최대 6개 screenshot, 선택적 15초 silent preview를 정확히 기록하고 블로그의 16:9 주장을 배제했다. B는 이를 다섯 개의 명확한 소유 문서로 나누고 온라인 미검증, verification date 미기재, 형식·픽셀·용량·locale 등 미정 값을 명시한다. A의 단일 README도 모든 핵심 기대를 통과하지만, B가 출처·소유권·미확정 사항과 자산 관계를 더 추적 가능하게 구성했다."
+    }
+  ]
+}

@@ -2,7 +2,7 @@
 
 ## Purpose and default root
 
-Use this prebuilt for a coherent visual asset system for an app or game digital storefront such as Apple App Store, Google Play, Microsoft Store, or Steam. It governs assets and their shared visual composition but does not create icons, screenshots, videos, capsules, heroes, feature graphics, or promotional artwork. Its default output root is `docs/design-system-visual-assets`.
+Use this prebuilt for a coherent visual asset system for any digital storefront. The storefront may distribute apps, games, software, media, device experiences, or another product category; support is discovered from the requested scope and current authoritative material rather than a built-in store list. The prebuilt governs assets and their shared visual composition but does not create the assets themselves. Its default output root is `docs/design-system-visual-assets`.
 
 ## Base document set
 
@@ -20,7 +20,7 @@ docs/design-system-visual-assets/
     └── <store-name>.md
 ```
 
-The displayed root is replaced by the resolved output root. `stores/` and its files are conditional; do not create a literal placeholder file.
+The displayed root is replaced by the resolved output root and serves as a responsibility map, not a requirement to create empty files. Always create `index.md` for a new saved set. Create another common file only when it owns at least one supplied or verified decision, or a necessary unresolved decision readers must track. `stores/` remains conditional; never create literal placeholder files.
 
 ## File responsibilities
 
@@ -34,7 +34,7 @@ Own color, typography, backgrounds, illustration, device frames, product-to-list
 
 ### `asset-system.md`
 
-Own the role and relationship of icons, screenshots, preview videos or trailers, feature graphics, capsules, heroes, library art, and other storefront-defined assets. Distinguish shared source material, storefront variants, locale variants, and asset-specific decisions without inventing required deliverables.
+Own cross-storefront concepts and mappings such as product identity, captured product views, motion previews, promotional artwork, and shared source material. Storefront files own each operator's official asset names, required status, specifications, placements, and storefront-specific relationships. Do not move those facts into the common contract.
 
 ### `screenshots-and-previews.md`
 
@@ -42,7 +42,7 @@ Own screen selection, sequence, narrative flow, fidelity to actual UI or gamepla
 
 ### `composition-and-copy.md`
 
-Own visual hierarchy, safe areas, text placement, message length, composition rules, and usage or prohibited-usage examples supported by the brand and product sources.
+Own visual hierarchy, safe areas, and copy embedded in or directly paired with visual assets. It does not own general storefront listing titles, descriptions, tags, or search metadata.
 
 ### `localization.md`
 
@@ -58,7 +58,7 @@ Own source files, export formats, filenames, locale and store variants, review s
 
 ### `stores/<store-name>.md`
 
-For every explicitly named storefront, follow [storefront-research.md](../storefront-research.md) and create or update exactly one storefront file after current first-party research. Multiple storefronts require separate files; aliases for the same storefront require one file.
+For every in-scope storefront, follow [storefront-research.md](../storefront-research.md). Mutating operations create or update one file per storefront after current first-party research or the documented web-unavailable fallback; review and fact-check report findings without changing files. Multiple storefronts require separate files, while aliases confirmed to represent the same official storefront share one file.
 
 Keep the research visual-only. Storefront listing titles, descriptions, tags, categories, pricing, and legal submission fields do not belong here unless a rule directly determines whether a visual asset is valid.
 

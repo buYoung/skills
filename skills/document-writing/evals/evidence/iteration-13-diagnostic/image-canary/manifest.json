@@ -1,0 +1,21 @@
+{
+  "document_root_exists": true,
+  "png": {
+    "exists": true,
+    "is_png": true,
+    "width": 1024,
+    "height": 500,
+    "bit_depth": 8,
+    "color_type": 2,
+    "has_alpha": false,
+    "sha256": "cbc4404d7cda79ad6dd5ff8684988c66b340e3e37757a3695d64b84d5c356088"
+  },
+  "image_generation_calls": [
+    {
+      "tool": "built-in image_gen",
+      "status": "completed; visually inspected; resized to required dimensions",
+      "output_path": "workspace/docs/marketing/google-play/orbit-notes-feature-graphic.png"
+    }
+  ],
+  "passed": true
+}

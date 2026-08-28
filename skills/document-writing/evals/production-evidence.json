@@ -1,0 +1,106 @@
+{
+  "schema_version": 2,
+  "trust_boundary": "local-unattested",
+  "generated_at": "2026-08-28",
+  "iteration": 13,
+  "status": "diagnostic-failed",
+  "production_ready": false,
+  "contract_sha256": "1040aea8b0874fb65b927cdaec0bcacd8db6a66df1aa43f764048fcb1b222aed",
+  "runtime": {
+    "runner": "codex-in-app-isolated-subagents",
+    "command": "Codex in-app isolated behavior, selection, comparison, and image-canary runs; no external CLI executor",
+    "model": "gpt-5.6-luna",
+    "reasoning_effort": "medium",
+    "telemetry_status": "unavailable",
+    "limitations": [
+      "The clean iteration has no raw Codex context, tool telemetry, or platform receipts.",
+      "The recorded worker and comparator events are local reports and are not remote attestation."
+    ]
+  },
+  "behavior_benchmark": {
+    "path": "evals/evidence/iteration-13-diagnostic/benchmark.json",
+    "sha256": "402d6c02bfa86e384f1d83032bed20f48a8be368c18a12fb03b2e9fe5f4f9513"
+  },
+  "selection_benchmark": {
+    "path": "evals/evidence/iteration-13-diagnostic/selection.json",
+    "sha256": "2e34b2010d0843f7f9f1380f2193499784f22c54bb69e5464da9abe3f91a3755"
+  },
+  "measurements": {
+    "behavior": {
+      "current": {"passed": 138, "total": 142, "macro_pass_rate": 0.971830985915493},
+      "without_skill": {"passed": 106, "total": 142, "macro_pass_rate": 0.7464788732394366}
+    },
+    "blind": {"current_wins": 20, "total_pairs": 20, "current_win_rate": 1.0},
+    "selection": {"selected": 180, "total": 180, "precision": 1.0, "recall": 1.0, "specificity": 1.0}
+  },
+  "hard_gates": {
+    "existing_document_preservation": false,
+    "review_no_mutation": true,
+    "collision_no_overwrite": true,
+    "web_unavailable_no_hallucination": true
+  },
+  "blind_comparison": {
+    "path": "evals/evidence/iteration-13-diagnostic/blind-comparison.json",
+    "sha256": "886279c46b543bd0bf06af7c585c9f8cc889662fd9fae7089ffa145000b246b4",
+    "total_pairs": 20,
+    "current_wins": 20,
+    "without_skill_wins": 0,
+    "ties": 0,
+    "credited_current_wins": 20,
+    "current_win_rate": 1.0,
+    "tie_policy": "credit-current"
+  },
+  "integrity": {
+    "path": "evals/evidence/iteration-13-diagnostic/integrity.json",
+    "sha256": "d850856d0bbe89c2de7e921c305069518dbd1c445e4cec6063880cf7a520c64b"
+  },
+  "review": {
+    "status": "generated",
+    "artifact_path": "evals/evidence/iteration-13-diagnostic/review.html",
+    "sha256": "d03aac0004914ae44d2fb0e3dc87d93eb97516c485e0d12c1fb90c058b9dba60"
+  },
+  "image_canary": {
+    "passed": true,
+    "eval_id": 24,
+    "artifact_name": "orbit-notes-feature-graphic-1024x500.png",
+    "artifact_path": "evals/evidence/iteration-13-diagnostic/image-canary/final/orbit-notes-feature-graphic-1024x500.png",
+    "sha256": "cbc4404d7cda79ad6dd5ff8684988c66b340e3e37757a3695d64b84d5c356088",
+    "source_artifact_path": "evals/evidence/iteration-13-diagnostic/image-canary/source/orbit-notes-feature-graphic.png",
+    "source_sha256": "cbc4404d7cda79ad6dd5ff8684988c66b340e3e37757a3695d64b84d5c356088",
+    "manifest_artifact_path": "evals/evidence/iteration-13-diagnostic/image-canary/manifest.json",
+    "manifest_sha256": "f754d09d934ce0f6f8d45476977ca3c5efebd4ec2b642e9266f27cb0164ac1f3",
+    "generation_artifact_path": "evals/evidence/iteration-13-diagnostic/image-canary/generation/run-report.json",
+    "generation_artifact_sha256": "f6b97a693a53c95d20dd471647818b35fb4805cd556e1941afecfa5c1aa60a32",
+    "width": 1024,
+    "height": 500,
+    "has_alpha": false,
+    "image_tool_calls": 1,
+    "generation_tool": "built-in image_gen"
+  },
+  "artifacts": [
+    {"kind": "measurement-summary", "path": "evals/evidence/iteration-13-diagnostic/measurement-summary.json", "sha256": "98cb3ec23ec91f25e502973ee86eae37922bbced4841f40a71180ff3438e53b9"},
+    {"kind": "behavior-results", "path": "evals/evidence/iteration-13-diagnostic/benchmark.json", "sha256": "402d6c02bfa86e384f1d83032bed20f48a8be368c18a12fb03b2e9fe5f4f9513"},
+    {"kind": "selection-results", "path": "evals/evidence/iteration-13-diagnostic/selection.json", "sha256": "2e34b2010d0843f7f9f1380f2193499784f22c54bb69e5464da9abe3f91a3755"},
+    {"kind": "blind-comparison", "path": "evals/evidence/iteration-13-diagnostic/blind-comparison.json", "sha256": "886279c46b543bd0bf06af7c585c9f8cc889662fd9fae7089ffa145000b246b4"},
+    {"kind": "integrity", "path": "evals/evidence/iteration-13-diagnostic/integrity.json", "sha256": "d850856d0bbe89c2de7e921c305069518dbd1c445e4cec6063880cf7a520c64b"},
+    {"kind": "review", "path": "evals/evidence/iteration-13-diagnostic/review.html", "sha256": "d03aac0004914ae44d2fb0e3dc87d93eb97516c485e0d12c1fb90c058b9dba60"},
+    {"kind": "image-canary-manifest", "path": "evals/evidence/iteration-13-diagnostic/image-canary/manifest.json", "sha256": "f754d09d934ce0f6f8d45476977ca3c5efebd4ec2b642e9266f27cb0164ac1f3"},
+    {"kind": "image-canary-generation", "path": "evals/evidence/iteration-13-diagnostic/image-canary/generation/run-report.json", "sha256": "f6b97a693a53c95d20dd471647818b35fb4805cd556e1941afecfa5c1aa60a32"},
+    {"kind": "image-canary-source", "path": "evals/evidence/iteration-13-diagnostic/image-canary/source/orbit-notes-feature-graphic.png", "sha256": "cbc4404d7cda79ad6dd5ff8684988c66b340e3e37757a3695d64b84d5c356088"},
+    {"kind": "image-canary", "path": "evals/evidence/iteration-13-diagnostic/image-canary/final/orbit-notes-feature-graphic-1024x500.png", "sha256": "cbc4404d7cda79ad6dd5ff8684988c66b340e3e37757a3695d64b84d5c356088"},
+    {"kind": "image-canary-document", "path": "evals/evidence/iteration-13-diagnostic/image-canary/document/docs/marketing/google-play/index.md", "sha256": "0225c1593b4e71b3d6163583690cee44aa2698c3845f35b6aa8e69dc4bdc3796"},
+    {"kind": "image-canary-document-file", "path": "evals/evidence/iteration-13-diagnostic/image-canary/document/docs/marketing/google-play/visual-language.md", "sha256": "657b07ddd928e07e1b3c12aa5144f20dea70c50a401b59bfce8c91ff952a3699"},
+    {"kind": "image-canary-document-file", "path": "evals/evidence/iteration-13-diagnostic/image-canary/document/docs/marketing/google-play/asset-system.md", "sha256": "21bec0d59c5eabbfe7d12f3242206eef9bac176e88c472ea83860f200f45bb41"},
+    {"kind": "image-canary-document-file", "path": "evals/evidence/iteration-13-diagnostic/image-canary/document/docs/marketing/google-play/composition-and-copy.md", "sha256": "dde47b78c2687182fa93bdc8aee9f5d2853efee0ccce14e899f55c50cb1916c3"},
+    {"kind": "image-canary-document-file", "path": "evals/evidence/iteration-13-diagnostic/image-canary/document/docs/marketing/google-play/accessibility.md", "sha256": "6c81c16472d467b3acae78d250bdff6c4842a8470b0f016aa8aed3fc11af5596"},
+    {"kind": "image-canary-document-file", "path": "evals/evidence/iteration-13-diagnostic/image-canary/document/docs/marketing/google-play/delivery-and-versioning.md", "sha256": "a285d6e47aeaa989be5c8473768e33645041d78377903d0f7919b35bae1844ff"},
+    {"kind": "image-canary-document-file", "path": "evals/evidence/iteration-13-diagnostic/image-canary/document/docs/marketing/google-play/stores/google-play.md", "sha256": "0629bcdf4f69bd3ae847932c83e75331245fdfdb547fc020cd9e1f16465803e0"},
+    {"kind": "image-canary-document-asset", "path": "evals/evidence/iteration-13-diagnostic/image-canary/document/docs/marketing/google-play/orbit-notes-feature-graphic.png", "sha256": "cbc4404d7cda79ad6dd5ff8684988c66b340e3e37757a3695d64b84d5c356088"}
+  ],
+  "limitations": [
+    "No raw Codex context, tool telemetry, or platform receipt was available in the clean iteration.",
+    "Selection is a description-only binary routing measurement, not automatic skill-invocation telemetry.",
+    "The existing-document-preservation hard gate failed, so the result is diagnostic-failed despite the relative comparison threshold passing.",
+    "Storefront requirements remain time-sensitive and image canary coverage lacks supplied app UI and supported-device scope."
+  ]
+}

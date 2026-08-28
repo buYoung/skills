@@ -110,5 +110,37 @@
   {
     "query": "우리 게임의 Steam header capsule, main capsule, 스크린샷 5장과 trailer thumbnail을 실제 이미지 파일로 디자인해서 납품해줘.",
     "should_trigger": false
+  },
+  {
+    "query": "Samsung Galaxy Store에 올릴 앱의 아이콘·스크린샷·프로모션 이미지 규칙을 현재 공식 개발자 자료로 조사해서 storefront 시각 자산 디자인시스템 문서로 만들어줘.",
+    "should_trigger": true
+  },
+  {
+    "query": "우리 웹앱 내부 tokens/components/accessibility 가이드와 itch.io 페이지 이미지 규격 문서를 각각 정본으로 남겨줘. 두 문서 세트는 섞지 마.",
+    "should_trigger": true
+  },
+  {
+    "query": "docs/design-system-visual-assets의 기존 상점 문서들을 수정하지 말고 출처 freshness, 깨진 링크, common/store 책임 중복만 상세 검토해줘.",
+    "should_trigger": true
+  },
+  {
+    "query": "F-Droid 시각 자산 디자인시스템 문서를 만들고, 문서가 정한 규칙으로 실제 PNG 제작도 별도 산출물로 진행해줘.",
+    "should_trigger": true
+  },
+  {
+    "query": "디자이너와 개발자가 함께 보는 제품 UI foundations, semantic tokens, Button/Dialog 규칙, 접근성 원칙을 docs/ui-system 아래 정본 가이드로 정리해줘.",
+    "should_trigger": true
+  },
+  {
+    "query": "Apple Store 온라인 쇼핑몰의 iPhone 제품 hero 사진과 상세페이지 갤러리 배치를 실제 웹페이지로 구현해줘.",
+    "should_trigger": false
+  },
+  {
+    "query": "Amazon Appstore용 스크린샷과 아이콘 이미지를 실제 파일로 만들어줘. 문서나 규칙 정리는 필요 없어.",
+    "should_trigger": false
+  },
+  {
+    "query": "Figma에서 모바일 앱 디자인시스템 라이브러리를 만들고 컴포넌트 variants와 auto layout을 실제 파일에 구성해줘.",
+    "should_trigger": false
   }
 ]

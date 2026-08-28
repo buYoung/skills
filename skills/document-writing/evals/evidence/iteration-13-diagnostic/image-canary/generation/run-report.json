@@ -1,0 +1,35 @@
+{
+  "status": "completed",
+  "produced_paths": [
+    "workspace/docs/marketing/google-play/index.md",
+    "workspace/docs/marketing/google-play/visual-language.md",
+    "workspace/docs/marketing/google-play/asset-system.md",
+    "workspace/docs/marketing/google-play/composition-and-copy.md",
+    "workspace/docs/marketing/google-play/accessibility.md",
+    "workspace/docs/marketing/google-play/delivery-and-versioning.md",
+    "workspace/docs/marketing/google-play/stores/google-play.md",
+    "workspace/docs/marketing/google-play/orbit-notes-feature-graphic.png"
+  ],
+  "read_paths": [
+    "<skill-snapshot>/SKILL.md",
+    "<skill-snapshot>/references/document-types/design-system/design-system-overview.md",
+    "<skill-snapshot>/references/document-types/design-system/design-system-authoring.md",
+    "<skill-snapshot>/references/document-types/design-system/storefront-research.md",
+    "<skill-snapshot>/references/document-types/design-system/prebuilts/app-store-page.md",
+    "<skill-snapshot>/references/shared/human-readable-writing.md",
+    "<skill-snapshot>/references/shared/source-grounding.md",
+    "<imagegen-skill>/SKILL.md"
+  ],
+  "web_urls": [
+    {"url": "https://support.google.com/googleplay/android-developer/answer/9866151?hl=en", "status": "opened via search result; direct open rate-limited"},
+    {"url": "https://support.google.com/googleplay/android-developer/answer/13393723?hl=en", "status": "opened and verified"}
+  ],
+  "image_generation_calls": [
+    {"tool": "built-in image_gen", "status": "completed; visually inspected; resized to required dimensions", "output_path": "workspace/docs/marketing/google-play/orbit-notes-feature-graphic.png"}
+  ],
+  "notes": [
+    "Official Google Play requirements were researched on 2026-08-28.",
+    "The generated PNG is RGB with no alpha and measures 1024 x 500 pixels.",
+    "Screenshots, preview video, and device-specific assets remain unresolved because no actual app UI or supported-device scope was supplied."
+  ]
+}

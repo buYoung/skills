@@ -1,0 +1,3920 @@
+{
+  "metadata": {
+    "skill_name": "document-writing",
+    "executor_model": "gpt-5.6-luna",
+    "reasoning_effort": "medium",
+    "evals_run": [
+      11,
+      19,
+      20,
+      21,
+      22,
+      23,
+      25,
+      26,
+      27,
+      28
+    ],
+    "runs_per_configuration": 2,
+    "configurations": [
+      "with_skill",
+      "without_skill"
+    ],
+    "telemetry_status": "unavailable"
+  },
+  "runs": [
+    {
+      "eval_id": 11,
+      "eval_name": "existing-design-system-preservation",
+      "configuration": "with_skill",
+      "run_number": 1,
+      "job_id": "j001",
+      "status": "completed",
+      "produced_paths": [
+        "docs/design-system/accessibility.md",
+        "docs/design-system/content.md",
+        "docs/design-system/index.md"
+      ],
+      "result": {
+        "valid": true,
+        "passed": 12,
+        "failed": 0,
+        "total": 12,
+        "pass_rate": 1.0,
+        "time_seconds": null,
+        "tokens": null
+      },
+      "expectations": [
+        {
+          "text": "The existing document-set location remains unchanged instead of moving work to a newly chosen default folder.",
+          "passed": true,
+          "evidence": "기존 `docs/design-system` 위치를 그대로 사용했다."
+        },
+        {
+          "text": "The work stays a product UI design-system update rather than becoming a storefront-asset document.",
+          "passed": true,
+          "evidence": "`content.md`와 `accessibility.md` 모두 Acme Console UI를 명시한다."
+        },
+        {
+          "text": "The exact token value, fenced code block, external link, user-owned team notes, and integration contract are byte-for-byte preserved.",
+          "passed": true,
+          "evidence": "보존 대상 세 파일은 초기본과 동일하고 `--color-brand: #7654FF`, fenced CSS, 링크, `violet sunrise`, `data-theme`가 유지된다."
+        },
+        {
+          "text": "Content and accessibility each receive one owning file with cross-references rather than duplicate definitions.",
+          "passed": true,
+          "evidence": "`content.md`, `accessibility.md`가 각각 존재하고 `index.md`가 두 파일의 소유권을 링크한다."
+        },
+        {
+          "text": "No silent overwrite of an unrelated document and no `-v2`, `-final`, or date-suffixed duplicate is introduced.",
+          "passed": true,
+          "evidence": "관련 두 파일만 추가했고 suffix 사본은 없다."
+        },
+        {
+          "text": "Preserve integration-contract.md byte-for-byte",
+          "passed": true,
+          "evidence": "integration-contract.md is unchanged"
+        },
+        {
+          "text": "Preserve team-notes.md byte-for-byte",
+          "passed": true,
+          "evidence": "team-notes.md is unchanged"
+        },
+        {
+          "text": "Preserve tokens.md byte-for-byte",
+          "passed": true,
+          "evidence": "tokens.md is unchanged"
+        },
+        {
+          "text": "Extend index.md without rewriting its existing content",
+          "passed": true,
+          "evidence": "Every existing non-empty index line remains intact and ordered"
+        },
+        {
+          "text": "Create a meaningful, indexed content.md owner document",
+          "passed": true,
+          "evidence": "content.md has substantive owned guidance and an index link"
+        },
+        {
+          "text": "Create a meaningful, indexed accessibility.md owner document",
+          "passed": true,
+          "evidence": "accessibility.md has substantive owned guidance and an index link"
+        },
+        {
+          "text": "Create only the two requested owner files",
+          "passed": true,
+          "evidence": "No unexpected file was added"
+        }
+      ],
+      "semantic_expectations": [
+        {
+          "text": "The existing document-set location remains unchanged instead of moving work to a newly chosen default folder.",
+          "passed": true,
+          "evidence": "기존 `docs/design-system` 위치를 그대로 사용했다."
+        },
+        {
+          "text": "The work stays a product UI design-system update rather than becoming a storefront-asset document.",
+          "passed": true,
+          "evidence": "`content.md`와 `accessibility.md` 모두 Acme Console UI를 명시한다."
+        },
+        {
+          "text": "The exact token value, fenced code block, external link, user-owned team notes, and integration contract are byte-for-byte preserved.",
+          "passed": true,
+          "evidence": "보존 대상 세 파일은 초기본과 동일하고 `--color-brand: #7654FF`, fenced CSS, 링크, `violet sunrise`, `data-theme`가 유지된다."
+        },
+        {
+          "text": "Content and accessibility each receive one owning file with cross-references rather than duplicate definitions.",
+          "passed": true,
+          "evidence": "`content.md`, `accessibility.md`가 각각 존재하고 `index.md`가 두 파일의 소유권을 링크한다."
+        },
+        {
+          "text": "No silent overwrite of an unrelated document and no `-v2`, `-final`, or date-suffixed duplicate is introduced.",
+          "passed": true,
+          "evidence": "관련 두 파일만 추가했고 suffix 사본은 없다."
+        }
+      ],
+      "deterministic_expectations": [
+        {
+          "text": "Preserve integration-contract.md byte-for-byte",
+          "passed": true,
+          "evidence": "integration-contract.md is unchanged"
+        },
+        {
+          "text": "Preserve team-notes.md byte-for-byte",
+          "passed": true,
+          "evidence": "team-notes.md is unchanged"
+        },
+        {
+          "text": "Preserve tokens.md byte-for-byte",
+          "passed": true,
+          "evidence": "tokens.md is unchanged"
+        },
+        {
+          "text": "Extend index.md without rewriting its existing content",
+          "passed": true,
+          "evidence": "Every existing non-empty index line remains intact and ordered"
+        },
+        {
+          "text": "Create a meaningful, indexed content.md owner document",
+          "passed": true,
+          "evidence": "content.md has substantive owned guidance and an index link"
+        },
+        {
+          "text": "Create a meaningful, indexed accessibility.md owner document",
+          "passed": true,
+          "evidence": "accessibility.md has substantive owned guidance and an index link"
+        },
+        {
+          "text": "Create only the two requested owner files",
+          "passed": true,
+          "evidence": "No unexpected file was added"
+        }
+      ]
+    },
+    {
+      "eval_id": 11,
+      "eval_name": "existing-design-system-preservation",
+      "configuration": "without_skill",
+      "run_number": 1,
+      "job_id": "j021",
+      "status": "completed",
+      "produced_paths": [
+        "docs/design-system/index.md"
+      ],
+      "result": {
+        "valid": true,
+        "passed": 8,
+        "failed": 4,
+        "total": 12,
+        "pass_rate": 0.6666666666666666,
+        "time_seconds": null,
+        "tokens": null
+      },
+      "expectations": [
+        {
+          "text": "The existing document-set location remains unchanged instead of moving work to a newly chosen default folder.",
+          "passed": true,
+          "evidence": "모든 결과가 기존 `docs/design-system` 아래에 있다."
+        },
+        {
+          "text": "The work stays a product UI design-system update rather than becoming a storefront-asset document.",
+          "passed": true,
+          "evidence": "`index.md` 제목과 본문이 `Acme UI Design System` 및 제품 UI 기준이다."
+        },
+        {
+          "text": "The exact token value, fenced code block, external link, user-owned team notes, and integration contract are byte-for-byte preserved.",
+          "passed": true,
+          "evidence": "초기 파일과 결과의 `tokens.md`, `team-notes.md`, `integration-contract.md` 내용이 동일하다."
+        },
+        {
+          "text": "Content and accessibility each receive one owning file with cross-references rather than duplicate definitions.",
+          "passed": false,
+          "evidence": "별도 owning file 없이 두 섹션이 모두 `index.md`에 들어갔다."
+        },
+        {
+          "text": "No silent overwrite of an unrelated document and no `-v2`, `-final`, or date-suffixed duplicate is introduced.",
+          "passed": true,
+          "evidence": "기존 4개 파일만 있고 suffix 사본이 없다."
+        },
+        {
+          "text": "Preserve integration-contract.md byte-for-byte",
+          "passed": true,
+          "evidence": "integration-contract.md is unchanged"
+        },
+        {
+          "text": "Preserve team-notes.md byte-for-byte",
+          "passed": true,
+          "evidence": "team-notes.md is unchanged"
+        },
+        {
+          "text": "Preserve tokens.md byte-for-byte",
+          "passed": true,
+          "evidence": "tokens.md is unchanged"
+        },
+        {
+          "text": "Extend index.md without rewriting its existing content",
+          "passed": true,
+          "evidence": "Every existing non-empty index line remains intact and ordered"
+        },
+        {
+          "text": "Create a meaningful, indexed content.md owner document",
+          "passed": false,
+          "evidence": "length=0 heading=false guidance=false linked=false"
+        },
+        {
+          "text": "Create a meaningful, indexed accessibility.md owner document",
+          "passed": false,
+          "evidence": "length=0 heading=false guidance=false linked=false"
+        },
+        {
+          "text": "Create only the two requested owner files",
+          "passed": false,
+          "evidence": "result files=[\"index.md\",\"integration-contract.md\",\"team-notes.md\",\"tokens.md\"]"
+        }
+      ],
+      "semantic_expectations": [
+        {
+          "text": "The existing document-set location remains unchanged instead of moving work to a newly chosen default folder.",
+          "passed": true,
+          "evidence": "모든 결과가 기존 `docs/design-system` 아래에 있다."
+        },
+        {
+          "text": "The work stays a product UI design-system update rather than becoming a storefront-asset document.",
+          "passed": true,
+          "evidence": "`index.md` 제목과 본문이 `Acme UI Design System` 및 제품 UI 기준이다."
+        },
+        {
+          "text": "The exact token value, fenced code block, external link, user-owned team notes, and integration contract are byte-for-byte preserved.",
+          "passed": true,
+          "evidence": "초기 파일과 결과의 `tokens.md`, `team-notes.md`, `integration-contract.md` 내용이 동일하다."
+        },
+        {
+          "text": "Content and accessibility each receive one owning file with cross-references rather than duplicate definitions.",
+          "passed": false,
+          "evidence": "별도 owning file 없이 두 섹션이 모두 `index.md`에 들어갔다."
+        },
+        {
+          "text": "No silent overwrite of an unrelated document and no `-v2`, `-final`, or date-suffixed duplicate is introduced.",
+          "passed": true,
+          "evidence": "기존 4개 파일만 있고 suffix 사본이 없다."
+        }
+      ],
+      "deterministic_expectations": [
+        {
+          "text": "Preserve integration-contract.md byte-for-byte",
+          "passed": true,
+          "evidence": "integration-contract.md is unchanged"
+        },
+        {
+          "text": "Preserve team-notes.md byte-for-byte",
+          "passed": true,
+          "evidence": "team-notes.md is unchanged"
+        },
+        {
+          "text": "Preserve tokens.md byte-for-byte",
+          "passed": true,
+          "evidence": "tokens.md is unchanged"
+        },
+        {
+          "text": "Extend index.md without rewriting its existing content",
+          "passed": true,
+          "evidence": "Every existing non-empty index line remains intact and ordered"
+        },
+        {
+          "text": "Create a meaningful, indexed content.md owner document",
+          "passed": false,
+          "evidence": "length=0 heading=false guidance=false linked=false"
+        },
+        {
+          "text": "Create a meaningful, indexed accessibility.md owner document",
+          "passed": false,
+          "evidence": "length=0 heading=false guidance=false linked=false"
+        },
+        {
+          "text": "Create only the two requested owner files",
+          "passed": false,
+          "evidence": "result files=[\"index.md\",\"integration-contract.md\",\"team-notes.md\",\"tokens.md\"]"
+        }
+      ]
+    },
+    {
+      "eval_id": 11,
+      "eval_name": "existing-design-system-preservation",
+      "configuration": "with_skill",
+      "run_number": 2,
+      "job_id": "j002",
+      "status": "completed",
+      "produced_paths": [
+        "docs/design-system/accessibility.md",
+        "docs/design-system/content.md",
+        "docs/design-system/index.md"
+      ],
+      "result": {
+        "valid": true,
+        "passed": 12,
+        "failed": 0,
+        "total": 12,
+        "pass_rate": 1.0,
+        "time_seconds": null,
+        "tokens": null
+      },
+      "expectations": [
+        {
+          "text": "The existing document-set location remains unchanged instead of moving work to a newly chosen default folder.",
+          "passed": true,
+          "evidence": "기존 `docs/design-system` 위치를 사용했다."
+        },
+        {
+          "text": "The work stays a product UI design-system update rather than becoming a storefront-asset document.",
+          "passed": true,
+          "evidence": "두 신규 파일이 `Acme Console UI` 기준을 소유한다."
+        },
+        {
+          "text": "The exact token value, fenced code block, external link, user-owned team notes, and integration contract are byte-for-byte preserved.",
+          "passed": true,
+          "evidence": "초기본과 결과의 세 보존 파일이 동일하다."
+        },
+        {
+          "text": "Content and accessibility each receive one owning file with cross-references rather than duplicate definitions.",
+          "passed": true,
+          "evidence": "`content.md`, `accessibility.md`와 `index.md` 소유권 링크가 있다."
+        },
+        {
+          "text": "No silent overwrite of an unrelated document and no `-v2`, `-final`, or date-suffixed duplicate is introduced.",
+          "passed": true,
+          "evidence": "suffix 파일이나 무관한 덮어쓰기가 없다."
+        },
+        {
+          "text": "Preserve integration-contract.md byte-for-byte",
+          "passed": true,
+          "evidence": "integration-contract.md is unchanged"
+        },
+        {
+          "text": "Preserve team-notes.md byte-for-byte",
+          "passed": true,
+          "evidence": "team-notes.md is unchanged"
+        },
+        {
+          "text": "Preserve tokens.md byte-for-byte",
+          "passed": true,
+          "evidence": "tokens.md is unchanged"
+        },
+        {
+          "text": "Extend index.md without rewriting its existing content",
+          "passed": true,
+          "evidence": "Every existing non-empty index line remains intact and ordered"
+        },
+        {
+          "text": "Create a meaningful, indexed content.md owner document",
+          "passed": true,
+          "evidence": "content.md has substantive owned guidance and an index link"
+        },
+        {
+          "text": "Create a meaningful, indexed accessibility.md owner document",
+          "passed": true,
+          "evidence": "accessibility.md has substantive owned guidance and an index link"
+        },
+        {
+          "text": "Create only the two requested owner files",
+          "passed": true,
+          "evidence": "No unexpected file was added"
+        }
+      ],
+      "semantic_expectations": [
+        {
+          "text": "The existing document-set location remains unchanged instead of moving work to a newly chosen default folder.",
+          "passed": true,
+          "evidence": "기존 `docs/design-system` 위치를 사용했다."
+        },
+        {
+          "text": "The work stays a product UI design-system update rather than becoming a storefront-asset document.",
+          "passed": true,
+          "evidence": "두 신규 파일이 `Acme Console UI` 기준을 소유한다."
+        },
+        {
+          "text": "The exact token value, fenced code block, external link, user-owned team notes, and integration contract are byte-for-byte preserved.",
+          "passed": true,
+          "evidence": "초기본과 결과의 세 보존 파일이 동일하다."
+        },
+        {
+          "text": "Content and accessibility each receive one owning file with cross-references rather than duplicate definitions.",
+          "passed": true,
+          "evidence": "`content.md`, `accessibility.md`와 `index.md` 소유권 링크가 있다."
+        },
+        {
+          "text": "No silent overwrite of an unrelated document and no `-v2`, `-final`, or date-suffixed duplicate is introduced.",
+          "passed": true,
+          "evidence": "suffix 파일이나 무관한 덮어쓰기가 없다."
+        }
+      ],
+      "deterministic_expectations": [
+        {
+          "text": "Preserve integration-contract.md byte-for-byte",
+          "passed": true,
+          "evidence": "integration-contract.md is unchanged"
+        },
+        {
+          "text": "Preserve team-notes.md byte-for-byte",
+          "passed": true,
+          "evidence": "team-notes.md is unchanged"
+        },
+        {
+          "text": "Preserve tokens.md byte-for-byte",
+          "passed": true,
+          "evidence": "tokens.md is unchanged"
+        },
+        {
+          "text": "Extend index.md without rewriting its existing content",
+          "passed": true,
+          "evidence": "Every existing non-empty index line remains intact and ordered"
+        },
+        {
+          "text": "Create a meaningful, indexed content.md owner document",
+          "passed": true,
+          "evidence": "content.md has substantive owned guidance and an index link"
+        },
+        {
+          "text": "Create a meaningful, indexed accessibility.md owner document",
+          "passed": true,
+          "evidence": "accessibility.md has substantive owned guidance and an index link"
+        },
+        {
+          "text": "Create only the two requested owner files",
+          "passed": true,
+          "evidence": "No unexpected file was added"
+        }
+      ]
+    },
+    {
+      "eval_id": 11,
+      "eval_name": "existing-design-system-preservation",
+      "configuration": "without_skill",
+      "run_number": 2,
+      "job_id": "j041",
+      "status": "completed",
+      "produced_paths": [
+        "docs/design-system/index.md"
+      ],
+      "result": {
+        "valid": true,
+        "passed": 8,
+        "failed": 4,
+        "total": 12,
+        "pass_rate": 0.6666666666666666,
+        "time_seconds": null,
+        "tokens": null
+      },
+      "expectations": [
+        {
+          "text": "The existing document-set location remains unchanged instead of moving work to a newly chosen default folder.",
+          "passed": true,
+          "evidence": "기존 위치를 유지했다."
+        },
+        {
+          "text": "The work stays a product UI design-system update rather than becoming a storefront-asset document.",
+          "passed": true,
+          "evidence": "`index.md`가 제품 UI 디자인 시스템 문서다."
+        },
+        {
+          "text": "The exact token value, fenced code block, external link, user-owned team notes, and integration contract are byte-for-byte preserved.",
+          "passed": true,
+          "evidence": "`tokens.md`, `team-notes.md`, `integration-contract.md`가 초기본과 동일하다."
+        },
+        {
+          "text": "Content and accessibility each receive one owning file with cross-references rather than duplicate definitions.",
+          "passed": false,
+          "evidence": "둘 다 `index.md`에 직접 정의됐고 개별 owning file이 없다."
+        },
+        {
+          "text": "No silent overwrite of an unrelated document and no `-v2`, `-final`, or date-suffixed duplicate is introduced.",
+          "passed": true,
+          "evidence": "기존 파일 외 사본이 없다."
+        },
+        {
+          "text": "Preserve integration-contract.md byte-for-byte",
+          "passed": true,
+          "evidence": "integration-contract.md is unchanged"
+        },
+        {
+          "text": "Preserve team-notes.md byte-for-byte",
+          "passed": true,
+          "evidence": "team-notes.md is unchanged"
+        },
+        {
+          "text": "Preserve tokens.md byte-for-byte",
+          "passed": true,
+          "evidence": "tokens.md is unchanged"
+        },
+        {
+          "text": "Extend index.md without rewriting its existing content",
+          "passed": true,
+          "evidence": "Every existing non-empty index line remains intact and ordered"
+        },
+        {
+          "text": "Create a meaningful, indexed content.md owner document",
+          "passed": false,
+          "evidence": "length=0 heading=false guidance=false linked=false"
+        },
+        {
+          "text": "Create a meaningful, indexed accessibility.md owner document",
+          "passed": false,
+          "evidence": "length=0 heading=false guidance=false linked=false"
+        },
+        {
+          "text": "Create only the two requested owner files",
+          "passed": false,
+          "evidence": "result files=[\"index.md\",\"integration-contract.md\",\"team-notes.md\",\"tokens.md\"]"
+        }
+      ],
+      "semantic_expectations": [
+        {
+          "text": "The existing document-set location remains unchanged instead of moving work to a newly chosen default folder.",
+          "passed": true,
+          "evidence": "기존 위치를 유지했다."
+        },
+        {
+          "text": "The work stays a product UI design-system update rather than becoming a storefront-asset document.",
+          "passed": true,
+          "evidence": "`index.md`가 제품 UI 디자인 시스템 문서다."
+        },
+        {
+          "text": "The exact token value, fenced code block, external link, user-owned team notes, and integration contract are byte-for-byte preserved.",
+          "passed": true,
+          "evidence": "`tokens.md`, `team-notes.md`, `integration-contract.md`가 초기본과 동일하다."
+        },
+        {
+          "text": "Content and accessibility each receive one owning file with cross-references rather than duplicate definitions.",
+          "passed": false,
+          "evidence": "둘 다 `index.md`에 직접 정의됐고 개별 owning file이 없다."
+        },
+        {
+          "text": "No silent overwrite of an unrelated document and no `-v2`, `-final`, or date-suffixed duplicate is introduced.",
+          "passed": true,
+          "evidence": "기존 파일 외 사본이 없다."
+        }
+      ],
+      "deterministic_expectations": [
+        {
+          "text": "Preserve integration-contract.md byte-for-byte",
+          "passed": true,
+          "evidence": "integration-contract.md is unchanged"
+        },
+        {
+          "text": "Preserve team-notes.md byte-for-byte",
+          "passed": true,
+          "evidence": "team-notes.md is unchanged"
+        },
+        {
+          "text": "Preserve tokens.md byte-for-byte",
+          "passed": true,
+          "evidence": "tokens.md is unchanged"
+        },
+        {
+          "text": "Extend index.md without rewriting its existing content",
+          "passed": true,
+          "evidence": "Every existing non-empty index line remains intact and ordered"
+        },
+        {
+          "text": "Create a meaningful, indexed content.md owner document",
+          "passed": false,
+          "evidence": "length=0 heading=false guidance=false linked=false"
+        },
+        {
+          "text": "Create a meaningful, indexed accessibility.md owner document",
+          "passed": false,
+          "evidence": "length=0 heading=false guidance=false linked=false"
+        },
+        {
+          "text": "Create only the two requested owner files",
+          "passed": false,
+          "evidence": "result files=[\"index.md\",\"integration-contract.md\",\"team-notes.md\",\"tokens.md\"]"
+        }
+      ]
+    },
+    {
+      "eval_id": 19,
+      "eval_name": "generic-storefront-discovery",
+      "configuration": "with_skill",
+      "run_number": 1,
+      "job_id": "j003",
+      "status": "completed",
+      "produced_paths": [
+        "docs/launch-assets/accessibility.md",
+        "docs/launch-assets/asset-system.md",
+        "docs/launch-assets/composition-and-copy.md",
+        "docs/launch-assets/delivery-and-versioning.md",
+        "docs/launch-assets/index.md",
+        "docs/launch-assets/localization.md",
+        "docs/launch-assets/screenshots-and-previews.md",
+        "docs/launch-assets/stores/flathub.md",
+        "docs/launch-assets/stores/snap-store.md",
+        "docs/launch-assets/visual-language.md"
+      ],
+      "result": {
+        "valid": true,
+        "passed": 4,
+        "failed": 1,
+        "total": 5,
+        "pass_rate": 0.8,
+        "time_seconds": null,
+        "tokens": null
+      },
+      "expectations": [
+        {
+          "text": "Flathub and Snap Store are handled from their current first-party material even though neither is named in a fixed example list.",
+          "passed": true,
+          "evidence": "두 storefront 파일이 공식 출처와 2026-08-28 확인일을 기록한다."
+        },
+        {
+          "text": "Only Flathub and Snap Store receive storefront files; Steam is treated as comparison-only and receives neither research nor a file.",
+          "passed": true,
+          "evidence": "`stores/`에는 `flathub.md`, `snap-store.md`만 있고 `index.md`가 Steam 제외를 명시한다."
+        },
+        {
+          "text": "Each storefront file records its official name, operator identity, product applicability, first-party source locations, and verification date from opened first-party material.",
+          "passed": false,
+          "evidence": "이름·적용 범위·출처·확인일은 있으나 Flathub 운영자와 Snap 운영자 정체를 명시적 필드로 기록하지 않았다."
+        },
+        {
+          "text": "Only visual asset requirements are included, with unverifiable values explicitly unresolved.",
+          "passed": true,
+          "evidence": "Flathub 고정 상한과 Snap 영상 제한을 `미해결`로 두고 시각 자산 범위만 다룬다."
+        },
+        {
+          "text": "No actual assets or general listing metadata are produced.",
+          "passed": true,
+          "evidence": "문서만 생성했고 실제 자산·가격·설명 등은 만들지 않았다."
+        }
+      ],
+      "semantic_expectations": [
+        {
+          "text": "Flathub and Snap Store are handled from their current first-party material even though neither is named in a fixed example list.",
+          "passed": true,
+          "evidence": "두 storefront 파일이 공식 출처와 2026-08-28 확인일을 기록한다."
+        },
+        {
+          "text": "Only Flathub and Snap Store receive storefront files; Steam is treated as comparison-only and receives neither research nor a file.",
+          "passed": true,
+          "evidence": "`stores/`에는 `flathub.md`, `snap-store.md`만 있고 `index.md`가 Steam 제외를 명시한다."
+        },
+        {
+          "text": "Each storefront file records its official name, operator identity, product applicability, first-party source locations, and verification date from opened first-party material.",
+          "passed": false,
+          "evidence": "이름·적용 범위·출처·확인일은 있으나 Flathub 운영자와 Snap 운영자 정체를 명시적 필드로 기록하지 않았다."
+        },
+        {
+          "text": "Only visual asset requirements are included, with unverifiable values explicitly unresolved.",
+          "passed": true,
+          "evidence": "Flathub 고정 상한과 Snap 영상 제한을 `미해결`로 두고 시각 자산 범위만 다룬다."
+        },
+        {
+          "text": "No actual assets or general listing metadata are produced.",
+          "passed": true,
+          "evidence": "문서만 생성했고 실제 자산·가격·설명 등은 만들지 않았다."
+        }
+      ],
+      "deterministic_expectations": []
+    },
+    {
+      "eval_id": 19,
+      "eval_name": "generic-storefront-discovery",
+      "configuration": "without_skill",
+      "run_number": 1,
+      "job_id": "j023",
+      "status": "completed",
+      "produced_paths": [
+        "docs/launch-assets/README.md"
+      ],
+      "result": {
+        "valid": true,
+        "passed": 3,
+        "failed": 2,
+        "total": 5,
+        "pass_rate": 0.6,
+        "time_seconds": null,
+        "tokens": null
+      },
+      "expectations": [
+        {
+          "text": "Flathub and Snap Store are handled from their current first-party material even though neither is named in a fixed example list.",
+          "passed": true,
+          "evidence": "Flathub와 Snap 공식 자료 링크 및 `확인일: 2026-08-28`이 있다."
+        },
+        {
+          "text": "Only Flathub and Snap Store receive storefront files; Steam is treated as comparison-only and receives neither research nor a file.",
+          "passed": false,
+          "evidence": "Steam은 없지만 Flathub/Snap 각각의 storefront file도 없고 단일 `README.md`뿐이다."
+        },
+        {
+          "text": "Each storefront file records its official name, operator identity, product applicability, first-party source locations, and verification date from opened first-party material.",
+          "passed": false,
+          "evidence": "상점별 파일이 없고 운영자 정체도 기록되지 않았다."
+        },
+        {
+          "text": "Only visual asset requirements are included, with unverifiable values explicitly unresolved.",
+          "passed": true,
+          "evidence": "아이콘·스크린샷·배너만 다루며 Snap 형식 충돌은 실제 포털 재확인 대상으로 남겼다."
+        },
+        {
+          "text": "No actual assets or general listing metadata are produced.",
+          "passed": true,
+          "evidence": "Markdown 가이드만 만들었고 실제 이미지나 일반 listing 데이터는 없다."
+        }
+      ],
+      "semantic_expectations": [
+        {
+          "text": "Flathub and Snap Store are handled from their current first-party material even though neither is named in a fixed example list.",
+          "passed": true,
+          "evidence": "Flathub와 Snap 공식 자료 링크 및 `확인일: 2026-08-28`이 있다."
+        },
+        {
+          "text": "Only Flathub and Snap Store receive storefront files; Steam is treated as comparison-only and receives neither research nor a file.",
+          "passed": false,
+          "evidence": "Steam은 없지만 Flathub/Snap 각각의 storefront file도 없고 단일 `README.md`뿐이다."
+        },
+        {
+          "text": "Each storefront file records its official name, operator identity, product applicability, first-party source locations, and verification date from opened first-party material.",
+          "passed": false,
+          "evidence": "상점별 파일이 없고 운영자 정체도 기록되지 않았다."
+        },
+        {
+          "text": "Only visual asset requirements are included, with unverifiable values explicitly unresolved.",
+          "passed": true,
+          "evidence": "아이콘·스크린샷·배너만 다루며 Snap 형식 충돌은 실제 포털 재확인 대상으로 남겼다."
+        },
+        {
+          "text": "No actual assets or general listing metadata are produced.",
+          "passed": true,
+          "evidence": "Markdown 가이드만 만들었고 실제 이미지나 일반 listing 데이터는 없다."
+        }
+      ],
+      "deterministic_expectations": []
+    },
+    {
+      "eval_id": 19,
+      "eval_name": "generic-storefront-discovery",
+      "configuration": "with_skill",
+      "run_number": 2,
+      "job_id": "j004",
+      "status": "completed",
+      "produced_paths": [
+        "docs/launch-assets/asset-system.md",
+        "docs/launch-assets/index.md",
+        "docs/launch-assets/stores/flathub.md",
+        "docs/launch-assets/stores/snap-store.md"
+      ],
+      "result": {
+        "valid": true,
+        "passed": 4,
+        "failed": 1,
+        "total": 5,
+        "pass_rate": 0.8,
+        "time_seconds": null,
+        "tokens": null
+      },
+      "expectations": [
+        {
+          "text": "Flathub and Snap Store are handled from their current first-party material even though neither is named in a fixed example list.",
+          "passed": true,
+          "evidence": "각 storefront 파일이 2026-08-28에 연 공식 자료를 열거한다."
+        },
+        {
+          "text": "Only Flathub and Snap Store receive storefront files; Steam is treated as comparison-only and receives neither research nor a file.",
+          "passed": true,
+          "evidence": "`stores/`에는 두 상점 파일만 존재하고 Steam 파일·연구가 없다."
+        },
+        {
+          "text": "Each storefront file records its official name, operator identity, product applicability, first-party source locations, and verification date from opened first-party material.",
+          "passed": false,
+          "evidence": "이름·적용성·출처·날짜는 있으나 Flathub 운영자 정체가 명시되지 않았다."
+        },
+        {
+          "text": "Only visual asset requirements are included, with unverifiable values explicitly unresolved.",
+          "passed": true,
+          "evidence": "Snap 스크린샷 픽셀 제한을 확인 불가로 명시하고 상점 업로드 UI에서 확인하게 한다."
+        },
+        {
+          "text": "No actual assets or general listing metadata are produced.",
+          "passed": true,
+          "evidence": "`index.md`가 제목·설명·가격·분류·법적 필드를 제외하며 문서만 있다."
+        }
+      ],
+      "semantic_expectations": [
+        {
+          "text": "Flathub and Snap Store are handled from their current first-party material even though neither is named in a fixed example list.",
+          "passed": true,
+          "evidence": "각 storefront 파일이 2026-08-28에 연 공식 자료를 열거한다."
+        },
+        {
+          "text": "Only Flathub and Snap Store receive storefront files; Steam is treated as comparison-only and receives neither research nor a file.",
+          "passed": true,
+          "evidence": "`stores/`에는 두 상점 파일만 존재하고 Steam 파일·연구가 없다."
+        },
+        {
+          "text": "Each storefront file records its official name, operator identity, product applicability, first-party source locations, and verification date from opened first-party material.",
+          "passed": false,
+          "evidence": "이름·적용성·출처·날짜는 있으나 Flathub 운영자 정체가 명시되지 않았다."
+        },
+        {
+          "text": "Only visual asset requirements are included, with unverifiable values explicitly unresolved.",
+          "passed": true,
+          "evidence": "Snap 스크린샷 픽셀 제한을 확인 불가로 명시하고 상점 업로드 UI에서 확인하게 한다."
+        },
+        {
+          "text": "No actual assets or general listing metadata are produced.",
+          "passed": true,
+          "evidence": "`index.md`가 제목·설명·가격·분류·법적 필드를 제외하며 문서만 있다."
+        }
+      ],
+      "deterministic_expectations": []
+    },
+    {
+      "eval_id": 19,
+      "eval_name": "generic-storefront-discovery",
+      "configuration": "without_skill",
+      "run_number": 2,
+      "job_id": "j024",
+      "status": "completed",
+      "produced_paths": [
+        "docs/launch-assets/README.md"
+      ],
+      "result": {
+        "valid": true,
+        "passed": 2,
+        "failed": 3,
+        "total": 5,
+        "pass_rate": 0.4,
+        "time_seconds": null,
+        "tokens": null
+      },
+      "expectations": [
+        {
+          "text": "Flathub and Snap Store are handled from their current first-party material even though neither is named in a fixed example list.",
+          "passed": true,
+          "evidence": "공식 운영자 자료 링크와 2026-08-28 확인일을 적었다."
+        },
+        {
+          "text": "Only Flathub and Snap Store receive storefront files; Steam is treated as comparison-only and receives neither research nor a file.",
+          "passed": false,
+          "evidence": "Steam은 없지만 상점별 파일도 없고 `README.md` 하나뿐이다."
+        },
+        {
+          "text": "Each storefront file records its official name, operator identity, product applicability, first-party source locations, and verification date from opened first-party material.",
+          "passed": false,
+          "evidence": "상점별 파일과 운영자 정체 필드가 없다."
+        },
+        {
+          "text": "Only visual asset requirements are included, with unverifiable values explicitly unresolved.",
+          "passed": false,
+          "evidence": "여러 세부 수치를 확정적으로 제시하지만 출처별 불일치·미확정 상태 구분이 충분하지 않다."
+        },
+        {
+          "text": "No actual assets or general listing metadata are produced.",
+          "passed": true,
+          "evidence": "실제 자산이나 일반 listing 데이터는 생성하지 않았다."
+        }
+      ],
+      "semantic_expectations": [
+        {
+          "text": "Flathub and Snap Store are handled from their current first-party material even though neither is named in a fixed example list.",
+          "passed": true,
+          "evidence": "공식 운영자 자료 링크와 2026-08-28 확인일을 적었다."
+        },
+        {
+          "text": "Only Flathub and Snap Store receive storefront files; Steam is treated as comparison-only and receives neither research nor a file.",
+          "passed": false,
+          "evidence": "Steam은 없지만 상점별 파일도 없고 `README.md` 하나뿐이다."
+        },
+        {
+          "text": "Each storefront file records its official name, operator identity, product applicability, first-party source locations, and verification date from opened first-party material.",
+          "passed": false,
+          "evidence": "상점별 파일과 운영자 정체 필드가 없다."
+        },
+        {
+          "text": "Only visual asset requirements are included, with unverifiable values explicitly unresolved.",
+          "passed": false,
+          "evidence": "여러 세부 수치를 확정적으로 제시하지만 출처별 불일치·미확정 상태 구분이 충분하지 않다."
+        },
+        {
+          "text": "No actual assets or general listing metadata are produced.",
+          "passed": true,
+          "evidence": "실제 자산이나 일반 listing 데이터는 생성하지 않았다."
+        }
+      ],
+      "deterministic_expectations": []
+    },
+    {
+      "eval_id": 20,
+      "eval_name": "review-no-mutation",
+      "configuration": "with_skill",
+      "run_number": 1,
+      "job_id": "j005",
+      "status": "completed",
+      "produced_paths": [],
+      "result": {
+        "valid": true,
+        "passed": 11,
+        "failed": 0,
+        "total": 11,
+        "pass_rate": 1.0,
+        "time_seconds": null,
+        "tokens": null
+      },
+      "expectations": [
+        {
+          "text": "The operation is review and remains read-only even though a storefront is in scope.",
+          "passed": true,
+          "evidence": "`검토 범위`에서 읽기 전용 수행을 명시한다."
+        },
+        {
+          "text": "All supplied fixture files remain byte-for-byte unchanged and no file is created, renamed, or deleted.",
+          "passed": true,
+          "evidence": "workspace 결과가 초기 4개 파일과 내용·경로가 동일하다."
+        },
+        {
+          "text": "The broken delivery link, leaked storefront-specific requirement, and stale research date are reported as findings.",
+          "passed": true,
+          "evidence": "끊긴 delivery 링크, `Every channel`의 1600×900 누출, 2021 날짜를 모두 주요 finding으로 적었다."
+        },
+        {
+          "text": "Missing documents are recommendations rather than newly created files.",
+          "passed": true,
+          "evidence": "입력·누락 문서를 작성하지 않았다고 보고한다."
+        },
+        {
+          "text": "The completion report distinguishes inspected evidence from unverified current storefront requirements.",
+          "passed": true,
+          "evidence": "확인한 Samsung 링크·확인일과 제품 유형·국가·기기·로케일 미확정 한계를 별도 절로 구분한다."
+        },
+        {
+          "text": "Preserve asset-system.md byte-for-byte",
+          "passed": true,
+          "evidence": "asset-system.md is unchanged"
+        },
+        {
+          "text": "Preserve brand-notes.md byte-for-byte",
+          "passed": true,
+          "evidence": "brand-notes.md is unchanged"
+        },
+        {
+          "text": "Preserve index.md byte-for-byte",
+          "passed": true,
+          "evidence": "index.md is unchanged"
+        },
+        {
+          "text": "Preserve directory stores",
+          "passed": true,
+          "evidence": "Directory remains"
+        },
+        {
+          "text": "Preserve stores/galaxy-store.md byte-for-byte",
+          "passed": true,
+          "evidence": "stores/galaxy-store.md is unchanged"
+        },
+        {
+          "text": "Preserve the complete tree",
+          "passed": true,
+          "evidence": "No path was created, deleted, renamed, or type-changed"
+        }
+      ],
+      "semantic_expectations": [
+        {
+          "text": "The operation is review and remains read-only even though a storefront is in scope.",
+          "passed": true,
+          "evidence": "`검토 범위`에서 읽기 전용 수행을 명시한다."
+        },
+        {
+          "text": "All supplied fixture files remain byte-for-byte unchanged and no file is created, renamed, or deleted.",
+          "passed": true,
+          "evidence": "workspace 결과가 초기 4개 파일과 내용·경로가 동일하다."
+        },
+        {
+          "text": "The broken delivery link, leaked storefront-specific requirement, and stale research date are reported as findings.",
+          "passed": true,
+          "evidence": "끊긴 delivery 링크, `Every channel`의 1600×900 누출, 2021 날짜를 모두 주요 finding으로 적었다."
+        },
+        {
+          "text": "Missing documents are recommendations rather than newly created files.",
+          "passed": true,
+          "evidence": "입력·누락 문서를 작성하지 않았다고 보고한다."
+        },
+        {
+          "text": "The completion report distinguishes inspected evidence from unverified current storefront requirements.",
+          "passed": true,
+          "evidence": "확인한 Samsung 링크·확인일과 제품 유형·국가·기기·로케일 미확정 한계를 별도 절로 구분한다."
+        }
+      ],
+      "deterministic_expectations": [
+        {
+          "text": "Preserve asset-system.md byte-for-byte",
+          "passed": true,
+          "evidence": "asset-system.md is unchanged"
+        },
+        {
+          "text": "Preserve brand-notes.md byte-for-byte",
+          "passed": true,
+          "evidence": "brand-notes.md is unchanged"
+        },
+        {
+          "text": "Preserve index.md byte-for-byte",
+          "passed": true,
+          "evidence": "index.md is unchanged"
+        },
+        {
+          "text": "Preserve directory stores",
+          "passed": true,
+          "evidence": "Directory remains"
+        },
+        {
+          "text": "Preserve stores/galaxy-store.md byte-for-byte",
+          "passed": true,
+          "evidence": "stores/galaxy-store.md is unchanged"
+        },
+        {
+          "text": "Preserve the complete tree",
+          "passed": true,
+          "evidence": "No path was created, deleted, renamed, or type-changed"
+        }
+      ]
+    },
+    {
+      "eval_id": 20,
+      "eval_name": "review-no-mutation",
+      "configuration": "without_skill",
+      "run_number": 1,
+      "job_id": "j025",
+      "status": "completed",
+      "produced_paths": [],
+      "result": {
+        "valid": true,
+        "passed": 11,
+        "failed": 0,
+        "total": 11,
+        "pass_rate": 1.0,
+        "time_seconds": null,
+        "tokens": null
+      },
+      "expectations": [
+        {
+          "text": "The operation is review and remains read-only even though a storefront is in scope.",
+          "passed": true,
+          "evidence": "응답이 검토 결과이며 파일을 수정하지 않았다고 명시한다."
+        },
+        {
+          "text": "All supplied fixture files remain byte-for-byte unchanged and no file is created, renamed, or deleted.",
+          "passed": true,
+          "evidence": "workspace 4개 파일이 초기본과 동일하고 추가 파일이 없다."
+        },
+        {
+          "text": "The broken delivery link, leaked storefront-specific requirement, and stale research date are reported as findings.",
+          "passed": true,
+          "evidence": "`delivery-and-versioning.md` 누락, 모든 채널의 Galaxy 배너, `2021-06-30`을 각각 findings로 제시한다."
+        },
+        {
+          "text": "Missing documents are recommendations rather than newly created files.",
+          "passed": true,
+          "evidence": "누락 전달 문서를 새로 쓰지 않았다고 명시한다."
+        },
+        {
+          "text": "The completion report distinguishes inspected evidence from unverified current storefront requirements.",
+          "passed": true,
+          "evidence": "파일에서 확인한 문장과 현재 Galaxy 정책·규격을 확인할 수 없다는 한계를 분리한다."
+        },
+        {
+          "text": "Preserve asset-system.md byte-for-byte",
+          "passed": true,
+          "evidence": "asset-system.md is unchanged"
+        },
+        {
+          "text": "Preserve brand-notes.md byte-for-byte",
+          "passed": true,
+          "evidence": "brand-notes.md is unchanged"
+        },
+        {
+          "text": "Preserve index.md byte-for-byte",
+          "passed": true,
+          "evidence": "index.md is unchanged"
+        },
+        {
+          "text": "Preserve directory stores",
+          "passed": true,
+          "evidence": "Directory remains"
+        },
+        {
+          "text": "Preserve stores/galaxy-store.md byte-for-byte",
+          "passed": true,
+          "evidence": "stores/galaxy-store.md is unchanged"
+        },
+        {
+          "text": "Preserve the complete tree",
+          "passed": true,
+          "evidence": "No path was created, deleted, renamed, or type-changed"
+        }
+      ],
+      "semantic_expectations": [
+        {
+          "text": "The operation is review and remains read-only even though a storefront is in scope.",
+          "passed": true,
+          "evidence": "응답이 검토 결과이며 파일을 수정하지 않았다고 명시한다."
+        },
+        {
+          "text": "All supplied fixture files remain byte-for-byte unchanged and no file is created, renamed, or deleted.",
+          "passed": true,
+          "evidence": "workspace 4개 파일이 초기본과 동일하고 추가 파일이 없다."
+        },
+        {
+          "text": "The broken delivery link, leaked storefront-specific requirement, and stale research date are reported as findings.",
+          "passed": true,
+          "evidence": "`delivery-and-versioning.md` 누락, 모든 채널의 Galaxy 배너, `2021-06-30`을 각각 findings로 제시한다."
+        },
+        {
+          "text": "Missing documents are recommendations rather than newly created files.",
+          "passed": true,
+          "evidence": "누락 전달 문서를 새로 쓰지 않았다고 명시한다."
+        },
+        {
+          "text": "The completion report distinguishes inspected evidence from unverified current storefront requirements.",
+          "passed": true,
+          "evidence": "파일에서 확인한 문장과 현재 Galaxy 정책·규격을 확인할 수 없다는 한계를 분리한다."
+        }
+      ],
+      "deterministic_expectations": [
+        {
+          "text": "Preserve asset-system.md byte-for-byte",
+          "passed": true,
+          "evidence": "asset-system.md is unchanged"
+        },
+        {
+          "text": "Preserve brand-notes.md byte-for-byte",
+          "passed": true,
+          "evidence": "brand-notes.md is unchanged"
+        },
+        {
+          "text": "Preserve index.md byte-for-byte",
+          "passed": true,
+          "evidence": "index.md is unchanged"
+        },
+        {
+          "text": "Preserve directory stores",
+          "passed": true,
+          "evidence": "Directory remains"
+        },
+        {
+          "text": "Preserve stores/galaxy-store.md byte-for-byte",
+          "passed": true,
+          "evidence": "stores/galaxy-store.md is unchanged"
+        },
+        {
+          "text": "Preserve the complete tree",
+          "passed": true,
+          "evidence": "No path was created, deleted, renamed, or type-changed"
+        }
+      ]
+    },
+    {
+      "eval_id": 20,
+      "eval_name": "review-no-mutation",
+      "configuration": "with_skill",
+      "run_number": 2,
+      "job_id": "j006",
+      "status": "completed",
+      "produced_paths": [],
+      "result": {
+        "valid": true,
+        "passed": 11,
+        "failed": 0,
+        "total": 11,
+        "pass_rate": 1.0,
+        "time_seconds": null,
+        "tokens": null
+      },
+      "expectations": [
+        {
+          "text": "The operation is review and remains read-only even though a storefront is in scope.",
+          "passed": true,
+          "evidence": "응답만 작성하고 원본을 수정하지 않았다고 명시한다."
+        },
+        {
+          "text": "All supplied fixture files remain byte-for-byte unchanged and no file is created, renamed, or deleted.",
+          "passed": true,
+          "evidence": "workspace의 4개 fixture가 초기본과 동일하다."
+        },
+        {
+          "text": "The broken delivery link, leaked storefront-specific requirement, and stale research date are reported as findings.",
+          "passed": true,
+          "evidence": "끊긴 release delivery notes, 모든 채널 배너, 2021-06-30을 모두 주요 문제로 기록한다."
+        },
+        {
+          "text": "Missing documents are recommendations rather than newly created files.",
+          "passed": true,
+          "evidence": "누락 문서는 권고 대상으로만 열거하고 생성하지 않았다."
+        },
+        {
+          "text": "The completion report distinguishes inspected evidence from unverified current storefront requirements.",
+          "passed": true,
+          "evidence": "Samsung 공식 링크·확인일과 제품 유형·국가·기기·언어 미확정을 분리한다."
+        },
+        {
+          "text": "Preserve asset-system.md byte-for-byte",
+          "passed": true,
+          "evidence": "asset-system.md is unchanged"
+        },
+        {
+          "text": "Preserve brand-notes.md byte-for-byte",
+          "passed": true,
+          "evidence": "brand-notes.md is unchanged"
+        },
+        {
+          "text": "Preserve index.md byte-for-byte",
+          "passed": true,
+          "evidence": "index.md is unchanged"
+        },
+        {
+          "text": "Preserve directory stores",
+          "passed": true,
+          "evidence": "Directory remains"
+        },
+        {
+          "text": "Preserve stores/galaxy-store.md byte-for-byte",
+          "passed": true,
+          "evidence": "stores/galaxy-store.md is unchanged"
+        },
+        {
+          "text": "Preserve the complete tree",
+          "passed": true,
+          "evidence": "No path was created, deleted, renamed, or type-changed"
+        }
+      ],
+      "semantic_expectations": [
+        {
+          "text": "The operation is review and remains read-only even though a storefront is in scope.",
+          "passed": true,
+          "evidence": "응답만 작성하고 원본을 수정하지 않았다고 명시한다."
+        },
+        {
+          "text": "All supplied fixture files remain byte-for-byte unchanged and no file is created, renamed, or deleted.",
+          "passed": true,
+          "evidence": "workspace의 4개 fixture가 초기본과 동일하다."
+        },
+        {
+          "text": "The broken delivery link, leaked storefront-specific requirement, and stale research date are reported as findings.",
+          "passed": true,
+          "evidence": "끊긴 release delivery notes, 모든 채널 배너, 2021-06-30을 모두 주요 문제로 기록한다."
+        },
+        {
+          "text": "Missing documents are recommendations rather than newly created files.",
+          "passed": true,
+          "evidence": "누락 문서는 권고 대상으로만 열거하고 생성하지 않았다."
+        },
+        {
+          "text": "The completion report distinguishes inspected evidence from unverified current storefront requirements.",
+          "passed": true,
+          "evidence": "Samsung 공식 링크·확인일과 제품 유형·국가·기기·언어 미확정을 분리한다."
+        }
+      ],
+      "deterministic_expectations": [
+        {
+          "text": "Preserve asset-system.md byte-for-byte",
+          "passed": true,
+          "evidence": "asset-system.md is unchanged"
+        },
+        {
+          "text": "Preserve brand-notes.md byte-for-byte",
+          "passed": true,
+          "evidence": "brand-notes.md is unchanged"
+        },
+        {
+          "text": "Preserve index.md byte-for-byte",
+          "passed": true,
+          "evidence": "index.md is unchanged"
+        },
+        {
+          "text": "Preserve directory stores",
+          "passed": true,
+          "evidence": "Directory remains"
+        },
+        {
+          "text": "Preserve stores/galaxy-store.md byte-for-byte",
+          "passed": true,
+          "evidence": "stores/galaxy-store.md is unchanged"
+        },
+        {
+          "text": "Preserve the complete tree",
+          "passed": true,
+          "evidence": "No path was created, deleted, renamed, or type-changed"
+        }
+      ]
+    },
+    {
+      "eval_id": 20,
+      "eval_name": "review-no-mutation",
+      "configuration": "without_skill",
+      "run_number": 2,
+      "job_id": "j026",
+      "status": "completed",
+      "produced_paths": [],
+      "result": {
+        "valid": true,
+        "passed": 11,
+        "failed": 0,
+        "total": 11,
+        "pass_rate": 1.0,
+        "time_seconds": null,
+        "tokens": null
+      },
+      "expectations": [
+        {
+          "text": "The operation is review and remains read-only even though a storefront is in scope.",
+          "passed": true,
+          "evidence": "`원본 변경 여부`에서 수정하지 않았다고 명시한다."
+        },
+        {
+          "text": "All supplied fixture files remain byte-for-byte unchanged and no file is created, renamed, or deleted.",
+          "passed": true,
+          "evidence": "초기 네 파일과 결과가 동일하고 신규 파일이 없다."
+        },
+        {
+          "text": "The broken delivery link, leaked storefront-specific requirement, and stale research date are reported as findings.",
+          "passed": true,
+          "evidence": "세 문제를 번호 1~3으로 구체적으로 보고한다."
+        },
+        {
+          "text": "Missing documents are recommendations rather than newly created files.",
+          "passed": true,
+          "evidence": "누락 문서를 새로 작성하지 않았다고 명시한다."
+        },
+        {
+          "text": "The completion report distinguishes inspected evidence from unverified current storefront requirements.",
+          "passed": true,
+          "evidence": "제공 파일 근거와 현재 규격을 확인할 수 없다는 한계는 구분하지만 직접 확인된 최신 근거는 없다."
+        },
+        {
+          "text": "Preserve asset-system.md byte-for-byte",
+          "passed": true,
+          "evidence": "asset-system.md is unchanged"
+        },
+        {
+          "text": "Preserve brand-notes.md byte-for-byte",
+          "passed": true,
+          "evidence": "brand-notes.md is unchanged"
+        },
+        {
+          "text": "Preserve index.md byte-for-byte",
+          "passed": true,
+          "evidence": "index.md is unchanged"
+        },
+        {
+          "text": "Preserve directory stores",
+          "passed": true,
+          "evidence": "Directory remains"
+        },
+        {
+          "text": "Preserve stores/galaxy-store.md byte-for-byte",
+          "passed": true,
+          "evidence": "stores/galaxy-store.md is unchanged"
+        },
+        {
+          "text": "Preserve the complete tree",
+          "passed": true,
+          "evidence": "No path was created, deleted, renamed, or type-changed"
+        }
+      ],
+      "semantic_expectations": [
+        {
+          "text": "The operation is review and remains read-only even though a storefront is in scope.",
+          "passed": true,
+          "evidence": "`원본 변경 여부`에서 수정하지 않았다고 명시한다."
+        },
+        {
+          "text": "All supplied fixture files remain byte-for-byte unchanged and no file is created, renamed, or deleted.",
+          "passed": true,
+          "evidence": "초기 네 파일과 결과가 동일하고 신규 파일이 없다."
+        },
+        {
+          "text": "The broken delivery link, leaked storefront-specific requirement, and stale research date are reported as findings.",
+          "passed": true,
+          "evidence": "세 문제를 번호 1~3으로 구체적으로 보고한다."
+        },
+        {
+          "text": "Missing documents are recommendations rather than newly created files.",
+          "passed": true,
+          "evidence": "누락 문서를 새로 작성하지 않았다고 명시한다."
+        },
+        {
+          "text": "The completion report distinguishes inspected evidence from unverified current storefront requirements.",
+          "passed": true,
+          "evidence": "제공 파일 근거와 현재 규격을 확인할 수 없다는 한계는 구분하지만 직접 확인된 최신 근거는 없다."
+        }
+      ],
+      "deterministic_expectations": [
+        {
+          "text": "Preserve asset-system.md byte-for-byte",
+          "passed": true,
+          "evidence": "asset-system.md is unchanged"
+        },
+        {
+          "text": "Preserve brand-notes.md byte-for-byte",
+          "passed": true,
+          "evidence": "brand-notes.md is unchanged"
+        },
+        {
+          "text": "Preserve index.md byte-for-byte",
+          "passed": true,
+          "evidence": "index.md is unchanged"
+        },
+        {
+          "text": "Preserve directory stores",
+          "passed": true,
+          "evidence": "Directory remains"
+        },
+        {
+          "text": "Preserve stores/galaxy-store.md byte-for-byte",
+          "passed": true,
+          "evidence": "stores/galaxy-store.md is unchanged"
+        },
+        {
+          "text": "Preserve the complete tree",
+          "passed": true,
+          "evidence": "No path was created, deleted, renamed, or type-changed"
+        }
+      ]
+    },
+    {
+      "eval_id": 21,
+      "eval_name": "collision-no-overwrite",
+      "configuration": "with_skill",
+      "run_number": 1,
+      "job_id": "j007",
+      "status": "clarification_required",
+      "produced_paths": [],
+      "result": {
+        "valid": true,
+        "passed": 9,
+        "failed": 0,
+        "total": 9,
+        "pass_rate": 1.0,
+        "time_seconds": null,
+        "tokens": null
+      },
+      "expectations": [
+        {
+          "text": "The supplied index is identified as an unrelated production-access handbook rather than a UI design-system set.",
+          "passed": true,
+          "evidence": "기존 `index.md`가 Production Access Handbook 목차라고 보고한다."
+        },
+        {
+          "text": "No supplied file is changed and no sibling, versioned, or default-root design-system file is created.",
+          "passed": true,
+          "evidence": "세 결과 파일이 초기본과 동일하고 추가 파일이 없다."
+        },
+        {
+          "text": "The assistant asks one concise question to resolve which document belongs in the location or where the new guide should go.",
+          "passed": true,
+          "evidence": "분리된 새 디렉터리 경로를 지정해 달라는 질문 하나다."
+        },
+        {
+          "text": "The request is not treated as authorization to normalize the unrelated policy.",
+          "passed": true,
+          "evidence": "연결된 운영 문서까지 보존했다."
+        },
+        {
+          "text": "The response reports the collision without claiming a document was produced.",
+          "passed": true,
+          "evidence": "완료 주장이 없고 충돌만 설명한다."
+        },
+        {
+          "text": "Preserve incident-exceptions.md byte-for-byte",
+          "passed": true,
+          "evidence": "incident-exceptions.md is unchanged"
+        },
+        {
+          "text": "Preserve index.md byte-for-byte",
+          "passed": true,
+          "evidence": "index.md is unchanged"
+        },
+        {
+          "text": "Preserve request-access.md byte-for-byte",
+          "passed": true,
+          "evidence": "request-access.md is unchanged"
+        },
+        {
+          "text": "Preserve the complete tree",
+          "passed": true,
+          "evidence": "No path was created, deleted, renamed, or type-changed"
+        }
+      ],
+      "semantic_expectations": [
+        {
+          "text": "The supplied index is identified as an unrelated production-access handbook rather than a UI design-system set.",
+          "passed": true,
+          "evidence": "기존 `index.md`가 Production Access Handbook 목차라고 보고한다."
+        },
+        {
+          "text": "No supplied file is changed and no sibling, versioned, or default-root design-system file is created.",
+          "passed": true,
+          "evidence": "세 결과 파일이 초기본과 동일하고 추가 파일이 없다."
+        },
+        {
+          "text": "The assistant asks one concise question to resolve which document belongs in the location or where the new guide should go.",
+          "passed": true,
+          "evidence": "분리된 새 디렉터리 경로를 지정해 달라는 질문 하나다."
+        },
+        {
+          "text": "The request is not treated as authorization to normalize the unrelated policy.",
+          "passed": true,
+          "evidence": "연결된 운영 문서까지 보존했다."
+        },
+        {
+          "text": "The response reports the collision without claiming a document was produced.",
+          "passed": true,
+          "evidence": "완료 주장이 없고 충돌만 설명한다."
+        }
+      ],
+      "deterministic_expectations": [
+        {
+          "text": "Preserve incident-exceptions.md byte-for-byte",
+          "passed": true,
+          "evidence": "incident-exceptions.md is unchanged"
+        },
+        {
+          "text": "Preserve index.md byte-for-byte",
+          "passed": true,
+          "evidence": "index.md is unchanged"
+        },
+        {
+          "text": "Preserve request-access.md byte-for-byte",
+          "passed": true,
+          "evidence": "request-access.md is unchanged"
+        },
+        {
+          "text": "Preserve the complete tree",
+          "passed": true,
+          "evidence": "No path was created, deleted, renamed, or type-changed"
+        }
+      ]
+    },
+    {
+      "eval_id": 21,
+      "eval_name": "collision-no-overwrite",
+      "configuration": "without_skill",
+      "run_number": 1,
+      "job_id": "j027",
+      "status": "clarification_required",
+      "produced_paths": [],
+      "result": {
+        "valid": true,
+        "passed": 9,
+        "failed": 0,
+        "total": 9,
+        "pass_rate": 1.0,
+        "time_seconds": null,
+        "tokens": null
+      },
+      "expectations": [
+        {
+          "text": "The supplied index is identified as an unrelated production-access handbook rather than a UI design-system set.",
+          "passed": true,
+          "evidence": "`Production Access Handbook` 목차라고 명시한다."
+        },
+        {
+          "text": "No supplied file is changed and no sibling, versioned, or default-root design-system file is created.",
+          "passed": true,
+          "evidence": "세 파일 해시가 초기본과 같고 다른 파일이 없다."
+        },
+        {
+          "text": "The assistant asks one concise question to resolve which document belongs in the location or where the new guide should go.",
+          "passed": true,
+          "evidence": "별도 하위 폴더인지 다른 팀 폴더인지 한 문장으로 묻는다."
+        },
+        {
+          "text": "The request is not treated as authorization to normalize the unrelated policy.",
+          "passed": true,
+          "evidence": "기존 핸드북을 수정하지 않았다."
+        },
+        {
+          "text": "The response reports the collision without claiming a document was produced.",
+          "passed": true,
+          "evidence": "충돌과 질문만 있으며 완료 주장이 없다."
+        },
+        {
+          "text": "Preserve incident-exceptions.md byte-for-byte",
+          "passed": true,
+          "evidence": "incident-exceptions.md is unchanged"
+        },
+        {
+          "text": "Preserve index.md byte-for-byte",
+          "passed": true,
+          "evidence": "index.md is unchanged"
+        },
+        {
+          "text": "Preserve request-access.md byte-for-byte",
+          "passed": true,
+          "evidence": "request-access.md is unchanged"
+        },
+        {
+          "text": "Preserve the complete tree",
+          "passed": true,
+          "evidence": "No path was created, deleted, renamed, or type-changed"
+        }
+      ],
+      "semantic_expectations": [
+        {
+          "text": "The supplied index is identified as an unrelated production-access handbook rather than a UI design-system set.",
+          "passed": true,
+          "evidence": "`Production Access Handbook` 목차라고 명시한다."
+        },
+        {
+          "text": "No supplied file is changed and no sibling, versioned, or default-root design-system file is created.",
+          "passed": true,
+          "evidence": "세 파일 해시가 초기본과 같고 다른 파일이 없다."
+        },
+        {
+          "text": "The assistant asks one concise question to resolve which document belongs in the location or where the new guide should go.",
+          "passed": true,
+          "evidence": "별도 하위 폴더인지 다른 팀 폴더인지 한 문장으로 묻는다."
+        },
+        {
+          "text": "The request is not treated as authorization to normalize the unrelated policy.",
+          "passed": true,
+          "evidence": "기존 핸드북을 수정하지 않았다."
+        },
+        {
+          "text": "The response reports the collision without claiming a document was produced.",
+          "passed": true,
+          "evidence": "충돌과 질문만 있으며 완료 주장이 없다."
+        }
+      ],
+      "deterministic_expectations": [
+        {
+          "text": "Preserve incident-exceptions.md byte-for-byte",
+          "passed": true,
+          "evidence": "incident-exceptions.md is unchanged"
+        },
+        {
+          "text": "Preserve index.md byte-for-byte",
+          "passed": true,
+          "evidence": "index.md is unchanged"
+        },
+        {
+          "text": "Preserve request-access.md byte-for-byte",
+          "passed": true,
+          "evidence": "request-access.md is unchanged"
+        },
+        {
+          "text": "Preserve the complete tree",
+          "passed": true,
+          "evidence": "No path was created, deleted, renamed, or type-changed"
+        }
+      ]
+    },
+    {
+      "eval_id": 21,
+      "eval_name": "collision-no-overwrite",
+      "configuration": "with_skill",
+      "run_number": 2,
+      "job_id": "j008",
+      "status": "clarification_required",
+      "produced_paths": [],
+      "result": {
+        "valid": true,
+        "passed": 9,
+        "failed": 0,
+        "total": 9,
+        "pass_rate": 1.0,
+        "time_seconds": null,
+        "tokens": null
+      },
+      "expectations": [
+        {
+          "text": "The supplied index is identified as an unrelated production-access handbook rather than a UI design-system set.",
+          "passed": true,
+          "evidence": "제품 UI가 아니라 Production Access Handbook 진입점이라고 명시한다."
+        },
+        {
+          "text": "No supplied file is changed and no sibling, versioned, or default-root design-system file is created.",
+          "passed": true,
+          "evidence": "모든 결과 해시가 초기본과 같고 추가 파일이 없다."
+        },
+        {
+          "text": "The assistant asks one concise question to resolve which document belongs in the location or where the new guide should go.",
+          "passed": true,
+          "evidence": "보존한 채 둘 새 디렉터리를 지정해 달라는 질문 하나다."
+        },
+        {
+          "text": "The request is not treated as authorization to normalize the unrelated policy.",
+          "passed": true,
+          "evidence": "운영 핸드북과 관련 파일을 수정하지 않았다."
+        },
+        {
+          "text": "The response reports the collision without claiming a document was produced.",
+          "passed": true,
+          "evidence": "충돌 보고와 질문만 있다."
+        },
+        {
+          "text": "Preserve incident-exceptions.md byte-for-byte",
+          "passed": true,
+          "evidence": "incident-exceptions.md is unchanged"
+        },
+        {
+          "text": "Preserve index.md byte-for-byte",
+          "passed": true,
+          "evidence": "index.md is unchanged"
+        },
+        {
+          "text": "Preserve request-access.md byte-for-byte",
+          "passed": true,
+          "evidence": "request-access.md is unchanged"
+        },
+        {
+          "text": "Preserve the complete tree",
+          "passed": true,
+          "evidence": "No path was created, deleted, renamed, or type-changed"
+        }
+      ],
+      "semantic_expectations": [
+        {
+          "text": "The supplied index is identified as an unrelated production-access handbook rather than a UI design-system set.",
+          "passed": true,
+          "evidence": "제품 UI가 아니라 Production Access Handbook 진입점이라고 명시한다."
+        },
+        {
+          "text": "No supplied file is changed and no sibling, versioned, or default-root design-system file is created.",
+          "passed": true,
+          "evidence": "모든 결과 해시가 초기본과 같고 추가 파일이 없다."
+        },
+        {
+          "text": "The assistant asks one concise question to resolve which document belongs in the location or where the new guide should go.",
+          "passed": true,
+          "evidence": "보존한 채 둘 새 디렉터리를 지정해 달라는 질문 하나다."
+        },
+        {
+          "text": "The request is not treated as authorization to normalize the unrelated policy.",
+          "passed": true,
+          "evidence": "운영 핸드북과 관련 파일을 수정하지 않았다."
+        },
+        {
+          "text": "The response reports the collision without claiming a document was produced.",
+          "passed": true,
+          "evidence": "충돌 보고와 질문만 있다."
+        }
+      ],
+      "deterministic_expectations": [
+        {
+          "text": "Preserve incident-exceptions.md byte-for-byte",
+          "passed": true,
+          "evidence": "incident-exceptions.md is unchanged"
+        },
+        {
+          "text": "Preserve index.md byte-for-byte",
+          "passed": true,
+          "evidence": "index.md is unchanged"
+        },
+        {
+          "text": "Preserve request-access.md byte-for-byte",
+          "passed": true,
+          "evidence": "request-access.md is unchanged"
+        },
+        {
+          "text": "Preserve the complete tree",
+          "passed": true,
+          "evidence": "No path was created, deleted, renamed, or type-changed"
+        }
+      ]
+    },
+    {
+      "eval_id": 21,
+      "eval_name": "collision-no-overwrite",
+      "configuration": "without_skill",
+      "run_number": 2,
+      "job_id": "j028",
+      "status": "clarification_required",
+      "produced_paths": [],
+      "result": {
+        "valid": true,
+        "passed": 9,
+        "failed": 0,
+        "total": 9,
+        "pass_rate": 1.0,
+        "time_seconds": null,
+        "tokens": null
+      },
+      "expectations": [
+        {
+          "text": "The supplied index is identified as an unrelated production-access handbook rather than a UI design-system set.",
+          "passed": true,
+          "evidence": "Production Access Handbook 시작 문서라고 식별한다."
+        },
+        {
+          "text": "No supplied file is changed and no sibling, versioned, or default-root design-system file is created.",
+          "passed": true,
+          "evidence": "초기 파일들이 그대로이고 신규 파일이 없다."
+        },
+        {
+          "text": "The assistant asks one concise question to resolve which document belongs in the location or where the new guide should go.",
+          "passed": true,
+          "evidence": "위치를 묻는 질문 하나를 제시한다."
+        },
+        {
+          "text": "The request is not treated as authorization to normalize the unrelated policy.",
+          "passed": true,
+          "evidence": "기존 문서 수정이 없다."
+        },
+        {
+          "text": "The response reports the collision without claiming a document was produced.",
+          "passed": true,
+          "evidence": "문서 생성 완료를 주장하지 않는다."
+        },
+        {
+          "text": "Preserve incident-exceptions.md byte-for-byte",
+          "passed": true,
+          "evidence": "incident-exceptions.md is unchanged"
+        },
+        {
+          "text": "Preserve index.md byte-for-byte",
+          "passed": true,
+          "evidence": "index.md is unchanged"
+        },
+        {
+          "text": "Preserve request-access.md byte-for-byte",
+          "passed": true,
+          "evidence": "request-access.md is unchanged"
+        },
+        {
+          "text": "Preserve the complete tree",
+          "passed": true,
+          "evidence": "No path was created, deleted, renamed, or type-changed"
+        }
+      ],
+      "semantic_expectations": [
+        {
+          "text": "The supplied index is identified as an unrelated production-access handbook rather than a UI design-system set.",
+          "passed": true,
+          "evidence": "Production Access Handbook 시작 문서라고 식별한다."
+        },
+        {
+          "text": "No supplied file is changed and no sibling, versioned, or default-root design-system file is created.",
+          "passed": true,
+          "evidence": "초기 파일들이 그대로이고 신규 파일이 없다."
+        },
+        {
+          "text": "The assistant asks one concise question to resolve which document belongs in the location or where the new guide should go.",
+          "passed": true,
+          "evidence": "위치를 묻는 질문 하나를 제시한다."
+        },
+        {
+          "text": "The request is not treated as authorization to normalize the unrelated policy.",
+          "passed": true,
+          "evidence": "기존 문서 수정이 없다."
+        },
+        {
+          "text": "The response reports the collision without claiming a document was produced.",
+          "passed": true,
+          "evidence": "문서 생성 완료를 주장하지 않는다."
+        }
+      ],
+      "deterministic_expectations": [
+        {
+          "text": "Preserve incident-exceptions.md byte-for-byte",
+          "passed": true,
+          "evidence": "incident-exceptions.md is unchanged"
+        },
+        {
+          "text": "Preserve index.md byte-for-byte",
+          "passed": true,
+          "evidence": "index.md is unchanged"
+        },
+        {
+          "text": "Preserve request-access.md byte-for-byte",
+          "passed": true,
+          "evidence": "request-access.md is unchanged"
+        },
+        {
+          "text": "Preserve the complete tree",
+          "passed": true,
+          "evidence": "No path was created, deleted, renamed, or type-changed"
+        }
+      ]
+    },
+    {
+      "eval_id": 22,
+      "eval_name": "reuse-noncanonical-storefront-path",
+      "configuration": "with_skill",
+      "run_number": 1,
+      "job_id": "j009",
+      "status": "completed",
+      "produced_paths": [
+        "docs/design-system-visual-assets/stores/play-store-assets.md"
+      ],
+      "result": {
+        "valid": true,
+        "passed": 8,
+        "failed": 1,
+        "total": 9,
+        "pass_rate": 0.8888888888888888,
+        "time_seconds": null,
+        "tokens": null
+      },
+      "expectations": [
+        {
+          "text": "The existing file is recognized as the Google Play owner within this document set.",
+          "passed": true,
+          "evidence": "`index.md`의 Google Play listing artwork 링크 소유 파일을 갱신했다."
+        },
+        {
+          "text": "The existing `stores/play-store-assets.md` path is reused and `stores/google-play.md` is not created.",
+          "passed": true,
+          "evidence": "정확한 기존 경로만 존재한다."
+        },
+        {
+          "text": "No path rename occurs without an explicit migration request.",
+          "passed": true,
+          "evidence": "이름·위치 변경이 없다."
+        },
+        {
+          "text": "Other existing files remain unchanged except for required cross-reference updates.",
+          "passed": true,
+          "evidence": "두 주변 파일이 초기본과 동일하다."
+        },
+        {
+          "text": "Current first-party requirements and verification metadata are updated without inventing values.",
+          "passed": true,
+          "evidence": "Google Play Console Help와 2026-08-28을 기록하고 앱/게임 및 지원 기기를 미확정으로 남긴다."
+        },
+        {
+          "text": "Reuse the established non-canonical storefront path",
+          "passed": true,
+          "evidence": "The existing path owns Google Play and index.md links it"
+        },
+        {
+          "text": "Make a source-backed storefront update without deleting protected content",
+          "passed": false,
+          "evidence": "changed=true protected=false officialSource=true verificationDate=true"
+        },
+        {
+          "text": "Preserve all unrelated existing files",
+          "passed": true,
+          "evidence": "All unrelated fixture files are byte-for-byte preserved"
+        },
+        {
+          "text": "Do not create another storefront owner",
+          "passed": true,
+          "evidence": "No duplicate owner or unexpected document was added"
+        }
+      ],
+      "semantic_expectations": [
+        {
+          "text": "The existing file is recognized as the Google Play owner within this document set.",
+          "passed": true,
+          "evidence": "`index.md`의 Google Play listing artwork 링크 소유 파일을 갱신했다."
+        },
+        {
+          "text": "The existing `stores/play-store-assets.md` path is reused and `stores/google-play.md` is not created.",
+          "passed": true,
+          "evidence": "정확한 기존 경로만 존재한다."
+        },
+        {
+          "text": "No path rename occurs without an explicit migration request.",
+          "passed": true,
+          "evidence": "이름·위치 변경이 없다."
+        },
+        {
+          "text": "Other existing files remain unchanged except for required cross-reference updates.",
+          "passed": true,
+          "evidence": "두 주변 파일이 초기본과 동일하다."
+        },
+        {
+          "text": "Current first-party requirements and verification metadata are updated without inventing values.",
+          "passed": true,
+          "evidence": "Google Play Console Help와 2026-08-28을 기록하고 앱/게임 및 지원 기기를 미확정으로 남긴다."
+        }
+      ],
+      "deterministic_expectations": [
+        {
+          "text": "Reuse the established non-canonical storefront path",
+          "passed": true,
+          "evidence": "The existing path owns Google Play and index.md links it"
+        },
+        {
+          "text": "Make a source-backed storefront update without deleting protected content",
+          "passed": false,
+          "evidence": "changed=true protected=false officialSource=true verificationDate=true"
+        },
+        {
+          "text": "Preserve all unrelated existing files",
+          "passed": true,
+          "evidence": "All unrelated fixture files are byte-for-byte preserved"
+        },
+        {
+          "text": "Do not create another storefront owner",
+          "passed": true,
+          "evidence": "No duplicate owner or unexpected document was added"
+        }
+      ]
+    },
+    {
+      "eval_id": 22,
+      "eval_name": "reuse-noncanonical-storefront-path",
+      "configuration": "without_skill",
+      "run_number": 1,
+      "job_id": "j029",
+      "status": "completed",
+      "produced_paths": [
+        "docs/design-system-visual-assets/stores/play-store-assets.md"
+      ],
+      "result": {
+        "valid": true,
+        "passed": 7,
+        "failed": 2,
+        "total": 9,
+        "pass_rate": 0.7777777777777778,
+        "time_seconds": null,
+        "tokens": null
+      },
+      "expectations": [
+        {
+          "text": "The existing file is recognized as the Google Play owner within this document set.",
+          "passed": true,
+          "evidence": "응답이 기존 `play-store-assets.md`를 직접 가리킨다."
+        },
+        {
+          "text": "The existing `stores/play-store-assets.md` path is reused and `stores/google-play.md` is not created.",
+          "passed": true,
+          "evidence": "기존 경로만 수정됐고 `google-play.md`는 없다."
+        },
+        {
+          "text": "No path rename occurs without an explicit migration request.",
+          "passed": true,
+          "evidence": "파일명과 위치가 그대로다."
+        },
+        {
+          "text": "Other existing files remain unchanged except for required cross-reference updates.",
+          "passed": true,
+          "evidence": "`index.md`와 `release-coordination.md` 해시가 초기본과 같다."
+        },
+        {
+          "text": "Current first-party requirements and verification metadata are updated without inventing values.",
+          "passed": false,
+          "evidence": "공식 링크는 있으나 문서 본문에 검증 날짜 메타데이터가 없다."
+        },
+        {
+          "text": "Reuse the established non-canonical storefront path",
+          "passed": true,
+          "evidence": "The existing path owns Google Play and index.md links it"
+        },
+        {
+          "text": "Make a source-backed storefront update without deleting protected content",
+          "passed": false,
+          "evidence": "changed=true protected=false officialSource=true verificationDate=false"
+        },
+        {
+          "text": "Preserve all unrelated existing files",
+          "passed": true,
+          "evidence": "All unrelated fixture files are byte-for-byte preserved"
+        },
+        {
+          "text": "Do not create another storefront owner",
+          "passed": true,
+          "evidence": "No duplicate owner or unexpected document was added"
+        }
+      ],
+      "semantic_expectations": [
+        {
+          "text": "The existing file is recognized as the Google Play owner within this document set.",
+          "passed": true,
+          "evidence": "응답이 기존 `play-store-assets.md`를 직접 가리킨다."
+        },
+        {
+          "text": "The existing `stores/play-store-assets.md` path is reused and `stores/google-play.md` is not created.",
+          "passed": true,
+          "evidence": "기존 경로만 수정됐고 `google-play.md`는 없다."
+        },
+        {
+          "text": "No path rename occurs without an explicit migration request.",
+          "passed": true,
+          "evidence": "파일명과 위치가 그대로다."
+        },
+        {
+          "text": "Other existing files remain unchanged except for required cross-reference updates.",
+          "passed": true,
+          "evidence": "`index.md`와 `release-coordination.md` 해시가 초기본과 같다."
+        },
+        {
+          "text": "Current first-party requirements and verification metadata are updated without inventing values.",
+          "passed": false,
+          "evidence": "공식 링크는 있으나 문서 본문에 검증 날짜 메타데이터가 없다."
+        }
+      ],
+      "deterministic_expectations": [
+        {
+          "text": "Reuse the established non-canonical storefront path",
+          "passed": true,
+          "evidence": "The existing path owns Google Play and index.md links it"
+        },
+        {
+          "text": "Make a source-backed storefront update without deleting protected content",
+          "passed": false,
+          "evidence": "changed=true protected=false officialSource=true verificationDate=false"
+        },
+        {
+          "text": "Preserve all unrelated existing files",
+          "passed": true,
+          "evidence": "All unrelated fixture files are byte-for-byte preserved"
+        },
+        {
+          "text": "Do not create another storefront owner",
+          "passed": true,
+          "evidence": "No duplicate owner or unexpected document was added"
+        }
+      ]
+    },
+    {
+      "eval_id": 22,
+      "eval_name": "reuse-noncanonical-storefront-path",
+      "configuration": "with_skill",
+      "run_number": 2,
+      "job_id": "j010",
+      "status": "completed",
+      "produced_paths": [
+        "docs/design-system-visual-assets/stores/play-store-assets.md"
+      ],
+      "result": {
+        "valid": true,
+        "passed": 8,
+        "failed": 1,
+        "total": 9,
+        "pass_rate": 0.8888888888888888,
+        "time_seconds": null,
+        "tokens": null
+      },
+      "expectations": [
+        {
+          "text": "The existing file is recognized as the Google Play owner within this document set.",
+          "passed": true,
+          "evidence": "기존 연결 파일을 같은 이름과 위치로 갱신했다고 보고한다."
+        },
+        {
+          "text": "The existing `stores/play-store-assets.md` path is reused and `stores/google-play.md` is not created.",
+          "passed": true,
+          "evidence": "해당 기존 파일만 존재한다."
+        },
+        {
+          "text": "No path rename occurs without an explicit migration request.",
+          "passed": true,
+          "evidence": "경로 변경이 없다."
+        },
+        {
+          "text": "Other existing files remain unchanged except for required cross-reference updates.",
+          "passed": true,
+          "evidence": "`index.md`, `release-coordination.md` 내용이 초기본과 동일하다."
+        },
+        {
+          "text": "Current first-party requirements and verification metadata are updated without inventing values.",
+          "passed": true,
+          "evidence": "공식 도움말 2개와 2026-08-28 확인일을 기록하고 미확정 앱 유형·기기·언어를 별도 절에 둔다."
+        },
+        {
+          "text": "Reuse the established non-canonical storefront path",
+          "passed": true,
+          "evidence": "The existing path owns Google Play and index.md links it"
+        },
+        {
+          "text": "Make a source-backed storefront update without deleting protected content",
+          "passed": false,
+          "evidence": "changed=true protected=false officialSource=true verificationDate=true"
+        },
+        {
+          "text": "Preserve all unrelated existing files",
+          "passed": true,
+          "evidence": "All unrelated fixture files are byte-for-byte preserved"
+        },
+        {
+          "text": "Do not create another storefront owner",
+          "passed": true,
+          "evidence": "No duplicate owner or unexpected document was added"
+        }
+      ],
+      "semantic_expectations": [
+        {
+          "text": "The existing file is recognized as the Google Play owner within this document set.",
+          "passed": true,
+          "evidence": "기존 연결 파일을 같은 이름과 위치로 갱신했다고 보고한다."
+        },
+        {
+          "text": "The existing `stores/play-store-assets.md` path is reused and `stores/google-play.md` is not created.",
+          "passed": true,
+          "evidence": "해당 기존 파일만 존재한다."
+        },
+        {
+          "text": "No path rename occurs without an explicit migration request.",
+          "passed": true,
+          "evidence": "경로 변경이 없다."
+        },
+        {
+          "text": "Other existing files remain unchanged except for required cross-reference updates.",
+          "passed": true,
+          "evidence": "`index.md`, `release-coordination.md` 내용이 초기본과 동일하다."
+        },
+        {
+          "text": "Current first-party requirements and verification metadata are updated without inventing values.",
+          "passed": true,
+          "evidence": "공식 도움말 2개와 2026-08-28 확인일을 기록하고 미확정 앱 유형·기기·언어를 별도 절에 둔다."
+        }
+      ],
+      "deterministic_expectations": [
+        {
+          "text": "Reuse the established non-canonical storefront path",
+          "passed": true,
+          "evidence": "The existing path owns Google Play and index.md links it"
+        },
+        {
+          "text": "Make a source-backed storefront update without deleting protected content",
+          "passed": false,
+          "evidence": "changed=true protected=false officialSource=true verificationDate=true"
+        },
+        {
+          "text": "Preserve all unrelated existing files",
+          "passed": true,
+          "evidence": "All unrelated fixture files are byte-for-byte preserved"
+        },
+        {
+          "text": "Do not create another storefront owner",
+          "passed": true,
+          "evidence": "No duplicate owner or unexpected document was added"
+        }
+      ]
+    },
+    {
+      "eval_id": 22,
+      "eval_name": "reuse-noncanonical-storefront-path",
+      "configuration": "without_skill",
+      "run_number": 2,
+      "job_id": "j030",
+      "status": "completed",
+      "produced_paths": [
+        "docs/design-system-visual-assets/stores/play-store-assets.md"
+      ],
+      "result": {
+        "valid": true,
+        "passed": 8,
+        "failed": 1,
+        "total": 9,
+        "pass_rate": 0.8888888888888888,
+        "time_seconds": null,
+        "tokens": null
+      },
+      "expectations": [
+        {
+          "text": "The existing file is recognized as the Google Play owner within this document set.",
+          "passed": true,
+          "evidence": "기존 Google Play listing artwork 파일을 갱신했다."
+        },
+        {
+          "text": "The existing `stores/play-store-assets.md` path is reused and `stores/google-play.md` is not created.",
+          "passed": true,
+          "evidence": "기존 경로만 사용했다."
+        },
+        {
+          "text": "No path rename occurs without an explicit migration request.",
+          "passed": true,
+          "evidence": "이름 변경이 없다."
+        },
+        {
+          "text": "Other existing files remain unchanged except for required cross-reference updates.",
+          "passed": true,
+          "evidence": "주변 파일이 초기본 그대로다."
+        },
+        {
+          "text": "Current first-party requirements and verification metadata are updated without inventing values.",
+          "passed": true,
+          "evidence": "공식 링크와 2026-08-28 확인일, 핵심 수치를 기록했다."
+        },
+        {
+          "text": "Reuse the established non-canonical storefront path",
+          "passed": true,
+          "evidence": "The existing path owns Google Play and index.md links it"
+        },
+        {
+          "text": "Make a source-backed storefront update without deleting protected content",
+          "passed": false,
+          "evidence": "changed=true protected=false officialSource=true verificationDate=true"
+        },
+        {
+          "text": "Preserve all unrelated existing files",
+          "passed": true,
+          "evidence": "All unrelated fixture files are byte-for-byte preserved"
+        },
+        {
+          "text": "Do not create another storefront owner",
+          "passed": true,
+          "evidence": "No duplicate owner or unexpected document was added"
+        }
+      ],
+      "semantic_expectations": [
+        {
+          "text": "The existing file is recognized as the Google Play owner within this document set.",
+          "passed": true,
+          "evidence": "기존 Google Play listing artwork 파일을 갱신했다."
+        },
+        {
+          "text": "The existing `stores/play-store-assets.md` path is reused and `stores/google-play.md` is not created.",
+          "passed": true,
+          "evidence": "기존 경로만 사용했다."
+        },
+        {
+          "text": "No path rename occurs without an explicit migration request.",
+          "passed": true,
+          "evidence": "이름 변경이 없다."
+        },
+        {
+          "text": "Other existing files remain unchanged except for required cross-reference updates.",
+          "passed": true,
+          "evidence": "주변 파일이 초기본 그대로다."
+        },
+        {
+          "text": "Current first-party requirements and verification metadata are updated without inventing values.",
+          "passed": true,
+          "evidence": "공식 링크와 2026-08-28 확인일, 핵심 수치를 기록했다."
+        }
+      ],
+      "deterministic_expectations": [
+        {
+          "text": "Reuse the established non-canonical storefront path",
+          "passed": true,
+          "evidence": "The existing path owns Google Play and index.md links it"
+        },
+        {
+          "text": "Make a source-backed storefront update without deleting protected content",
+          "passed": false,
+          "evidence": "changed=true protected=false officialSource=true verificationDate=true"
+        },
+        {
+          "text": "Preserve all unrelated existing files",
+          "passed": true,
+          "evidence": "All unrelated fixture files are byte-for-byte preserved"
+        },
+        {
+          "text": "Do not create another storefront owner",
+          "passed": true,
+          "evidence": "No duplicate owner or unexpected document was added"
+        }
+      ]
+    },
+    {
+      "eval_id": 23,
+      "eval_name": "mixed-prebuilt-output-sets",
+      "configuration": "with_skill",
+      "run_number": 1,
+      "job_id": "j011",
+      "status": "completed",
+      "produced_paths": [
+        "docs/design-system-visual-assets/accessibility.md",
+        "docs/design-system-visual-assets/asset-system.md",
+        "docs/design-system-visual-assets/composition-and-copy.md",
+        "docs/design-system-visual-assets/delivery-and-versioning.md",
+        "docs/design-system-visual-assets/index.md",
+        "docs/design-system-visual-assets/screenshots-and-previews.md",
+        "docs/design-system-visual-assets/stores/itch-io.md",
+        "docs/design-system-visual-assets/visual-language.md",
+        "docs/design-system/accessibility.md",
+        "docs/design-system/components/index.md",
+        "docs/design-system/foundations.md",
+        "docs/design-system/index.md",
+        "docs/design-system/patterns.md",
+        "docs/design-system/tokens.md"
+      ],
+      "result": {
+        "valid": true,
+        "passed": 5,
+        "failed": 0,
+        "total": 5,
+        "pass_rate": 1.0,
+        "time_seconds": null,
+        "tokens": null
+      },
+      "expectations": [
+        {
+          "text": "The request remains one document task but is split into two separate output sets, one for product UI and one for storefront assets.",
+          "passed": true,
+          "evidence": "두 별도 문서 세트를 생성했다."
+        },
+        {
+          "text": "The product UI set uses `docs/design-system` and the storefront set uses `docs/design-system-visual-assets`.",
+          "passed": true,
+          "evidence": "파일 목록이 정확히 두 기본 루트 아래에 있다."
+        },
+        {
+          "text": "No UI component contract is written into storefront files and no storefront specification is written into the UI set.",
+          "passed": true,
+          "evidence": "UI `components/index.md`와 storefront `stores/itch-io.md`의 소유권이 분리되고 각 index가 상호 범위를 제외한다."
+        },
+        {
+          "text": "itch.io is handled through current official-source discovery rather than requiring a special built-in mapping.",
+          "passed": true,
+          "evidence": "`stores/itch-io.md`에 열린 공식 자료와 확인일이 있다."
+        },
+        {
+          "text": "Both requested deliverables are completed rather than silently dropping one.",
+          "passed": true,
+          "evidence": "UI 6개 문서와 storefront 8개 문서가 모두 존재한다."
+        }
+      ],
+      "semantic_expectations": [
+        {
+          "text": "The request remains one document task but is split into two separate output sets, one for product UI and one for storefront assets.",
+          "passed": true,
+          "evidence": "두 별도 문서 세트를 생성했다."
+        },
+        {
+          "text": "The product UI set uses `docs/design-system` and the storefront set uses `docs/design-system-visual-assets`.",
+          "passed": true,
+          "evidence": "파일 목록이 정확히 두 기본 루트 아래에 있다."
+        },
+        {
+          "text": "No UI component contract is written into storefront files and no storefront specification is written into the UI set.",
+          "passed": true,
+          "evidence": "UI `components/index.md`와 storefront `stores/itch-io.md`의 소유권이 분리되고 각 index가 상호 범위를 제외한다."
+        },
+        {
+          "text": "itch.io is handled through current official-source discovery rather than requiring a special built-in mapping.",
+          "passed": true,
+          "evidence": "`stores/itch-io.md`에 열린 공식 자료와 확인일이 있다."
+        },
+        {
+          "text": "Both requested deliverables are completed rather than silently dropping one.",
+          "passed": true,
+          "evidence": "UI 6개 문서와 storefront 8개 문서가 모두 존재한다."
+        }
+      ],
+      "deterministic_expectations": []
+    },
+    {
+      "eval_id": 23,
+      "eval_name": "mixed-prebuilt-output-sets",
+      "configuration": "without_skill",
+      "run_number": 1,
+      "job_id": "j031",
+      "status": "completed",
+      "produced_paths": [
+        "docs/app-ui/README.md",
+        "docs/itch-io/README.md"
+      ],
+      "result": {
+        "valid": true,
+        "passed": 4,
+        "failed": 1,
+        "total": 5,
+        "pass_rate": 0.8,
+        "time_seconds": null,
+        "tokens": null
+      },
+      "expectations": [
+        {
+          "text": "The request remains one document task but is split into two separate output sets, one for product UI and one for storefront assets.",
+          "passed": true,
+          "evidence": "`docs/app-ui`와 `docs/itch-io` 두 결과로 분리했다."
+        },
+        {
+          "text": "The product UI set uses `docs/design-system` and the storefront set uses `docs/design-system-visual-assets`.",
+          "passed": false,
+          "evidence": "요구된 두 기본 경로가 아니라 `docs/app-ui`, `docs/itch-io`를 사용했다."
+        },
+        {
+          "text": "No UI component contract is written into storefront files and no storefront specification is written into the UI set.",
+          "passed": true,
+          "evidence": "두 README의 범위를 상호 제외한다고 명시한다."
+        },
+        {
+          "text": "itch.io is handled through current official-source discovery rather than requiring a special built-in mapping.",
+          "passed": true,
+          "evidence": "itch.io 공식 문서 링크와 2026-08-28 확인일을 제공한다."
+        },
+        {
+          "text": "Both requested deliverables are completed rather than silently dropping one.",
+          "passed": true,
+          "evidence": "UI와 itch.io 문서 모두 내용이 있다."
+        }
+      ],
+      "semantic_expectations": [
+        {
+          "text": "The request remains one document task but is split into two separate output sets, one for product UI and one for storefront assets.",
+          "passed": true,
+          "evidence": "`docs/app-ui`와 `docs/itch-io` 두 결과로 분리했다."
+        },
+        {
+          "text": "The product UI set uses `docs/design-system` and the storefront set uses `docs/design-system-visual-assets`.",
+          "passed": false,
+          "evidence": "요구된 두 기본 경로가 아니라 `docs/app-ui`, `docs/itch-io`를 사용했다."
+        },
+        {
+          "text": "No UI component contract is written into storefront files and no storefront specification is written into the UI set.",
+          "passed": true,
+          "evidence": "두 README의 범위를 상호 제외한다고 명시한다."
+        },
+        {
+          "text": "itch.io is handled through current official-source discovery rather than requiring a special built-in mapping.",
+          "passed": true,
+          "evidence": "itch.io 공식 문서 링크와 2026-08-28 확인일을 제공한다."
+        },
+        {
+          "text": "Both requested deliverables are completed rather than silently dropping one.",
+          "passed": true,
+          "evidence": "UI와 itch.io 문서 모두 내용이 있다."
+        }
+      ],
+      "deterministic_expectations": []
+    },
+    {
+      "eval_id": 23,
+      "eval_name": "mixed-prebuilt-output-sets",
+      "configuration": "with_skill",
+      "run_number": 2,
+      "job_id": "j012",
+      "status": "completed",
+      "produced_paths": [
+        "docs/design-system-visual-assets/asset-system.md",
+        "docs/design-system-visual-assets/index.md",
+        "docs/design-system-visual-assets/screenshots-and-previews.md",
+        "docs/design-system-visual-assets/stores/itch-io.md",
+        "docs/design-system-visual-assets/visual-language.md",
+        "docs/design-system/components/index.md",
+        "docs/design-system/foundations.md",
+        "docs/design-system/index.md",
+        "docs/design-system/tokens.md"
+      ],
+      "result": {
+        "valid": true,
+        "passed": 5,
+        "failed": 0,
+        "total": 5,
+        "pass_rate": 1.0,
+        "time_seconds": null,
+        "tokens": null
+      },
+      "expectations": [
+        {
+          "text": "The request remains one document task but is split into two separate output sets, one for product UI and one for storefront assets.",
+          "passed": true,
+          "evidence": "두 별도 세트와 각 index가 있다."
+        },
+        {
+          "text": "The product UI set uses `docs/design-system` and the storefront set uses `docs/design-system-visual-assets`.",
+          "passed": true,
+          "evidence": "전체 파일이 정확한 두 기본 루트에 있다."
+        },
+        {
+          "text": "No UI component contract is written into storefront files and no storefront specification is written into the UI set.",
+          "passed": true,
+          "evidence": "UI `components/index.md`와 storefront `stores/itch-io.md`가 명확히 분리된다."
+        },
+        {
+          "text": "itch.io is handled through current official-source discovery rather than requiring a special built-in mapping.",
+          "passed": true,
+          "evidence": "공식 자료 목록과 2026-08-28 확인일을 기록한다."
+        },
+        {
+          "text": "Both requested deliverables are completed rather than silently dropping one.",
+          "passed": true,
+          "evidence": "UI와 storefront 양쪽 모두 다중 파일 문서 세트가 완성됐다."
+        }
+      ],
+      "semantic_expectations": [
+        {
+          "text": "The request remains one document task but is split into two separate output sets, one for product UI and one for storefront assets.",
+          "passed": true,
+          "evidence": "두 별도 세트와 각 index가 있다."
+        },
+        {
+          "text": "The product UI set uses `docs/design-system` and the storefront set uses `docs/design-system-visual-assets`.",
+          "passed": true,
+          "evidence": "전체 파일이 정확한 두 기본 루트에 있다."
+        },
+        {
+          "text": "No UI component contract is written into storefront files and no storefront specification is written into the UI set.",
+          "passed": true,
+          "evidence": "UI `components/index.md`와 storefront `stores/itch-io.md`가 명확히 분리된다."
+        },
+        {
+          "text": "itch.io is handled through current official-source discovery rather than requiring a special built-in mapping.",
+          "passed": true,
+          "evidence": "공식 자료 목록과 2026-08-28 확인일을 기록한다."
+        },
+        {
+          "text": "Both requested deliverables are completed rather than silently dropping one.",
+          "passed": true,
+          "evidence": "UI와 storefront 양쪽 모두 다중 파일 문서 세트가 완성됐다."
+        }
+      ],
+      "deterministic_expectations": []
+    },
+    {
+      "eval_id": 23,
+      "eval_name": "mixed-prebuilt-output-sets",
+      "configuration": "without_skill",
+      "run_number": 2,
+      "job_id": "j032",
+      "status": "completed",
+      "produced_paths": [
+        "docs/product/app-ui-guidelines.md",
+        "docs/publishing/itch-io-public-page-assets.md"
+      ],
+      "result": {
+        "valid": true,
+        "passed": 4,
+        "failed": 1,
+        "total": 5,
+        "pass_rate": 0.8,
+        "time_seconds": null,
+        "tokens": null
+      },
+      "expectations": [
+        {
+          "text": "The request remains one document task but is split into two separate output sets, one for product UI and one for storefront assets.",
+          "passed": true,
+          "evidence": "UI 문서와 itch.io 문서를 별개 파일로 만들었다."
+        },
+        {
+          "text": "The product UI set uses `docs/design-system` and the storefront set uses `docs/design-system-visual-assets`.",
+          "passed": false,
+          "evidence": "`docs/product`와 `docs/publishing`을 사용했다."
+        },
+        {
+          "text": "No UI component contract is written into storefront files and no storefront specification is written into the UI set.",
+          "passed": true,
+          "evidence": "두 단일 문서의 목적과 범위는 상호 분리돼 있다."
+        },
+        {
+          "text": "itch.io is handled through current official-source discovery rather than requiring a special built-in mapping.",
+          "passed": true,
+          "evidence": "공식 운영자 자료와 날짜를 기재했다."
+        },
+        {
+          "text": "Both requested deliverables are completed rather than silently dropping one.",
+          "passed": true,
+          "evidence": "두 결과 모두 실질 내용이 있다."
+        }
+      ],
+      "semantic_expectations": [
+        {
+          "text": "The request remains one document task but is split into two separate output sets, one for product UI and one for storefront assets.",
+          "passed": true,
+          "evidence": "UI 문서와 itch.io 문서를 별개 파일로 만들었다."
+        },
+        {
+          "text": "The product UI set uses `docs/design-system` and the storefront set uses `docs/design-system-visual-assets`.",
+          "passed": false,
+          "evidence": "`docs/product`와 `docs/publishing`을 사용했다."
+        },
+        {
+          "text": "No UI component contract is written into storefront files and no storefront specification is written into the UI set.",
+          "passed": true,
+          "evidence": "두 단일 문서의 목적과 범위는 상호 분리돼 있다."
+        },
+        {
+          "text": "itch.io is handled through current official-source discovery rather than requiring a special built-in mapping.",
+          "passed": true,
+          "evidence": "공식 운영자 자료와 날짜를 기재했다."
+        },
+        {
+          "text": "Both requested deliverables are completed rather than silently dropping one.",
+          "passed": true,
+          "evidence": "두 결과 모두 실질 내용이 있다."
+        }
+      ],
+      "deterministic_expectations": []
+    },
+    {
+      "eval_id": 25,
+      "eval_name": "web-unavailable-generic-storefront",
+      "configuration": "with_skill",
+      "run_number": 1,
+      "job_id": "j013",
+      "status": "completed",
+      "produced_paths": [],
+      "result": {
+        "valid": true,
+        "passed": 5,
+        "failed": 0,
+        "total": 5,
+        "pass_rate": 1.0,
+        "time_seconds": null,
+        "tokens": null
+      },
+      "expectations": [
+        {
+          "text": "The request is handled as an unresolved storefront-document task rather than rejected because Nova Market is unfamiliar.",
+          "passed": true,
+          "evidence": "미확정 상태에서 필요한 입력과 후속 추출 절차를 제공한다."
+        },
+        {
+          "text": "No operator, official domain, attempted URL, source title, verification date, or mutable requirement is invented.",
+          "passed": true,
+          "evidence": "모든 정체·URL·수치·일자를 `미확정` 또는 `미제공`으로 둔다."
+        },
+        {
+          "text": "The result records that online research is unavailable and requests an official publisher guide or operator identity.",
+          "passed": true,
+          "evidence": "첫 문단에 인터넷을 사용할 수 없다고 기록하고 공식 서비스명·운영 주체·가이드 원문을 요청한다."
+        },
+        {
+          "text": "No partial storefront file presents assumptions as facts.",
+          "passed": true,
+          "evidence": "Nova storefront 파일을 만들지 않는다고 명시하며 실제 workspace 파일도 없다."
+        },
+        {
+          "text": "The completion report states that current storefront requirements remain unverified.",
+          "passed": true,
+          "evidence": "현재 운영자·규칙을 확인할 수 없고 공식 자료 전에는 최종 가이드를 쓰지 않는다고 한다."
+        }
+      ],
+      "semantic_expectations": [
+        {
+          "text": "The request is handled as an unresolved storefront-document task rather than rejected because Nova Market is unfamiliar.",
+          "passed": true,
+          "evidence": "미확정 상태에서 필요한 입력과 후속 추출 절차를 제공한다."
+        },
+        {
+          "text": "No operator, official domain, attempted URL, source title, verification date, or mutable requirement is invented.",
+          "passed": true,
+          "evidence": "모든 정체·URL·수치·일자를 `미확정` 또는 `미제공`으로 둔다."
+        },
+        {
+          "text": "The result records that online research is unavailable and requests an official publisher guide or operator identity.",
+          "passed": true,
+          "evidence": "첫 문단에 인터넷을 사용할 수 없다고 기록하고 공식 서비스명·운영 주체·가이드 원문을 요청한다."
+        },
+        {
+          "text": "No partial storefront file presents assumptions as facts.",
+          "passed": true,
+          "evidence": "Nova storefront 파일을 만들지 않는다고 명시하며 실제 workspace 파일도 없다."
+        },
+        {
+          "text": "The completion report states that current storefront requirements remain unverified.",
+          "passed": true,
+          "evidence": "현재 운영자·규칙을 확인할 수 없고 공식 자료 전에는 최종 가이드를 쓰지 않는다고 한다."
+        }
+      ],
+      "deterministic_expectations": []
+    },
+    {
+      "eval_id": 25,
+      "eval_name": "web-unavailable-generic-storefront",
+      "configuration": "without_skill",
+      "run_number": 1,
+      "job_id": "j033",
+      "status": "completed",
+      "produced_paths": [],
+      "result": {
+        "valid": true,
+        "passed": 4,
+        "failed": 1,
+        "total": 5,
+        "pass_rate": 0.8,
+        "time_seconds": null,
+        "tokens": null
+      },
+      "expectations": [
+        {
+          "text": "The request is handled as an unresolved storefront-document task rather than rejected because Nova Market is unfamiliar.",
+          "passed": true,
+          "evidence": "등록 전 확인할 사항과 자료 수집 순서를 제공한다."
+        },
+        {
+          "text": "No operator, official domain, attempted URL, source title, verification date, or mutable requirement is invented.",
+          "passed": true,
+          "evidence": "운영자·URL·규격을 모두 요청 항목으로만 둔다."
+        },
+        {
+          "text": "The result records that online research is unavailable and requests an official publisher guide or operator identity.",
+          "passed": false,
+          "evidence": "공식 가이드와 운영자 요청은 있으나 온라인 연구 불가 상태를 응답에 명시하지 않았다."
+        },
+        {
+          "text": "No partial storefront file presents assumptions as facts.",
+          "passed": true,
+          "evidence": "workspace 파일이 없고 확인 목록만 응답했다."
+        },
+        {
+          "text": "The completion report states that current storefront requirements remain unverified.",
+          "passed": true,
+          "evidence": "공식 자료 전에는 규격을 확정하지 않겠다고 명시한다."
+        }
+      ],
+      "semantic_expectations": [
+        {
+          "text": "The request is handled as an unresolved storefront-document task rather than rejected because Nova Market is unfamiliar.",
+          "passed": true,
+          "evidence": "등록 전 확인할 사항과 자료 수집 순서를 제공한다."
+        },
+        {
+          "text": "No operator, official domain, attempted URL, source title, verification date, or mutable requirement is invented.",
+          "passed": true,
+          "evidence": "운영자·URL·규격을 모두 요청 항목으로만 둔다."
+        },
+        {
+          "text": "The result records that online research is unavailable and requests an official publisher guide or operator identity.",
+          "passed": false,
+          "evidence": "공식 가이드와 운영자 요청은 있으나 온라인 연구 불가 상태를 응답에 명시하지 않았다."
+        },
+        {
+          "text": "No partial storefront file presents assumptions as facts.",
+          "passed": true,
+          "evidence": "workspace 파일이 없고 확인 목록만 응답했다."
+        },
+        {
+          "text": "The completion report states that current storefront requirements remain unverified.",
+          "passed": true,
+          "evidence": "공식 자료 전에는 규격을 확정하지 않겠다고 명시한다."
+        }
+      ],
+      "deterministic_expectations": []
+    },
+    {
+      "eval_id": 25,
+      "eval_name": "web-unavailable-generic-storefront",
+      "configuration": "with_skill",
+      "run_number": 2,
+      "job_id": "j014",
+      "status": "completed",
+      "produced_paths": [],
+      "result": {
+        "valid": true,
+        "passed": 5,
+        "failed": 0,
+        "total": 5,
+        "pass_rate": 1.0,
+        "time_seconds": null,
+        "tokens": null
+      },
+      "expectations": [
+        {
+          "text": "The request is handled as an unresolved storefront-document task rather than rejected because Nova Market is unfamiliar.",
+          "passed": true,
+          "evidence": "현재 결론과 확인할 정보, 자료 수령 후 처리 원칙을 제공한다."
+        },
+        {
+          "text": "No operator, official domain, attempted URL, source title, verification date, or mutable requirement is invented.",
+          "passed": true,
+          "evidence": "운영자·URL·자산 수치 모두 질문 항목이며 사실로 채우지 않는다."
+        },
+        {
+          "text": "The result records that online research is unavailable and requests an official publisher guide or operator identity.",
+          "passed": true,
+          "evidence": "인터넷을 사용할 수 없다고 명시하고 운영 주체와 공식 가이드 원문을 요청한다."
+        },
+        {
+          "text": "No partial storefront file presents assumptions as facts.",
+          "passed": true,
+          "evidence": "Nova용 파일을 만들지 않는다고 명시하며 실제 파일도 없다."
+        },
+        {
+          "text": "The completion report states that current storefront requirements remain unverified.",
+          "passed": true,
+          "evidence": "자료 전에는 공식 사이트·운영 서비스·규격·필수 항목을 확인된 사실로 제시할 수 없다고 한다."
+        }
+      ],
+      "semantic_expectations": [
+        {
+          "text": "The request is handled as an unresolved storefront-document task rather than rejected because Nova Market is unfamiliar.",
+          "passed": true,
+          "evidence": "현재 결론과 확인할 정보, 자료 수령 후 처리 원칙을 제공한다."
+        },
+        {
+          "text": "No operator, official domain, attempted URL, source title, verification date, or mutable requirement is invented.",
+          "passed": true,
+          "evidence": "운영자·URL·자산 수치 모두 질문 항목이며 사실로 채우지 않는다."
+        },
+        {
+          "text": "The result records that online research is unavailable and requests an official publisher guide or operator identity.",
+          "passed": true,
+          "evidence": "인터넷을 사용할 수 없다고 명시하고 운영 주체와 공식 가이드 원문을 요청한다."
+        },
+        {
+          "text": "No partial storefront file presents assumptions as facts.",
+          "passed": true,
+          "evidence": "Nova용 파일을 만들지 않는다고 명시하며 실제 파일도 없다."
+        },
+        {
+          "text": "The completion report states that current storefront requirements remain unverified.",
+          "passed": true,
+          "evidence": "자료 전에는 공식 사이트·운영 서비스·규격·필수 항목을 확인된 사실로 제시할 수 없다고 한다."
+        }
+      ],
+      "deterministic_expectations": []
+    },
+    {
+      "eval_id": 25,
+      "eval_name": "web-unavailable-generic-storefront",
+      "configuration": "without_skill",
+      "run_number": 2,
+      "job_id": "j034",
+      "status": "completed",
+      "produced_paths": [],
+      "result": {
+        "valid": true,
+        "passed": 4,
+        "failed": 1,
+        "total": 5,
+        "pass_rate": 0.8,
+        "time_seconds": null,
+        "tokens": null
+      },
+      "expectations": [
+        {
+          "text": "The request is handled as an unresolved storefront-document task rather than rejected because Nova Market is unfamiliar.",
+          "passed": true,
+          "evidence": "확인 목록과 자료 수령 후 작성 순서를 제공한다."
+        },
+        {
+          "text": "No operator, official domain, attempted URL, source title, verification date, or mutable requirement is invented.",
+          "passed": true,
+          "evidence": "확인 전 쓰지 않을 내용을 명시하고 수치를 발명하지 않는다."
+        },
+        {
+          "text": "The result records that online research is unavailable and requests an official publisher guide or operator identity.",
+          "passed": false,
+          "evidence": "공식 자료·운영자 요청은 있으나 인터넷 사용 불가 상태를 응답에 기록하지 않았다."
+        },
+        {
+          "text": "No partial storefront file presents assumptions as facts.",
+          "passed": true,
+          "evidence": "workspace 결과 파일은 없다."
+        },
+        {
+          "text": "The completion report states that current storefront requirements remain unverified.",
+          "passed": true,
+          "evidence": "공식 규격이 없으면 현재 확인된 공식 규격 없음으로 남긴다고 한다."
+        }
+      ],
+      "semantic_expectations": [
+        {
+          "text": "The request is handled as an unresolved storefront-document task rather than rejected because Nova Market is unfamiliar.",
+          "passed": true,
+          "evidence": "확인 목록과 자료 수령 후 작성 순서를 제공한다."
+        },
+        {
+          "text": "No operator, official domain, attempted URL, source title, verification date, or mutable requirement is invented.",
+          "passed": true,
+          "evidence": "확인 전 쓰지 않을 내용을 명시하고 수치를 발명하지 않는다."
+        },
+        {
+          "text": "The result records that online research is unavailable and requests an official publisher guide or operator identity.",
+          "passed": false,
+          "evidence": "공식 자료·운영자 요청은 있으나 인터넷 사용 불가 상태를 응답에 기록하지 않았다."
+        },
+        {
+          "text": "No partial storefront file presents assumptions as facts.",
+          "passed": true,
+          "evidence": "workspace 결과 파일은 없다."
+        },
+        {
+          "text": "The completion report states that current storefront requirements remain unverified.",
+          "passed": true,
+          "evidence": "공식 규격이 없으면 현재 확인된 공식 규격 없음으로 남긴다고 한다."
+        }
+      ],
+      "deterministic_expectations": []
+    },
+    {
+      "eval_id": 26,
+      "eval_name": "multifile-root-given-as-markdown",
+      "configuration": "with_skill",
+      "run_number": 1,
+      "job_id": "j015",
+      "status": "clarification_required",
+      "produced_paths": [],
+      "result": {
+        "valid": true,
+        "passed": 5,
+        "failed": 0,
+        "total": 5,
+        "pass_rate": 1.0,
+        "time_seconds": null,
+        "tokens": null
+      },
+      "expectations": [
+        {
+          "text": "The skill recognizes that the requested UI guide is a multi-file document set that needs a directory root.",
+          "passed": true,
+          "evidence": "`index.md`, `foundations.md`, `tokens.md` 등의 문서 세트라고 명시한다."
+        },
+        {
+          "text": "It does not create a directory named `design-system.md` or collapse the requested document set into one Markdown file.",
+          "passed": true,
+          "evidence": "workspace 파일을 만들지 않았다."
+        },
+        {
+          "text": "It asks one concise question to choose the set root or clarify a chat-only single-file draft.",
+          "passed": true,
+          "evidence": "`docs/design-system/` 또는 다른 디렉터리를 묻는 질문 하나다."
+        },
+        {
+          "text": "No default-root duplicate is created while the user-specified destination remains unresolved.",
+          "passed": true,
+          "evidence": "어떤 파일도 생성하지 않았다."
+        },
+        {
+          "text": "The request remains a product UI design-system request; the path shape does not turn it into a different document type.",
+          "passed": true,
+          "evidence": "제품 UI 디자인 시스템으로 분류한다."
+        }
+      ],
+      "semantic_expectations": [
+        {
+          "text": "The skill recognizes that the requested UI guide is a multi-file document set that needs a directory root.",
+          "passed": true,
+          "evidence": "`index.md`, `foundations.md`, `tokens.md` 등의 문서 세트라고 명시한다."
+        },
+        {
+          "text": "It does not create a directory named `design-system.md` or collapse the requested document set into one Markdown file.",
+          "passed": true,
+          "evidence": "workspace 파일을 만들지 않았다."
+        },
+        {
+          "text": "It asks one concise question to choose the set root or clarify a chat-only single-file draft.",
+          "passed": true,
+          "evidence": "`docs/design-system/` 또는 다른 디렉터리를 묻는 질문 하나다."
+        },
+        {
+          "text": "No default-root duplicate is created while the user-specified destination remains unresolved.",
+          "passed": true,
+          "evidence": "어떤 파일도 생성하지 않았다."
+        },
+        {
+          "text": "The request remains a product UI design-system request; the path shape does not turn it into a different document type.",
+          "passed": true,
+          "evidence": "제품 UI 디자인 시스템으로 분류한다."
+        }
+      ],
+      "deterministic_expectations": []
+    },
+    {
+      "eval_id": 26,
+      "eval_name": "multifile-root-given-as-markdown",
+      "configuration": "without_skill",
+      "run_number": 1,
+      "job_id": "j035",
+      "status": "completed",
+      "produced_paths": [
+        "docs/design-system.md"
+      ],
+      "result": {
+        "valid": true,
+        "passed": 1,
+        "failed": 4,
+        "total": 5,
+        "pass_rate": 0.2,
+        "time_seconds": null,
+        "tokens": null
+      },
+      "expectations": [
+        {
+          "text": "The skill recognizes that the requested UI guide is a multi-file document set that needs a directory root.",
+          "passed": false,
+          "evidence": "단일 Markdown 문서로 처리했다."
+        },
+        {
+          "text": "It does not create a directory named `design-system.md` or collapse the requested document set into one Markdown file.",
+          "passed": false,
+          "evidence": "`docs/design-system.md` 한 파일을 생성했다."
+        },
+        {
+          "text": "It asks one concise question to choose the set root or clarify a chat-only single-file draft.",
+          "passed": false,
+          "evidence": "질문 없이 완료를 주장한다."
+        },
+        {
+          "text": "No default-root duplicate is created while the user-specified destination remains unresolved.",
+          "passed": false,
+          "evidence": "미해결 목적지에 바로 파일을 만들었다."
+        },
+        {
+          "text": "The request remains a product UI design-system request; the path shape does not turn it into a different document type.",
+          "passed": true,
+          "evidence": "내용 자체는 제품 UI 가이드다."
+        }
+      ],
+      "semantic_expectations": [
+        {
+          "text": "The skill recognizes that the requested UI guide is a multi-file document set that needs a directory root.",
+          "passed": false,
+          "evidence": "단일 Markdown 문서로 처리했다."
+        },
+        {
+          "text": "It does not create a directory named `design-system.md` or collapse the requested document set into one Markdown file.",
+          "passed": false,
+          "evidence": "`docs/design-system.md` 한 파일을 생성했다."
+        },
+        {
+          "text": "It asks one concise question to choose the set root or clarify a chat-only single-file draft.",
+          "passed": false,
+          "evidence": "질문 없이 완료를 주장한다."
+        },
+        {
+          "text": "No default-root duplicate is created while the user-specified destination remains unresolved.",
+          "passed": false,
+          "evidence": "미해결 목적지에 바로 파일을 만들었다."
+        },
+        {
+          "text": "The request remains a product UI design-system request; the path shape does not turn it into a different document type.",
+          "passed": true,
+          "evidence": "내용 자체는 제품 UI 가이드다."
+        }
+      ],
+      "deterministic_expectations": []
+    },
+    {
+      "eval_id": 26,
+      "eval_name": "multifile-root-given-as-markdown",
+      "configuration": "with_skill",
+      "run_number": 2,
+      "job_id": "j016",
+      "status": "clarification_required",
+      "produced_paths": [],
+      "result": {
+        "valid": true,
+        "passed": 5,
+        "failed": 0,
+        "total": 5,
+        "pass_rate": 1.0,
+        "time_seconds": null,
+        "tokens": null
+      },
+      "expectations": [
+        {
+          "text": "The skill recognizes that the requested UI guide is a multi-file document set that needs a directory root.",
+          "passed": true,
+          "evidence": "`index.md`를 포함한 문서 세트라고 명시한다."
+        },
+        {
+          "text": "It does not create a directory named `design-system.md` or collapse the requested document set into one Markdown file.",
+          "passed": true,
+          "evidence": "workspace에 결과 파일이 없다."
+        },
+        {
+          "text": "It asks one concise question to choose the set root or clarify a chat-only single-file draft.",
+          "passed": true,
+          "evidence": "`docs/design-system/` 생성 여부를 묻는 질문 하나다."
+        },
+        {
+          "text": "No default-root duplicate is created while the user-specified destination remains unresolved.",
+          "passed": true,
+          "evidence": "기본 루트나 사본을 생성하지 않았다."
+        },
+        {
+          "text": "The request remains a product UI design-system request; the path shape does not turn it into a different document type.",
+          "passed": true,
+          "evidence": "제품 UI 가이드로 유지한다."
+        }
+      ],
+      "semantic_expectations": [
+        {
+          "text": "The skill recognizes that the requested UI guide is a multi-file document set that needs a directory root.",
+          "passed": true,
+          "evidence": "`index.md`를 포함한 문서 세트라고 명시한다."
+        },
+        {
+          "text": "It does not create a directory named `design-system.md` or collapse the requested document set into one Markdown file.",
+          "passed": true,
+          "evidence": "workspace에 결과 파일이 없다."
+        },
+        {
+          "text": "It asks one concise question to choose the set root or clarify a chat-only single-file draft.",
+          "passed": true,
+          "evidence": "`docs/design-system/` 생성 여부를 묻는 질문 하나다."
+        },
+        {
+          "text": "No default-root duplicate is created while the user-specified destination remains unresolved.",
+          "passed": true,
+          "evidence": "기본 루트나 사본을 생성하지 않았다."
+        },
+        {
+          "text": "The request remains a product UI design-system request; the path shape does not turn it into a different document type.",
+          "passed": true,
+          "evidence": "제품 UI 가이드로 유지한다."
+        }
+      ],
+      "deterministic_expectations": []
+    },
+    {
+      "eval_id": 26,
+      "eval_name": "multifile-root-given-as-markdown",
+      "configuration": "without_skill",
+      "run_number": 2,
+      "job_id": "j036",
+      "status": "completed",
+      "produced_paths": [
+        "docs/design-system.md"
+      ],
+      "result": {
+        "valid": true,
+        "passed": 1,
+        "failed": 4,
+        "total": 5,
+        "pass_rate": 0.2,
+        "time_seconds": null,
+        "tokens": null
+      },
+      "expectations": [
+        {
+          "text": "The skill recognizes that the requested UI guide is a multi-file document set that needs a directory root.",
+          "passed": false,
+          "evidence": "단일 문서로 작성했다."
+        },
+        {
+          "text": "It does not create a directory named `design-system.md` or collapse the requested document set into one Markdown file.",
+          "passed": false,
+          "evidence": "`docs/design-system.md` 파일 하나가 있다."
+        },
+        {
+          "text": "It asks one concise question to choose the set root or clarify a chat-only single-file draft.",
+          "passed": false,
+          "evidence": "질문 없이 완료했다."
+        },
+        {
+          "text": "No default-root duplicate is created while the user-specified destination remains unresolved.",
+          "passed": false,
+          "evidence": "미해결 경로에 결과를 생성했다."
+        },
+        {
+          "text": "The request remains a product UI design-system request; the path shape does not turn it into a different document type.",
+          "passed": true,
+          "evidence": "문서 내용은 제품 UI다."
+        }
+      ],
+      "semantic_expectations": [
+        {
+          "text": "The skill recognizes that the requested UI guide is a multi-file document set that needs a directory root.",
+          "passed": false,
+          "evidence": "단일 문서로 작성했다."
+        },
+        {
+          "text": "It does not create a directory named `design-system.md` or collapse the requested document set into one Markdown file.",
+          "passed": false,
+          "evidence": "`docs/design-system.md` 파일 하나가 있다."
+        },
+        {
+          "text": "It asks one concise question to choose the set root or clarify a chat-only single-file draft.",
+          "passed": false,
+          "evidence": "질문 없이 완료했다."
+        },
+        {
+          "text": "No default-root duplicate is created while the user-specified destination remains unresolved.",
+          "passed": false,
+          "evidence": "미해결 경로에 결과를 생성했다."
+        },
+        {
+          "text": "The request remains a product UI design-system request; the path shape does not turn it into a different document type.",
+          "passed": true,
+          "evidence": "문서 내용은 제품 UI다."
+        }
+      ],
+      "deterministic_expectations": []
+    },
+    {
+      "eval_id": 27,
+      "eval_name": "collective-platform-ambiguity",
+      "configuration": "with_skill",
+      "run_number": 1,
+      "job_id": "j017",
+      "status": "clarification_required",
+      "produced_paths": [
+        "docs/design-system/index.md",
+        "docs/design-system/platforms/web.md"
+      ],
+      "result": {
+        "valid": true,
+        "passed": 5,
+        "failed": 0,
+        "total": 5,
+        "pass_rate": 1.0,
+        "time_seconds": null,
+        "tokens": null
+      },
+      "expectations": [
+        {
+          "text": "The common design-system contract remains platform-neutral.",
+          "passed": true,
+          "evidence": "`index.md` 원칙이 공유 UI 결정을 platform-neutral로 유지한다고 명시한다."
+        },
+        {
+          "text": "The response explicitly preserves the confirmed web adaptation as `platforms/web.md` for completion after clarification; it is not silently dropped.",
+          "passed": true,
+          "evidence": "응답과 실제 파일 모두 `docs/design-system/platforms/web.md`를 제공한다."
+        },
+        {
+          "text": "The assistant asks one concise question to resolve whether mobile is the team's own platform name or a label covering concrete platforms.",
+          "passed": true,
+          "evidence": "iOS+Android 집합인지 내부 분류인지 한 질문으로 묻는다."
+        },
+        {
+          "text": "It does not invent iOS or Android scope from convention.",
+          "passed": true,
+          "evidence": "모바일 owner를 `Not created`로 유지한다."
+        },
+        {
+          "text": "The unresolved platform decision is not represented as a completed adaptation.",
+          "passed": true,
+          "evidence": "모바일 파일이 없고 unresolved 상태가 문서 지도에 표시된다."
+        }
+      ],
+      "semantic_expectations": [
+        {
+          "text": "The common design-system contract remains platform-neutral.",
+          "passed": true,
+          "evidence": "`index.md` 원칙이 공유 UI 결정을 platform-neutral로 유지한다고 명시한다."
+        },
+        {
+          "text": "The response explicitly preserves the confirmed web adaptation as `platforms/web.md` for completion after clarification; it is not silently dropped.",
+          "passed": true,
+          "evidence": "응답과 실제 파일 모두 `docs/design-system/platforms/web.md`를 제공한다."
+        },
+        {
+          "text": "The assistant asks one concise question to resolve whether mobile is the team's own platform name or a label covering concrete platforms.",
+          "passed": true,
+          "evidence": "iOS+Android 집합인지 내부 분류인지 한 질문으로 묻는다."
+        },
+        {
+          "text": "It does not invent iOS or Android scope from convention.",
+          "passed": true,
+          "evidence": "모바일 owner를 `Not created`로 유지한다."
+        },
+        {
+          "text": "The unresolved platform decision is not represented as a completed adaptation.",
+          "passed": true,
+          "evidence": "모바일 파일이 없고 unresolved 상태가 문서 지도에 표시된다."
+        }
+      ],
+      "deterministic_expectations": []
+    },
+    {
+      "eval_id": 27,
+      "eval_name": "collective-platform-ambiguity",
+      "configuration": "without_skill",
+      "run_number": 1,
+      "job_id": "j037",
+      "status": "completed",
+      "produced_paths": [
+        "product-ui-guide.md"
+      ],
+      "result": {
+        "valid": true,
+        "passed": 2,
+        "failed": 3,
+        "total": 5,
+        "pass_rate": 0.4,
+        "time_seconds": null,
+        "tokens": null
+      },
+      "expectations": [
+        {
+          "text": "The common design-system contract remains platform-neutral.",
+          "passed": true,
+          "evidence": "공통 변경만 공통 원칙에 반영한다고 적었다."
+        },
+        {
+          "text": "The response explicitly preserves the confirmed web adaptation as `platforms/web.md` for completion after clarification; it is not silently dropped.",
+          "passed": false,
+          "evidence": "`platforms/web.md` 없이 `product-ui-guide.md` 한 파일에 웹 섹션을 넣었다."
+        },
+        {
+          "text": "The assistant asks one concise question to resolve whether mobile is the team's own platform name or a label covering concrete platforms.",
+          "passed": false,
+          "evidence": "선택지를 문서화했지만 사용자에게 직접 질문하지 않고 완료를 주장한다."
+        },
+        {
+          "text": "It does not invent iOS or Android scope from convention.",
+          "passed": true,
+          "evidence": "모바일 범위를 결정 필요로 둔다."
+        },
+        {
+          "text": "The unresolved platform decision is not represented as a completed adaptation.",
+          "passed": false,
+          "evidence": "응답이 ‘웹과 모바일로 분리해 작성했습니다’라고 하며 모바일 섹션을 결과물에 만든다."
+        }
+      ],
+      "semantic_expectations": [
+        {
+          "text": "The common design-system contract remains platform-neutral.",
+          "passed": true,
+          "evidence": "공통 변경만 공통 원칙에 반영한다고 적었다."
+        },
+        {
+          "text": "The response explicitly preserves the confirmed web adaptation as `platforms/web.md` for completion after clarification; it is not silently dropped.",
+          "passed": false,
+          "evidence": "`platforms/web.md` 없이 `product-ui-guide.md` 한 파일에 웹 섹션을 넣었다."
+        },
+        {
+          "text": "The assistant asks one concise question to resolve whether mobile is the team's own platform name or a label covering concrete platforms.",
+          "passed": false,
+          "evidence": "선택지를 문서화했지만 사용자에게 직접 질문하지 않고 완료를 주장한다."
+        },
+        {
+          "text": "It does not invent iOS or Android scope from convention.",
+          "passed": true,
+          "evidence": "모바일 범위를 결정 필요로 둔다."
+        },
+        {
+          "text": "The unresolved platform decision is not represented as a completed adaptation.",
+          "passed": false,
+          "evidence": "응답이 ‘웹과 모바일로 분리해 작성했습니다’라고 하며 모바일 섹션을 결과물에 만든다."
+        }
+      ],
+      "deterministic_expectations": []
+    },
+    {
+      "eval_id": 27,
+      "eval_name": "collective-platform-ambiguity",
+      "configuration": "with_skill",
+      "run_number": 2,
+      "job_id": "j018",
+      "status": "completed",
+      "produced_paths": [
+        "docs/design-system/index.md",
+        "docs/design-system/platforms/web.md"
+      ],
+      "result": {
+        "valid": true,
+        "passed": 5,
+        "failed": 0,
+        "total": 5,
+        "pass_rate": 1.0,
+        "time_seconds": null,
+        "tokens": null
+      },
+      "expectations": [
+        {
+          "text": "The common design-system contract remains platform-neutral.",
+          "passed": true,
+          "evidence": "공통 정본이 없으면 웹 파일에 공유 규칙을 복제하지 않는다고 명시한다."
+        },
+        {
+          "text": "The response explicitly preserves the confirmed web adaptation as `platforms/web.md` for completion after clarification; it is not silently dropped.",
+          "passed": true,
+          "evidence": "실제 `docs/design-system/platforms/web.md`가 있고 응답이 링크한다."
+        },
+        {
+          "text": "The assistant asks one concise question to resolve whether mobile is the team's own platform name or a label covering concrete platforms.",
+          "passed": true,
+          "evidence": "모바일 집합 범위 또는 내부 분류명을 결정해 달라는 하나의 선택 질문이다."
+        },
+        {
+          "text": "It does not invent iOS or Android scope from convention.",
+          "passed": true,
+          "evidence": "`platforms/mobile.md`를 만들지 않고 양쪽 의미를 미결정으로 둔다."
+        },
+        {
+          "text": "The unresolved platform decision is not represented as a completed adaptation.",
+          "passed": true,
+          "evidence": "모바일 결과 파일이 없고 index에 결정 필요로만 기록된다."
+        }
+      ],
+      "semantic_expectations": [
+        {
+          "text": "The common design-system contract remains platform-neutral.",
+          "passed": true,
+          "evidence": "공통 정본이 없으면 웹 파일에 공유 규칙을 복제하지 않는다고 명시한다."
+        },
+        {
+          "text": "The response explicitly preserves the confirmed web adaptation as `platforms/web.md` for completion after clarification; it is not silently dropped.",
+          "passed": true,
+          "evidence": "실제 `docs/design-system/platforms/web.md`가 있고 응답이 링크한다."
+        },
+        {
+          "text": "The assistant asks one concise question to resolve whether mobile is the team's own platform name or a label covering concrete platforms.",
+          "passed": true,
+          "evidence": "모바일 집합 범위 또는 내부 분류명을 결정해 달라는 하나의 선택 질문이다."
+        },
+        {
+          "text": "It does not invent iOS or Android scope from convention.",
+          "passed": true,
+          "evidence": "`platforms/mobile.md`를 만들지 않고 양쪽 의미를 미결정으로 둔다."
+        },
+        {
+          "text": "The unresolved platform decision is not represented as a completed adaptation.",
+          "passed": true,
+          "evidence": "모바일 결과 파일이 없고 index에 결정 필요로만 기록된다."
+        }
+      ],
+      "deterministic_expectations": []
+    },
+    {
+      "eval_id": 27,
+      "eval_name": "collective-platform-ambiguity",
+      "configuration": "without_skill",
+      "run_number": 2,
+      "job_id": "j038",
+      "status": "completed",
+      "produced_paths": [
+        "product-ui-guide.md"
+      ],
+      "result": {
+        "valid": true,
+        "passed": 1,
+        "failed": 4,
+        "total": 5,
+        "pass_rate": 0.2,
+        "time_seconds": null,
+        "tokens": null
+      },
+      "expectations": [
+        {
+          "text": "The common design-system contract remains platform-neutral.",
+          "passed": true,
+          "evidence": "공통 원칙을 별도 관리한다고 설명한다."
+        },
+        {
+          "text": "The response explicitly preserves the confirmed web adaptation as `platforms/web.md` for completion after clarification; it is not silently dropped.",
+          "passed": false,
+          "evidence": "`platforms/web.md` 없이 단일 `product-ui-guide.md`만 있다."
+        },
+        {
+          "text": "The assistant asks one concise question to resolve whether mobile is the team's own platform name or a label covering concrete platforms.",
+          "passed": false,
+          "evidence": "문서 안에 결정할 질문을 기록했지만 응답은 직접 질문하지 않고 완료를 주장한다."
+        },
+        {
+          "text": "It does not invent iOS or Android scope from convention.",
+          "passed": false,
+          "evidence": "결정 전인데도 `Mobile (iOS)`, `Mobile (Android)` 표기와 터치·전환 관리 단위를 제시한다."
+        },
+        {
+          "text": "The unresolved platform decision is not represented as a completed adaptation.",
+          "passed": false,
+          "evidence": "`Mobile (분류 정의 대기)` 섹션과 임시 적용 범위를 완성된 문서에 넣었다."
+        }
+      ],
+      "semantic_expectations": [
+        {
+          "text": "The common design-system contract remains platform-neutral.",
+          "passed": true,
+          "evidence": "공통 원칙을 별도 관리한다고 설명한다."
+        },
+        {
+          "text": "The response explicitly preserves the confirmed web adaptation as `platforms/web.md` for completion after clarification; it is not silently dropped.",
+          "passed": false,
+          "evidence": "`platforms/web.md` 없이 단일 `product-ui-guide.md`만 있다."
+        },
+        {
+          "text": "The assistant asks one concise question to resolve whether mobile is the team's own platform name or a label covering concrete platforms.",
+          "passed": false,
+          "evidence": "문서 안에 결정할 질문을 기록했지만 응답은 직접 질문하지 않고 완료를 주장한다."
+        },
+        {
+          "text": "It does not invent iOS or Android scope from convention.",
+          "passed": false,
+          "evidence": "결정 전인데도 `Mobile (iOS)`, `Mobile (Android)` 표기와 터치·전환 관리 단위를 제시한다."
+        },
+        {
+          "text": "The unresolved platform decision is not represented as a completed adaptation.",
+          "passed": false,
+          "evidence": "`Mobile (분류 정의 대기)` 섹션과 임시 적용 범위를 완성된 문서에 넣었다."
+        }
+      ],
+      "deterministic_expectations": []
+    },
+    {
+      "eval_id": 28,
+      "eval_name": "supplied-unknown-storefront",
+      "configuration": "with_skill",
+      "run_number": 1,
+      "job_id": "j019",
+      "status": "completed",
+      "produced_paths": [
+        "docs/orbit-market-assets/asset-system.md",
+        "docs/orbit-market-assets/composition-and-copy.md",
+        "docs/orbit-market-assets/index.md",
+        "docs/orbit-market-assets/screenshots-and-previews.md",
+        "docs/orbit-market-assets/stores/orbit-market.md"
+      ],
+      "result": {
+        "valid": true,
+        "passed": 5,
+        "failed": 0,
+        "total": 5,
+        "pass_rate": 1.0,
+        "time_seconds": null,
+        "tokens": null
+      },
+      "expectations": [
+        {
+          "text": "The supplied publisher guide identifies Orbit Market Publishing Ltd. as the operator and is used as the sole factual source.",
+          "passed": true,
+          "evidence": "`stores/orbit-market.md`가 운영자를 명시하고 `index.md`가 supplied guide만 유일한 입력이라고 선언한다."
+        },
+        {
+          "text": "The storefront document records the guide's distinctive asset rules, including the 4:5 discovery card, six screenshot limit, and optional 15-second silent preview.",
+          "passed": true,
+          "evidence": "store inventory와 owning files에 세 규칙 및 배치·첫 3초 조건이 있다."
+        },
+        {
+          "text": "No URL, verification date, or requirement absent from the supplied guide is invented while web access is unavailable.",
+          "passed": true,
+          "evidence": "온라인 연구 불가, no verification date를 명시하고 형식·픽셀·용량 등을 unresolved로 둔다."
+        },
+        {
+          "text": "The conflicting blog claim about a 16:9 banner is not presented as an Orbit Market requirement.",
+          "passed": true,
+          "evidence": "블로그를 출처에서 제외했고 16:9/12장 주장은 어디에도 없다."
+        },
+        {
+          "text": "The requested document set is written under `docs/orbit-market-assets` without creating unrelated storefront files.",
+          "passed": true,
+          "evidence": "모든 결과 문서가 요청 루트와 `stores/orbit-market.md` 아래에만 있다."
+        }
+      ],
+      "semantic_expectations": [
+        {
+          "text": "The supplied publisher guide identifies Orbit Market Publishing Ltd. as the operator and is used as the sole factual source.",
+          "passed": true,
+          "evidence": "`stores/orbit-market.md`가 운영자를 명시하고 `index.md`가 supplied guide만 유일한 입력이라고 선언한다."
+        },
+        {
+          "text": "The storefront document records the guide's distinctive asset rules, including the 4:5 discovery card, six screenshot limit, and optional 15-second silent preview.",
+          "passed": true,
+          "evidence": "store inventory와 owning files에 세 규칙 및 배치·첫 3초 조건이 있다."
+        },
+        {
+          "text": "No URL, verification date, or requirement absent from the supplied guide is invented while web access is unavailable.",
+          "passed": true,
+          "evidence": "온라인 연구 불가, no verification date를 명시하고 형식·픽셀·용량 등을 unresolved로 둔다."
+        },
+        {
+          "text": "The conflicting blog claim about a 16:9 banner is not presented as an Orbit Market requirement.",
+          "passed": true,
+          "evidence": "블로그를 출처에서 제외했고 16:9/12장 주장은 어디에도 없다."
+        },
+        {
+          "text": "The requested document set is written under `docs/orbit-market-assets` without creating unrelated storefront files.",
+          "passed": true,
+          "evidence": "모든 결과 문서가 요청 루트와 `stores/orbit-market.md` 아래에만 있다."
+        }
+      ],
+      "deterministic_expectations": []
+    },
+    {
+      "eval_id": 28,
+      "eval_name": "supplied-unknown-storefront",
+      "configuration": "without_skill",
+      "run_number": 1,
+      "job_id": "j039",
+      "status": "completed",
+      "produced_paths": [
+        "docs/orbit-market-assets/README.md"
+      ],
+      "result": {
+        "valid": true,
+        "passed": 4,
+        "failed": 1,
+        "total": 5,
+        "pass_rate": 0.8,
+        "time_seconds": null,
+        "tokens": null
+      },
+      "expectations": [
+        {
+          "text": "The supplied publisher guide identifies Orbit Market Publishing Ltd. as the operator and is used as the sole factual source.",
+          "passed": false,
+          "evidence": "sole source 사용은 명시하지만 결과 가이드에 운영자 `Orbit Market Publishing Ltd.`를 기록하지 않았다."
+        },
+        {
+          "text": "The storefront document records the guide's distinctive asset rules, including the 4:5 discovery card, six screenshot limit, and optional 15-second silent preview.",
+          "passed": true,
+          "evidence": "세 규칙과 하단 1/4, 상단 1/3, 첫 3초 조건을 모두 담았다."
+        },
+        {
+          "text": "No URL, verification date, or requirement absent from the supplied guide is invented while web access is unavailable.",
+          "passed": true,
+          "evidence": "URL·날짜·추가 규격을 만들지 않았다."
+        },
+        {
+          "text": "The conflicting blog claim about a 16:9 banner is not presented as an Orbit Market requirement.",
+          "passed": true,
+          "evidence": "16:9 또는 12장 주장이 결과 문서에 없다."
+        },
+        {
+          "text": "The requested document set is written under `docs/orbit-market-assets` without creating unrelated storefront files.",
+          "passed": true,
+          "evidence": "해당 루트의 `README.md`만 만들었다."
+        }
+      ],
+      "semantic_expectations": [
+        {
+          "text": "The supplied publisher guide identifies Orbit Market Publishing Ltd. as the operator and is used as the sole factual source.",
+          "passed": false,
+          "evidence": "sole source 사용은 명시하지만 결과 가이드에 운영자 `Orbit Market Publishing Ltd.`를 기록하지 않았다."
+        },
+        {
+          "text": "The storefront document records the guide's distinctive asset rules, including the 4:5 discovery card, six screenshot limit, and optional 15-second silent preview.",
+          "passed": true,
+          "evidence": "세 규칙과 하단 1/4, 상단 1/3, 첫 3초 조건을 모두 담았다."
+        },
+        {
+          "text": "No URL, verification date, or requirement absent from the supplied guide is invented while web access is unavailable.",
+          "passed": true,
+          "evidence": "URL·날짜·추가 규격을 만들지 않았다."
+        },
+        {
+          "text": "The conflicting blog claim about a 16:9 banner is not presented as an Orbit Market requirement.",
+          "passed": true,
+          "evidence": "16:9 또는 12장 주장이 결과 문서에 없다."
+        },
+        {
+          "text": "The requested document set is written under `docs/orbit-market-assets` without creating unrelated storefront files.",
+          "passed": true,
+          "evidence": "해당 루트의 `README.md`만 만들었다."
+        }
+      ],
+      "deterministic_expectations": []
+    },
+    {
+      "eval_id": 28,
+      "eval_name": "supplied-unknown-storefront",
+      "configuration": "with_skill",
+      "run_number": 2,
+      "job_id": "j020",
+      "status": "completed",
+      "produced_paths": [
+        "docs/orbit-market-assets/asset-system.md",
+        "docs/orbit-market-assets/composition-and-copy.md",
+        "docs/orbit-market-assets/index.md",
+        "docs/orbit-market-assets/screenshots-and-previews.md",
+        "docs/orbit-market-assets/stores/orbit-market.md"
+      ],
+      "result": {
+        "valid": true,
+        "passed": 5,
+        "failed": 0,
+        "total": 5,
+        "pass_rate": 1.0,
+        "time_seconds": null,
+        "tokens": null
+      },
+      "expectations": [
+        {
+          "text": "The supplied publisher guide identifies Orbit Market Publishing Ltd. as the operator and is used as the sole factual source.",
+          "passed": true,
+          "evidence": "store 파일이 운영자를 명시하고 index가 publisher guide만 기준 입력이라고 한다."
+        },
+        {
+          "text": "The storefront document records the guide's distinctive asset rules, including the 4:5 discovery card, six screenshot limit, and optional 15-second silent preview.",
+          "passed": true,
+          "evidence": "inventory와 owning files에 세 핵심 규칙, 카드 배치, 첫 3초 조건이 모두 있다."
+        },
+        {
+          "text": "No URL, verification date, or requirement absent from the supplied guide is invented while web access is unavailable.",
+          "passed": true,
+          "evidence": "온라인 자료를 못 열었고 검증일을 쓰지 않으며 미제공 규격을 미정으로 남긴다."
+        },
+        {
+          "text": "The conflicting blog claim about a 16:9 banner is not presented as an Orbit Market requirement.",
+          "passed": true,
+          "evidence": "블로그를 제외했다고 명시하고 16:9/12장 규칙을 반영하지 않았다."
+        },
+        {
+          "text": "The requested document set is written under `docs/orbit-market-assets` without creating unrelated storefront files.",
+          "passed": true,
+          "evidence": "다섯 문서가 요청 루트와 Orbit 전용 store 파일에만 있다."
+        }
+      ],
+      "semantic_expectations": [
+        {
+          "text": "The supplied publisher guide identifies Orbit Market Publishing Ltd. as the operator and is used as the sole factual source.",
+          "passed": true,
+          "evidence": "store 파일이 운영자를 명시하고 index가 publisher guide만 기준 입력이라고 한다."
+        },
+        {
+          "text": "The storefront document records the guide's distinctive asset rules, including the 4:5 discovery card, six screenshot limit, and optional 15-second silent preview.",
+          "passed": true,
+          "evidence": "inventory와 owning files에 세 핵심 규칙, 카드 배치, 첫 3초 조건이 모두 있다."
+        },
+        {
+          "text": "No URL, verification date, or requirement absent from the supplied guide is invented while web access is unavailable.",
+          "passed": true,
+          "evidence": "온라인 자료를 못 열었고 검증일을 쓰지 않으며 미제공 규격을 미정으로 남긴다."
+        },
+        {
+          "text": "The conflicting blog claim about a 16:9 banner is not presented as an Orbit Market requirement.",
+          "passed": true,
+          "evidence": "블로그를 제외했다고 명시하고 16:9/12장 규칙을 반영하지 않았다."
+        },
+        {
+          "text": "The requested document set is written under `docs/orbit-market-assets` without creating unrelated storefront files.",
+          "passed": true,
+          "evidence": "다섯 문서가 요청 루트와 Orbit 전용 store 파일에만 있다."
+        }
+      ],
+      "deterministic_expectations": []
+    },
+    {
+      "eval_id": 28,
+      "eval_name": "supplied-unknown-storefront",
+      "configuration": "without_skill",
+      "run_number": 2,
+      "job_id": "j040",
+      "status": "completed",
+      "produced_paths": [
+        "docs/orbit-market-assets/README.md"
+      ],
+      "result": {
+        "valid": true,
+        "passed": 5,
+        "failed": 0,
+        "total": 5,
+        "pass_rate": 1.0,
+        "time_seconds": null,
+        "tokens": null
+      },
+      "expectations": [
+        {
+          "text": "The supplied publisher guide identifies Orbit Market Publishing Ltd. as the operator and is used as the sole factual source.",
+          "passed": true,
+          "evidence": "README 첫 문장과 응답이 운영자 및 sole source를 명시한다."
+        },
+        {
+          "text": "The storefront document records the guide's distinctive asset rules, including the 4:5 discovery card, six screenshot limit, and optional 15-second silent preview.",
+          "passed": true,
+          "evidence": "필수·선택 자산 절과 체크리스트에 모두 반영한다."
+        },
+        {
+          "text": "No URL, verification date, or requirement absent from the supplied guide is invented while web access is unavailable.",
+          "passed": true,
+          "evidence": "URL·날짜를 만들지 않고 미제공 형식·해상도·용량을 확인되지 않은 항목으로 둔다."
+        },
+        {
+          "text": "The conflicting blog claim about a 16:9 banner is not presented as an Orbit Market requirement.",
+          "passed": true,
+          "evidence": "블로그를 사용하지 않았고 충돌 주장이 결과에 없다."
+        },
+        {
+          "text": "The requested document set is written under `docs/orbit-market-assets` without creating unrelated storefront files.",
+          "passed": true,
+          "evidence": "요청 루트의 README만 생성했다."
+        }
+      ],
+      "semantic_expectations": [
+        {
+          "text": "The supplied publisher guide identifies Orbit Market Publishing Ltd. as the operator and is used as the sole factual source.",
+          "passed": true,
+          "evidence": "README 첫 문장과 응답이 운영자 및 sole source를 명시한다."
+        },
+        {
+          "text": "The storefront document records the guide's distinctive asset rules, including the 4:5 discovery card, six screenshot limit, and optional 15-second silent preview.",
+          "passed": true,
+          "evidence": "필수·선택 자산 절과 체크리스트에 모두 반영한다."
+        },
+        {
+          "text": "No URL, verification date, or requirement absent from the supplied guide is invented while web access is unavailable.",
+          "passed": true,
+          "evidence": "URL·날짜를 만들지 않고 미제공 형식·해상도·용량을 확인되지 않은 항목으로 둔다."
+        },
+        {
+          "text": "The conflicting blog claim about a 16:9 banner is not presented as an Orbit Market requirement.",
+          "passed": true,
+          "evidence": "블로그를 사용하지 않았고 충돌 주장이 결과에 없다."
+        },
+        {
+          "text": "The requested document set is written under `docs/orbit-market-assets` without creating unrelated storefront files.",
+          "passed": true,
+          "evidence": "요청 루트의 README만 생성했다."
+        }
+      ],
+      "deterministic_expectations": []
+    }
+  ],
+  "run_summary": {
+    "with_skill": {
+      "passed": 138,
+      "total": 142,
+      "pass_rate": 0.971830985915493
+    },
+    "without_skill": {
+      "passed": 106,
+      "total": 142,
+      "pass_rate": 0.7464788732394366
+    }
+  },
+  "notes": [
+    "Workers received only the user prompt, isolated input workspace, and neutral output-report instructions.",
+    "The discarded first forward comparator missed nested workspace/docs files; its result is excluded."
+  ]
+}

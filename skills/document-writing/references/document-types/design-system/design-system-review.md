@@ -2,12 +2,12 @@
 
 ## Review boundary
 
-Review the document set against its selected prebuilt, stated sources, and requested platforms or stores. Report findings without rewriting unless the user requested an update, rewrite, or normalization.
+Review or fact-check the document set against its selected prebuilt, stated sources, and requested platforms or storefronts. These operations are read-only: do not create, rename, delete, or edit any document file. If the user also requests corrections, finish the review findings first and treat the corrections as a separate update operation.
 
 ## Routing and location checks
 
 - The artifact is a design-system decision source, not a UI implementation, asset-production request, FDD, or architecture design.
-- Exactly one prebuilt fits the artifact's purpose.
+- Exactly one prebuilt fits each output set's purpose; a combined review repeats the checks independently for every set.
 - A custom path has not changed the selected prebuilt.
 - The root follows user-specified path, existing-set location, then prebuilt default order.
 - No unrelated document was overwritten and no arbitrary versioned duplicate was introduced.
@@ -25,12 +25,14 @@ Review the document set against its selected prebuilt, stated sources, and reque
 ## Conditional checks
 
 - `default` has no `platforms/` file unless at least one platform is explicitly in scope, and each file covers only that platform.
-- `app-store-page` has no `stores/` file unless at least one storefront is explicitly in scope.
-- Every named storefront resolves to exactly one file after alias deduplication, and no unrequested storefront file exists.
+- `app-store-page` has no `stores/` file unless at least one storefront is in scope for the existing set.
+- Every storefront represented by the set resolves to exactly one file after confirmed alias deduplication. Existing files outside the current review focus remain valid members of the set.
 - Mutable visual asset sizes, counts, formats, placements, dependencies, and validity rules are supported by current first-party material checked for the document's revision.
 - Storefront files exclude general listing copy, tags, categories, pricing, and legal submission fields.
 - Inaccessible or conflicting official material is recorded as an explicit limitation; it is not silently replaced with third-party claims.
 - Platform- or store-specific differences have not been generalized into the common contract.
+
+Report missing or stale platform and storefront files as findings. Do not create them during review or fact-check, and do not treat valid pre-existing files outside the requested review focus as unrequested artifacts.
 
 ## Quality bar
 

@@ -8,7 +8,7 @@
 
 ### 추가
 
-- 사람이 읽기 좋은 구조화 문서를 위한 `document-writing` skill 추가 — 10개 문서 유형 라우팅, 점진적 reference 로딩, 근거 기반 편집, FDD 구조 검증 지원. Design System Document는 제품 UI용 `default`와 앱·게임 상점 시각 자산용 `app-store-page` prebuilt를 분리하고, 지정된 상점마다 현재 공식 자료를 조사한 전용 시각 자산 계약을 제공
+- 사람이 읽기 좋은 구조화 문서를 위한 `document-writing` skill 추가 — 10개 문서 유형 라우팅, 점진적 reference 로딩, 근거 기반 편집, 구조 검증 지원. Design System Document는 제품 UI와 storefront 시각 자산 출력 세트를 분리하고, allowlist 없이 범위에 포함된 임의의 디지털 storefront를 동적으로 식별해 현재 1차 자료를 조사. 현실형 fixture 행동 eval, 균형형 선택 사례 60개, 스킬 사용·미사용 쌍대 실행, tool·출처 기록, negative control, blind 비교, 정적 review, 실제 PNG canary와 로컬·CI·release evidence 검증 추가
 
 ### 제거
 
