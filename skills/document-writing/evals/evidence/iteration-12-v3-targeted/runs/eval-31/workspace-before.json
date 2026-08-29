@@ -1,0 +1,58 @@
+{
+  "workspace_root": "/Users/buyonglee/Documents/work/private/skills/skills/document-writing-workspace/iteration-12/behavior/job-b11872c2b00383aefcd74ff7/workspace",
+  "root": "/Users/buyonglee/Documents/work/private/skills/skills/document-writing-workspace/iteration-12/behavior/job-b11872c2b00383aefcd74ff7/workspace",
+  "exists": true,
+  "entries": [
+    {
+      "path": "docs",
+      "type": "directory"
+    },
+    {
+      "path": "docs/design-system",
+      "type": "directory"
+    },
+    {
+      "path": "docs/design-system/approved-change.md",
+      "type": "file",
+      "sha256": "ea931bcbc54597909803ac41167c4eb0f4bdbe7301d1883f25663897df3599be"
+    },
+    {
+      "path": "docs/design-system/components",
+      "type": "directory"
+    },
+    {
+      "path": "docs/design-system/components/alert.md",
+      "type": "file",
+      "sha256": "6ac2b750846d9776fd5cfe8c0a31840f018b43c16387d5c4539f308a36c53d50"
+    },
+    {
+      "path": "docs/design-system/components/button.md",
+      "type": "file",
+      "sha256": "f596dab84694c900fcc1c9101d6856a5353fb6228f69298ba949a28f07b77e9d"
+    },
+    {
+      "path": "docs/design-system/foundations.md",
+      "type": "file",
+      "sha256": "71cd214df1c4558562d5d1bafa66750139de9ca3099e4649c8f724e01fbba5e9"
+    },
+    {
+      "path": "docs/design-system/index.md",
+      "type": "file",
+      "sha256": "5f2bdf9e9b83b415b72a2b95bc6ea85c6f804d6ee2c572d32e98802317a1ffe5"
+    },
+    {
+      "path": "docs/design-system/tokens.md",
+      "type": "file",
+      "sha256": "148b881b5d38b65420aab812f53706376ac1ca461936ee0a79cc72b5f067f84a"
+    }
+  ],
+  "files": {
+    "docs/design-system/approved-change.md": "ea931bcbc54597909803ac41167c4eb0f4bdbe7301d1883f25663897df3599be",
+    "docs/design-system/components/alert.md": "6ac2b750846d9776fd5cfe8c0a31840f018b43c16387d5c4539f308a36c53d50",
+    "docs/design-system/components/button.md": "f596dab84694c900fcc1c9101d6856a5353fb6228f69298ba949a28f07b77e9d",
+    "docs/design-system/foundations.md": "71cd214df1c4558562d5d1bafa66750139de9ca3099e4649c8f724e01fbba5e9",
+    "docs/design-system/index.md": "5f2bdf9e9b83b415b72a2b95bc6ea85c6f804d6ee2c572d32e98802317a1ffe5",
+    "docs/design-system/tokens.md": "148b881b5d38b65420aab812f53706376ac1ca461936ee0a79cc72b5f067f84a"
+  },
+  "sha256": "c2506deb3a24267594063a97cd396113ed5739765341411798f4d7e298e05540"
+}

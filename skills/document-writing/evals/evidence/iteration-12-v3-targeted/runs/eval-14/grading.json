@@ -1,0 +1,42 @@
+{
+  "schema_version": 3,
+  "status": "completed-independent-grading",
+  "provenance": "independent-luna-grader-output",
+  "eval_id": 14,
+  "grader_task_context_id": "c7ae4b2b8f5444f0b9cfe647755fa693",
+  "model": "gpt-5.6-luna",
+  "reasoning_effort": "medium",
+  "expectations": [
+    {
+      "text": "The selected prebuilt is `app-store-page` and common visual-asset documents remain store-neutral.",
+      "passed": false,
+      "evidence": "The response identifies `app-store-page` and the workspace contains a common document, but common.md ends with the store-specific instruction to upload approved bundles to Play Console, so the common visual-asset contract is not fully store-neutral."
+    },
+    {
+      "text": "Only the in-scope Google Play adaptation is added as `stores/google-play.md`; the explicitly excluded Apple App Store is neither researched nor given a file.",
+      "passed": true,
+      "evidence": "The workspace change set and execution receipt list `docs/design-system-visual-assets/stores/google-play.md` as the only store-specific document; the response explicitly says Apple App Store content was not included, and no Apple store file is present in the supplied workspace."
+    },
+    {
+      "text": "Mutable Google Play sizes, counts, formats, and policies are verified from current official Google sources rather than memory.",
+      "passed": true,
+      "evidence": "stores/google-play.md provides current size, count, format, and policy requirements and attributes them to three official Google Play Console Help sources; deterministic grading also confirms an observable HTTPS source URL and real ISO verification date."
+    },
+    {
+      "text": "The store file records official source URLs and a verification date near mutable requirements.",
+      "passed": true,
+      "evidence": "stores/google-play.md states that the official sources were checked on 2026-08-29 and lists three HTTPS support.google.com URLs with the same verification date in its source section."
+    },
+    {
+      "text": "Google Play-specific differences are not generalized into the common visual-asset contract.",
+      "passed": true,
+      "evidence": "The Google Play-specific dimensions, counts, formats, YouTube constraints, and policy checklist appear in stores/google-play.md; common.md retains roles, visual direction, localization, delivery, versioning, and generic store-compliance review without those mutable Google Play requirements."
+    }
+  ],
+  "summary": {
+    "passed": 4,
+    "failed": 1,
+    "total": 5,
+    "pass_rate": 0.8
+  }
+}

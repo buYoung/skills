@@ -1,0 +1,1325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Eval Review</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600&family=Lora:wght@400;500&display=swap" rel="stylesheet">
+  <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js" integrity="sha384-EnyY0/GSHQGSxSgMwaIPzSESbqoOLSexfnSMN2AP+39Ckmn92stwABZynq1JyzdT" crossorigin="anonymous"></script>
+  <style>
+    :root {
+      --bg: #faf9f5;
+      --surface: #ffffff;
+      --border: #e8e6dc;
+      --text: #141413;
+      --text-muted: #b0aea5;
+      --accent: #d97757;
+      --accent-hover: #c4613f;
+      --green: #788c5d;
+      --green-bg: #eef2e8;
+      --red: #c44;
+      --red-bg: #fceaea;
+      --header-bg: #141413;
+      --header-text: #faf9f5;
+      --radius: 6px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Lora', Georgia, serif;
+      background: var(--bg);
+      color: var(--text);
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ---- Header ---- */
+    .header {
+      background: var(--header-bg);
+      color: var(--header-text);
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-shrink: 0;
+    }
+    .header h1 {
+      font-family: 'Poppins', sans-serif;
+      font-size: 1.25rem;
+      font-weight: 600;
+    }
+    .header .instructions {
+      font-size: 0.8rem;
+      opacity: 0.7;
+      margin-top: 0.25rem;
+    }
+    .header .progress {
+      font-size: 0.875rem;
+      opacity: 0.8;
+      text-align: right;
+    }
+
+    /* ---- Main content ---- */
+    .main {
+      flex: 1;
+      overflow-y: auto;
+      padding: 1.5rem 2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+
+    /* ---- Sections ---- */
+    .section {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      flex-shrink: 0;
+    }
+    .section-header {
+      font-family: 'Poppins', sans-serif;
+      padding: 0.75rem 1rem;
+      font-size: 0.75rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      border-bottom: 1px solid var(--border);
+      background: var(--bg);
+    }
+    .section-body {
+      padding: 1rem;
+    }
+
+    /* ---- Config badge ---- */
+    .config-badge {
+      display: inline-block;
+      padding: 0.2rem 0.625rem;
+      border-radius: 9999px;
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.6875rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      margin-left: 0.75rem;
+      vertical-align: middle;
+    }
+    .config-badge.config-primary {
+      background: rgba(33, 150, 243, 0.12);
+      color: #1976d2;
+    }
+    .config-badge.config-baseline {
+      background: rgba(255, 193, 7, 0.15);
+      color: #f57f17;
+    }
+
+    /* ---- Prompt ---- */
+    .prompt-text {
+      white-space: pre-wrap;
+      font-size: 0.9375rem;
+      line-height: 1.6;
+    }
+
+    /* ---- Outputs ---- */
+    .output-file {
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+    .output-file + .output-file {
+      margin-top: 1rem;
+    }
+    .output-file-header {
+      padding: 0.5rem 0.75rem;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+      font-family: 'SF Mono', SFMono-Regular, Consolas, 'Liberation Mono', Menlo, monospace;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .output-file-header .dl-btn {
+      font-size: 0.7rem;
+      color: var(--accent);
+      text-decoration: none;
+      cursor: pointer;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      font-weight: 500;
+      opacity: 0.8;
+    }
+    .output-file-header .dl-btn:hover {
+      opacity: 1;
+      text-decoration: underline;
+    }
+    .output-file-content {
+      padding: 0.75rem;
+      overflow-x: auto;
+    }
+    .output-file-content pre {
+      font-size: 0.8125rem;
+      line-height: 1.5;
+      white-space: pre-wrap;
+      word-break: break-word;
+      font-family: 'SF Mono', SFMono-Regular, Consolas, 'Liberation Mono', Menlo, monospace;
+    }
+    .output-file-content img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 4px;
+    }
+    .output-file-content iframe {
+      width: 100%;
+      height: 600px;
+      border: none;
+    }
+    .output-file-content table {
+      border-collapse: collapse;
+      font-size: 0.8125rem;
+      width: 100%;
+    }
+    .output-file-content table td,
+    .output-file-content table th {
+      border: 1px solid var(--border);
+      padding: 0.375rem 0.5rem;
+      text-align: left;
+    }
+    .output-file-content table th {
+      background: var(--bg);
+      font-weight: 600;
+    }
+    .output-file-content .download-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 1rem;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      color: var(--accent);
+      text-decoration: none;
+      font-size: 0.875rem;
+      cursor: pointer;
+    }
+    .output-file-content .download-link:hover {
+      background: var(--border);
+    }
+    .empty-state {
+      color: var(--text-muted);
+      font-style: italic;
+      padding: 2rem;
+      text-align: center;
+    }
+
+    /* ---- Feedback ---- */
+    .prev-feedback {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 0.625rem 0.75rem;
+      margin-top: 0.75rem;
+      font-size: 0.8125rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+    .prev-feedback-label {
+      font-size: 0.7rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin-bottom: 0.25rem;
+      color: var(--text-muted);
+    }
+    .feedback-textarea {
+      width: 100%;
+      min-height: 100px;
+      padding: 0.75rem;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      font-family: inherit;
+      font-size: 0.9375rem;
+      line-height: 1.5;
+      resize: vertical;
+      color: var(--text);
+    }
+    .feedback-textarea:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    }
+    .feedback-status {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: 0.5rem;
+      min-height: 1.1em;
+    }
+
+    /* ---- Grades (collapsible) ---- */
+    .grades-toggle {
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+      user-select: none;
+    }
+    .grades-toggle:hover {
+      color: var(--accent);
+    }
+    .grades-toggle .arrow {
+      margin-right: 0.5rem;
+      transition: transform 0.15s;
+      font-size: 0.75rem;
+    }
+    .grades-toggle .arrow.open {
+      transform: rotate(90deg);
+    }
+    .grades-content {
+      display: none;
+      margin-top: 0.75rem;
+    }
+    .grades-content.open {
+      display: block;
+    }
+    .grades-summary {
+      font-size: 0.875rem;
+      margin-bottom: 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .grade-badge {
+      display: inline-block;
+      padding: 0.125rem 0.5rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+    .grade-pass { background: var(--green-bg); color: var(--green); }
+    .grade-fail { background: var(--red-bg); color: var(--red); }
+    .assertion-list {
+      list-style: none;
+    }
+    .assertion-item {
+      padding: 0.625rem 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.8125rem;
+    }
+    .assertion-item:last-child { border-bottom: none; }
+    .assertion-status {
+      font-weight: 600;
+      margin-right: 0.5rem;
+    }
+    .assertion-status.pass { color: var(--green); }
+    .assertion-status.fail { color: var(--red); }
+    .assertion-evidence {
+      color: var(--text-muted);
+      font-size: 0.75rem;
+      margin-top: 0.25rem;
+      padding-left: 1.5rem;
+    }
+
+    /* ---- View tabs ---- */
+    .view-tabs {
+      display: flex;
+      gap: 0;
+      padding: 0 2rem;
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+    .view-tab {
+      font-family: 'Poppins', sans-serif;
+      padding: 0.625rem 1.25rem;
+      font-size: 0.8125rem;
+      font-weight: 500;
+      cursor: pointer;
+      border: none;
+      background: none;
+      color: var(--text-muted);
+      border-bottom: 2px solid transparent;
+      transition: all 0.15s;
+    }
+    .view-tab:hover { color: var(--text); }
+    .view-tab.active {
+      color: var(--accent);
+      border-bottom-color: var(--accent);
+    }
+    .view-panel { display: none; }
+    .view-panel.active { display: flex; flex-direction: column; flex: 1; overflow: hidden; }
+
+    /* ---- Benchmark view ---- */
+    .benchmark-view {
+      padding: 1.5rem 2rem;
+      overflow-y: auto;
+      flex: 1;
+    }
+    .benchmark-table {
+      border-collapse: collapse;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      font-size: 0.8125rem;
+      width: 100%;
+      margin-bottom: 1.5rem;
+    }
+    .benchmark-table th, .benchmark-table td {
+      padding: 0.625rem 0.75rem;
+      text-align: left;
+      border: 1px solid var(--border);
+    }
+    .benchmark-table th {
+      font-family: 'Poppins', sans-serif;
+      background: var(--header-bg);
+      color: var(--header-text);
+      font-weight: 500;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .benchmark-table tr:hover { background: var(--bg); }
+    .benchmark-table tr.benchmark-row-with { background: rgba(33, 150, 243, 0.06); }
+    .benchmark-table tr.benchmark-row-without { background: rgba(255, 193, 7, 0.06); }
+    .benchmark-table tr.benchmark-row-with:hover { background: rgba(33, 150, 243, 0.12); }
+    .benchmark-table tr.benchmark-row-without:hover { background: rgba(255, 193, 7, 0.12); }
+    .benchmark-table tr.benchmark-row-avg { font-weight: 600; border-top: 2px solid var(--border); }
+    .benchmark-table tr.benchmark-row-avg.benchmark-row-with { background: rgba(33, 150, 243, 0.12); }
+    .benchmark-table tr.benchmark-row-avg.benchmark-row-without { background: rgba(255, 193, 7, 0.12); }
+    .benchmark-delta-positive { color: var(--green); font-weight: 600; }
+    .benchmark-delta-negative { color: var(--red); font-weight: 600; }
+    .benchmark-notes {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1rem;
+    }
+    .benchmark-notes h3 {
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.875rem;
+      margin-bottom: 0.75rem;
+    }
+    .benchmark-notes ul {
+      list-style: disc;
+      padding-left: 1.25rem;
+    }
+    .benchmark-notes li {
+      font-size: 0.8125rem;
+      line-height: 1.6;
+      margin-bottom: 0.375rem;
+    }
+    .benchmark-empty {
+      color: var(--text-muted);
+      font-style: italic;
+      text-align: center;
+      padding: 3rem;
+    }
+
+    /* ---- Navigation ---- */
+    .nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 2rem;
+      border-top: 1px solid var(--border);
+      background: var(--surface);
+      flex-shrink: 0;
+    }
+    .nav-btn {
+      font-family: 'Poppins', sans-serif;
+      padding: 0.5rem 1.25rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface);
+      cursor: pointer;
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--text);
+      transition: all 0.15s;
+    }
+    .nav-btn:hover:not(:disabled) {
+      background: var(--bg);
+      border-color: var(--text-muted);
+    }
+    .nav-btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+    .done-btn {
+      font-family: 'Poppins', sans-serif;
+      padding: 0.5rem 1.5rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface);
+      color: var(--text);
+      cursor: pointer;
+      font-size: 0.875rem;
+      font-weight: 500;
+      transition: all 0.15s;
+    }
+    .done-btn:hover {
+      background: var(--bg);
+      border-color: var(--text-muted);
+    }
+    .done-btn.ready {
+      border: none;
+      background: var(--accent);
+      color: white;
+      font-weight: 600;
+    }
+    .done-btn.ready:hover {
+      background: var(--accent-hover);
+    }
+    /* ---- Done overlay ---- */
+    .done-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 100;
+      justify-content: center;
+      align-items: center;
+    }
+    .done-overlay.visible {
+      display: flex;
+    }
+    .done-card {
+      background: var(--surface);
+      border-radius: 12px;
+      padding: 2rem 3rem;
+      text-align: center;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      max-width: 500px;
+    }
+    .done-card h2 {
+      font-size: 1.5rem;
+      margin-bottom: 0.5rem;
+    }
+    .done-card p {
+      color: var(--text-muted);
+      margin-bottom: 1.5rem;
+      line-height: 1.5;
+    }
+    .done-card .btn-row {
+      display: flex;
+      gap: 0.5rem;
+      justify-content: center;
+    }
+    .done-card button {
+      padding: 0.5rem 1.25rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface);
+      cursor: pointer;
+      font-size: 0.875rem;
+    }
+    .done-card button:hover {
+      background: var(--bg);
+    }
+    /* ---- Toast ---- */
+    .toast {
+      position: fixed;
+      bottom: 5rem;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--header-bg);
+      color: var(--header-text);
+      padding: 0.625rem 1.25rem;
+      border-radius: var(--radius);
+      font-size: 0.875rem;
+      opacity: 0;
+      transition: opacity 0.3s;
+      pointer-events: none;
+      z-index: 200;
+    }
+    .toast.visible {
+      opacity: 1;
+    }
+  </style>
+</head>
+<body>
+  <div id="app" style="height:100vh; display:flex; flex-direction:column;">
+    <div class="header">
+      <div>
+        <h1>Eval Review: <span id="skill-name"></span></h1>
+        <div class="instructions">Review each output and leave feedback below. Navigate with arrow keys or buttons. When done, copy feedback and paste into Claude Code.</div>
+      </div>
+      <div class="progress" id="progress"></div>
+    </div>
+
+    <!-- View tabs (only shown when benchmark data exists) -->
+    <div class="view-tabs" id="view-tabs" style="display:none;">
+      <button class="view-tab active" onclick="switchView('outputs')">Outputs</button>
+      <button class="view-tab" onclick="switchView('benchmark')">Benchmark</button>
+    </div>
+
+    <!-- Outputs panel (qualitative review) -->
+    <div class="view-panel active" id="panel-outputs">
+    <div class="main">
+      <!-- Prompt -->
+      <div class="section">
+        <div class="section-header">Prompt <span class="config-badge" id="config-badge" style="display:none;"></span></div>
+        <div class="section-body">
+          <div class="prompt-text" id="prompt-text"></div>
+        </div>
+      </div>
+
+      <!-- Outputs -->
+      <div class="section">
+        <div class="section-header">Output</div>
+        <div class="section-body" id="outputs-body">
+          <div class="empty-state">No output files found</div>
+        </div>
+      </div>
+
+      <!-- Previous Output (collapsible) -->
+      <div class="section" id="prev-outputs-section" style="display:none;">
+        <div class="section-header">
+          <div class="grades-toggle" onclick="togglePrevOutputs()">
+            <span class="arrow" id="prev-outputs-arrow">&#9654;</span>
+            Previous Output
+          </div>
+        </div>
+        <div class="grades-content" id="prev-outputs-content"></div>
+      </div>
+
+      <!-- Grades (collapsible) -->
+      <div class="section" id="grades-section" style="display:none;">
+        <div class="section-header">
+          <div class="grades-toggle" onclick="toggleGrades()">
+            <span class="arrow" id="grades-arrow">&#9654;</span>
+            Formal Grades
+          </div>
+        </div>
+        <div class="grades-content" id="grades-content"></div>
+      </div>
+
+      <!-- Feedback -->
+      <div class="section">
+        <div class="section-header">Your Feedback</div>
+        <div class="section-body">
+          <textarea
+            class="feedback-textarea"
+            id="feedback"
+            placeholder="What do you think of this output? Any issues, suggestions, or things that look great?"
+          ></textarea>
+          <div class="feedback-status" id="feedback-status"></div>
+          <div class="prev-feedback" id="prev-feedback" style="display:none;">
+            <div class="prev-feedback-label">Previous feedback</div>
+            <div id="prev-feedback-text"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="nav" id="outputs-nav">
+      <button class="nav-btn" id="prev-btn" onclick="navigate(-1)">&#8592; Previous</button>
+      <button class="done-btn" id="done-btn" onclick="showDoneDialog()">Submit All Reviews</button>
+      <button class="nav-btn" id="next-btn" onclick="navigate(1)">Next &#8594;</button>
+    </div>
+    </div><!-- end panel-outputs -->
+
+    <!-- Benchmark panel (quantitative stats) -->
+    <div class="view-panel" id="panel-benchmark">
+      <div class="benchmark-view" id="benchmark-content">
+        <div class="benchmark-empty">No benchmark data available. Run a benchmark to see quantitative results here.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Done overlay -->
+  <div class="done-overlay" id="done-overlay">
+    <div class="done-card">
+      <h2>Review Complete</h2>
+      <p>Your feedback has been saved. Go back to your Claude Code session and tell Claude you're done reviewing.</p>
+      <div class="btn-row">
+        <button onclick="closeDoneDialog()">OK</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast" id="toast"></div>
+
+  <script>
+    // ---- Embedded data (injected by generate_review.py) ----
+    const EMBEDDED_DATA = {"skill_name": "document-writing", "runs": [{"id": "behavior-job-0718d2d8de6b366c889f3ac4", "prompt": "\uc81c\ud488 \uc804\ubc18\uc5d0\uc11c \ub514\uc790\uc774\ub108\uc640 \ud504\ub860\ud2b8\uc5d4\ub4dc \uac1c\ubc1c\uc790\uac00 \ud568\uaed8 \uc0ac\uc6a9\ud560 \ub514\uc790\uc778\uc2dc\uc2a4\ud15c \ubb38\uc11c\ub97c \ub9cc\ub4e4\uc5b4\uc918. \ubcc4\ub3c4 \uc800\uc7a5 \uacbd\ub85c\ub098 \ud50c\ub7ab\ud3fc\uc740 \uc9c0\uc815\ud558\uc9c0 \uc54a\ub294\ub2e4. \ud655\uc778\ub41c \uc6d0\uce59\uc740 \uba85\ud655\uc131, \uc77c\uad00\uc131, \uc811\uadfc\uc131\uc774\ub2e4. \ud604\uc7ac \ube0c\ub79c\ub4dc \uc0c9\uc0c1\u00b7\uc11c\uccb4\u00b7\uac04\uaca9 \uac12\uacfc \ucef4\ud3ec\ub10c\ud2b8 \ubaa9\ub85d\uc740 \uc544\uc9c1 \uacb0\uc815\ub418\uc9c0 \uc54a\uc558\ub2e4. foundations, tokens, components, patterns, content, accessibility, governance\uc758 \uc815\ubcf8 \uc704\uce58\uac00 \ubd84\uba85\ud574\uc57c \ud558\uace0 \uc5c6\ub294 \uac12\uc740 \ucd94\uc815\ud558\uc9c0 \ub9c8\ub77c.", "eval_id": 10, "outputs": [{"name": "artifact-review.md", "type": "text", "content": ""}, {"name": "assistant-response.md", "type": "text", "content": "\ud604\uc7ac \ud655\uc778\ub41c \uc6d0\uce59\uc740 \uba85\ud655\uc131, \uc77c\uad00\uc131, \uc811\uadfc\uc131\uc774\uba70 \ube0c\ub79c\ub4dc \uc0c9\uc0c1\u00b7\uc11c\uccb4\u00b7\uac04\uaca9 \uac12\uacfc \ucef4\ud3ec\ub10c\ud2b8 \ubaa9\ub85d\uc740 \uc544\uc9c1 \uacb0\uc815\ub418\uc9c0 \uc54a\uc558\uc2b5\ub2c8\ub2e4. \ub530\ub77c\uc11c \uac12\uc744 \ucd94\uc815\ud558\uac70\ub098 \uc815\ubcf8 \ubb38\uc11c \uc138\ud2b8\ub97c \ub9cc\ub4e4 \uc218 \uc5c6\uc2b5\ub2c8\ub2e4.\n\n\uba3c\uc800 \uc81c\ud488 \uc804\ubc18\uc5d0\uc11c \uc2b9\uc778\ud560 \ub514\uc790\uc778 \ubc29\ud5a5\uc744 \uc815\ud574\uc57c \ud569\ub2c8\ub2e4. \ub2e4\uc74c \uc911 \uc5b4\ub290 \ubc29\ud5a5\uc744 \uc120\ud0dd\ud558\uc2dc\uaca0\uc2b5\ub2c8\uae4c?\n\n1. \uc815\ubcf4\uc640 \uc791\uc5c5\uc744 \ube60\ub974\uac8c \ud30c\uc545\ud558\ub3c4\ub85d \uad6c\uc870\uc640 \ub300\ube44\ub97c \uc6b0\uc120\ud558\ub294 \ubc29\ud5a5 \u2014 \uc5c5\ubb34\ud615 \ud654\uba74\uacfc \ubc00\ub3c4 \ub192\uc740 \ud750\ub984\uc5d0 \uc720\ub9ac\ud558\uc9c0\ub9cc \uac1c\uc131\uc774 \uc57d\ud558\uac8c \ub290\uaef4\uc9c8 \uc218 \uc788\uc2b5\ub2c8\ub2e4.\n2. \ucc28\ubd84\ud558\uace0 \uc548\uc815\uc801\uc778 \uc778\uc0c1\uacfc \ubc18\ubcf5 \uac00\ub2a5\ud55c \uaddc\uce59\uc744 \uc6b0\uc120\ud558\ub294 \ubc29\ud5a5 \u2014 \uc5ec\ub7ec \uc81c\ud488 \uc601\uc5ed\uc758 \uc77c\uad00\uc131\uc5d0 \uc720\ub9ac\ud558\uc9c0\ub9cc \ud65c\ub3d9\uc801\uc778 \uacbd\ud5d8\uc5d0\uc11c\ub294 \ub2e4\uc18c \ubcf4\uc218\uc801\uc73c\ub85c \ub290\uaef4\uc9c8 \uc218 \uc788\uc2b5\ub2c8\ub2e4.\n3. \uc0c1\ud669\uc5d0 \ub530\ub77c \uc815\ubcf4 \ubc00\ub3c4\uc640 \ud45c\ud604 \uac15\ub3c4\ub97c \uc720\uc5f0\ud558\uac8c \uc870\uc808\ud558\ub294 \ubc29\ud5a5 \u2014 \ub2e4\uc591\ud55c \uc0ac\uc6a9\uc790\uc640 \ud654\uba74\uc5d0 \ub300\uc751\ud558\uae30 \uc27d\uc9c0\ub9cc \uaddc\uce59 \uacbd\uacc4\uac00 \ubcf5\uc7a1\ud574\uc9c8 \uc704\ud5d8\uc774 \uc788\uc2b5\ub2c8\ub2e4.\n\n\uc5b4\ub290 \ubc29\ud5a5\uc744 \uc2b9\uc778\ud558\uc2dc\uaca0\uc2b5\ub2c8\uae4c?\n"}, {"name": "tree.txt", "type": "text", "content": "\n"}], "grading": {"schema_version": 3, "status": "completed-independent-grading", "provenance": "independent-luna-grader-output", "eval_id": 10, "grader_task_context_id": "65930d6ac201420dbae71465ea9b0d61", "model": "gpt-5.6-luna", "reasoning_effort": "medium", "expectations": [{"text": "The artifact is routed to Design System Document with the `default` prebuilt, not to FDD, reference/specification, or UI implementation.", "passed": false, "evidence": "The supplied response does not identify a Design System Document route or the `default` prebuilt; it only asks the user to approve a design direction. The receipt also reports capability evidence as unverified."}, {"text": "No file or directory is created because neither a design direction nor representative validation has been approved.", "passed": true, "evidence": "The response requests approval of a direction before proceeding, and execution-receipt produced_paths is empty while workspace_before_sha256 and workspace_after_sha256 are identical."}, {"text": "The response derives two or three materially different direction hypotheses from the supplied product evidence and recommends one with concrete benefits and risks.", "passed": false, "evidence": "The response provides three distinct directions and gives a benefit and risk for each, but it does not recommend one; it asks the user which direction to approve."}, {"text": "The user is asked no more than three plain-language questions about recognizable outcomes or use situations; internal design-axis terminology is not required from the user.", "passed": true, "evidence": "The response asks one question (which direction to approve), within the maximum of three, and presents plain-language outcomes and situations such as rapid information scanning, dense workflows, consistency across product areas, and varied users/screens."}, {"text": "The response does not invent brand values, token values, component inventory, platforms, or claim that the design-system document is complete.", "passed": true, "evidence": "The response explicitly says brand colors, typefaces, spacing values, and component list are undecided and says values must not be estimated; it does not claim the document is complete or introduce a platform."}], "summary": {"passed": 3, "failed": 2, "total": 5, "pass_rate": 0.6}}}, {"id": "behavior-job-4b48a2fc09818d0849b924ed", "prompt": "Google Play \ub4f1\ub85d\uc6a9 \uc2dc\uac01 \uc790\uc0b0 \ub514\uc790\uc778\uc2dc\uc2a4\ud15c \ubb38\uc11c\ub97c \uc791\uc131\ud574\uc918. '\uc2e4\uc81c \uc81c\ud488 \ud654\uba74\uc774 \uc8fc\uc778\uacf5\uc774\uace0 \uc7a5\uc2dd\uc740 \uc808\uc81c\ud558\ub418 \ud55c \uac00\uc9c0 \uc120\uba85\ud55c \uac15\uc870\uc0c9\uc73c\ub85c \uc9c4\ucde8\uc801\uc778 \uc778\uc0c1\uc744 \uc900\ub2e4'\ub294 \ubc29\ud5a5\uc740 \ube0c\ub79c\ub4dc \ucc45\uc784\uc790\uac00 \uc2b9\uc778\ud588\ub2e4. \uc791\uc740 \uc571 \uc544\uc774\ucf58\uacfc \uc815\ubcf4\uac00 \ub9ce\uc740 \uc2a4\ud06c\ub9b0\uc0f7, \uc815\uc801 \uc774\ubbf8\uc9c0\uc640 \uc6c0\uc9c1\uc774\ub294 preview\uc5d0\uc11c \uc774 \ubc29\ud5a5\uc744 \uac80\uc99d\ud588\ub2e4. \uc544\uc774\ucf58, \uc2a4\ud06c\ub9b0\uc0f7, preview video, feature graphic\uc758 \uc5ed\ud560\uacfc \uad00\uacc4, localization, \uc804\ub2ec\u00b7\ubc84\uc804 \uaddc\uce59\uc744 \uacf5\ud1b5 \ubb38\uc11c\uc5d0 \ub450\uace0 Google Play\uc5d0\uc11c\ub9cc \ub2ec\ub77c\uc9c0\ub294 \ud604\uc7ac \ud06c\uae30\u00b7\uac1c\uc218\u00b7\ud615\uc2dd\u00b7\uc815\ucc45\uc740 \uacf5\uc2dd \uc790\ub8cc\ub97c \ub2e4\uc2dc \ud655\uc778\ud574 \ubcc4\ub3c4 store \ubb38\uc11c\uc5d0 \ucd9c\ucc98\uc640 \ud655\uc778\uc77c\uc744 \ub0a8\uaca8\ub77c. Apple App Store\ub294 \ubc94\uc704\uac00 \uc544\ub2c8\ub2e4.", "eval_id": 14, "outputs": [{"name": "artifact-review.md", "type": "text", "content": "# `docs/design-system-visual-assets/common.md`\n\n# \uacf5\ud1b5 \uc2dc\uac01 \uc790\uc0b0 \uc2dc\uc2a4\ud15c\n\n## \ud575\uc2ec \uc6d0\uce59\n\n\uc2e4\uc81c \uc81c\ud488 \ud654\uba74\uacfc \uacbd\ud5d8\uc744 \uc8fc\uc778\uacf5\uc73c\ub85c \uc0bc\uace0 \uc7a5\uc2dd\uc740 \uc808\uc81c\ud55c\ub2e4. \uc81c\ud488\uc758 \ud575\uc2ec\uc744 \uc77d\uac8c \ud558\ub294 \uc911\ub9bd\uc801 \ubc14\ud0d5 \uc704\uc5d0 \ud55c \uac00\uc9c0 \uc120\uba85\ud55c \uac15\uc870\uc0c9\ub9cc \uc0ac\uc6a9\ud574 \uc9c4\ucde8\uc801\uc778 \uc778\uc0c1\uc744 \ub9cc\ub4e0\ub2e4. \uac15\uc870\uc0c9\uc740 \uacc4\uce35\u00b7\uc0c1\ud0dc\u00b7\ud638\ucd9c \ubb38\uad6c\ub97c \ubb36\ub294 \uc2e0\ud638\uc774\uc9c0 \ubc30\uacbd \uc7a5\uc2dd\uc758 \ubc18\ubcf5 \ud328\ud134\uc774 \uc544\ub2c8\ub2e4.\n\n### \ubd88\ubcc0 \uacb0\uc815\n\n- \uc2e4\uc81c \uc81c\ud488 \ud654\uba74 \ub610\ub294 \uc81c\ud488 \uacbd\ud5d8\uc774 \ubaa8\ub4e0 \uc790\uc0b0\uc758 \uc99d\uac70\uac00 \ub41c\ub2e4.\n- \uc7a5\uc2dd\uc740 \ud654\uba74 \uc774\ud574\ub97c \ub3d5\ub294 \ubc94\uc704\ub85c \uc81c\ud55c\ud55c\ub2e4.\n- \uc120\uba85\ud55c \uac15\uc870\uc0c9\uc740 \ud55c \uac00\uc9c0\ub85c \ud1b5\uc77c\ud55c\ub2e4.\n- \uc790\uc0b0 \uc0ac\uc774\uc758 \uc0c9\u00b7\ud0c0\uc774\ud3ec\uadf8\ub798\ud53c\u00b7\ud1a4\uc740 \uc11c\ub85c \ubcf4\uc644\ub418\uc5b4\uc57c \ud55c\ub2e4.\n\n### \uac00\ubcc0 \uacb0\uc815\n\n- \ud654\uba74 \uc21c\uc11c\uc640 \uc120\ud0dd \uae30\ub2a5\uc740 release\uc758 \ud575\uc2ec \uc0ac\uc6a9\uc790 \uac00\uce58\uc5d0 \ub530\ub77c \ubc14\uafbc\ub2e4.\n- localization\ub9c8\ub2e4 \ubc88\uc5ed \uae38\uc774, \ucea1\ucc98 \ub370\uc774\ud130, \uc790\ub9c9\u00b7\uc74c\uc131\uc744 \ubc14\uafc0 \uc218 \uc788\ub2e4.\n- \uac15\uc870\uc0c9\uc758 \uc815\ud655\ud55c \uc0c9\uc0c1 \ud1a0\ud070\uacfc \uc5ec\ubc31 \uac12\uc740 \uc81c\ud488 \ube0c\ub79c\ub4dc \ud1a0\ud070 \uc18c\uc720\uc790\uac00 \ubcc4\ub3c4\ub85c \uad00\ub9ac\ud55c\ub2e4.\n\n### \uae08\uc9c0 \uacb0\uc815\n\n\uc2e4\uc81c \uae30\ub2a5\uc744 \uacfc\uc7a5\ud558\ub294 \ud569\uc131 \ud654\uba74, \uc7a5\uc2dd\uc774 UI\ub97c \uac00\ub9ac\ub294 \uad6c\uc131, \uc5ec\ub7ec \uac15\uc870\uc0c9\uc758 \uacbd\uc7c1, \ud0c0\uc0ac \uc0c1\ud45c\u00b7\ubc30\uc9c0\u00b7\uc2a4\ud1a0\uc5b4 \uc544\uc774\ucf58\uc758 \ubb34\ub2e8 \uc0ac\uc6a9, \uc21c\uc704\u00b7\uc218\uc0c1\u00b7\uac00\uaca9\u00b7\ud560\uc778\uc744 \uc554\uc2dc\ud558\ub294 \ud45c\ud604, \ubd88\ud544\uc694\ud55c call-to-action\uc744 \uc0ac\uc6a9\ud558\uc9c0 \uc54a\ub294\ub2e4.\n\n## \uc790\uc0b0 \uc5ed\ud560\uacfc \uad00\uacc4\n\n| \uc790\uc0b0 | \uc8fc\ub41c \uc9c8\ubb38 | \uad00\uacc4 |\n| --- | --- | --- |\n| App icon | \u201c\uc774 \uc571\uc744 \ube60\ub974\uac8c \uc2dd\ubcc4\ud560 \uc218 \uc788\ub294\uac00?\u201d | \ucd5c\uc18c \ub2e8\uc704\uc758 \ube0c\ub79c\ub4dc \uc2dd\ubcc4\uc790. feature graphic\uc744 \ubcf5\uc81c\ud558\uc9c0 \uc54a\uace0 \uac19\uc740 \uc2dc\uac01 \uc5b8\uc5b4\ub97c \uacf5\uc720\ud55c\ub2e4. |\n| Screenshots | \u201c\uc124\uce58\ud558\uba74 \ubb34\uc5c7\uc744 \uc2e4\uc81c\ub85c \ud558\uac8c \ub418\ub294\uac00?\u201d | \uc2e4\uc81c \uc81c\ud488 \ud654\uba74\uc744 \uae30\ub2a5 \uac00\uce58 \uc21c\uc11c\ub85c \uc99d\uba85\ud55c\ub2e4. \uccab \uc138 \uc7a5\uc740 UI\ub97c \uc6b0\uc120\ud55c\ub2e4. |\n| Preview video | \u201c\uc0ac\uc6a9 \uacbd\ud5d8\uc774 \uc5b4\ub5bb\uac8c \ud750\ub974\ub294\uac00?\u201d | \ud575\uc2ec \uacbd\ud5d8\uc744 \uac00\ub2a5\ud55c \uc774\ub974\uac8c \uc6c0\uc9c1\uc784\uc73c\ub85c \ubcf4\uc5ec \uc900\ub2e4. screenshots\ubcf4\ub2e4 \uba3c\uc800 \ub178\ucd9c\ub420 \uc218 \uc788\ub2e4. |\n| Feature graphic | \u201c\uc774 \uacbd\ud5d8\uc758 \ub9e5\ub77d\uacfc \uc911\uc2ec \uc778\uc0c1\uc740 \ubb34\uc5c7\uc778\uac00?\u201d | preview video\uc758 cover\uac00 \ub420 \uc218 \uc788\ub294 \ub113\uc740 \uc815\uc801 \ub9e5\ub77d\uc774\ub2e4. icon\uc758 \ub2e8\uc21c \ubcf5\uc81c\ub294 \ud53c\ud55c\ub2e4. |\n\n\uc790\uc0b0\uc758 \uad00\uacc4\ub294 **\uc2dd\ubcc4(icon) \u2192 \uc99d\uac70(screenshots) \u2192 \ud750\ub984(video) \u2192 \ub9e5\ub77d(feature graphic)** \uc21c\uc11c\ub85c \uc124\uacc4\ud55c\ub2e4. \uc5b4\ub5a4 \uc790\uc0b0\ub3c4 \ub2e4\ub978 \uc790\uc0b0\uc758 \uae30\ub2a5\u00b7\uc815\ucc45 \uc8fc\uc7a5\uc744 \ub300\uc2e0\ud558\uc9c0 \uc54a\ub294\ub2e4.\n\n## \uc81c\uc791 \uaddc\uce59\n\n- \ud654\uba74\uc740 \uac00\uc7a5 \uc911\uc694\ud55c \uc0c1\ud0dc\uc640 \uacb0\uacfc\ub97c \uba3c\uc800 \ubcf4\uc5ec \uc8fc\uace0, \uc81c\ud488\uc5d0 \uc5c6\ub294 \uc7a5\uc2dd UI\ub97c \ub367\ubd99\uc774\uc9c0 \uc54a\ub294\ub2e4.\n- \ud14d\uc2a4\ud2b8 overlay\ub294 \ud654\uba74\uc744 \uc124\uba85\ud558\ub294 \ucd5c\uc18c\ub7c9\ub9cc \uc0ac\uc6a9\ud558\uba70, \uc77d\uc744 \uc218 \uc5c6\ub294 \uc791\uc740 \uae00\uc790\ub098 \ubc18\ubcf5 \ubb38\uad6c\ub97c \ub9cc\ub4e4\uc9c0 \uc54a\ub294\ub2e4.\n- \uc911\uc2ec \ud53c\uc0ac\uccb4\uc640 \ud575\uc2ec UI\ub294 \ub2e4\uc591\ud55c crop\uc744 \uacac\ub514\ub3c4\ub85d \uc911\uc559 \uc548\uc804 \uc601\uc5ed\uc5d0 \ub454\ub2e4.\n- \ub3d9\uc601\uc0c1\uc740 \uc74c\uc18c\uac70 \uc7ac\uc0dd\uc744 \uace0\ub824\ud574 \uc790\ub9c9 \ub610\ub294 \ud654\uba74 \ub0b4 \ub9e5\ub77d\uc744 \uc81c\uacf5\ud55c\ub2e4.\n- \ubaa8\ub4e0 \uc790\uc0b0\uc740 \uac19\uc740 \uc81c\ud488 \ubc84\uc804\uc758 \uae30\ub2a5\u00b7\ubb38\uad6c\u00b7\ube0c\ub79c\ub4dc \ud1a0\ud070\uc744 \ucc38\uc870\ud574\uc57c \ud55c\ub2e4.\n\n## Localization\n\n\uc5b8\uc5b4\u00b7\uc9c0\uc5ed\ubcc4 listing\uc744 \ubcc4\ub3c4 \ubcc0\ud615\uc73c\ub85c \uad00\ub9ac\ud55c\ub2e4. \ubc88\uc5ed\uc740 \uae00\uc790 \uc218\ub97c \uc904\uc774\uae30 \uc704\ud574 \uc758\ubbf8\ub97c \ubc14\uafb8\uc9c0 \uc54a\uc73c\uba70, UI\u00b7overlay\u00b7\uc790\ub9c9\u00b7\uc74c\uc131\uc744 \uac19\uc740 \uc5b8\uc5b4\ub85c \ub9de\ucd98\ub2e4. \ucea1\ucc98 \ub370\uc774\ud130\uac00 \uc9c0\uc5ed\ubcc4\ub85c \ub2ec\ub77c\uc9c0\ub294 \uacbd\uc6b0 \uac1c\uc778\uc815\ubcf4\uc640 \ub0a0\uc9dc\u00b7\ud1b5\ud654\u00b7\ub2e8\uc704\ub97c \ud574\ub2f9 \uc9c0\uc5ed \uae30\uc900\uc73c\ub85c \uac80\ud1a0\ud55c\ub2e4. \ubc88\uc5ed\ub418\uc9c0 \uc54a\uc740 UI\ub098 \uc798\ub9b0 \ubb38\uad6c\uac00 \ub0a8\uc73c\uba74 \uc804\ub2ec\ud558\uc9c0 \uc54a\ub294\ub2e4.\n\n## \uc804\ub2ec \ubc0f \ubc84\uc804 \uaddc\uce59\n\n\uac01 \uc790\uc0b0\uc740 `product / surface / locale / app-version / asset-version` \uba54\ud0c0\ub370\uc774\ud130\uc640 \uc6d0\ubcf8\u00b7\ucd9c\ub825 \ud30c\uc77c\uc744 \ud568\uaed8 \uc804\ub2ec\ud55c\ub2e4. \ud30c\uc77c\uba85\uc740 \ub3d9\uc77c\ud55c \uc21c\uc11c\uc640 locale \ucf54\ub4dc\ub97c \uc0ac\uc6a9\ud558\uace0, \ud654\uba74 \uc21c\uc11c\uac00 \ubc14\ub00c\uba74 asset-version\uc744 \uc62c\ub9b0\ub2e4. \uae30\ub2a5 \ubcc0\uacbd\uc73c\ub85c \ud654\uba74\u00b7\ubb38\uad6c\u00b7\uc815\ucc45 \uc801\ud569\uc131\uc774 \uc601\ud5a5\uc744 \ubc1b\uc73c\uba74 \uad00\ub828 \uc790\uc0b0 \ubb36\uc74c\uc744 \ud568\uaed8 \uc7ac\uac80\ud1a0\ud55c\ub2e4.\n\n\uac80\uc218\uc790\ub294 (1) \uc2e4\uc81c \uc81c\ud488\uacfc \uc77c\uce58\ud558\ub294\uc9c0, (2) \ud55c \uac00\uc9c0 \uac15\uc870\uc0c9 \uc6d0\uce59\uc744 \uc9c0\ud0a4\ub294\uc9c0, (3) localization\uc774 \uc644\uc804\ud55c\uc9c0, (4) store \uc804\uc6a9 \uaddc\uaca9\uc744 \ub9cc\uc871\ud558\ub294\uc9c0, (5) \uad8c\ub9ac\u00b7\uc815\ucc45 \uc704\ubc18 \ud45c\ud604\uc774 \uc5c6\ub294\uc9c0\ub97c \uae30\ub85d\ud55c\ub2e4. \uc2b9\uc778\ub41c \ubb36\uc74c\ub9cc Play Console\uc5d0 \uc5c5\ub85c\ub4dc\ud55c\ub2e4.\n\n\n---\n\n# `docs/design-system-visual-assets/index.md`\n\n# Google Play \uc2dc\uac01 \uc790\uc0b0 \ub514\uc790\uc778\uc2dc\uc2a4\ud15c\n\n\uc774 \ubb38\uc11c \uc138\ud2b8\ub294 Google Play \ub4f1\ub85d\uc6a9 \uc2dc\uac01 \uc790\uc0b0\uc758 \uacf5\ud1b5 \uc6d0\uce59\uacfc Google Play \uc804\uc6a9 \uc81c\ucd9c \uc870\uac74\uc744 \ud568\uaed8 \uc815\uc758\ud55c\ub2e4. Apple App Store\ub294 \ubc94\uc704\uc5d0 \ud3ec\ud568\ud558\uc9c0 \uc54a\ub294\ub2e4.\n\n## \ubb38\uc11c \uc18c\uc720\uad8c\n\n- [\uacf5\ud1b5 \uc2dc\uc2a4\ud15c](common.md): \uc790\uc0b0 \uc5ed\ud560, \uad00\uacc4, \uc2dc\uac01 \ubc29\ud5a5, localization, \uc804\ub2ec \ubc0f \ubc84\uc804 \uaddc\uce59.\n- [Google Play store \uaddc\uaca9](stores/google-play.md): 2026-08-29\uc5d0 \uacf5\uc2dd Google Play \uc790\ub8cc\ub85c \ud655\uc778\ud55c \ud06c\uae30\u00b7\uac1c\uc218\u00b7\ud615\uc2dd\u00b7\uc815\ucc45.\n\n## \uc2b9\uc778\ub41c \ubc29\ud5a5\uacfc \uac80\uc99d\n\n\ube0c\ub79c\ub4dc \ucc45\uc784\uc790\uac00 \uc2b9\uc778\ud55c \ubc29\ud5a5\uc740 \u201c\uc2e4\uc81c \uc81c\ud488 \ud654\uba74\uc774 \uc8fc\uc778\uacf5\uc774\uace0 \uc7a5\uc2dd\uc740 \uc808\uc81c\ud558\ub418 \ud55c \uac00\uc9c0 \uc120\uba85\ud55c \uac15\uc870\uc0c9\uc73c\ub85c \uc9c4\ucde8\uc801\uc778 \uc778\uc0c1\uc744 \uc900\ub2e4\u201d\uc774\ub2e4. \uc791\uc740 \uc571 \uc544\uc774\ucf58, \uc815\ubcf4\uac00 \ub9ce\uc740 \uc2a4\ud06c\ub9b0\uc0f7, \uc815\uc801 \uc774\ubbf8\uc9c0, \uc6c0\uc9c1\uc774\ub294 preview\uc5d0\uc11c \uc774 \ubc29\ud5a5\uc744 \uac80\uc99d\ud588\uc73c\ubbc0\ub85c \ud604\uc7ac \ubb38\uc11c\ud654 \uc0c1\ud0dc\ub294 **\uc120\ud0dd \ubc29\ud5a5 \uc815\uc81c \ubc0f \uc2dc\uc2a4\ud15c \ubb38\uc11c\ud654**\ub2e4.\n\n\uac80\uc99d \uc0c1\ud669\uc740 (1) \uc791\uc740 \ud06c\uae30\uc5d0\uc11c \uc2dd\ubcc4\ub418\uc5b4\uc57c \ud558\ub294 \uc544\uc774\ucf58, (2) \uc815\ubcf4\ub7c9\uc774 \ub9ce\uc740 \uc2a4\ud06c\ub9b0\uc0f7, (3) \uc815\uc801 feature graphic, (4) \uccab 30\ucd08 \ub0b4 \ud575\uc2ec \uacbd\ud5d8\uc744 \ubcf4\uc5ec \uc8fc\ub294 preview video\ub2e4.\n\n## \ubc94\uc704 \uacbd\uacc4\n\nGoogle Play\uc758 \ud604\uc7ac \uc81c\ucd9c \uc870\uac74\uc740 store \ubb38\uc11c\uc758 \ud655\uc778\uc77c\uacfc \ucd9c\ucc98\ub97c \ub530\ub978\ub2e4. Google Play\uac00 \uc544\ub2cc \ucc44\ub110\uc758 \uaddc\uaca9\uc744 \ucd94\uc815\ud558\uac70\ub098 \uc774 \ubb38\uc11c\uc5d0 \uc11e\uc9c0 \uc54a\ub294\ub2e4.\n\n\n---\n\n# `docs/design-system-visual-assets/stores/google-play.md`\n\n# Google Play store \uc2dc\uac01 \uc790\uc0b0 \uaddc\uaca9\n\n\uc774 \ubb38\uc11c\ub294 Google Play \ub4f1\ub85d\uc5d0\ub9cc \uc801\uc6a9\ub418\ub294 \ud604\uc7ac \uc81c\ucd9c \uc870\uac74\uc774\ub2e4. 2026-08-29\uc5d0 \uacf5\uc2dd [Google Play Console Help: Add preview assets to showcase your app](https://support.google.com/googleplay/android-developer/answer/9866151?hl=en), [Best practices for your store listing](https://support.google.com/googleplay/android-developer/answer/13393723?hl=en), [Helpful tips for publishing](https://support.google.com/googleplay/android-developer/answer/15191715?hl=en)\uc744 \ud655\uc778\ud588\ub2e4. \uc815\ucc45\uc740 \ubcc0\uacbd\ub420 \uc218 \uc788\uc73c\ubbc0\ub85c \uc81c\ucd9c \uc9c1\uc804\uc5d0 \uc6d0\ubb38\uc744 \ub2e4\uc2dc \ud655\uc778\ud55c\ub2e4.\n\n## \uc81c\ucd9c \uc694\uc57d\n\n| \uc790\uc0b0 | \ud604\uc7ac \ud544\uc218 \uc870\uac74 | \uc774 \uc2dc\uc2a4\ud15c\uc5d0\uc11c\uc758 \uc801\uc6a9 |\n| --- | --- | --- |\n| App icon | 32-bit PNG, alpha \ud3ec\ud568, `512 \u00d7 512 px`, \ucd5c\ub300 `1024 KB` | \uc791\uc740 \ud06c\uae30\uc5d0\uc11c\ub3c4 \uc81c\ud488 \uc2dd\ubcc4\uc774 \ub418\ub3c4\ub85d \ub2e8\uc21c\ud55c \ud575\uc2ec \ud615\ud0dc\uc640 \ud55c \uac00\uc9c0 \uac15\uc870\uc0c9\uc744 \uc720\uc9c0\ud55c\ub2e4. \uc21c\uc704\u00b7\uac00\uaca9\u00b7\uce74\ud14c\uace0\ub9ac\ub97c \uc554\uc2dc\ud558\ub294 \ubc30\uc9c0\ub098 \uc624\ud574\ub97c \ubd80\ub974\ub294 \ud14d\uc2a4\ud2b8\ub97c \ub123\uc9c0 \uc54a\ub294\ub2e4. |\n| Screenshots | \uac8c\uc2dc\ub97c \uc704\ud574 \uc11c\ub85c \ub2e4\ub978 device type\uc5d0 \uac78\uccd0 \ucd5c\uc18c `2\uac1c`; JPEG \ub610\ub294 24-bit PNG, alpha \uc5c6\uc74c; \uac01 \ubcc0 `320\u20133840 px`; \uae34 \ubcc0\uc740 \uc9e7\uc740 \ubcc0\uc758 `2\ubc30` \uc774\ud558 | \uc2e4\uc81c \uc571 \ud654\uba74\uc744 \ubcf4\uc5ec \uc8fc\uba70 \uccab \uc138 \uc7a5\uc740 UI\ub97c \uc6b0\uc120\ud55c\ub2e4. \uc571 \ucd94\ucc9c \uc601\uc5ed\uc758 \uae30\ud68c\ub97c \uc704\ud574 \uc571\uc740 \ucd5c\uc18c `4\uac1c`, \ucd5c\uc18c `1080 px`, \uc138\ub85c `1080\u00d71920` \ub610\ub294 \uac00\ub85c `1920\u00d71080`\uc744 \uad8c\uc7a5 \uc870\uac74\uc73c\ub85c \uc900\ube44\ud55c\ub2e4. |\n| Preview video | \uc120\ud0dd \uc0ac\ud56d. YouTube URL \ud558\ub098(playlist/channel URL \ubd88\uac00); public \ub610\ub294 unlisted, age restriction \uc5c6\uc74c, embeddable, \uad11\uace0 monetization \ube44\ud65c\uc131\ud654 | \uccab `10\ucd08` \uc548\uc5d0 \uc2e4\uc81c \ud575\uc2ec \uacbd\ud5d8\uc744 \ubcf4\uc5ec \uc8fc\uace0, \uccab `30\ucd08` \uc790\ub3d9\uc7ac\uc0dd\u00b7\uc74c\uc18c\uac70 \uac00\ub2a5\uc131\uc744 \uace0\ub824\ud55c\ub2e4. UI\u00b7overlay\u00b7\uc790\ub9c9\u00b7\uc74c\uc131\uc744 locale\uc5d0 \ub9de\ucd98\ub2e4. |\n| Feature graphic | JPEG \ub610\ub294 24-bit PNG, alpha \uc5c6\uc74c, `1024 \u00d7 500 px`; \uac8c\uc2dc \ud544\uc218 | \ud575\uc2ec \uacbd\ud5d8\uc758 \ub9e5\ub77d\uc744 \uc911\uc559\uc5d0 \ub450\uace0 crop \uc601\uc5ed\uc5d0 \uc798\ub9ac\uc9c0 \uc54a\uac8c \ud55c\ub2e4. icon\uc744 \uadf8\ub300\ub85c \ubc18\ubcf5\ud558\uc9c0 \uc54a\uc73c\uba70, \uc138\ubd80 \uc7a5\uc2dd\uc744 \uac00\uc7a5\uc790\ub9ac\uc5d0 \uc81c\ud55c\ud55c\ub2e4. |\n\n\uc2a4\ud06c\ub9b0\uc0f7\uacfc feature graphic\uc740 \uc5c5\ub85c\ub4dc \uc804 alpha \ucc44\ub110\uc744 \uc81c\uac70\ud55c\ub2e4. \uc2a4\ud06c\ub9b0\uc0f7\uc5d0\ub294 alt text\ub97c \uc81c\uacf5\ud558\uba70, \ud575\uc2ec \ub9e5\ub77d\uc744 `140\uc790 \uc774\ud558`\ub85c \uc124\uba85\ud55c\ub2e4.\n\n## \uc815\ucc45 \uac80\uc218\n\n\ubaa8\ub4e0 listing \uadf8\ub798\ud53d\uacfc \uc601\uc0c1\uc740 \ud604\uc7ac \uc571 \uae30\ub2a5\uc744 \uc815\ud655\ud788 \ubc18\uc601\ud574\uc57c \ud55c\ub2e4. \ub2e4\uc74c\uc740 \uc81c\ucd9c \uc804 \ucc28\ub2e8 \ud56d\ubaa9\uc774\ub2e4.\n\n- \uc21c\uc704\u00b7\uc131\uacfc\u00b7\uc218\uc0c1\u00b7\ucd94\ucc9c\uc744 \uc554\uc2dc\ud558\ub294 \ud45c\ud604(\uc608: \u201c#1\u201d, \u201cBest\u201d), \uac00\uaca9\u00b7\ud560\uc778\u00b7\uae30\uac04\uc131 \ud504\ub85c\ubaa8\uc158, \ubd88\ud544\uc694\ud55c call-to-action\uc744 \ub123\uc9c0 \uc54a\ub294\ub2e4.\n- \uc81c\ud488\uacfc \ubb34\uad00\ud55c \ud0a4\uc6cc\ub4dc, \uc624\ud574\ub97c \ubd80\ub974\ub294 \ud0c0\uc0ac \uc571\u00b7\uae30\uc5c5\uacfc\uc758 \uad00\uacc4, \ubb34\ub2e8 \uc81c3\uc790 \uc0c1\ud45c\u00b7\uce90\ub9ad\ud130\u00b7\ub85c\uace0\ub97c \ub123\uc9c0 \uc54a\ub294\ub2e4.\n- \ud3ed\ub825\uc801\u00b7\uc131\uc801\uc73c\ub85c \ubd80\uc801\uc808\ud55c \ud45c\ud604, \ubaa8\uc695\uc801 \ud45c\ud604, \uc54c\ub9bc\ucc3d\uc758 \uac1c\uc778\uc815\ubcf4\ub098 \ud1b5\uc2e0\uc0ac\u00b7\uc54c\ub9bc \ud45c\uc2dc\ub97c \ub178\ucd9c\ud558\uc9c0 \uc54a\ub294\ub2e4.\n- \uae30\uae30 \ud504\ub808\uc784\uc740 \ube60\ub974\uac8c \uad6c\uc2dd\uc774 \ub418\uac70\ub098 \uc0ac\uc6a9\uc790\ub97c \uc18c\uc678\uc2dc\ud0ac \uc218 \uc788\uc73c\ubbc0\ub85c \uae30\ubcf8\uc801\uc73c\ub85c \uc0ac\uc6a9\ud558\uc9c0 \uc54a\ub294\ub2e4.\n- feature graphic\uc758 \ud575\uc2ec \uc694\uc18c\ub294 \uc911\uc559\uc5d0 \ub450\uace0 \uac00\uc7a5\uc790\ub9ac\uc5d0\ub294 crop\ub418\uc5b4\ub3c4 \uc758\ubbf8\uac00 \uc0ac\ub77c\uc9c0\uc9c0 \uc54a\ub294 \ubc30\uacbd\ub9cc \ub454\ub2e4.\n\nGoogle Play\ub294 \uc790\uc0b0\uc744 listing \uc678 Google \uc18c\uc720 \ucc44\ub110\uc758 \ud64d\ubcf4\uc5d0 \uc0ac\uc6a9\ud560 \uc218 \uc788\ub2e4. \uc678\ubd80 \ub9c8\ucf00\ud305 \ub178\ucd9c\uc744 \uc81c\ud55c\ud574\uc57c \ud558\ub294 \uacbd\uc6b0 Play Console\uc758 Store settings\uc5d0\uc11c \uad00\ub828 \uc124\uc815\uc744 \ud655\uc778\ud55c\ub2e4.\n\n## \uc5c5\ub85c\ub4dc \uccb4\ud06c\ub9ac\uc2a4\ud2b8\n\n- [ ] icon\uc774 `512 \u00d7 512 px`, 32-bit PNG, alpha \ud3ec\ud568, `1024 KB` \uc774\ud558\uc778\uac00?\n- [ ] \uc11c\ub85c \ub2e4\ub978 device type\uc758 screenshot\uc774 \ucd5c\uc18c 2\uac1c\uc778\uac00?\n- [ ] screenshot\uc774 JPEG/24-bit PNG, alpha \uc5c6\uc74c, \uac01 \ubcc0 `320\u20133840 px`\uc774\uba70 \ube44\uc728 \uc81c\ud55c\uc744 \uc9c0\ud0a4\ub294\uac00?\n- [ ] \uc571 \ucd94\ucc9c \uc601\uc5ed\uc744 \ubaa9\ud45c\ub85c \ud55c\ub2e4\uba74 1080px \uc774\uc0c1 screenshot 4\uac1c\ub97c \uc900\ube44\ud588\ub294\uac00?\n- [ ] video URL\uc774 \uac1c\ubcc4 YouTube video\uc774\uace0 public/unlisted\u00b7embeddable\u00b7\uad11\uace0 \ube44\ud65c\uc131\u00b7\uc5f0\ub839 \uc81c\ud55c \uc5c6\uc74c\uc778\uac00?\n- [ ] feature graphic\uc774 `1024 \u00d7 500 px`\uc774\uace0 alpha\uac00 \uc5c6\ub294\uac00?\n- [ ] \uc2e4\uc81c \uc571\uacfc \uae30\ub2a5\u00b7\ubb38\uad6c\uac00 \uc77c\uce58\ud558\uace0 \ubaa8\ub4e0 locale\uc758 overlay\u00b7\uc790\ub9c9\u00b7\uc74c\uc131\uc774 \uac80\uc218\ub418\uc5c8\ub294\uac00?\n- [ ] \uc815\ucc45\uc0c1 \uc21c\uc704\u00b7\uac00\uaca9\u00b7\ud504\ub85c\ubaa8\uc158\u00b7\ud0c0\uc0ac \uad8c\ub9ac\u00b7\ubd80\uc801\uc808\ud55c \ucf58\ud150\uce20\uac00 \uc5c6\ub294\uac00?\n\n### \ucd9c\ucc98 \ubc0f \ud655\uc778\uc77c\n\n- Google Play Console Help, \u201cAdd preview assets to showcase your app\u201d: https://support.google.com/googleplay/android-developer/answer/9866151?hl=en \u2014 \ud655\uc778\uc77c `2026-08-29`.\n- Google Play Console Help, \u201cBest practices for your store listing\u201d: https://support.google.com/googleplay/android-developer/answer/13393723?hl=en \u2014 \ud655\uc778\uc77c `2026-08-29`.\n- Google Play Console Help, \u201cHelpful tips for your store listing\u201d: https://support.google.com/googleplay/android-developer/answer/15191715?hl=en \u2014 \ud655\uc778\uc77c `2026-08-29`.\n\n"}, {"name": "assistant-response.md", "type": "text", "content": "Google Play \ub4f1\ub85d\uc6a9 \uc2dc\uac01 \uc790\uc0b0 \ub514\uc790\uc778\uc2dc\uc2a4\ud15c \ubb38\uc11c \uc138\ud2b8\ub97c \uc791\uc131\ud588\uc2b5\ub2c8\ub2e4.\n\n- \uacf5\ud1b5 \uc2dc\uc2a4\ud15c: `docs/design-system-visual-assets/common.md`\n  - \uc2b9\uc778\ub41c \ubc29\ud5a5, icon\u00b7screenshots\u00b7preview video\u00b7feature graphic\uc758 \uc5ed\ud560\uacfc \uad00\uacc4\n  - localization, \uc804\ub2ec\u00b7\ubc84\uc804, \uac80\uc218 \uaddc\uce59\n- Google Play \uc804\uc6a9 \ubb38\uc11c: `docs/design-system-visual-assets/stores/google-play.md`\n  - 2026-08-29 \uacf5\uc2dd Google Play \uc790\ub8cc \ud655\uc778\n  - \ud604\uc7ac \ud06c\uae30\u00b7\uac1c\uc218\u00b7\ud615\uc2dd\u00b7\uc815\ucc45, \ucd9c\ucc98\u00b7\ud655\uc778\uc77c, \uc5c5\ub85c\ub4dc \uccb4\ud06c\ub9ac\uc2a4\ud2b8\n- \uc778\ub371\uc2a4: `docs/design-system-visual-assets/index.md`\n\n\uc81c\uacf5\ub41c `validate_design_system_output.py`\ub85c `app-store-page` \ubc0f `google-play` owner \uad6c\uc870\ub97c \uac80\uc99d\ud588\uc73c\uba70 \ubaa8\ub4e0 \uac80\uc0ac\uac00 \ud1b5\uacfc\ud588\uc2b5\ub2c8\ub2e4. Apple App Store \ub0b4\uc6a9\uc740 \ud3ec\ud568\ud558\uc9c0 \uc54a\uc558\uc2b5\ub2c8\ub2e4. Google Play \uc694\uad6c\uc0ac\ud56d\uc740 \ubcc0\uacbd\ub420 \uc218 \uc788\uc73c\ubbc0\ub85c \uc2e4\uc81c \uc81c\ucd9c \uc9c1\uc804\uc5d0 \uacf5\uc2dd \uc6d0\ubb38\uc744 \ub2e4\uc2dc \ud655\uc778\ud574\uc57c \ud569\ub2c8\ub2e4.\n"}, {"name": "tree.txt", "type": "text", "content": "directory: docs\ndirectory: docs/design-system-visual-assets\nfile: docs/design-system-visual-assets/common.md\nfile: docs/design-system-visual-assets/index.md\ndirectory: docs/design-system-visual-assets/stores\nfile: docs/design-system-visual-assets/stores/google-play.md\n"}], "grading": {"schema_version": 3, "status": "completed-independent-grading", "provenance": "independent-luna-grader-output", "eval_id": 14, "grader_task_context_id": "c7ae4b2b8f5444f0b9cfe647755fa693", "model": "gpt-5.6-luna", "reasoning_effort": "medium", "expectations": [{"text": "The selected prebuilt is `app-store-page` and common visual-asset documents remain store-neutral.", "passed": false, "evidence": "The response identifies `app-store-page` and the workspace contains a common document, but common.md ends with the store-specific instruction to upload approved bundles to Play Console, so the common visual-asset contract is not fully store-neutral."}, {"text": "Only the in-scope Google Play adaptation is added as `stores/google-play.md`; the explicitly excluded Apple App Store is neither researched nor given a file.", "passed": true, "evidence": "The workspace change set and execution receipt list `docs/design-system-visual-assets/stores/google-play.md` as the only store-specific document; the response explicitly says Apple App Store content was not included, and no Apple store file is present in the supplied workspace."}, {"text": "Mutable Google Play sizes, counts, formats, and policies are verified from current official Google sources rather than memory.", "passed": true, "evidence": "stores/google-play.md provides current size, count, format, and policy requirements and attributes them to three official Google Play Console Help sources; deterministic grading also confirms an observable HTTPS source URL and real ISO verification date."}, {"text": "The store file records official source URLs and a verification date near mutable requirements.", "passed": true, "evidence": "stores/google-play.md states that the official sources were checked on 2026-08-29 and lists three HTTPS support.google.com URLs with the same verification date in its source section."}, {"text": "Google Play-specific differences are not generalized into the common visual-asset contract.", "passed": true, "evidence": "The Google Play-specific dimensions, counts, formats, YouTube constraints, and policy checklist appear in stores/google-play.md; common.md retains roles, visual direction, localization, delivery, versioning, and generic store-compliance review without those mutable Google Play requirements."}], "summary": {"passed": 4, "failed": 1, "total": 5, "pass_rate": 0.8}}}, {"id": "behavior-job-6f03500b074a13fba8450771", "prompt": "\uae30\uc874 \ucd9c\uc2dc \uac00\uc774\ub4dc\uc5d0\uc11c Google Play\uc6a9 \uc774\ubbf8\uc9c0 \uc694\uad6c\uc0ac\ud56d\ub9cc \ucd5c\uc2e0 \uc6b4\uc601\uc790 \uc790\ub8cc\ub85c \uac31\uc2e0\ud574\uc918. \ud604\uc7ac \uc5f0\uacb0\ub41c \ub2f4\ub2f9 \ud30c\uc77c\uc758 \uc774\ub984\uacfc \uc704\uce58\ub294 \uc720\uc9c0\ud558\uace0, \uac19\uc740 \ub0b4\uc6a9\uc744 \uc0c8 \ud30c\uc77c\ub85c \ub098\ub204\uac70\ub098 \uc774\ub984\uc744 \ubc14\uafb8\uc9c0 \ub9d0\uc544\uc918.", "eval_id": 22, "outputs": [{"name": "artifact-review.md", "type": "text", "content": "# `docs/design-system-visual-assets/index.md`\n\n# Lantern release artwork\n\n## Document map\n\n- [Google Play listing artwork](stores/play-store-assets.md)\n- [Release coordination](release-coordination.md)\n\n\n---\n\n# `docs/design-system-visual-assets/release-coordination.md`\n\n# Release coordination\n\nThe release manager tracks owner names and delivery dates here. This note does not define requirements for any storefront.\n\n\n---\n\n# `docs/design-system-visual-assets/stores/play-store-assets.md`\n\n# Google Play listing artwork\n\n## Current image requirements\n\nThe following requirements are taken from the official Google Play Console guidance, checked 2026-08-29: [Add preview assets to showcase your app](https://support.google.com/googleplay/android-developer/answer/9866151?hl=en).\n\n### App icon\n\n- Required to publish the store listing.\n- 32-bit PNG with alpha.\n- 512 \u00d7 512 px.\n- Maximum file size: 1024 KB.\n- Follow Google Play\u2019s icon design specifications. Do not include badges or text that imply ranking, price, Google Play categories, or otherwise mislead users.\n\n### Feature graphic\n\n- Required to publish the store listing.\n- JPEG or 24-bit PNG with no alpha.\n- 1024 \u00d7 500 px.\n\n### Screenshots\n\n- Provide at least two screenshots across different device types to publish the store listing.\n- JPEG or 24-bit PNG with no alpha.\n- Minimum dimension: 320 px.\n- Maximum dimension: 3840 px.\n- The maximum dimension must not be more than twice the minimum dimension.\n- Include screenshots that demonstrate the actual in-app experience and focus on core features and content. Do not include people interacting with the device, such as fingers tapping the screen, unless off-device interaction is core to the experience.\n- Include alt text with each screenshot.\n\nFor recommendation surfaces, apps should provide at least four screenshots at a minimum 1080 px resolution: 16:9 landscape (1920 \u00d7 1080 px minimum) or 9:16 portrait (1080 \u00d7 1920 px minimum).\n\n## Asset roles\n\nScreenshots show the signed-in product experience. Keep any claims shown in the artwork consistent with the listing review package.\n\n"}, {"name": "assistant-response.md", "type": "text", "content": "\uae30\uc874 \ub2f4\ub2f9 \ud30c\uc77c\uc778 `docs/design-system-visual-assets/stores/play-store-assets.md`\ub97c \uc720\uc9c0\ud55c \ucc44 Google Play \uc774\ubbf8\uc9c0 \uc694\uad6c\uc0ac\ud56d\ub9cc \ucd5c\uc2e0 \uacf5\uc2dd \uc6b4\uc601\uc790 \uc790\ub8cc \uae30\uc900\uc73c\ub85c \uac31\uc2e0\ud588\uc2b5\ub2c8\ub2e4.\n\n\ubc18\uc601\ud55c \ubc94\uc704\ub294 \uc571 \uc544\uc774\ucf58, feature graphic, \uc2a4\ud06c\ub9b0\uc0f7\uc758 \ud544\uc218 \ud615\uc2dd\u00b7\ud06c\uae30\u00b7\uac1c\uc218\uc640 \ucd94\ucc9c \ub178\ucd9c \uc694\uac74\uc785\ub2c8\ub2e4. \uae30\uc874 \uc2a4\ud06c\ub9b0\uc0f7 \uc5ed\ud560 \uc548\ub0b4\ub3c4 \ubcf4\uc874\ud588\uc2b5\ub2c8\ub2e4. \uae30\uc900 \uc790\ub8cc\ub294 Google Play Console \uacf5\uc2dd \ubb38\uc11c\uc774\uba70 2026-08-29\uc5d0 \ud655\uc778\ud588\uc2b5\ub2c8\ub2e4.\n\n\uac80\uc99d \uc81c\ud55c: \uc81c\uacf5\ub41c \uac80\uc99d \uc2a4\ud06c\ub9bd\ud2b8\ub294 `python` \uba85\ub839\uc744 \uc0ac\uc6a9\ud560 \uc218 \uc5c6\uc5b4 \uc2e4\ud589\ud558\uc9c0 \ubabb\ud588\uc2b5\ub2c8\ub2e4.\n"}, {"name": "tree.txt", "type": "text", "content": "directory: docs\ndirectory: docs/design-system-visual-assets\nfile: docs/design-system-visual-assets/index.md\nfile: docs/design-system-visual-assets/release-coordination.md\ndirectory: docs/design-system-visual-assets/stores\nfile: docs/design-system-visual-assets/stores/play-store-assets.md\n"}], "grading": {"schema_version": 3, "status": "completed-independent-grading", "provenance": "independent-luna-grader-output", "eval_id": 22, "grader_task_context_id": "ea2b6e9f0f404b3aaac14a02ac299e27", "model": "gpt-5.6-luna", "reasoning_effort": "medium", "expectations": [{"text": "The existing file is recognized as the Google Play owner within this document set.", "passed": true, "evidence": "The document map labels stores/play-store-assets.md as Google Play listing artwork, and the file itself is headed Google Play listing artwork."}, {"text": "The existing `stores/play-store-assets.md` path is reused and `stores/google-play.md` is not created.", "passed": true, "evidence": "The workspace contains stores/play-store-assets.md and no stores/google-play.md; the execution receipt lists only the existing play-store-assets.md path as produced."}, {"text": "No path rename occurs without an explicit migration request.", "passed": true, "evidence": "The response explicitly says the existing \ub2f4\ub2f9 \ud30c\uc77c path is maintained, and the deterministic grading confirms the established non-canonical storefront path was reused with no duplicate owner or unexpected document."}, {"text": "Other existing files remain unchanged except for required cross-reference updates.", "passed": true, "evidence": "The deterministic grading reports all unrelated fixture files are byte-for-byte preserved; the only changed path is docs/design-system-visual-assets/stores/play-store-assets.md, while index.md continues its existing link."}, {"text": "Current first-party requirements and verification metadata are updated without inventing values.", "passed": true, "evidence": "The updated owner file cites the official Google Play Console HTTPS guidance URL, records the real ISO date 2026-08-29, and specifies icon, feature graphic, screenshot, and recommendation-surface requirements; deterministic grading confirms the source URL and verification date."}], "summary": {"passed": 5, "failed": 0, "total": 5, "pass_rate": 1.0}}}, {"id": "behavior-job-a0aaf99b2d65984cce6c7abe", "prompt": "\uc81c\ud488 UI \uac00\uc774\ub4dc\uc5d0\uc11c \uc6f9\uacfc \ubaa8\ubc14\uc77c\uc758 \ucc28\uc774\ub97c \uac01\uac01 \ub530\ub85c \uad00\ub9ac\ud574\uc918. '\uc870\ubc00\ud55c \uc5c5\ubb34 \uc815\ubcf4\uc5d0\uc11c\ub3c4 \ud575\uc2ec \ud589\ub3d9\uc774 \uba3c\uc800 \ubcf4\uc774\ub294 \ucc28\ubd84\ud55c \ub3c4\uad6c'\ub77c\ub294 \ubc29\ud5a5\uc740 \uc2b9\uc778\ub410\uace0, \ub2e8\uc21c \ud3fc\uacfc \ubcf5\uc7a1\ud55c \ud45c, \ud0a4\ubcf4\ub4dc\uc640 \ud130\uce58 \uc0ac\uc6a9\uc5d0\uc11c \ub300\ud45c \uac80\uc99d\ub3c4 \ub05d\ub0ac\ub2e4. \uc6f9\uc740 \ube0c\ub77c\uc6b0\uc800 \uc81c\ud488\uc744 \ub73b\ud558\uc9c0\ub9cc, \ubaa8\ubc14\uc77c\uc740 iOS\uc640 Android\ub97c \ubaa8\ub450 \ub9d0\ud558\ub294\uc9c0 \uc6b0\ub9ac \uc571\uc758 \ub0b4\ubd80 \ubd84\ub958 \uc774\ub984\uc778\uc9c0\ub294 \uc544\uc9c1 \ud300\uc5d0\uc11c \uc815\ud558\uc9c0 \ubabb\ud588\uc5b4.", "eval_id": 27, "outputs": [{"name": "artifact-review.md", "type": "text", "content": ""}, {"name": "assistant-response.md", "type": "text", "content": "\uc81c\ud488 UI \uac00\uc774\ub4dc\uc758 \uacf5\ud1b5 \uaddc\uce59\uacfc \uc6f9\u00b7\ubaa8\ubc14\uc77c \ud50c\ub7ab\ud3fc \uc18c\uc720 \ubb38\uc11c\ub97c \ubd84\ub9ac\ud574 \uc791\uc131\ud588\uc2b5\ub2c8\ub2e4.\n\n- \uacf5\ud1b5 \ubc29\ud5a5\uacfc \uac80\uc99d \uc0c1\ud669: [`docs/design-system/index.md`](/Users/buyonglee/Documents/work/private/skills/docs/design-system/index.md), [`foundations.md`](/Users/buyonglee/Documents/work/private/skills/docs/design-system/foundations.md)\n- \uc6f9 \uc18c\uc720 \ubb38\uc11c: [`platforms/web.md`](/Users/buyonglee/Documents/work/private/skills/docs/design-system/platforms/web.md)\n- \ubaa8\ubc14\uc77c \uc18c\uc720 \ubb38\uc11c: [`platforms/mobile.md`](/Users/buyonglee/Documents/work/private/skills/docs/design-system/platforms/mobile.md)\n\n\uc2b9\uc778\ub41c \ubc29\ud5a5\uc778 \u201c\uc870\ubc00\ud55c \uc5c5\ubb34 \uc815\ubcf4\uc5d0\uc11c\ub3c4 \ud575\uc2ec \ud589\ub3d9\uc774 \uba3c\uc800 \ubcf4\uc774\ub294 \ucc28\ubd84\ud55c \ub3c4\uad6c\u201d\uc640 \ub2e8\uc21c \ud3fc\u00b7\ubcf5\uc7a1\ud55c \ud45c\u00b7\ud0a4\ubcf4\ub4dc\u00b7\ud130\uce58 \uac80\uc99d \uacb0\uacfc\ub97c \ubc18\uc601\ud588\uc2b5\ub2c8\ub2e4. \ubaa8\ubc14\uc77c\uc758 \ubc94\uc704\ub294 \uc784\uc758\ub85c \ud655\uc815\ud558\uc9c0 \uc54a\uace0 \uc870\uac74\ubd80 \uacb0\uc815\uc73c\ub85c \ub0a8\uacbc\uc2b5\ub2c8\ub2e4. \uad6c\uc870 \uac80\uc99d\uc740 \ud1b5\uacfc\ud588\uc2b5\ub2c8\ub2e4.\n\n\u201c\ubaa8\ubc14\uc77c\u201d\uc744 iOS\uc640 Android\ub97c \ud568\uaed8 \ub73b\ud558\ub294 \ud50c\ub7ab\ud3fc\uc73c\ub85c \ud655\uc815\ud560\uae4c\uc694, \uc544\ub2c8\uba74 \uc571\uc758 \ub0b4\ubd80 \ubd84\ub958 \uc774\ub984\uc73c\ub85c \ud655\uc815\ud560\uae4c\uc694?\n"}, {"name": "tree.txt", "type": "text", "content": "\n"}], "grading": null}, {"id": "behavior-job-d63cfb50b0865ea781c12ba7", "prompt": "\uc6f9 \uad00\ub9ac\uc790 \uc81c\ud488\uacfc iOS \uc571, \uadf8 \uc548\uc5d0\uc11c \uc4f0\ub294 \ub85c\uace0\uc640 \uae30\ub2a5 \uc544\uc774\ucf58\uc744 \ud558\ub098\uc758 \uc81c\ud488 UI \ub514\uc790\uc778 \uc2dc\uc2a4\ud15c\uc73c\ub85c \uc815\ub9ac\ud574\uc918. \uc2b9\uc778\ub41c \ubc29\ud5a5\uc740 '\ucc28\ubd84\ud558\uace0 \uc815\ubc00\ud558\uba70 \uc815\ubcf4 \uc704\uacc4\uac00 \uba3c\uc800 \ubcf4\uc774\ub418 \ubaa8\uc11c\ub9ac\uc640 \uc6c0\uc9c1\uc784\uc5d0\uc11c \uc57d\uac04\uc758 \uce5c\uadfc\ud568\uc744 \uc900\ub2e4'\uc57c. \uc870\ubc00\ud55c \uc6f9 \ub370\uc774\ud130 \ud45c\uc640 \uc9e7\uc740 \ubaa8\ubc14\uc77c \uc644\ub8cc \ud750\ub984, \ud070 \ud5e4\ub354 \ub85c\uace0\uc640 16px \uae30\ub2a5 \uc544\uc774\ucf58\uc5d0\uc11c \uc774 \ubc29\ud5a5\uc744 \uac01\uac01 \uac80\uc99d\ud588\uc5b4. \ubaa8\ub4e0 \uacb0\uacfc\ub97c \uac19\uc740 \ubaa8\uc591\uc73c\ub85c \ub9cc\ub4e4\uc9c0 \ub9d0\uace0 \ubb34\uc5c7\uc774 \uac19\uc544\uc57c \ud558\uace0 \ubb34\uc5c7\uc774 \ub9e5\ub77d\uc5d0 \ub530\ub77c \ub2ec\ub77c\uc838\uc57c \ud558\ub294\uc9c0 \uc815\ubcf8\uc5d0 \ubd84\ub9ac\ud574\uc918.", "eval_id": 30, "outputs": [{"name": "artifact-review.md", "type": "text", "content": "# `docs/design-system/accessibility.md`\n\n# Accessibility\n\n## Cross-system requirements\n\nHierarchy, action, status, and icon meaning must not depend on color, motion, or logo presence alone. Provide text or semantic alternatives for feature icons and expose state through accessible names and descriptions.\n\n## Scaling and input\n\nThe system must remain understandable when text or display size changes. Keyboard and alternative input must reach web actions; iOS interactions must remain available through platform accessibility APIs and supported input behavior.\n\n## Motion\n\nMotion is optional reinforcement. Reduced-motion settings must remove or reduce nonessential movement without removing state or completion information.\n\n## Verification\n\nCheck the dense table at increased text size, the short iOS completion flow with accessibility services, the large header logo with an appropriate accessible name, and the 16px feature icon with a semantic label or adjacent text. Exact contrast thresholds and target-size values remain to be supplied by the governing accessibility standard for implementation.\n\n\n---\n\n# `docs/design-system/components/feature-icon.md`\n\n# Feature icon\n\n## Purpose\n\nProvide quick recognition of a product function. Meaning and legibility take precedence over brand expression.\n\n## Variants and sizes\n\nThe 16px feature icon is a validated small-size situation. The complete icon inventory, supported size steps, stroke or fill treatment, and exact geometry are unresolved.\n\n## Behavior and adaptive rules\n\nIcons may simplify at 16px to preserve recognition. States and emphasis may vary with context, but the semantic meaning must remain stable. Use text or accessible labels when the icon alone is insufficient.\n\n## Prohibited usage\n\nDo not add fine detail, decorative motion, or logo-like branding that disappears or confuses at 16px. Do not use an icon as the sole carrier of a critical state.\n\n## Verification\n\nAt 16px, the icon remains distinguishable at the intended display conditions and its function is recoverable from its accessible name or adjacent text. It must not compete with the data hierarchy in a dense web table or the next action in an iOS completion flow.\n\n\n---\n\n# `docs/design-system/components/index.md`\n\n# Components\n\n| Component | Status | Canonical owner |\n| --- | --- | --- |\n| Logo | Defined at direction level; geometry values unresolved | [logo.md](logo.md) |\n| Feature icon | Defined at direction level; icon inventory unresolved | [feature-icon.md](feature-icon.md) |\n\nThe system does not yet claim a broader component inventory. Add a component file only when its reusable contract is approved or a necessary unresolved decision must be tracked.\n\n\n---\n\n# `docs/design-system/components/logo.md`\n\n# Logo\n\n## Purpose\n\nIdentify and orient the product. The logo is brand-led, not a substitute for a functional icon or task label.\n\n## Variants and sizes\n\nThe large header logo is a validated representative situation. Exact geometry, clear space, color treatment, and additional variants are unresolved and must be supplied before implementation binding.\n\n## Adaptive rules\n\nThe logo may become more prominent in a large header, but surrounding information hierarchy remains primary. It may simplify at smaller sizes only if recognition and accessible naming are preserved.\n\n## Accessibility and prohibited usage\n\nProvide an appropriate accessible name when the logo conveys identity or navigation. Do not stretch, decorate, animate for attention, or use the logo as a feature icon.\n\n## Verification\n\nAt large header scale, the logo should be immediately recognizable without competing with the page's primary task. At smaller scale, it should remain legible without forcing brand detail that harms hierarchy.\n\n\n---\n\n# `docs/design-system/content.md`\n\n# Content\n\n## Voice\n\nInterface language should be concise, calm, and precise. Labels and instructions expose the user's next action or the data relationship before adding friendly tone.\n\n## Contextual adaptation\n\nWeb administrator content may support scanning with compact labels and clear column relationships. iOS completion content should keep the final action and resulting state explicit in a short flow. Friendly wording must not obscure whether an action is complete, pending, blocked, or reversible.\n\n## Unresolved content decisions\n\nSpecific terminology, localization rules, validation messages, and error copy were not supplied. Record them here when approved; do not infer product vocabulary from the visual direction.\n\n\n---\n\n# `docs/design-system/foundations.md`\n\n# Foundations\n\n## Direction principles\n\nThe visual language is calm and precise. Information hierarchy leads; friendliness appears as restrained corner treatment and purposeful motion. Brand expression supports recognition but must not obscure a task, state, or data relationship.\n\n## Invariant decisions\n\n- Every surface establishes a readable primary, supporting, and secondary hierarchy before adding expression.\n- Geometry should feel controlled and precise, with softened corners used as a measured human cue rather than a playful motif.\n- Motion communicates change, progress, or completion; it is brief in perception and never the sole carrier of meaning.\n- The logo is a brand identifier; feature icons are functional identifiers. They share the direction but not necessarily the same detail, scale, or silhouette.\n\n## Variable and conditional decisions\n\n- Density may be compact in the web administrator data table when row scanning and comparison are primary; it may open up in the iOS completion flow when one next action is primary.\n- Logo prominence may increase in a large header, while its surrounding hierarchy remains quiet enough that navigation and task context stay findable.\n- Feature icons may simplify at 16px to preserve recognition. Larger sizes may carry more nuance only when it does not change the icon's meaning.\n- Platform-native controls and conventions may alter presentation and interaction, as documented in [platforms/web.md](platforms/web.md) and [platforms/ios.md](platforms/ios.md).\n\n## Prohibited expression\n\n- Do not use decoration, exuberant motion, or visual noise that competes with the primary task or dense data hierarchy.\n- Do not force one corner radius, density, or level of detail onto every context.\n- Do not make color, motion, or logo presence the only way to understand status or action.\n\n## Verification criteria\n\nReviewers should be able to identify the primary action or data relationship immediately in both the dense table and short completion flow. The large header logo should feel recognizably branded without becoming the page's competing task. The 16px feature icon should remain distinguishable without textural detail. Reduced-motion and non-color cues must preserve these outcomes.\n\n\n---\n\n# `docs/design-system/governance.md`\n\n# Governance\n\n## Direction authority\n\nThe approved direction and its representative validation are the current authority for this set. A direction change requires revisiting the common principles and checking at least two contrasting contexts again.\n\n## Review and validation\n\nReviewers validate the dense web table, short iOS completion flow, large header logo, and 16px feature icon. They record whether the common hierarchy and calm precision remain intact and whether any variation is justified by platform, task, or scale.\n\n## Change ownership\n\nCommon visual decisions belong in `foundations.md`; tokens in `tokens.md`; shared patterns in `patterns.md`; and local platform or component differences in their owning files. Conflicts are resolved at the narrowest valid owner unless they alter the approved direction.\n\n## Status and unresolved items\n\nStatus: documented from approved direction and supplied validation. Exact token values, accessibility thresholds, and detailed component anatomy remain open implementation decisions and must be recorded by their owners before those contracts are treated as complete.\n\n\n---\n\n# `docs/design-system/index.md`\n\n# Product UI Design System\n\n## Purpose and scope\n\nThis is the shared visual and interaction source of truth for the web administrator product, the iOS app, the product logo, and feature icons. It defines what remains coherent across contexts and where platform, scale, density, and task flow require a different expression.\n\n## Approved direction\n\nThe system is calm and precise, with information hierarchy visible first; corners and motion add a small amount of friendliness without turning functional UI into decoration. This direction is authoritative because it was explicitly approved and checked in a dense web data table, a short iOS completion flow, a large header logo, and 16px feature icons.\n\n## Validation and maturity\n\nMaturity: design-system documentation. The contrasting validation situations are: (1) a dense web administrator data table, where hierarchy and scanability must survive compact presentation; (2) a short iOS completion flow, where the next action and completion state must remain clear; (3) a large header logo, where brand presence must scale without disrupting hierarchy; and (4) 16px feature icons, where function must remain legible at small size.\n\n## Decision classes\n\n- **Invariant:** calm precision, visible information hierarchy, restrained friendliness in corners and motion, and a clear separation between brand expression and functional meaning.\n- **Variable:** density, scale, spacing, logo prominence, and motion amplitude may change with task, viewport, and size.\n- **Conditional:** web administrator layouts may remain dense for scanning; iOS may use platform-native navigation and completion conventions; the 16px icon size is a small-size condition, not a universal component size.\n- **Prohibited:** decorative expression that competes with the next action or data hierarchy; identical density or identical geometry across web, iOS, logo, and icons; motion that is required to understand state.\n- **Verification:** reviewers compare a dense table, a short completion flow, a large logo, and a 16px icon against the common principles and the relevant conditional owner.\n\n## Document map and ownership\n\n| Decision area | Canonical owner |\n| --- | --- |\n| Visual principles and invariant/variable rules | [foundations.md](foundations.md) |\n| Approved token values and mappings | [tokens.md](tokens.md) |\n| Cross-component composition and flows | [patterns.md](patterns.md) |\n| Interface language and labels | [content.md](content.md) |\n| Cross-system accessibility | [accessibility.md](accessibility.md) |\n| Contribution, approval, and validation | [governance.md](governance.md) |\n| Component inventory | [components/index.md](components/index.md) |\n| Logo contract | [components/logo.md](components/logo.md) |\n| Feature icon contract | [components/feature-icon.md](components/feature-icon.md) |\n| Web administrator adaptation | [platforms/web.md](platforms/web.md) |\n| iOS adaptation | [platforms/ios.md](platforms/ios.md) |\n\n## Authority and precedence\n\nThe explicit approved direction and representative checks in the request are the direction authority. This set is the durable interpretation of that direction. If later platform guidance or implementation evidence conflicts with a common rule, resolve the conflict at the narrowest owner: platform-specific constraints belong in `platforms/`, component behavior belongs in its component file, and a change to the upper-level character requires governance review and new contrasting validation.\n\n## Open decisions\n\nExact color, typography, spacing, motion-duration, breakpoint, and logo geometry values were not supplied or verified here. Their values remain an implementation decision owned by [tokens.md](tokens.md) or the relevant component owner; this document does not invent them.\n\n\n---\n\n# `docs/design-system/patterns.md`\n\n# Patterns\n\n## Cross-context composition\n\nPatterns preserve the invariant direction while adapting density and emphasis to the task. A data-comparison pattern may be compact and scan-oriented; a completion pattern may reduce competing choices and make the next action prominent.\n\n## States and transitions\n\nStates must be understandable without motion. Motion may confirm a transition or completion when it supports the user's mental model. iOS completion flows may use platform-native transition conventions; web administrator tables may use restrained state changes that do not interrupt scanning.\n\n## Brand and function\n\nUse the logo when the reader needs product identity or orientation. Use feature icons when the reader needs quick functional recognition. Do not substitute the logo for an icon or make a functional icon carry brand detail that harms recognition at 16px.\n\n## Adaptive rule\n\nKeep hierarchy, meaning, and restrained friendliness common. Allow density, scale, interaction presentation, and motion behavior to vary only under the platform and size conditions documented by the owning files.\n\n\n---\n\n# `docs/design-system/platforms/ios.md`\n\n# iOS platform adaptation\n\n## Scope\n\nThis file covers the iOS app. It preserves the common direction in [foundations.md](../foundations.md) while documenting native interaction and completion-flow context.\n\n## Conditional rules\n\n- The short completion flow may give one next action stronger emphasis and more breathing room than a dense web table.\n- Use iOS-native navigation, input, accessibility semantics, and user settings where they are the platform's established convention.\n- Completion must be explicit in content and state; motion may reinforce it but cannot be required to perceive it.\n- Reduced-motion settings must be honored for nonessential transitions.\n\n## Contextual variation\n\nThe iOS flow may be more spacious and transition-oriented than the web administrator table. This variation supports task completion while preserving calm precision, clear hierarchy, and restrained friendliness.\n\n## Unresolved platform values\n\nExact layout units, supported OS versions, native-component mappings, typography behavior, and motion durations were not supplied and remain implementation decisions.\n\n\n---\n\n# `docs/design-system/platforms/web.md`\n\n# Web platform adaptation\n\n## Scope\n\nThis file covers the web administrator product. It preserves the common direction in [foundations.md](../foundations.md) while documenting web-specific density and interaction context.\n\n## Conditional rules\n\n- A dense data table may use compact presentation when comparison and scanning are primary.\n- Column relationships, sorting or filtering affordances, and row states must remain visually and semantically distinguishable.\n- Keyboard access and visible focus are required for interactive table controls and navigation.\n- Motion must not interrupt scanning or be required to understand a row state.\n\n## Contextual variation\n\nThe web table may be denser than the iOS completion flow. This is a task adaptation, not a departure from calm precision or visible hierarchy. The large header logo may support product orientation, while feature icons remain function-led.\n\n## Unresolved platform values\n\nBreakpoints, density measurements, focus styling values, and browser support targets were not supplied and remain implementation decisions.\n\n\n---\n\n# `docs/design-system/tokens.md`\n\n# Tokens\n\n## Contract\n\nThis file owns approved token values, semantic aliases, and component bindings. No exact token values were supplied or verified in this brief, so values remain unresolved rather than inferred from convention.\n\n## Required layers\n\nWhen values are approved, record them in this order: source tokens, semantic aliases, then component bindings. A component must consume a semantic meaning rather than bypassing the shared meaning with an unexplained local value.\n\n## Unresolved values\n\nThe following require an authoritative decision: color roles and values, typography families and scales, spacing and sizing steps, corner geometry, elevation or depth treatment, motion durations and easing, and responsive breakpoints. The web and iOS owners may map these values differently only when a platform constraint is documented; they must not silently create competing common values.\n\n## Verification\n\nToken review checks that each value has a meaning, a single owner, and a consumer; that the dense table and short completion flow preserve hierarchy; and that the 16px icon and large logo use size-appropriate bindings without changing their semantic roles.\n\n"}, {"name": "assistant-response.md", "type": "text", "content": "# \ub514\uc790\uc778 \uc2dc\uc2a4\ud15c \ubb38\uc11c \uc138\ud2b8 \uc644\ub8cc\n\n\uc2b9\uc778\ub41c \ubc29\ud5a5\uc778 \u201c\ucc28\ubd84\ud558\uace0 \uc815\ubc00\ud558\uba70 \uc815\ubcf4 \uc704\uacc4\uac00 \uba3c\uc800 \ubcf4\uc774\ub418 \ubaa8\uc11c\ub9ac\uc640 \uc6c0\uc9c1\uc784\uc5d0\uc11c \uc57d\uac04\uc758 \uce5c\uadfc\ud568\uc744 \uc900\ub2e4\u201d\ub97c \uc815\ubcf8\uc5d0 \ubc18\uc601\ud588\uc2b5\ub2c8\ub2e4. \uc6f9 \uad00\ub9ac\uc790 \uc81c\ud488\uacfc iOS \uc571\uc758 \uacf5\ud1b5 \uc6d0\uce59\uc744 \ubd84\ub9ac\ud558\uace0, \uc870\ubc00\ud55c \uc6f9 \ub370\uc774\ud130 \ud45c\u00b7\uc9e7\uc740 iOS \uc644\ub8cc \ud750\ub984\u00b7\ud070 \ud5e4\ub354 \ub85c\uace0\u00b716px \uae30\ub2a5 \uc544\uc774\ucf58\uc758 \ub9e5\ub77d\ubcc4 \ucc28\uc774\ub97c \uc870\uac74\ubd80 \uaddc\uce59\uc73c\ub85c \uae30\ub85d\ud588\uc2b5\ub2c8\ub2e4.\n\n\ubb38\uc11c \uc138\ud2b8\ub294 `docs/design-system/` \uc544\ub798\uc5d0 \uc0dd\uc131\ud588\uc73c\uba70, `index.md`\uac00 \uac01 \uacb0\uc815\uc758 \uc815\ubcf8 \uc18c\uc720\uc790\ub97c \uc5f0\uacb0\ud569\ub2c8\ub2e4. \uacf5\ud1b5 \uae30\ubc18, \ud1a0\ud070 \uacc4\uc57d, \ud328\ud134, \ucf58\ud150\uce20, \uc811\uadfc\uc131, \uac70\ubc84\ub10c\uc2a4, \ub85c\uace0, \uae30\ub2a5 \uc544\uc774\ucf58, `web`, `ios` \ud50c\ub7ab\ud3fc \ubb38\uc11c\ub97c \ud3ec\ud568\ud569\ub2c8\ub2e4.\n\n\uc81c\uacf5\ub418\uc9c0 \uc54a\uc740 \uc0c9\uc0c1\u00b7\ud0c0\uc774\ud3ec\uadf8\ub798\ud53c\u00b7\uac04\uaca9\u00b7\ube0c\ub808\uc774\ud06c\ud3ec\uc778\ud2b8\u00b7\ubaa8\uc158 \uac12\uacfc \uc0c1\uc138 \uc544\uc774\ucf58 \uc778\ubca4\ud1a0\ub9ac\ub294 \uc784\uc758\ub85c \ub9cc\ub4e4\uc9c0 \uc54a\uace0 \ubbf8\ud574\uacb0 \uacb0\uc815\uc73c\ub85c \ub0a8\uacbc\uc2b5\ub2c8\ub2e4.\n\n\uad6c\uc870 \uac80\uc99d\uc744 \uc644\ub8cc\ud588\uc2b5\ub2c8\ub2e4.\n\n- `index.md` \uc874\uc7ac\n- `web` \ud50c\ub7ab\ud3fc \uc18c\uc720\uc790 \uc874\uc7ac\n- `ios` \ud50c\ub7ab\ud3fc \uc18c\uc720\uc790 \uc874\uc7ac\n- `README.md`\uac00 `index.md`\ub97c \ub300\uccb4\ud558\uc9c0 \uc54a\uc74c\n\n\ud604\uc7ac \uc131\uc219\ub3c4\ub294 \uc2b9\uc778\ub41c \ubc29\ud5a5\uacfc \ub124 \uac00\uc9c0 \ub300\ud45c \uc0c1\ud669 \uac80\uc99d\uc744 \ubc18\uc601\ud55c \u201c\ub514\uc790\uc778 \uc2dc\uc2a4\ud15c \ubb38\uc11c\ud654\u201d\uc785\ub2c8\ub2e4.\n"}, {"name": "tree.txt", "type": "text", "content": "directory: docs\ndirectory: docs/design-system\nfile: docs/design-system/accessibility.md\ndirectory: docs/design-system/components\nfile: docs/design-system/components/feature-icon.md\nfile: docs/design-system/components/index.md\nfile: docs/design-system/components/logo.md\nfile: docs/design-system/content.md\nfile: docs/design-system/foundations.md\nfile: docs/design-system/governance.md\nfile: docs/design-system/index.md\nfile: docs/design-system/patterns.md\ndirectory: docs/design-system/platforms\nfile: docs/design-system/platforms/ios.md\nfile: docs/design-system/platforms/web.md\nfile: docs/design-system/tokens.md\n"}], "grading": {"schema_version": 3, "status": "completed-independent-grading", "provenance": "independent-luna-grader-output", "eval_id": 30, "grader_task_context_id": "513a9201602a46c9bd2faf0f0f61a526", "model": "gpt-5.6-luna", "reasoning_effort": "medium", "expectations": [{"text": "The request remains one `default` product UI output set; no new brand prebuilt or storefront set is invented for the logo and in-product icons.", "passed": true, "evidence": "index.md defines one shared visual and interaction source of truth for the web administrator product, iOS app, product logo, and feature icons; components/index.md explicitly limits the component inventory and the logo and feature-icon files treat them as product UI components rather than separate brand or storefront sets."}, {"text": "The approved direction and its authority appear in `index.md`, while `foundations.md` owns the shared upper-level shape, weight, spacing, hierarchy, icon, logo, and motion principles.", "passed": true, "evidence": "index.md states the approved calm-and-precise direction and identifies the explicit approval and representative checks as direction authority. Its document map assigns visual principles and invariant/variable rules to foundations.md, whose invariant and variable sections cover hierarchy, geometry/corners, density/spacing, logo/icons, and motion."}, {"text": "Invariant, variable, conditional, prohibited, and verification decisions are explicitly distinguishable instead of using an abstract consistency claim.", "passed": true, "evidence": "index.md contains a Decision classes section with separate Invariant, Variable, Conditional, Prohibited, and Verification entries; foundations.md also separates invariant, variable/conditional, prohibited expression, and verification criteria."}, {"text": "Web and iOS receive separate conditional platform adaptations, and logo versus 16px icon differences are treated as appropriate contextual variation rather than forced sameness.", "passed": true, "evidence": "platforms/web.md and platforms/ios.md are separate owners with conditional rules for dense table scanning versus short completion flow and native interaction. foundations.md and the component files explicitly distinguish the brand-led logo from functional icons and allow 16px simplification without forcing identical geometry or detail."}, {"text": "The supplied dense/simple, web/iOS, and large/small representative evidence is recorded without inventing unapproved token values.", "passed": true, "evidence": "index.md records all four supplied situations: dense web table, short iOS completion flow, large header logo, and 16px feature icons. tokens.md and the component/platform owners explicitly keep exact color, typography, spacing, breakpoint, motion, geometry, and inventory values unresolved rather than inferring them."}], "summary": {"passed": 5, "failed": 0, "total": 5, "pass_rate": 1.0}}}, {"id": "behavior-job-b11872c2b00383aefcd74ff7", "prompt": "\uae30\uc874 \uc81c\ud488 UI \ub514\uc790\uc778 \uc2dc\uc2a4\ud15c\uc5d0\uc11c \uc2b9\uc778 \ubcc0\uacbd \uae30\ub85d\uc5d0 \uc801\ud78c \uacbd\uace0 \uc0c9\uc0c1\ub9cc \ubc18\uc601\ud574\uc918. \uae30\uc874 \ubc29\ud5a5\uc744 \ub2e4\uc2dc \ud0d0\uc0c9\ud558\uac70\ub098 \ub2e4\ub978 \uc0c9\u00b7\uac04\uaca9\u00b7\ucef4\ud3ec\ub10c\ud2b8 \uaddc\uce59\uc744 \uc190\ub300\uc9c0 \ub9d0\uace0, \uacbd\uace0 \uc0c9\uc0c1\uc758 \uc815\ubcf8 \uac12\uc774 \uc2e4\uc81c \uacbd\uace0 \uc54c\ub9bc \uc18c\ube44\uc790\uae4c\uc9c0 \uc774\uc5b4\uc9c0\ub294\uc9c0 \ud655\uc778\ud574. \ubcc0\uacbd \uc804\ud6c4 \uae30\ubcf8 \uacbd\uace0\uc640 \uacbd\uace0 \uc548\uc758 \ub9c1\ud06c \uc0c1\ud0dc\ub9cc \uac80\uc99d\ud558\uace0 \ud604\uc7ac \ud30c\uc77c \uc774\ub984\uacfc \uad6c\uc870\ub97c \uc720\uc9c0\ud574\uc918.", "eval_id": 31, "outputs": [{"name": "artifact-review.md", "type": "text", "content": "# `docs/design-system/approved-change.md`\n\n# Approved warning color change\n\nProduct Design Council approved changing `color.status.warning` from `#E5A000` to `#D97706`.\n\nScope is limited to the canonical warning token and consumers that record or render its exact value. Validate the default warning and the warning-link state. Do not change danger color, spacing, component anatomy, or the approved design direction.\n\n\n---\n\n# `docs/design-system/components/alert.md`\n\n# Alert\n\n## Warning\n\n- Token binding: `color.status.warning`\n- Rendered marker color: `#D97706`\n- Default state: warning icon and explanatory text\n- Link state: warning icon, explanatory text, and underlined action link\n\n\n---\n\n# `docs/design-system/components/button.md`\n\n# Button\n\n- Primary action uses the existing brand action token.\n- Destructive action uses `color.status.danger`.\n- Inline spacing uses `space.control.inline`.\n\n\n---\n\n# `docs/design-system/foundations.md`\n\n# Foundations\n\n- Neutral surfaces carry routine information.\n- Semantic color is reserved for status and action meaning.\n- Warning states must remain legible without relying on color alone.\n\n\n---\n\n# `docs/design-system/index.md`\n\n# Atlas Design System\n\n## Direction\n\nApproved by Product Design Council: calm operational clarity, restrained decoration, and one strong semantic cue for attention-critical states.\n\nRepresentative validation covers a simple settings form and a dense incident table in both default and linked warning states.\n\n## Document map\n\n- [Foundations](foundations.md)\n- [Tokens](tokens.md)\n- [Alert](components/alert.md)\n- [Button](components/button.md)\n- [Approved warning change](approved-change.md)\n\n\n---\n\n# `docs/design-system/tokens.md`\n\n# Tokens\n\n| Token | Value | Meaning |\n| --- | --- | --- |\n| `color.status.warning` | `#D97706` | Warning emphasis and marker color |\n| `color.status.danger` | `#B42318` | Destructive or failed state |\n| `space.control.inline` | `8px` | Inline control spacing |\n\n"}, {"name": "assistant-response.md", "type": "text", "content": "\uc2b9\uc778\ub41c \uacbd\uace0 \uc0c9\uc0c1 \ubcc0\uacbd\uc744 \ubc18\uc601\ud588\uc2b5\ub2c8\ub2e4.\n\n- \uc815\ubcf8 \ud1a0\ud070 `color.status.warning`: `#E5A000` \u2192 `#D97706`\n- \ucd5c\uc885 Alert \uc18c\ube44\uc790(`Rendered marker color`): `#D97706`\uc73c\ub85c \uac31\uc2e0\n- \uae30\ubcf8 \uacbd\uace0 \uc0c1\ud0dc\uc640 \uacbd\uace0 \uc548\uc758 \ub9c1\ud06c \uc0c1\ud0dc\uac00 \ubaa8\ub450 `color.status.warning` \ubc14\uc778\ub529\uacfc \uc0c8 \uc0c9\uc0c1\uc744 \uc0ac\uc6a9\ud558\ub294\uc9c0 \ud655\uc778\n- \uc704\ud5d8 \uc0c9\uc0c1, \uac04\uaca9, \ucef4\ud3ec\ub10c\ud2b8 \uad6c\uc870, \uc2b9\uc778\ub41c \ub514\uc790\uc778 \ubc29\ud5a5\uc740 \ubcc0\uacbd\ud558\uc9c0 \uc54a\uc74c\n\n\ubcc0\uacbd \ud30c\uc77c:\n- `docs/design-system/tokens.md`\n- `docs/design-system/components/alert.md`\n"}, {"name": "tree.txt", "type": "text", "content": "directory: docs\ndirectory: docs/design-system\nfile: docs/design-system/approved-change.md\ndirectory: docs/design-system/components\nfile: docs/design-system/components/alert.md\nfile: docs/design-system/components/button.md\nfile: docs/design-system/foundations.md\nfile: docs/design-system/index.md\nfile: docs/design-system/tokens.md\n"}], "grading": {"schema_version": 3, "status": "completed-independent-grading", "provenance": "independent-luna-grader-output", "eval_id": 31, "grader_task_context_id": "250899386e3b44fd85bbf9d7559fbbac", "model": "gpt-5.6-luna", "reasoning_effort": "medium", "expectations": [{"text": "The existing approved direction and document-set location are reused without presenting new direction hypotheses or asking for reapproval.", "passed": true, "evidence": "The response states that the approved design direction was not changed and identifies the existing docs/design-system/tokens.md and docs/design-system/components/alert.md files. The supplied workspace retains the approved direction and document map in index.md and the approval record in approved-change.md; no new direction or reapproval request appears."}, {"text": "The warning token changes from `#E5A000` to the approved `#D97706`, and the alert consumer's exact rendered-color record changes to the same value.", "passed": true, "evidence": "workspace/docs/design-system/tokens.md records color.status.warning as #D97706, while workspace/docs/design-system/components/alert.md records Rendered marker color as #D97706. The response explicitly reports the #E5A000 to #D97706 replacement and consumer update; deterministic grading confirms both required changes."}, {"text": "The unchanged foundations, approval record, unrelated button component, filenames, and directory structure are preserved byte-for-byte.", "passed": true, "evidence": "The execution receipt lists only the two intended produced paths. Deterministic grading confirms no file or directory was created, removed, or renamed and explicitly confirms approved-change.md, components/button.md, foundations.md, and index.md were preserved byte-for-byte."}, {"text": "The result traces the approved value through the canonical token owner to the final alert consumer without changing the options contract or inventing aliases.", "passed": true, "evidence": "The approval record names color.status.warning as the canonical scoped token; tokens.md owns its value, and alert.md binds the alert to color.status.warning while recording the matching rendered value #D97706. No aliases or options contract are introduced in the supplied response or workspace, and deterministic grading confirms only the canonical token and final consumer changed."}, {"text": "Verification is limited to the default warning and warning-link representative states and does not claim a full-system redesign.", "passed": true, "evidence": "The response explicitly says the default warning and warning-link states were checked and that the approved direction, spacing, component structure, and unrelated colors were not changed. The alert document contains only the default and link states, matching the approval record's validation scope."}], "summary": {"passed": 5, "failed": 0, "total": 5, "pass_rate": 1.0}}}], "previous_feedback": {}, "previous_outputs": {}, "benchmark": {"schema_version": 3, "status": "diagnostic-failed", "metadata": {"skill_name": "document-writing", "timestamp": "2026-08-29T10:29:35Z", "evals_run": [10, 14, 22, 27, 30, 31], "configuration": "current", "runs_per_eval": 1}, "runs": [{"eval_id": 10, "eval_name": "directionless-new-system-gate", "configuration": "current", "run_number": 1, "job_id": "job-0718d2d8de6b366c889f3ac4", "task_context_id": "74a20267fe3541e6a13852dc695c8af4", "grader_task_context_id": "65930d6ac201420dbae71465ea9b0d61", "response_present": true, "execution": {"receipt_status": "completed", "receipt_valid": true, "valid": true}, "deterministic_status": "pass", "grading": {"status": "quality-failed", "format_valid": true, "semantic_passed": false, "pass_rate": 0.6}, "scoreable": true}, {"eval_id": 14, "eval_name": "included-and-excluded-storefronts", "configuration": "current", "run_number": 1, "job_id": "job-4b48a2fc09818d0849b924ed", "task_context_id": "ff78c88c9b40458aab84b1576661ce27", "grader_task_context_id": "c7ae4b2b8f5444f0b9cfe647755fa693", "response_present": true, "execution": {"receipt_status": "completed", "receipt_valid": true, "valid": true}, "deterministic_status": "pass", "grading": {"status": "quality-failed", "format_valid": true, "semantic_passed": false, "pass_rate": 0.8}, "scoreable": true}, {"eval_id": 22, "eval_name": "reuse-noncanonical-storefront-path", "configuration": "current", "run_number": 1, "job_id": "job-6f03500b074a13fba8450771", "task_context_id": "d9a95d7311524709af2a1258c6e688ef", "grader_task_context_id": "ea2b6e9f0f404b3aaac14a02ac299e27", "response_present": true, "execution": {"receipt_status": "completed", "receipt_valid": true, "valid": true}, "deterministic_status": "pass", "grading": {"status": "completed", "format_valid": true, "semantic_passed": true, "pass_rate": 1.0}, "scoreable": true}, {"eval_id": 27, "eval_name": "collective-platform-ambiguity", "configuration": "current", "run_number": 1, "job_id": "job-a0aaf99b2d65984cce6c7abe", "task_context_id": "0e26b49c4e8b42c9b5761e71fe4d0423", "grader_task_context_id": null, "response_present": true, "execution": {"receipt_status": "completed", "receipt_valid": true, "valid": true}, "deterministic_status": "fail", "grading": {"status": "not-run", "format_valid": false, "semantic_passed": false, "pass_rate": null}, "scoreable": false}, {"eval_id": 30, "eval_name": "cross-context-consistency-not-sameness", "configuration": "current", "run_number": 1, "job_id": "job-d63cfb50b0865ea781c12ba7", "task_context_id": "5e1ba086ed764e32ad3dba6dc2ed0ba6", "grader_task_context_id": "513a9201602a46c9bd2faf0f0f61a526", "response_present": true, "execution": {"receipt_status": "completed", "receipt_valid": true, "valid": true}, "deterministic_status": "pass", "grading": {"status": "completed", "format_valid": true, "semantic_passed": true, "pass_rate": 1.0}, "scoreable": true}, {"eval_id": 31, "eval_name": "focused-warning-token-update", "configuration": "current", "run_number": 1, "job_id": "job-b11872c2b00383aefcd74ff7", "task_context_id": "5548a7ee09494afa8895b8b5ccf10f2d", "grader_task_context_id": "250899386e3b44fd85bbf9d7559fbbac", "response_present": true, "execution": {"receipt_status": "completed", "receipt_valid": true, "valid": true}, "deterministic_status": "pass", "grading": {"status": "completed", "format_valid": true, "semantic_passed": true, "pass_rate": 1.0}, "scoreable": true}], "summary": {"scope_kind": "targeted", "planned_execution_tasks": 6, "responses_present": 6, "valid_execution_receipts": 6, "deterministic_passed": 5, "deterministic_failed": 1, "completed_independent_gradings": 5, "semantic_passed": 3, "macro_pass_rate": 0.88, "hard_gates": {"direction-approval-no-premature-write": "fail", "existing-document-preservation": "not-in-scope", "review-no-mutation": "not-in-scope", "collision-no-overwrite": "not-in-scope", "web-unavailable-no-hallucination": "not-in-scope", "qualitative-feedback-translation": "not-in-scope", "cross-context-consistency-not-sameness": "pass", "focused-update-propagation": "pass", "contradictory-preference-convergence": "not-in-scope"}, "all_scope_passed": false, "production_eligible": false}}};
+
+    // ---- State ----
+    let feedbackMap = {};  // run_id -> feedback text
+    let currentIndex = 0;
+    let visitedRuns = new Set();
+
+    // ---- Init ----
+    async function init() {
+      // Load saved feedback from server — but only if this isn't a fresh
+      // iteration (indicated by previous_feedback being present). When
+      // previous feedback exists, the feedback.json on disk is stale from
+      // the prior iteration and should not pre-fill the textareas.
+      const hasPrevious = Object.keys(EMBEDDED_DATA.previous_feedback || {}).length > 0
+        || Object.keys(EMBEDDED_DATA.previous_outputs || {}).length > 0;
+      if (!hasPrevious) {
+        try {
+          const resp = await fetch("/api/feedback");
+          const data = await resp.json();
+          if (data.reviews) {
+            for (const r of data.reviews) feedbackMap[r.run_id] = r.feedback;
+          }
+        } catch { /* first run, no feedback yet */ }
+      }
+
+      document.getElementById("skill-name").textContent = EMBEDDED_DATA.skill_name;
+      showRun(0);
+
+      // Wire up feedback auto-save
+      const textarea = document.getElementById("feedback");
+      let saveTimeout = null;
+      textarea.addEventListener("input", () => {
+        clearTimeout(saveTimeout);
+        document.getElementById("feedback-status").textContent = "";
+        saveTimeout = setTimeout(() => saveCurrentFeedback(), 800);
+      });
+    }
+
+    // ---- Navigation ----
+    function navigate(delta) {
+      const newIndex = currentIndex + delta;
+      if (newIndex >= 0 && newIndex < EMBEDDED_DATA.runs.length) {
+        saveCurrentFeedback();
+        showRun(newIndex);
+      }
+    }
+
+    function updateNavButtons() {
+      document.getElementById("prev-btn").disabled = currentIndex === 0;
+      document.getElementById("next-btn").disabled =
+        currentIndex === EMBEDDED_DATA.runs.length - 1;
+    }
+
+    // ---- Show a run ----
+    function showRun(index) {
+      currentIndex = index;
+      const run = EMBEDDED_DATA.runs[index];
+
+      // Progress
+      document.getElementById("progress").textContent =
+        `${index + 1} of ${EMBEDDED_DATA.runs.length}`;
+
+      // Prompt
+      document.getElementById("prompt-text").textContent = run.prompt;
+
+      // Config badge
+      const badge = document.getElementById("config-badge");
+      const configMatch = run.id.match(/(with_skill|without_skill|new_skill|old_skill)/);
+      if (configMatch) {
+        const config = configMatch[1];
+        const isBaseline = config === "without_skill" || config === "old_skill";
+        badge.textContent = config.replace(/_/g, " ");
+        badge.className = "config-badge " + (isBaseline ? "config-baseline" : "config-primary");
+        badge.style.display = "inline-block";
+      } else {
+        badge.style.display = "none";
+      }
+
+      // Outputs
+      renderOutputs(run);
+
+      // Previous outputs
+      renderPrevOutputs(run);
+
+      // Grades
+      renderGrades(run);
+
+      // Previous feedback
+      const prevFb = (EMBEDDED_DATA.previous_feedback || {})[run.id];
+      const prevEl = document.getElementById("prev-feedback");
+      if (prevFb) {
+        document.getElementById("prev-feedback-text").textContent = prevFb;
+        prevEl.style.display = "block";
+      } else {
+        prevEl.style.display = "none";
+      }
+
+      // Feedback
+      document.getElementById("feedback").value = feedbackMap[run.id] || "";
+      document.getElementById("feedback-status").textContent = "";
+
+      updateNavButtons();
+
+      // Track visited runs and promote done button when all visited
+      visitedRuns.add(index);
+      const doneBtn = document.getElementById("done-btn");
+      if (visitedRuns.size >= EMBEDDED_DATA.runs.length) {
+        doneBtn.classList.add("ready");
+      }
+
+      // Scroll main content to top
+      document.querySelector(".main").scrollTop = 0;
+    }
+
+    // ---- Render outputs ----
+    function renderOutputs(run) {
+      const container = document.getElementById("outputs-body");
+      container.innerHTML = "";
+
+      const outputs = run.outputs || [];
+      if (outputs.length === 0) {
+        container.innerHTML = '<div class="empty-state">No output files</div>';
+        return;
+      }
+
+      for (const file of outputs) {
+        const fileDiv = document.createElement("div");
+        fileDiv.className = "output-file";
+
+        // Always show file header with download link
+        const header = document.createElement("div");
+        header.className = "output-file-header";
+        const nameSpan = document.createElement("span");
+        nameSpan.textContent = file.name;
+        header.appendChild(nameSpan);
+        const dlBtn = document.createElement("a");
+        dlBtn.className = "dl-btn";
+        dlBtn.textContent = "Download";
+        dlBtn.download = file.name;
+        dlBtn.href = getDownloadUri(file);
+        header.appendChild(dlBtn);
+        fileDiv.appendChild(header);
+
+        const content = document.createElement("div");
+        content.className = "output-file-content";
+
+        if (file.type === "text") {
+          const pre = document.createElement("pre");
+          pre.textContent = file.content;
+          content.appendChild(pre);
+        } else if (file.type === "image") {
+          const img = document.createElement("img");
+          img.src = file.data_uri;
+          img.alt = file.name;
+          content.appendChild(img);
+        } else if (file.type === "pdf") {
+          const iframe = document.createElement("iframe");
+          iframe.src = file.data_uri;
+          content.appendChild(iframe);
+        } else if (file.type === "xlsx") {
+          renderXlsx(content, file.data_b64);
+        } else if (file.type === "binary") {
+          const a = document.createElement("a");
+          a.className = "download-link";
+          a.href = file.data_uri;
+          a.download = file.name;
+          a.textContent = "Download " + file.name;
+          content.appendChild(a);
+        } else if (file.type === "error") {
+          const pre = document.createElement("pre");
+          pre.textContent = file.content;
+          pre.style.color = "var(--red)";
+          content.appendChild(pre);
+        }
+
+        fileDiv.appendChild(content);
+        container.appendChild(fileDiv);
+      }
+    }
+
+    // ---- XLSX rendering via SheetJS ----
+    function renderXlsx(container, b64Data) {
+      try {
+        const raw = Uint8Array.from(atob(b64Data), c => c.charCodeAt(0));
+        const wb = XLSX.read(raw, { type: "array" });
+
+        for (let i = 0; i < wb.SheetNames.length; i++) {
+          const sheetName = wb.SheetNames[i];
+          const ws = wb.Sheets[sheetName];
+
+          if (wb.SheetNames.length > 1) {
+            const sheetLabel = document.createElement("div");
+            sheetLabel.style.cssText =
+              "font-weight:600; font-size:0.8rem; color:#b0aea5; margin-top:0.5rem; margin-bottom:0.25rem;";
+            sheetLabel.textContent = "Sheet: " + sheetName;
+            container.appendChild(sheetLabel);
+          }
+
+          const htmlStr = XLSX.utils.sheet_to_html(ws, { editable: false });
+          const wrapper = document.createElement("div");
+          wrapper.innerHTML = htmlStr;
+          container.appendChild(wrapper);
+        }
+      } catch (err) {
+        container.textContent = "Error rendering spreadsheet: " + err.message;
+      }
+    }
+
+    // ---- Grades ----
+    function renderGrades(run) {
+      const section = document.getElementById("grades-section");
+      const content = document.getElementById("grades-content");
+
+      if (!run.grading) {
+        section.style.display = "none";
+        return;
+      }
+
+      const grading = run.grading;
+      section.style.display = "block";
+      // Reset to collapsed
+      content.classList.remove("open");
+      document.getElementById("grades-arrow").classList.remove("open");
+
+      const summary = grading.summary || {};
+      const expectations = grading.expectations || [];
+
+      let html = '<div style="padding: 1rem;">';
+
+      // Summary line
+      const passRate = summary.pass_rate != null
+        ? Math.round(summary.pass_rate * 100) + "%"
+        : "?";
+      const badgeClass = summary.pass_rate >= 0.8 ? "grade-pass" : summary.pass_rate >= 0.5 ? "" : "grade-fail";
+      html += '<div class="grades-summary">';
+      html += '<span class="grade-badge ' + badgeClass + '">' + passRate + '</span>';
+      html += '<span>' + (summary.passed || 0) + ' passed, ' + (summary.failed || 0) + ' failed of ' + (summary.total || 0) + '</span>';
+      html += '</div>';
+
+      // Assertions list
+      html += '<ul class="assertion-list">';
+      for (const exp of expectations) {
+        const statusClass = exp.passed ? "pass" : "fail";
+        const statusIcon = exp.passed ? "\u2713" : "\u2717";
+        html += '<li class="assertion-item">';
+        html += '<span class="assertion-status ' + statusClass + '">' + statusIcon + '</span>';
+        html += '<span>' + escapeHtml(exp.text) + '</span>';
+        if (exp.evidence) {
+          html += '<div class="assertion-evidence">' + escapeHtml(exp.evidence) + '</div>';
+        }
+        html += '</li>';
+      }
+      html += '</ul>';
+
+      html += '</div>';
+      content.innerHTML = html;
+    }
+
+    function toggleGrades() {
+      const content = document.getElementById("grades-content");
+      const arrow = document.getElementById("grades-arrow");
+      content.classList.toggle("open");
+      arrow.classList.toggle("open");
+    }
+
+    // ---- Previous outputs (collapsible) ----
+    function renderPrevOutputs(run) {
+      const section = document.getElementById("prev-outputs-section");
+      const content = document.getElementById("prev-outputs-content");
+      const prevOutputs = (EMBEDDED_DATA.previous_outputs || {})[run.id];
+
+      if (!prevOutputs || prevOutputs.length === 0) {
+        section.style.display = "none";
+        return;
+      }
+
+      section.style.display = "block";
+      // Reset to collapsed
+      content.classList.remove("open");
+      document.getElementById("prev-outputs-arrow").classList.remove("open");
+
+      // Render the files into the content area
+      content.innerHTML = "";
+      const wrapper = document.createElement("div");
+      wrapper.style.padding = "1rem";
+
+      for (const file of prevOutputs) {
+        const fileDiv = document.createElement("div");
+        fileDiv.className = "output-file";
+
+        const header = document.createElement("div");
+        header.className = "output-file-header";
+        const nameSpan = document.createElement("span");
+        nameSpan.textContent = file.name;
+        header.appendChild(nameSpan);
+        const dlBtn = document.createElement("a");
+        dlBtn.className = "dl-btn";
+        dlBtn.textContent = "Download";
+        dlBtn.download = file.name;
+        dlBtn.href = getDownloadUri(file);
+        header.appendChild(dlBtn);
+        fileDiv.appendChild(header);
+
+        const fc = document.createElement("div");
+        fc.className = "output-file-content";
+
+        if (file.type === "text") {
+          const pre = document.createElement("pre");
+          pre.textContent = file.content;
+          fc.appendChild(pre);
+        } else if (file.type === "image") {
+          const img = document.createElement("img");
+          img.src = file.data_uri;
+          img.alt = file.name;
+          fc.appendChild(img);
+        } else if (file.type === "pdf") {
+          const iframe = document.createElement("iframe");
+          iframe.src = file.data_uri;
+          fc.appendChild(iframe);
+        } else if (file.type === "xlsx") {
+          renderXlsx(fc, file.data_b64);
+        } else if (file.type === "binary") {
+          const a = document.createElement("a");
+          a.className = "download-link";
+          a.href = file.data_uri;
+          a.download = file.name;
+          a.textContent = "Download " + file.name;
+          fc.appendChild(a);
+        }
+
+        fileDiv.appendChild(fc);
+        wrapper.appendChild(fileDiv);
+      }
+
+      content.appendChild(wrapper);
+    }
+
+    function togglePrevOutputs() {
+      const content = document.getElementById("prev-outputs-content");
+      const arrow = document.getElementById("prev-outputs-arrow");
+      content.classList.toggle("open");
+      arrow.classList.toggle("open");
+    }
+
+    // ---- Feedback (saved to server -> feedback.json) ----
+    function saveCurrentFeedback() {
+      const run = EMBEDDED_DATA.runs[currentIndex];
+      const text = document.getElementById("feedback").value;
+
+      if (text.trim() === "") {
+        delete feedbackMap[run.id];
+      } else {
+        feedbackMap[run.id] = text;
+      }
+
+      // Build reviews array from map
+      const reviews = [];
+      for (const [run_id, feedback] of Object.entries(feedbackMap)) {
+        if (feedback.trim()) {
+          reviews.push({ run_id, feedback, timestamp: new Date().toISOString() });
+        }
+      }
+
+      fetch("/api/feedback", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ reviews, status: "in_progress" }),
+      }).then(() => {
+        document.getElementById("feedback-status").textContent = "Saved";
+      }).catch(() => {
+        // Static mode or server unavailable — no-op on auto-save,
+        // feedback will be downloaded on final submit
+        document.getElementById("feedback-status").textContent = "Will download on submit";
+      });
+    }
+
+    // ---- Done ----
+    function showDoneDialog() {
+      // Save current textarea to feedbackMap (but don't POST yet)
+      const run = EMBEDDED_DATA.runs[currentIndex];
+      const text = document.getElementById("feedback").value;
+      if (text.trim() === "") {
+        delete feedbackMap[run.id];
+      } else {
+        feedbackMap[run.id] = text;
+      }
+
+      // POST once with status: complete — include ALL runs so the model
+      // can distinguish "no feedback" (looks good) from "not reviewed"
+      const reviews = [];
+      const ts = new Date().toISOString();
+      for (const r of EMBEDDED_DATA.runs) {
+        reviews.push({ run_id: r.id, feedback: feedbackMap[r.id] || "", timestamp: ts });
+      }
+      const payload = JSON.stringify({ reviews, status: "complete" }, null, 2);
+      fetch("/api/feedback", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: payload,
+      }).then(() => {
+        document.getElementById("done-overlay").classList.add("visible");
+      }).catch(() => {
+        // Server not available (static mode) — download as file
+        const blob = new Blob([payload], { type: "application/json" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "feedback.json";
+        a.click();
+        URL.revokeObjectURL(url);
+        document.getElementById("done-overlay").classList.add("visible");
+      });
+    }
+
+    function closeDoneDialog() {
+      // Reset status back to in_progress
+      saveCurrentFeedback();
+      document.getElementById("done-overlay").classList.remove("visible");
+    }
+
+    // ---- Toast ----
+    function showToast(message) {
+      const toast = document.getElementById("toast");
+      toast.textContent = message;
+      toast.classList.add("visible");
+      setTimeout(() => toast.classList.remove("visible"), 2000);
+    }
+
+    // ---- Keyboard nav ----
+    document.addEventListener("keydown", (e) => {
+      // Don't capture when typing in textarea
+      if (e.target.tagName === "TEXTAREA") return;
+
+      if (e.key === "ArrowLeft" || e.key === "ArrowUp") {
+        e.preventDefault();
+        navigate(-1);
+      } else if (e.key === "ArrowRight" || e.key === "ArrowDown") {
+        e.preventDefault();
+        navigate(1);
+      }
+    });
+
+    // ---- Util ----
+    function getDownloadUri(file) {
+      if (file.data_uri) return file.data_uri;
+      if (file.data_b64) return "data:application/octet-stream;base64," + file.data_b64;
+      if (file.type === "text") return "data:text/plain;charset=utf-8," + encodeURIComponent(file.content);
+      return "#";
+    }
+
+    function escapeHtml(text) {
+      const div = document.createElement("div");
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    // ---- View switching ----
+    function switchView(view) {
+      document.querySelectorAll(".view-tab").forEach(t => t.classList.remove("active"));
+      document.querySelectorAll(".view-panel").forEach(p => p.classList.remove("active"));
+      document.querySelector(`[onclick="switchView('${view}')"]`).classList.add("active");
+      document.getElementById("panel-" + view).classList.add("active");
+    }
+
+    // ---- Benchmark rendering ----
+    function renderBenchmark() {
+      const data = EMBEDDED_DATA.benchmark;
+      if (!data) return;
+
+      // Show the tabs
+      document.getElementById("view-tabs").style.display = "flex";
+
+      const container = document.getElementById("benchmark-content");
+      const summary = data.run_summary || {};
+      const metadata = data.metadata || {};
+      const notes = data.notes || [];
+
+      let html = "";
+
+      // Header
+      html += "<h2 style='font-family: Poppins, sans-serif; margin-bottom: 0.5rem;'>Benchmark Results</h2>";
+      html += "<p style='color: var(--text-muted); font-size: 0.875rem; margin-bottom: 1.25rem;'>";
+      if (metadata.skill_name) html += "<strong>" + escapeHtml(metadata.skill_name) + "</strong> &mdash; ";
+      if (metadata.timestamp) html += metadata.timestamp + " &mdash; ";
+      if (metadata.evals_run) html += "Evals: " + metadata.evals_run.join(", ") + " &mdash; ";
+      html += (metadata.runs_per_configuration || "?") + " runs per configuration";
+      html += "</p>";
+
+      // Summary table
+      html += '<table class="benchmark-table">';
+
+      function fmtStat(stat, pct) {
+        if (!stat) return "—";
+        const suffix = pct ? "%" : "";
+        const m = pct ? (stat.mean * 100).toFixed(0) : stat.mean.toFixed(1);
+        const s = pct ? (stat.stddev * 100).toFixed(0) : stat.stddev.toFixed(1);
+        return m + suffix + " ± " + s + suffix;
+      }
+
+      function deltaClass(val) {
+        if (!val) return "";
+        const n = parseFloat(val);
+        if (n > 0) return "benchmark-delta-positive";
+        if (n < 0) return "benchmark-delta-negative";
+        return "";
+      }
+
+      // Discover config names dynamically (everything except "delta")
+      const configs = Object.keys(summary).filter(k => k !== "delta");
+      const configA = configs[0] || "config_a";
+      const configB = configs[1] || "config_b";
+      const labelA = configA.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+      const labelB = configB.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+      const a = summary[configA] || {};
+      const b = summary[configB] || {};
+      const delta = summary.delta || {};
+
+      html += "<thead><tr><th>Metric</th><th>" + escapeHtml(labelA) + "</th><th>" + escapeHtml(labelB) + "</th><th>Delta</th></tr></thead>";
+      html += "<tbody>";
+
+      html += "<tr><td><strong>Pass Rate</strong></td>";
+      html += "<td>" + fmtStat(a.pass_rate, true) + "</td>";
+      html += "<td>" + fmtStat(b.pass_rate, true) + "</td>";
+      html += '<td class="' + deltaClass(delta.pass_rate) + '">' + (delta.pass_rate || "—") + "</td></tr>";
+
+      // Time (only show row if data exists)
+      if (a.time_seconds || b.time_seconds) {
+        html += "<tr><td><strong>Time (s)</strong></td>";
+        html += "<td>" + fmtStat(a.time_seconds, false) + "</td>";
+        html += "<td>" + fmtStat(b.time_seconds, false) + "</td>";
+        html += '<td class="' + deltaClass(delta.time_seconds) + '">' + (delta.time_seconds ? delta.time_seconds + "s" : "—") + "</td></tr>";
+      }
+
+      // Tokens (only show row if data exists)
+      if (a.tokens || b.tokens) {
+        html += "<tr><td><strong>Tokens</strong></td>";
+        html += "<td>" + fmtStat(a.tokens, false) + "</td>";
+        html += "<td>" + fmtStat(b.tokens, false) + "</td>";
+        html += '<td class="' + deltaClass(delta.tokens) + '">' + (delta.tokens || "—") + "</td></tr>";
+      }
+
+      html += "</tbody></table>";
+
+      // Per-eval breakdown (if runs data available)
+      const runs = data.runs || [];
+      if (runs.length > 0) {
+        const evalIds = [...new Set(runs.map(r => r.eval_id))].sort((a, b) => a - b);
+
+        html += "<h3 style='font-family: Poppins, sans-serif; margin-bottom: 0.75rem;'>Per-Eval Breakdown</h3>";
+
+        const hasTime = runs.some(r => r.result && r.result.time_seconds != null);
+        const hasErrors = runs.some(r => r.result && r.result.errors > 0);
+
+        for (const evalId of evalIds) {
+          const evalRuns = runs.filter(r => r.eval_id === evalId);
+          const evalName = evalRuns[0] && evalRuns[0].eval_name ? evalRuns[0].eval_name : "Eval " + evalId;
+
+          html += "<h4 style='font-family: Poppins, sans-serif; margin: 1rem 0 0.5rem; color: var(--text);'>" + escapeHtml(evalName) + "</h4>";
+          html += '<table class="benchmark-table">';
+          html += "<thead><tr><th>Config</th><th>Run</th><th>Pass Rate</th>";
+          if (hasTime) html += "<th>Time (s)</th>";
+          if (hasErrors) html += "<th>Crashes During Execution</th>";
+          html += "</tr></thead>";
+          html += "<tbody>";
+
+          // Group by config and render with average rows
+          const configGroups = [...new Set(evalRuns.map(r => r.configuration))];
+          for (let ci = 0; ci < configGroups.length; ci++) {
+            const config = configGroups[ci];
+            const configRuns = evalRuns.filter(r => r.configuration === config);
+            if (configRuns.length === 0) continue;
+
+            const rowClass = ci === 0 ? "benchmark-row-with" : "benchmark-row-without";
+            const configLabel = config.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+
+            for (const run of configRuns) {
+              const r = run.result || {};
+              const prClass = r.pass_rate >= 0.8 ? "benchmark-delta-positive" : r.pass_rate < 0.5 ? "benchmark-delta-negative" : "";
+              html += '<tr class="' + rowClass + '">';
+              html += "<td>" + configLabel + "</td>";
+              html += "<td>" + run.run_number + "</td>";
+              html += '<td class="' + prClass + '">' + ((r.pass_rate || 0) * 100).toFixed(0) + "% (" + (r.passed || 0) + "/" + (r.total || 0) + ")</td>";
+              if (hasTime) html += "<td>" + (r.time_seconds != null ? r.time_seconds.toFixed(1) : "—") + "</td>";
+              if (hasErrors) html += "<td>" + (r.errors || 0) + "</td>";
+              html += "</tr>";
+            }
+
+            // Average row
+            const rates = configRuns.map(r => (r.result || {}).pass_rate || 0);
+            const avgRate = rates.reduce((a, b) => a + b, 0) / rates.length;
+            const avgPrClass = avgRate >= 0.8 ? "benchmark-delta-positive" : avgRate < 0.5 ? "benchmark-delta-negative" : "";
+            html += '<tr class="benchmark-row-avg ' + rowClass + '">';
+            html += "<td>" + configLabel + "</td>";
+            html += "<td>Avg</td>";
+            html += '<td class="' + avgPrClass + '">' + (avgRate * 100).toFixed(0) + "%</td>";
+            if (hasTime) {
+              const times = configRuns.map(r => (r.result || {}).time_seconds).filter(t => t != null);
+              html += "<td>" + (times.length ? (times.reduce((a, b) => a + b, 0) / times.length).toFixed(1) : "—") + "</td>";
+            }
+            if (hasErrors) html += "<td></td>";
+            html += "</tr>";
+          }
+          html += "</tbody></table>";
+
+          // Per-assertion detail for this eval
+          const runsWithExpectations = {};
+          for (const config of configGroups) {
+            runsWithExpectations[config] = evalRuns.filter(r => r.configuration === config && r.expectations && r.expectations.length > 0);
+          }
+          const hasAnyExpectations = Object.values(runsWithExpectations).some(runs => runs.length > 0);
+          if (hasAnyExpectations) {
+            // Collect all unique assertion texts across all configs
+            const allAssertions = [];
+            const seen = new Set();
+            for (const config of configGroups) {
+              for (const run of runsWithExpectations[config]) {
+                for (const exp of (run.expectations || [])) {
+                  if (!seen.has(exp.text)) {
+                    seen.add(exp.text);
+                    allAssertions.push(exp.text);
+                  }
+                }
+              }
+            }
+
+            html += '<table class="benchmark-table" style="margin-top: 0.5rem;">';
+            html += "<thead><tr><th>Assertion</th>";
+            for (const config of configGroups) {
+              const label = config.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+              html += "<th>" + escapeHtml(label) + "</th>";
+            }
+            html += "</tr></thead><tbody>";
+
+            for (const assertionText of allAssertions) {
+              html += "<tr><td>" + escapeHtml(assertionText) + "</td>";
+
+              for (const config of configGroups) {
+                html += "<td>";
+                for (const run of runsWithExpectations[config]) {
+                  const exp = (run.expectations || []).find(e => e.text === assertionText);
+                  if (exp) {
+                    const cls = exp.passed ? "benchmark-delta-positive" : "benchmark-delta-negative";
+                    const icon = exp.passed ? "\u2713" : "\u2717";
+                    html += '<span class="' + cls + '" title="Run ' + run.run_number + ': ' + escapeHtml(exp.evidence || "") + '">' + icon + "</span> ";
+                  } else {
+                    html += "— ";
+                  }
+                }
+                html += "</td>";
+              }
+              html += "</tr>";
+            }
+            html += "</tbody></table>";
+          }
+        }
+      }
+
+      // Notes
+      if (notes.length > 0) {
+        html += '<div class="benchmark-notes">';
+        html += "<h3>Analysis Notes</h3>";
+        html += "<ul>";
+        for (const note of notes) {
+          html += "<li>" + escapeHtml(note) + "</li>";
+        }
+        html += "</ul></div>";
+      }
+
+      container.innerHTML = html;
+    }
+
+    // ---- Start ----
+    init();
+    renderBenchmark();
+  </script>
+</body>
+</html>

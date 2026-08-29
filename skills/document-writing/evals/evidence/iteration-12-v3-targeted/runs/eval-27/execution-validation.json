@@ -1,0 +1,12 @@
+{
+  "schema_version": 3,
+  "provenance": "harness-execution-validation",
+  "eval_id": 27,
+  "status": "hard-gate-failed",
+  "valid": false,
+  "reasons": [
+    "validate_eval_run.py: workspace change set is available",
+    "validate_eval_run.py: required change occurred: docs/design-system/index.md",
+    "validate_eval_run.py: required change occurred: docs/design-system/platforms/web.md"
+  ]
+}

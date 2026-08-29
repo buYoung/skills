@@ -1,0 +1,25 @@
+{
+  "schema_version": 3,
+  "provenance": "harness-derived-from-task-response-and-manifests",
+  "status": "completed",
+  "task_context_id": "ff78c88c9b40458aab84b1576661ce27",
+  "model": "gpt-5.6-luna",
+  "reasoning_effort": "medium",
+  "response_sha256": "d509edc7a76743c544c357439335f94c250c66c44ef9f825bb3e478dc38e155b",
+  "workspace_before_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+  "workspace_after_sha256": "fa84e2f2f9f9b2c42f2153c322d1f8f4c140631cf05af8170589e2f182e88bd8",
+  "produced_paths": [
+    "docs/design-system-visual-assets/common.md",
+    "docs/design-system-visual-assets/index.md",
+    "docs/design-system-visual-assets/stores/google-play.md"
+  ],
+  "telemetry": {
+    "status": "unavailable",
+    "duration_ms": null,
+    "total_tokens": null
+  },
+  "capability_evidence": {
+    "status": "unverified",
+    "events": []
+  }
+}

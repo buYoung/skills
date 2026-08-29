@@ -1,0 +1,24 @@
+{
+  "schema_version": 3,
+  "eval_id": 10,
+  "eval_name": "directionless-new-system-gate",
+  "configuration": "current",
+  "run_number": 1,
+  "prompt": "제품 전반에서 디자이너와 프론트엔드 개발자가 함께 사용할 디자인시스템 문서를 만들어줘. 별도 저장 경로나 플랫폼은 지정하지 않는다. 확인된 원칙은 명확성, 일관성, 접근성이다. 현재 브랜드 색상·서체·간격 값과 컴포넌트 목록은 아직 결정되지 않았다. foundations, tokens, components, patterns, content, accessibility, governance의 정본 위치가 분명해야 하고 없는 값은 추정하지 마라.",
+  "expectations": [
+    "The artifact is routed to Design System Document with the `default` prebuilt, not to FDD, reference/specification, or UI implementation.",
+    "No file or directory is created because neither a design direction nor representative validation has been approved.",
+    "The response derives two or three materially different direction hypotheses from the supplied product evidence and recommends one with concrete benefits and risks.",
+    "The user is asked no more than three plain-language questions about recognizable outcomes or use situations; internal design-axis terminology is not required from the user.",
+    "The response does not invent brand values, token values, component inventory, platforms, or claim that the design-system document is complete."
+  ],
+  "case_contract": {
+    "deny_write_tools": true,
+    "allowed_change_paths": [],
+    "response": {
+      "min_questions": 1,
+      "max_questions": 3
+    }
+  },
+  "task_context_id": "74a20267fe3541e6a13852dc695c8af4"
+}

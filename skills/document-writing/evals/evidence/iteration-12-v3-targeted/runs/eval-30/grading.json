@@ -1,0 +1,42 @@
+{
+  "schema_version": 3,
+  "status": "completed-independent-grading",
+  "provenance": "independent-luna-grader-output",
+  "eval_id": 30,
+  "grader_task_context_id": "513a9201602a46c9bd2faf0f0f61a526",
+  "model": "gpt-5.6-luna",
+  "reasoning_effort": "medium",
+  "expectations": [
+    {
+      "text": "The request remains one `default` product UI output set; no new brand prebuilt or storefront set is invented for the logo and in-product icons.",
+      "passed": true,
+      "evidence": "index.md defines one shared visual and interaction source of truth for the web administrator product, iOS app, product logo, and feature icons; components/index.md explicitly limits the component inventory and the logo and feature-icon files treat them as product UI components rather than separate brand or storefront sets."
+    },
+    {
+      "text": "The approved direction and its authority appear in `index.md`, while `foundations.md` owns the shared upper-level shape, weight, spacing, hierarchy, icon, logo, and motion principles.",
+      "passed": true,
+      "evidence": "index.md states the approved calm-and-precise direction and identifies the explicit approval and representative checks as direction authority. Its document map assigns visual principles and invariant/variable rules to foundations.md, whose invariant and variable sections cover hierarchy, geometry/corners, density/spacing, logo/icons, and motion."
+    },
+    {
+      "text": "Invariant, variable, conditional, prohibited, and verification decisions are explicitly distinguishable instead of using an abstract consistency claim.",
+      "passed": true,
+      "evidence": "index.md contains a Decision classes section with separate Invariant, Variable, Conditional, Prohibited, and Verification entries; foundations.md also separates invariant, variable/conditional, prohibited expression, and verification criteria."
+    },
+    {
+      "text": "Web and iOS receive separate conditional platform adaptations, and logo versus 16px icon differences are treated as appropriate contextual variation rather than forced sameness.",
+      "passed": true,
+      "evidence": "platforms/web.md and platforms/ios.md are separate owners with conditional rules for dense table scanning versus short completion flow and native interaction. foundations.md and the component files explicitly distinguish the brand-led logo from functional icons and allow 16px simplification without forcing identical geometry or detail."
+    },
+    {
+      "text": "The supplied dense/simple, web/iOS, and large/small representative evidence is recorded without inventing unapproved token values.",
+      "passed": true,
+      "evidence": "index.md records all four supplied situations: dense web table, short iOS completion flow, large header logo, and 16px feature icons. tokens.md and the component/platform owners explicitly keep exact color, typography, spacing, breakpoint, motion, geometry, and inventory values unresolved rather than inferring them."
+    }
+  ],
+  "summary": {
+    "passed": 5,
+    "failed": 0,
+    "total": 5,
+    "pass_rate": 1.0
+  }
+}

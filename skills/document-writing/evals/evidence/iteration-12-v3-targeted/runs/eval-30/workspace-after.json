@@ -1,0 +1,98 @@
+{
+  "workspace_root": "/Users/buyonglee/Documents/work/private/skills/skills/document-writing-workspace/iteration-12/behavior/job-d63cfb50b0865ea781c12ba7/workspace",
+  "root": "/Users/buyonglee/Documents/work/private/skills/skills/document-writing-workspace/iteration-12/behavior/job-d63cfb50b0865ea781c12ba7/workspace",
+  "exists": true,
+  "entries": [
+    {
+      "path": "docs",
+      "type": "directory"
+    },
+    {
+      "path": "docs/design-system",
+      "type": "directory"
+    },
+    {
+      "path": "docs/design-system/accessibility.md",
+      "type": "file",
+      "sha256": "b6dbe46f7c64fa8f7ce163d4b47f2cf5ee10a0061a5d2b9cf243efa322ab9afd"
+    },
+    {
+      "path": "docs/design-system/components",
+      "type": "directory"
+    },
+    {
+      "path": "docs/design-system/components/feature-icon.md",
+      "type": "file",
+      "sha256": "acdf80dfafafcd2010a3e7a1b7f2a34a3d0e1084809e98749f946912cb840196"
+    },
+    {
+      "path": "docs/design-system/components/index.md",
+      "type": "file",
+      "sha256": "937a8b356a0d05ca8e1398fcf568797153b967ec91d2a88010297aca279225f0"
+    },
+    {
+      "path": "docs/design-system/components/logo.md",
+      "type": "file",
+      "sha256": "fe46392ff2ff0e3153e91b4c57df46b1eac11a3aa13fb236432a68c4bd29b0e4"
+    },
+    {
+      "path": "docs/design-system/content.md",
+      "type": "file",
+      "sha256": "1806ee23b38ace79277d249ec8dceaf9960a48bea23fbed5e53117cf7d7c04b5"
+    },
+    {
+      "path": "docs/design-system/foundations.md",
+      "type": "file",
+      "sha256": "b4d0bfabb1a709c8ca725050c8ab72c03938f9e70e2730aa0e0385838199d9e9"
+    },
+    {
+      "path": "docs/design-system/governance.md",
+      "type": "file",
+      "sha256": "a0a29c443eec3a291dae35f8cd8718099da9d4b8fc8dee18a7ae271ed42f8a5f"
+    },
+    {
+      "path": "docs/design-system/index.md",
+      "type": "file",
+      "sha256": "29aa6e6f0899803307695b39f8c075d45fe8ed514fa3f7d7d9fcec2304b3f228"
+    },
+    {
+      "path": "docs/design-system/patterns.md",
+      "type": "file",
+      "sha256": "e5fe95cf1ec057e64e23763a86c2f2d20ce2dca4ad5369242869e7a41ac72cfc"
+    },
+    {
+      "path": "docs/design-system/platforms",
+      "type": "directory"
+    },
+    {
+      "path": "docs/design-system/platforms/ios.md",
+      "type": "file",
+      "sha256": "66f6563e24e4e2d64c1130fdf608c463825fbb249cd566650039a778e4975760"
+    },
+    {
+      "path": "docs/design-system/platforms/web.md",
+      "type": "file",
+      "sha256": "5c20e66155912c6a18e90c27c8c8677ed26a6c411433117e52eb634e81acc51c"
+    },
+    {
+      "path": "docs/design-system/tokens.md",
+      "type": "file",
+      "sha256": "5f53cd5b20d44a1edb16dd3f4084b332ac7ebd571ceea8c8f52f17a6aa57016c"
+    }
+  ],
+  "files": {
+    "docs/design-system/accessibility.md": "b6dbe46f7c64fa8f7ce163d4b47f2cf5ee10a0061a5d2b9cf243efa322ab9afd",
+    "docs/design-system/components/feature-icon.md": "acdf80dfafafcd2010a3e7a1b7f2a34a3d0e1084809e98749f946912cb840196",
+    "docs/design-system/components/index.md": "937a8b356a0d05ca8e1398fcf568797153b967ec91d2a88010297aca279225f0",
+    "docs/design-system/components/logo.md": "fe46392ff2ff0e3153e91b4c57df46b1eac11a3aa13fb236432a68c4bd29b0e4",
+    "docs/design-system/content.md": "1806ee23b38ace79277d249ec8dceaf9960a48bea23fbed5e53117cf7d7c04b5",
+    "docs/design-system/foundations.md": "b4d0bfabb1a709c8ca725050c8ab72c03938f9e70e2730aa0e0385838199d9e9",
+    "docs/design-system/governance.md": "a0a29c443eec3a291dae35f8cd8718099da9d4b8fc8dee18a7ae271ed42f8a5f",
+    "docs/design-system/index.md": "29aa6e6f0899803307695b39f8c075d45fe8ed514fa3f7d7d9fcec2304b3f228",
+    "docs/design-system/patterns.md": "e5fe95cf1ec057e64e23763a86c2f2d20ce2dca4ad5369242869e7a41ac72cfc",
+    "docs/design-system/platforms/ios.md": "66f6563e24e4e2d64c1130fdf608c463825fbb249cd566650039a778e4975760",
+    "docs/design-system/platforms/web.md": "5c20e66155912c6a18e90c27c8c8677ed26a6c411433117e52eb634e81acc51c",
+    "docs/design-system/tokens.md": "5f53cd5b20d44a1edb16dd3f4084b332ac7ebd571ceea8c8f52f17a6aa57016c"
+  },
+  "sha256": "87ee9aea16c4abaf66490cacf8d34114a0237bef1c120abe5804ae2c7c99aa65"
+}

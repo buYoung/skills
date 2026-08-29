@@ -1,0 +1,29 @@
+{
+  "schema_version": 3,
+  "eval_id": 27,
+  "eval_name": "collective-platform-ambiguity",
+  "configuration": "current",
+  "run_number": 1,
+  "prompt": "제품 UI 가이드에서 웹과 모바일의 차이를 각각 따로 관리해줘. '조밀한 업무 정보에서도 핵심 행동이 먼저 보이는 차분한 도구'라는 방향은 승인됐고, 단순 폼과 복잡한 표, 키보드와 터치 사용에서 대표 검증도 끝났다. 웹은 브라우저 제품을 뜻하지만, 모바일은 iOS와 Android를 모두 말하는지 우리 앱의 내부 분류 이름인지는 아직 팀에서 정하지 못했어.",
+  "expectations": [
+    "The common design-system contract remains platform-neutral.",
+    "The response explicitly preserves the confirmed web adaptation as `platforms/web.md` for completion after clarification; it is not silently dropped.",
+    "The assistant asks one concise question to resolve whether mobile is the team's own platform name or a label covering concrete platforms.",
+    "It does not invent iOS or Android scope from convention.",
+    "The unresolved platform decision is not represented as a completed adaptation."
+  ],
+  "case_contract": {
+    "allowed_change_paths": [
+      "docs/design-system/**"
+    ],
+    "required_change_paths": [
+      "docs/design-system/index.md",
+      "docs/design-system/platforms/web.md"
+    ],
+    "response": {
+      "min_questions": 1,
+      "max_questions": 1
+    }
+  },
+  "task_context_id": "0e26b49c4e8b42c9b5761e71fe4d0423"
+}

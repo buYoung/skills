@@ -1,0 +1,174 @@
+{
+  "status": "completed",
+  "validators": [
+    {
+      "name": "validate_eval_run.py",
+      "return_code": 0,
+      "stdout": "{\n  \"checks\": [\n    \"before/after manifests describe the same workspace\",\n    \"before manifest tree hash is canonical\",\n    \"after manifest tree hash is canonical\",\n    \"before manifest matches canonical package fixtures\",\n    \"before manifest directories match canonical package fixtures\",\n    \"after manifest matches the preserved workspace files\",\n    \"after manifest tree hash matches the preserved workspace\",\n    \"workspace change set is available\",\n    \"changed path is allowed: docs/design-system-visual-assets/common.md\",\n    \"changed path is not forbidden: docs/design-system-visual-assets/common.md\",\n    \"changed path is allowed: docs/design-system-visual-assets/index.md\",\n    \"changed path is not forbidden: docs/design-system-visual-assets/index.md\",\n    \"changed path is allowed: docs/design-system-visual-assets/stores/google-play.md\",\n    \"changed path is not forbidden: docs/design-system-visual-assets/stores/google-play.md\",\n    \"required change occurred: docs/design-system-visual-assets/index.md\",\n    \"required change occurred: docs/design-system-visual-assets/stores/google-play.md\",\n    \"execution receipt uses schema 3\",\n    \"execution receipt is harness-derived\",\n    \"execution receipt status is derived from response presence\",\n    \"execution receipt task_context_id matches task\",\n    \"execution receipt model matches task\",\n    \"execution receipt reasoning_effort matches task\",\n    \"response hash matches receipt\",\n    \"before manifest hash matches receipt\",\n    \"after manifest hash matches receipt\",\n    \"produced paths are derived from manifest diff\",\n    \"missing telemetry stays unavailable and null\",\n    \"missing capability evidence stays unverified\",\n    \"observable output records an HTTPS source URL\",\n    \"observable output records a real ISO verification date\"\n  ],\n  \"failures\": []\n}\n",
+      "stderr": ""
+    }
+  ],
+  "expectations": [
+    {
+      "text": "validate_eval_run.py: before/after manifests describe the same workspace",
+      "passed": true,
+      "evidence": "deterministic check"
+    },
+    {
+      "text": "validate_eval_run.py: before manifest tree hash is canonical",
+      "passed": true,
+      "evidence": "deterministic check"
+    },
+    {
+      "text": "validate_eval_run.py: after manifest tree hash is canonical",
+      "passed": true,
+      "evidence": "deterministic check"
+    },
+    {
+      "text": "validate_eval_run.py: before manifest matches canonical package fixtures",
+      "passed": true,
+      "evidence": "deterministic check"
+    },
+    {
+      "text": "validate_eval_run.py: before manifest directories match canonical package fixtures",
+      "passed": true,
+      "evidence": "deterministic check"
+    },
+    {
+      "text": "validate_eval_run.py: after manifest matches the preserved workspace files",
+      "passed": true,
+      "evidence": "deterministic check"
+    },
+    {
+      "text": "validate_eval_run.py: after manifest tree hash matches the preserved workspace",
+      "passed": true,
+      "evidence": "deterministic check"
+    },
+    {
+      "text": "validate_eval_run.py: workspace change set is available",
+      "passed": true,
+      "evidence": "deterministic check"
+    },
+    {
+      "text": "validate_eval_run.py: changed path is allowed: docs/design-system-visual-assets/common.md",
+      "passed": true,
+      "evidence": "deterministic check"
+    },
+    {
+      "text": "validate_eval_run.py: changed path is not forbidden: docs/design-system-visual-assets/common.md",
+      "passed": true,
+      "evidence": "deterministic check"
+    },
+    {
+      "text": "validate_eval_run.py: changed path is allowed: docs/design-system-visual-assets/index.md",
+      "passed": true,
+      "evidence": "deterministic check"
+    },
+    {
+      "text": "validate_eval_run.py: changed path is not forbidden: docs/design-system-visual-assets/index.md",
+      "passed": true,
+      "evidence": "deterministic check"
+    },
+    {
+      "text": "validate_eval_run.py: changed path is allowed: docs/design-system-visual-assets/stores/google-play.md",
+      "passed": true,
+      "evidence": "deterministic check"
+    },
+    {
+      "text": "validate_eval_run.py: changed path is not forbidden: docs/design-system-visual-assets/stores/google-play.md",
+      "passed": true,
+      "evidence": "deterministic check"
+    },
+    {
+      "text": "validate_eval_run.py: required change occurred: docs/design-system-visual-assets/index.md",
+      "passed": true,
+      "evidence": "deterministic check"
+    },
+    {
+      "text": "validate_eval_run.py: required change occurred: docs/design-system-visual-assets/stores/google-play.md",
+      "passed": true,
+      "evidence": "deterministic check"
+    },
+    {
+      "text": "validate_eval_run.py: execution receipt uses schema 3",
+      "passed": true,
+      "evidence": "deterministic check"
+    },
+    {
+      "text": "validate_eval_run.py: execution receipt is harness-derived",
+      "passed": true,
+      "evidence": "deterministic check"
+    },
+    {
+      "text": "validate_eval_run.py: execution receipt status is derived from response presence",
+      "passed": true,
+      "evidence": "deterministic check"
+    },
+    {
+      "text": "validate_eval_run.py: execution receipt task_context_id matches task",
+      "passed": true,
+      "evidence": "deterministic check"
+    },
+    {
+      "text": "validate_eval_run.py: execution receipt model matches task",
+      "passed": true,
+      "evidence": "deterministic check"
+    },
+    {
+      "text": "validate_eval_run.py: execution receipt reasoning_effort matches task",
+      "passed": true,
+      "evidence": "deterministic check"
+    },
+    {
+      "text": "validate_eval_run.py: response hash matches receipt",
+      "passed": true,
+      "evidence": "deterministic check"
+    },
+    {
+      "text": "validate_eval_run.py: before manifest hash matches receipt",
+      "passed": true,
+      "evidence": "deterministic check"
+    },
+    {
+      "text": "validate_eval_run.py: after manifest hash matches receipt",
+      "passed": true,
+      "evidence": "deterministic check"
+    },
+    {
+      "text": "validate_eval_run.py: produced paths are derived from manifest diff",
+      "passed": true,
+      "evidence": "deterministic check"
+    },
+    {
+      "text": "validate_eval_run.py: missing telemetry stays unavailable and null",
+      "passed": true,
+      "evidence": "deterministic check"
+    },
+    {
+      "text": "validate_eval_run.py: missing capability evidence stays unverified",
+      "passed": true,
+      "evidence": "deterministic check"
+    },
+    {
+      "text": "validate_eval_run.py: observable output records an HTTPS source URL",
+      "passed": true,
+      "evidence": "deterministic check"
+    },
+    {
+      "text": "validate_eval_run.py: observable output records a real ISO verification date",
+      "passed": true,
+      "evidence": "deterministic check"
+    },
+    {
+      "text": "Execution skill snapshot remains unchanged",
+      "passed": true,
+      "evidence": "before=22c2653ca14c5d7f7927c455f82268a5cb2da03a90685624a09093dd9c4a8669 after=22c2653ca14c5d7f7927c455f82268a5cb2da03a90685624a09093dd9c4a8669"
+    }
+  ],
+  "summary": {
+    "passed": 31,
+    "failed": 0,
+    "total": 31,
+    "pass_rate": 1.0
+  }
+}

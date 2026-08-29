@@ -1,0 +1,27 @@
+{
+  "schema_version": 3,
+  "eval_id": 30,
+  "eval_name": "cross-context-consistency-not-sameness",
+  "configuration": "current",
+  "run_number": 1,
+  "prompt": "웹 관리자 제품과 iOS 앱, 그 안에서 쓰는 로고와 기능 아이콘을 하나의 제품 UI 디자인 시스템으로 정리해줘. 승인된 방향은 '차분하고 정밀하며 정보 위계가 먼저 보이되 모서리와 움직임에서 약간의 친근함을 준다'야. 조밀한 웹 데이터 표와 짧은 모바일 완료 흐름, 큰 헤더 로고와 16px 기능 아이콘에서 이 방향을 각각 검증했어. 모든 결과를 같은 모양으로 만들지 말고 무엇이 같아야 하고 무엇이 맥락에 따라 달라져야 하는지 정본에 분리해줘.",
+  "expectations": [
+    "The request remains one `default` product UI output set; no new brand prebuilt or storefront set is invented for the logo and in-product icons.",
+    "The approved direction and its authority appear in `index.md`, while `foundations.md` owns the shared upper-level shape, weight, spacing, hierarchy, icon, logo, and motion principles.",
+    "Invariant, variable, conditional, prohibited, and verification decisions are explicitly distinguishable instead of using an abstract consistency claim.",
+    "Web and iOS receive separate conditional platform adaptations, and logo versus 16px icon differences are treated as appropriate contextual variation rather than forced sameness.",
+    "The supplied dense/simple, web/iOS, and large/small representative evidence is recorded without inventing unapproved token values."
+  ],
+  "case_contract": {
+    "allowed_change_paths": [
+      "docs/design-system/**"
+    ],
+    "required_change_paths": [
+      "docs/design-system/index.md",
+      "docs/design-system/foundations.md",
+      "docs/design-system/platforms/web.md",
+      "docs/design-system/platforms/ios.md"
+    ]
+  },
+  "task_context_id": "5e1ba086ed764e32ad3dba6dc2ed0ba6"
+}

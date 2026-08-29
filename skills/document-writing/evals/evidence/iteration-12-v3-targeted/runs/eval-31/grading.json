@@ -1,0 +1,42 @@
+{
+  "schema_version": 3,
+  "status": "completed-independent-grading",
+  "provenance": "independent-luna-grader-output",
+  "eval_id": 31,
+  "grader_task_context_id": "250899386e3b44fd85bbf9d7559fbbac",
+  "model": "gpt-5.6-luna",
+  "reasoning_effort": "medium",
+  "expectations": [
+    {
+      "text": "The existing approved direction and document-set location are reused without presenting new direction hypotheses or asking for reapproval.",
+      "passed": true,
+      "evidence": "The response states that the approved design direction was not changed and identifies the existing docs/design-system/tokens.md and docs/design-system/components/alert.md files. The supplied workspace retains the approved direction and document map in index.md and the approval record in approved-change.md; no new direction or reapproval request appears."
+    },
+    {
+      "text": "The warning token changes from `#E5A000` to the approved `#D97706`, and the alert consumer's exact rendered-color record changes to the same value.",
+      "passed": true,
+      "evidence": "workspace/docs/design-system/tokens.md records color.status.warning as #D97706, while workspace/docs/design-system/components/alert.md records Rendered marker color as #D97706. The response explicitly reports the #E5A000 to #D97706 replacement and consumer update; deterministic grading confirms both required changes."
+    },
+    {
+      "text": "The unchanged foundations, approval record, unrelated button component, filenames, and directory structure are preserved byte-for-byte.",
+      "passed": true,
+      "evidence": "The execution receipt lists only the two intended produced paths. Deterministic grading confirms no file or directory was created, removed, or renamed and explicitly confirms approved-change.md, components/button.md, foundations.md, and index.md were preserved byte-for-byte."
+    },
+    {
+      "text": "The result traces the approved value through the canonical token owner to the final alert consumer without changing the options contract or inventing aliases.",
+      "passed": true,
+      "evidence": "The approval record names color.status.warning as the canonical scoped token; tokens.md owns its value, and alert.md binds the alert to color.status.warning while recording the matching rendered value #D97706. No aliases or options contract are introduced in the supplied response or workspace, and deterministic grading confirms only the canonical token and final consumer changed."
+    },
+    {
+      "text": "Verification is limited to the default warning and warning-link representative states and does not claim a full-system redesign.",
+      "passed": true,
+      "evidence": "The response explicitly says the default warning and warning-link states were checked and that the approved direction, spacing, component structure, and unrelated colors were not changed. The alert document contains only the default and link states, matching the approval record's validation scope."
+    }
+  ],
+  "summary": {
+    "passed": 5,
+    "failed": 0,
+    "total": 5,
+    "pass_rate": 1.0
+  }
+}

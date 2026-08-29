@@ -1,0 +1,40 @@
+{
+  "workspace_root": "/Users/buyonglee/Documents/work/private/skills/skills/document-writing-workspace/iteration-12/behavior/job-6f03500b074a13fba8450771/workspace",
+  "root": "/Users/buyonglee/Documents/work/private/skills/skills/document-writing-workspace/iteration-12/behavior/job-6f03500b074a13fba8450771/workspace",
+  "exists": true,
+  "entries": [
+    {
+      "path": "docs",
+      "type": "directory"
+    },
+    {
+      "path": "docs/design-system-visual-assets",
+      "type": "directory"
+    },
+    {
+      "path": "docs/design-system-visual-assets/index.md",
+      "type": "file",
+      "sha256": "9033eaae37ae78c6978cea2688bac461a35233ec23bb72da5de8403f838defdd"
+    },
+    {
+      "path": "docs/design-system-visual-assets/release-coordination.md",
+      "type": "file",
+      "sha256": "e6ad83cc246e7f381a28efc79dea943dcdea2a27c44cee3530db223363cec137"
+    },
+    {
+      "path": "docs/design-system-visual-assets/stores",
+      "type": "directory"
+    },
+    {
+      "path": "docs/design-system-visual-assets/stores/play-store-assets.md",
+      "type": "file",
+      "sha256": "36866927dba12caef3c977339567887924da16e47c7e599210f044b07832ba00"
+    }
+  ],
+  "files": {
+    "docs/design-system-visual-assets/index.md": "9033eaae37ae78c6978cea2688bac461a35233ec23bb72da5de8403f838defdd",
+    "docs/design-system-visual-assets/release-coordination.md": "e6ad83cc246e7f381a28efc79dea943dcdea2a27c44cee3530db223363cec137",
+    "docs/design-system-visual-assets/stores/play-store-assets.md": "36866927dba12caef3c977339567887924da16e47c7e599210f044b07832ba00"
+  },
+  "sha256": "a32c24a90b8664e35b5ed3b7ffd1de6d6c1dca3fd254b30f085bcc09eee46cb8"
+}

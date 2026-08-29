@@ -1,0 +1,42 @@
+{
+  "schema_version": 3,
+  "status": "completed-independent-grading",
+  "provenance": "independent-luna-grader-output",
+  "eval_id": 22,
+  "grader_task_context_id": "ea2b6e9f0f404b3aaac14a02ac299e27",
+  "model": "gpt-5.6-luna",
+  "reasoning_effort": "medium",
+  "expectations": [
+    {
+      "text": "The existing file is recognized as the Google Play owner within this document set.",
+      "passed": true,
+      "evidence": "The document map labels stores/play-store-assets.md as Google Play listing artwork, and the file itself is headed Google Play listing artwork."
+    },
+    {
+      "text": "The existing `stores/play-store-assets.md` path is reused and `stores/google-play.md` is not created.",
+      "passed": true,
+      "evidence": "The workspace contains stores/play-store-assets.md and no stores/google-play.md; the execution receipt lists only the existing play-store-assets.md path as produced."
+    },
+    {
+      "text": "No path rename occurs without an explicit migration request.",
+      "passed": true,
+      "evidence": "The response explicitly says the existing 담당 파일 path is maintained, and the deterministic grading confirms the established non-canonical storefront path was reused with no duplicate owner or unexpected document."
+    },
+    {
+      "text": "Other existing files remain unchanged except for required cross-reference updates.",
+      "passed": true,
+      "evidence": "The deterministic grading reports all unrelated fixture files are byte-for-byte preserved; the only changed path is docs/design-system-visual-assets/stores/play-store-assets.md, while index.md continues its existing link."
+    },
+    {
+      "text": "Current first-party requirements and verification metadata are updated without inventing values.",
+      "passed": true,
+      "evidence": "The updated owner file cites the official Google Play Console HTTPS guidance URL, records the real ISO date 2026-08-29, and specifies icon, feature graphic, screenshot, and recommendation-surface requirements; deterministic grading confirms the source URL and verification date."
+    }
+  ],
+  "summary": {
+    "passed": 5,
+    "failed": 0,
+    "total": 5,
+    "pass_rate": 1.0
+  }
+}

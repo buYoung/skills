@@ -1,0 +1,42 @@
+{
+  "schema_version": 3,
+  "status": "completed-independent-grading",
+  "provenance": "independent-luna-grader-output",
+  "eval_id": 10,
+  "grader_task_context_id": "65930d6ac201420dbae71465ea9b0d61",
+  "model": "gpt-5.6-luna",
+  "reasoning_effort": "medium",
+  "expectations": [
+    {
+      "text": "The artifact is routed to Design System Document with the `default` prebuilt, not to FDD, reference/specification, or UI implementation.",
+      "passed": false,
+      "evidence": "The supplied response does not identify a Design System Document route or the `default` prebuilt; it only asks the user to approve a design direction. The receipt also reports capability evidence as unverified."
+    },
+    {
+      "text": "No file or directory is created because neither a design direction nor representative validation has been approved.",
+      "passed": true,
+      "evidence": "The response requests approval of a direction before proceeding, and execution-receipt produced_paths is empty while workspace_before_sha256 and workspace_after_sha256 are identical."
+    },
+    {
+      "text": "The response derives two or three materially different direction hypotheses from the supplied product evidence and recommends one with concrete benefits and risks.",
+      "passed": false,
+      "evidence": "The response provides three distinct directions and gives a benefit and risk for each, but it does not recommend one; it asks the user which direction to approve."
+    },
+    {
+      "text": "The user is asked no more than three plain-language questions about recognizable outcomes or use situations; internal design-axis terminology is not required from the user.",
+      "passed": true,
+      "evidence": "The response asks one question (which direction to approve), within the maximum of three, and presents plain-language outcomes and situations such as rapid information scanning, dense workflows, consistency across product areas, and varied users/screens."
+    },
+    {
+      "text": "The response does not invent brand values, token values, component inventory, platforms, or claim that the design-system document is complete.",
+      "passed": true,
+      "evidence": "The response explicitly says brand colors, typefaces, spacing values, and component list are undecided and says values must not be estimated; it does not claim the document is complete or introduce a platform."
+    }
+  ],
+  "summary": {
+    "passed": 3,
+    "failed": 2,
+    "total": 5,
+    "pass_rate": 0.6
+  }
+}
