@@ -1,0 +1,43 @@
+{
+  "eval_id": 14,
+  "eval_name": "included-and-excluded-storefronts",
+  "configuration": "with_skill",
+  "run_number": 1,
+  "prompt": "Google Play 등록용 시각 자산 디자인시스템 문서를 작성해줘. '실제 제품 화면이 주인공이고 장식은 절제하되 한 가지 선명한 강조색으로 진취적인 인상을 준다'는 방향은 브랜드 책임자가 승인했다. 작은 앱 아이콘과 정보가 많은 스크린샷, 정적 이미지와 움직이는 preview에서 이 방향을 검증했다. 아이콘, 스크린샷, preview video, feature graphic의 역할과 관계, localization, 전달·버전 규칙을 공통 문서에 두고 Google Play에서만 달라지는 현재 크기·개수·형식·정책은 공식 자료를 다시 확인해 별도 store 문서에 출처와 확인일을 남겨라. Apple App Store는 범위가 아니다.",
+  "expectations": [
+    "The selected prebuilt is `app-store-page` and common visual-asset documents remain store-neutral.",
+    "Only the in-scope Google Play adaptation is added as `stores/google-play.md`; the explicitly excluded Apple App Store is neither researched nor given a file.",
+    "Mutable Google Play sizes, counts, formats, and policies are verified from current official Google sources rather than memory.",
+    "The store file records official source URLs and a verification date near mutable requirements.",
+    "Google Play-specific differences are not generalized into the common visual-asset contract."
+  ],
+  "expected_output": "`app-store-page` prebuilt의 공통 계약과 공식 자료로 검증된 조건부 `stores/google-play.md`만 포함한 Design System Document.",
+  "case_contract": {
+    "required_capabilities": [
+      "web"
+    ],
+    "allowed_change_paths": [
+      "docs/design-system-visual-assets/**"
+    ],
+    "required_change_paths": [
+      "docs/design-system-visual-assets/index.md",
+      "docs/design-system-visual-assets/stores/google-play.md"
+    ],
+    "source_evidence": {
+      "require_https_url": true,
+      "require_verification_date": true
+    }
+  },
+  "allowed_workspace_change_paths": [
+    "docs/design-system-visual-assets/**"
+  ],
+  "skill_contract_sha256": "1992556407dd0e1d386fd82315fde0296bce26df2002f5deb5ff62b97ffdf254",
+  "skill_snapshot_before_sha256": "1e9bc77b686a9775a0295e2199cb5bbdb9c59d5ff0cf112d6d36d5cf9fcbd5ec",
+  "skill_snapshot_after_sha256": "1e9bc77b686a9775a0295e2199cb5bbdb9c59d5ff0cf112d6d36d5cf9fcbd5ec",
+  "skill_usage": "required",
+  "executor": "independent-luna-context",
+  "capability_evidence_status": "unverified",
+  "execution_receipt_sha256": "01ec8f287c3a858dd1ba8dbc899d5f95881cf3b660858fed497d02e9ff62f421",
+  "execution_receipt_schema_version": 3,
+  "context_id": "60ca29e9ad3246ec839179e90c50bc3c"
+}

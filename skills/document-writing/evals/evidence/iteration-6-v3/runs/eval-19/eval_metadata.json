@@ -1,0 +1,44 @@
+{
+  "eval_id": 19,
+  "eval_name": "generic-storefront-discovery",
+  "configuration": "with_skill",
+  "run_number": 1,
+  "prompt": "출시팀이 Flathub와 Snap Store에 올릴 때 쓸 스크린샷·아이콘·미리보기용 가이드를 `docs/launch-assets`에 정리해줘. '기능을 빠르게 이해시키는 차분한 기술 제품이며 장식보다 실제 화면의 판독성을 우선한다'는 방향은 승인됐고, 작은 아이콘과 큰 스크린샷, 밝은 화면과 어두운 화면에서 검증됐다. 최신 운영자 안내를 확인해 두 상점에서 달라지는 내용은 각각 적고, 공통 시각 원칙은 한곳에서 관리해줘. Steam은 회의에서 비교만 했으니 이번 문서에는 넣지 말아줘.",
+  "expectations": [
+    "Flathub and Snap Store are handled from their current first-party material even though neither is named in a fixed example list.",
+    "Only Flathub and Snap Store receive storefront files; Steam is treated as comparison-only and receives neither research nor a file.",
+    "Each storefront file records its official name, operator identity, product applicability, first-party source locations, and verification date from opened first-party material.",
+    "Only visual asset requirements are included, with unverifiable values explicitly unresolved.",
+    "No actual assets or general listing metadata are produced."
+  ],
+  "expected_output": "지정한 폴더에 Flathub와 Snap Store 문서를 각각 두고, Steam은 조사하거나 파일을 만들지 않은 시각 자산 문서 묶음.",
+  "case_contract": {
+    "required_capabilities": [
+      "web"
+    ],
+    "allowed_change_paths": [
+      "docs/launch-assets/**"
+    ],
+    "required_change_paths": [
+      "docs/launch-assets/index.md",
+      "docs/launch-assets/stores/flathub.md",
+      "docs/launch-assets/stores/snap-store.md"
+    ],
+    "source_evidence": {
+      "require_https_url": true,
+      "require_verification_date": true
+    }
+  },
+  "allowed_workspace_change_paths": [
+    "docs/launch-assets/**"
+  ],
+  "skill_contract_sha256": "1992556407dd0e1d386fd82315fde0296bce26df2002f5deb5ff62b97ffdf254",
+  "skill_snapshot_before_sha256": "1e9bc77b686a9775a0295e2199cb5bbdb9c59d5ff0cf112d6d36d5cf9fcbd5ec",
+  "skill_snapshot_after_sha256": "1e9bc77b686a9775a0295e2199cb5bbdb9c59d5ff0cf112d6d36d5cf9fcbd5ec",
+  "skill_usage": "required",
+  "executor": "independent-luna-context",
+  "capability_evidence_status": "unverified",
+  "execution_receipt_sha256": "b4ced81de78535a7977652d6bc4ce818149c8f17b71e6240b75cc52428ffc193",
+  "execution_receipt_schema_version": 3,
+  "context_id": "7c55669e3fbb4f7ab01e30d081126031"
+}

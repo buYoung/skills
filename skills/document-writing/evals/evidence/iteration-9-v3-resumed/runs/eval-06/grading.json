@@ -1,0 +1,42 @@
+{
+  "schema_version": 3,
+  "status": "completed-independent-grading",
+  "provenance": "independent-luna-grader-output",
+  "eval_id": 6,
+  "grader_task_context_id": "b3ce22764efc4fc1b6598a4cd022688a",
+  "model": "gpt-5.6-luna",
+  "reasoning_effort": "medium",
+  "expectations": [
+    {
+      "text": "The artifact is an analysis report, not a proposal or chronological record.",
+      "passed": true,
+      "evidence": "The document is explicitly titled '시범 운영 분석' and is organized around analysis questions, scope, evidence, findings, interpretation, limitations, and follow-up questions rather than a proposal, approval request, or timeline."
+    },
+    {
+      "text": "Scope and evidence are stated before findings and interpretation.",
+      "passed": true,
+      "evidence": "'분석 질문·범위·기간' and '자료와 방법' appear before '확인된 사실' and '해석과 시사점'; the evidence limitations and unavailable comparison data are stated before conclusions."
+    },
+    {
+      "text": "Observed facts, interpretation, and limitations are visibly separated.",
+      "passed": true,
+      "evidence": "The report has distinct headings for '확인된 사실', '해석과 시사점', and '한계와 불확실성'. It separately labels observed metrics, cautious implications, and missing baselines, definitions, side-effect monitoring, and privacy review."
+    },
+    {
+      "text": "The document does not request approval or present a recommendation as predetermined.",
+      "passed": true,
+      "evidence": "No approval request or predetermined recommendation appears. The report explicitly says the available results cannot establish expansion suitability or cost-effectiveness and ends with an evidence-qualified conclusion rather than a decision demand."
+    },
+    {
+      "text": "The opening summarizes what the pilot shows without overstating the evidence.",
+      "passed": true,
+      "evidence": "The executive summary reports the 12% average handling-time reduction and 3-point CSAT increase as observed positive changes, while immediately noting that missing comparison and measurement details prevent attributing causality or judging privacy safety."
+    }
+  ],
+  "summary": {
+    "passed": 5,
+    "failed": 0,
+    "total": 5,
+    "pass_rate": 1.0
+  }
+}

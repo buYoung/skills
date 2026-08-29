@@ -1,0 +1,10 @@
+{
+  "schema_version": 3,
+  "provenance": "harness-validation-of-independent-grading",
+  "eval_id": 22,
+  "status": "completed",
+  "format_valid": true,
+  "semantic_passed": true,
+  "reasons": [],
+  "grading_sha256": "134cf25180564c3bb0cebb454c9b5f4e1cf38481bccad51725167b7bd77f0d4b"
+}

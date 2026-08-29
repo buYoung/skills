@@ -1,0 +1,182 @@
+{
+  "status": "completed",
+  "validators": [
+    {
+      "name": "validate_eval_run.py",
+      "command": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/Users/buyonglee/Documents/work/private/skills/skills/document-writing/scripts/validate_eval_run.py",
+        "--suite",
+        "/Users/buyonglee/Documents/work/private/skills/skills/document-writing/evals/production-suite.json",
+        "--run",
+        "/Users/buyonglee/Documents/work/private/skills/skills/document-writing-workspace/iteration-6/behavior/job-5df6de9e7da34a986bd512c6"
+      ],
+      "return_code": 1,
+      "stdout": "{\n  \"checks\": [\n    \"before/after manifests describe the same workspace\",\n    \"before manifest tree hash is canonical\",\n    \"after manifest tree hash is canonical\",\n    \"before manifest matches canonical package fixtures\",\n    \"before manifest directories match canonical package fixtures\",\n    \"after manifest matches the preserved workspace files\",\n    \"after manifest tree hash matches the preserved workspace\",\n    \"workspace change set is available\",\n    \"changed path is allowed: docs/marketing/google-play/README.md\",\n    \"changed path is not forbidden: docs/marketing/google-play/README.md\",\n    \"changed path is allowed: docs/marketing/google-play/orbit-notes-feature-graphic.png\",\n    \"changed path is not forbidden: docs/marketing/google-play/orbit-notes-feature-graphic.png\",\n    \"execution receipt uses schema 3\",\n    \"execution receipt is harness-derived\",\n    \"execution receipt status is derived from response presence\",\n    \"execution receipt context_id matches task\",\n    \"execution receipt model matches task\",\n    \"execution receipt reasoning_effort matches task\",\n    \"response hash matches receipt\",\n    \"before manifest hash matches receipt\",\n    \"after manifest hash matches receipt\",\n    \"produced paths are derived from manifest diff\",\n    \"missing telemetry stays unavailable and null\",\n    \"missing capability evidence stays unverified\",\n    \"observable output records an HTTPS source URL\"\n  ],\n  \"failures\": [\n    \"required change occurred: docs/marketing/google-play/index.md\",\n    \"required change occurred: docs/marketing/google-play/stores/google-play.md\",\n    \"required change occurred: docs/marketing/google-play/orbit-notes-feature-graphic-1024x500.png\",\n    \"observable output records a verification date\",\n    \"required PNG exists: orbit-notes-feature-graphic-1024x500.png\"\n  ]\n}\n",
+      "stderr": ""
+    }
+  ],
+  "expectations": [
+    {
+      "text": "validate_eval_run.py: before/after manifests describe the same workspace",
+      "passed": true,
+      "evidence": "deterministic validator check"
+    },
+    {
+      "text": "validate_eval_run.py: before manifest tree hash is canonical",
+      "passed": true,
+      "evidence": "deterministic validator check"
+    },
+    {
+      "text": "validate_eval_run.py: after manifest tree hash is canonical",
+      "passed": true,
+      "evidence": "deterministic validator check"
+    },
+    {
+      "text": "validate_eval_run.py: before manifest matches canonical package fixtures",
+      "passed": true,
+      "evidence": "deterministic validator check"
+    },
+    {
+      "text": "validate_eval_run.py: before manifest directories match canonical package fixtures",
+      "passed": true,
+      "evidence": "deterministic validator check"
+    },
+    {
+      "text": "validate_eval_run.py: after manifest matches the preserved workspace files",
+      "passed": true,
+      "evidence": "deterministic validator check"
+    },
+    {
+      "text": "validate_eval_run.py: after manifest tree hash matches the preserved workspace",
+      "passed": true,
+      "evidence": "deterministic validator check"
+    },
+    {
+      "text": "validate_eval_run.py: workspace change set is available",
+      "passed": true,
+      "evidence": "deterministic validator check"
+    },
+    {
+      "text": "validate_eval_run.py: changed path is allowed: docs/marketing/google-play/README.md",
+      "passed": true,
+      "evidence": "deterministic validator check"
+    },
+    {
+      "text": "validate_eval_run.py: changed path is not forbidden: docs/marketing/google-play/README.md",
+      "passed": true,
+      "evidence": "deterministic validator check"
+    },
+    {
+      "text": "validate_eval_run.py: changed path is allowed: docs/marketing/google-play/orbit-notes-feature-graphic.png",
+      "passed": true,
+      "evidence": "deterministic validator check"
+    },
+    {
+      "text": "validate_eval_run.py: changed path is not forbidden: docs/marketing/google-play/orbit-notes-feature-graphic.png",
+      "passed": true,
+      "evidence": "deterministic validator check"
+    },
+    {
+      "text": "validate_eval_run.py: execution receipt uses schema 3",
+      "passed": true,
+      "evidence": "deterministic validator check"
+    },
+    {
+      "text": "validate_eval_run.py: execution receipt is harness-derived",
+      "passed": true,
+      "evidence": "deterministic validator check"
+    },
+    {
+      "text": "validate_eval_run.py: execution receipt status is derived from response presence",
+      "passed": true,
+      "evidence": "deterministic validator check"
+    },
+    {
+      "text": "validate_eval_run.py: execution receipt context_id matches task",
+      "passed": true,
+      "evidence": "deterministic validator check"
+    },
+    {
+      "text": "validate_eval_run.py: execution receipt model matches task",
+      "passed": true,
+      "evidence": "deterministic validator check"
+    },
+    {
+      "text": "validate_eval_run.py: execution receipt reasoning_effort matches task",
+      "passed": true,
+      "evidence": "deterministic validator check"
+    },
+    {
+      "text": "validate_eval_run.py: response hash matches receipt",
+      "passed": true,
+      "evidence": "deterministic validator check"
+    },
+    {
+      "text": "validate_eval_run.py: before manifest hash matches receipt",
+      "passed": true,
+      "evidence": "deterministic validator check"
+    },
+    {
+      "text": "validate_eval_run.py: after manifest hash matches receipt",
+      "passed": true,
+      "evidence": "deterministic validator check"
+    },
+    {
+      "text": "validate_eval_run.py: produced paths are derived from manifest diff",
+      "passed": true,
+      "evidence": "deterministic validator check"
+    },
+    {
+      "text": "validate_eval_run.py: missing telemetry stays unavailable and null",
+      "passed": true,
+      "evidence": "deterministic validator check"
+    },
+    {
+      "text": "validate_eval_run.py: missing capability evidence stays unverified",
+      "passed": true,
+      "evidence": "deterministic validator check"
+    },
+    {
+      "text": "validate_eval_run.py: observable output records an HTTPS source URL",
+      "passed": true,
+      "evidence": "deterministic validator check"
+    },
+    {
+      "text": "validate_eval_run.py: required change occurred: docs/marketing/google-play/index.md",
+      "passed": false,
+      "evidence": "deterministic validator failure"
+    },
+    {
+      "text": "validate_eval_run.py: required change occurred: docs/marketing/google-play/stores/google-play.md",
+      "passed": false,
+      "evidence": "deterministic validator failure"
+    },
+    {
+      "text": "validate_eval_run.py: required change occurred: docs/marketing/google-play/orbit-notes-feature-graphic-1024x500.png",
+      "passed": false,
+      "evidence": "deterministic validator failure"
+    },
+    {
+      "text": "validate_eval_run.py: observable output records a verification date",
+      "passed": false,
+      "evidence": "deterministic validator failure"
+    },
+    {
+      "text": "validate_eval_run.py: required PNG exists: orbit-notes-feature-graphic-1024x500.png",
+      "passed": false,
+      "evidence": "deterministic validator failure"
+    },
+    {
+      "text": "Execution skill snapshot remains unchanged",
+      "passed": true,
+      "evidence": "before=1e9bc77b686a9775a0295e2199cb5bbdb9c59d5ff0cf112d6d36d5cf9fcbd5ec after=1e9bc77b686a9775a0295e2199cb5bbdb9c59d5ff0cf112d6d36d5cf9fcbd5ec uses_skill=True"
+    }
+  ],
+  "summary": {
+    "passed": 26,
+    "failed": 5,
+    "total": 31,
+    "pass_rate": 0.8387096774193549
+  }
+}

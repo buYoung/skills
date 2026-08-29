@@ -1,0 +1,54 @@
+{
+  "workspace_root": "/Users/buyonglee/Documents/work/private/skills/skills/document-writing-workspace/iteration-6/behavior/job-e3978d153216707524fbaff2/workspace",
+  "root": "/Users/buyonglee/Documents/work/private/skills/skills/document-writing-workspace/iteration-6/behavior/job-e3978d153216707524fbaff2/workspace",
+  "exists": true,
+  "entries": [
+    {
+      "path": "docs",
+      "type": "directory"
+    },
+    {
+      "path": "docs/design-system",
+      "type": "directory"
+    },
+    {
+      "path": "docs/design-system/accessibility.md",
+      "type": "file",
+      "sha256": "cb2b42d110572f5cd2dca4d7ae3a33a2b578ed17edd77a0586dd21dbd7cd9557"
+    },
+    {
+      "path": "docs/design-system/content.md",
+      "type": "file",
+      "sha256": "388b1556e080fca798ebe6614cfa7b739ae07ebcf487efb207ad4ada2bb7a49a"
+    },
+    {
+      "path": "docs/design-system/index.md",
+      "type": "file",
+      "sha256": "85ae70323a6dd5137a45a0cf6877bcf99d3ce76f12f66fb14d8c313cbd945880"
+    },
+    {
+      "path": "docs/design-system/integration-contract.md",
+      "type": "file",
+      "sha256": "d2d7ba46975cdaecd8f6036d0504b34e62cabafe2ddca6e7f6197c781dde8478"
+    },
+    {
+      "path": "docs/design-system/team-notes.md",
+      "type": "file",
+      "sha256": "d51f0e154b5a8a894c3a7fed3f3fee0c3f253cd5a954ea0a0ec212553ea3c737"
+    },
+    {
+      "path": "docs/design-system/tokens.md",
+      "type": "file",
+      "sha256": "feb19dc01669dae4e3ba35755b70f79d74b073f028e5ff7b31c842caed090fe0"
+    }
+  ],
+  "files": {
+    "docs/design-system/accessibility.md": "cb2b42d110572f5cd2dca4d7ae3a33a2b578ed17edd77a0586dd21dbd7cd9557",
+    "docs/design-system/content.md": "388b1556e080fca798ebe6614cfa7b739ae07ebcf487efb207ad4ada2bb7a49a",
+    "docs/design-system/index.md": "85ae70323a6dd5137a45a0cf6877bcf99d3ce76f12f66fb14d8c313cbd945880",
+    "docs/design-system/integration-contract.md": "d2d7ba46975cdaecd8f6036d0504b34e62cabafe2ddca6e7f6197c781dde8478",
+    "docs/design-system/team-notes.md": "d51f0e154b5a8a894c3a7fed3f3fee0c3f253cd5a954ea0a0ec212553ea3c737",
+    "docs/design-system/tokens.md": "feb19dc01669dae4e3ba35755b70f79d74b073f028e5ff7b31c842caed090fe0"
+  },
+  "sha256": "89f839c51d2d4b6acbe91b5c5a8ded89e94d4a83004b9d37887cc42fe6ae8978"
+}

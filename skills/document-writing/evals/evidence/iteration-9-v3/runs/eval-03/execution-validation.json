@@ -1,0 +1,10 @@
+{
+  "schema_version": 3,
+  "provenance": "harness-execution-validation",
+  "eval_id": 3,
+  "status": "hard-gate-failed",
+  "valid": false,
+  "reasons": [
+    "validate_fdd.py --strict produced parseable JSON"
+  ]
+}

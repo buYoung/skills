@@ -121,15 +121,16 @@
     },
     {
       "id": 10,
+      "eval_name": "directionless-new-system-gate",
       "prompt": "제품 전반에서 디자이너와 프론트엔드 개발자가 함께 사용할 디자인시스템 문서를 만들어줘. 별도 저장 경로나 플랫폼은 지정하지 않는다. 확인된 원칙은 명확성, 일관성, 접근성이다. 현재 브랜드 색상·서체·간격 값과 컴포넌트 목록은 아직 결정되지 않았다. foundations, tokens, components, patterns, content, accessibility, governance의 정본 위치가 분명해야 하고 없는 값은 추정하지 마라.",
-      "expected_output": "`default` prebuilt로 라우팅되어 `docs/design-system`에 플랫폼 중립적인 Design System Document 문서 묶음을 구성한 결과.",
+      "expected_output": "`default` prebuilt로 라우팅하되 파일을 만들지 않고, 근거에서 도출한 2~3개 방향과 권장안 및 쉬운 승인 질문을 제시한 결과.",
       "files": [],
       "expectations": [
         "The artifact is routed to Design System Document with the `default` prebuilt, not to FDD, reference/specification, or UI implementation.",
-        "With no explicit path, the output root is `docs/design-system` and `index.md` maps the coordinated document set and canonical ownership.",
-        "The common files cover foundations, tokens, components, patterns, content, accessibility, and governance without inventing brand values or component inventory.",
-        "Undecided values are explicit where necessary, with no empty component placeholder documents.",
-        "No `platforms/<platform-name>.md` is created because no platform was specified."
+        "No file or directory is created because neither a design direction nor representative validation has been approved.",
+        "The response derives two or three materially different direction hypotheses from the supplied product evidence and recommends one with concrete benefits and risks.",
+        "The user is asked no more than three plain-language questions about recognizable outcomes or use situations; internal design-axis terminology is not required from the user.",
+        "The response does not invent brand values, token values, component inventory, platforms, or claim that the design-system document is complete."
       ]
     },
     {
@@ -153,20 +154,21 @@
     },
     {
       "id": 12,
+      "eval_name": "directionless-storefront-system-gate",
       "prompt": "우리 모바일 앱의 앱 마켓 상점페이지에서 아이콘, 스크린샷, 미리보기, feature graphic, 프로모션 이미지와 짧은 메시지가 하나의 시각 언어를 따르도록 디자인시스템 문서로 정리해줘. 특정 상점이나 저장 경로는 아직 정하지 않았고 실제 이미지 제작은 하지 않는다. 화면 선택과 이야기 순서, 브랜드 연속성, localization, accessibility, 원본·내보내기·버전 관리 규칙을 다뤄라.",
-      "expected_output": "`app-store-page` prebuilt로 라우팅되어 `docs/design-system-visual-assets`에 상점 중립적인 시각 자산 디자인시스템을 구성한 결과.",
+      "expected_output": "`app-store-page` prebuilt로 라우팅하되 파일이나 자산을 만들지 않고, 상점 중립적인 방향 가설과 권장안 및 쉬운 승인 질문을 제시한 결과.",
       "files": [],
       "expectations": [
         "The artifact is routed to Design System Document with `app-store-page`, not to `default` or an image-generation workflow.",
-        "With no explicit path, the output root is `docs/design-system-visual-assets`.",
-        "The document set covers visual language, asset relationships, screenshot and preview narrative, composition and copy, localization, accessibility, and delivery/versioning.",
-        "No asset image or video is produced as part of the document operation.",
-        "No `stores/<store-name>.md` or mutable store-specific dimensions, counts, formats, or policies are invented because no store was specified."
+        "No document file, image, or video is produced because the shared visual direction and representative validation are unapproved.",
+        "The response proposes two or three materially different storefront-neutral directions and recommends one using the supplied asset roles and audience context.",
+        "The approval question uses plain descriptions of visible outcomes rather than asking the user to choose abstract design axes.",
+        "No storefront file, mutable dimensions, counts, formats, policy, or completion claim is invented because no storefront or direction was approved."
       ]
     },
     {
       "id": 13,
-      "prompt": "웹 제품용 디자인시스템 문서를 작성해줘. 공통 foundations, tokens, components, patterns를 플랫폼 중립적으로 정의하되 웹에서만 달라지는 키보드·포인터 입력, 탐색, CSS 단위, 네이티브 요소 우선순위, 접근성 semantics, reduced motion 차이를 별도 문서에 기록해라. iOS와 Android는 범위가 아니다.",
+      "prompt": "웹 제품용 디자인시스템 문서를 작성해줘. '차분하고 정밀한 업무 도구이며 복잡한 정보에서도 한 가지 핵심 행동이 먼저 보인다'는 방향은 제품 책임자가 승인했다. 단순 설정 화면과 정보가 조밀한 데이터 표에서 이 방향과 접근성을 이미 검증했다. 공통 foundations, tokens, components, patterns를 플랫폼 중립적으로 정의하되 웹에서만 달라지는 키보드·포인터 입력, 탐색, CSS 단위, 네이티브 요소 우선순위, 접근성 semantics, reduced motion 차이를 별도 문서에 기록해라. iOS와 Android는 범위가 아니다.",
       "expected_output": "`default` prebuilt의 공통 계약과 조건부 `platforms/web.md`만 포함한 Design System Document.",
       "files": [],
       "expectations": [
@@ -181,7 +183,7 @@
       "id": 14,
       "eval_name": "included-and-excluded-storefronts",
       "required_capabilities": ["web"],
-      "prompt": "Google Play 등록용 시각 자산 디자인시스템 문서를 작성해줘. 아이콘, 스크린샷, preview video, feature graphic의 역할과 관계, localization, 전달·버전 규칙을 공통 문서에 두고 Google Play에서만 달라지는 현재 크기·개수·형식·정책은 공식 자료를 다시 확인해 별도 store 문서에 출처와 확인일을 남겨라. Apple App Store는 범위가 아니다.",
+      "prompt": "Google Play 등록용 시각 자산 디자인시스템 문서를 작성해줘. '실제 제품 화면이 주인공이고 장식은 절제하되 한 가지 선명한 강조색으로 진취적인 인상을 준다'는 방향은 브랜드 책임자가 승인했다. 작은 앱 아이콘과 정보가 많은 스크린샷, 정적 이미지와 움직이는 preview에서 이 방향을 검증했다. 아이콘, 스크린샷, preview video, feature graphic의 역할과 관계, localization, 전달·버전 규칙을 공통 문서에 두고 Google Play에서만 달라지는 현재 크기·개수·형식·정책은 공식 자료를 다시 확인해 별도 store 문서에 출처와 확인일을 남겨라. Apple App Store는 범위가 아니다.",
       "expected_output": "`app-store-page` prebuilt의 공통 계약과 공식 자료로 검증된 조건부 `stores/google-play.md`만 포함한 Design System Document.",
       "files": [],
       "expectations": [
@@ -195,7 +197,7 @@
     {
       "id": 15,
       "required_capabilities": ["web"],
-      "prompt": "MS Store의 Windows 11 데스크톱 MSIX 앱 등록용 시각 자산 디자인시스템 문서를 작성해줘. 앱 아이콘, 스크린샷, trailer와 추가 artwork의 역할·규격·노출 조건·device 변형을 현재 Microsoft 공식 자료에서 다시 조사해 전용 store 문서에 출처와 확인일을 남겨라. 앱 이름, 설명, search terms, 가격, 인증 절차는 범위에서 제외하고 실제 자산도 만들지 마라.",
+      "prompt": "MS Store의 Windows 11 데스크톱 MSIX 앱 등록용 시각 자산 디자인시스템 문서를 작성해줘. '제품의 정밀함을 우선하고 장식은 핵심 기능을 설명할 때만 사용한다'는 방향은 승인됐고, 작은 앱 아이콘과 큰 갤러리 이미지에서 검증됐다. 앱 아이콘, 스크린샷, trailer와 추가 artwork의 역할·규격·노출 조건·device 변형을 현재 Microsoft 공식 자료에서 다시 조사해 전용 store 문서에 출처와 확인일을 남겨라. 앱 이름, 설명, search terms, 가격, 인증 절차는 범위에서 제외하고 실제 자산도 만들지 마라.",
       "expected_output": "`app-store-page` 공통 계약과 현재 Microsoft 공식 자료에 근거한 `stores/microsoft-store.md`를 포함한 시각 자산 Design System Document.",
       "files": [],
       "expectations": [
@@ -209,7 +211,7 @@
     {
       "id": 16,
       "required_capabilities": ["web"],
-      "prompt": "Steam 게임 상점페이지용 시각 자산 디자인시스템 문서를 만들어줘. Steam에서 사용하는 capsule, screenshots, trailers와 thumbnail의 현재 이름·역할·필수 여부·규격·콘텐츠 제한·노출 관계를 Steamworks 공식 자료로 조사해서 별도 store 문서에 정리해라. 일반 앱 마켓의 feature graphic 명칭을 Steam에 억지로 적용하지 말고 실제 이미지나 영상은 만들지 마라.",
+      "prompt": "Steam 게임 상점페이지용 시각 자산 디자인시스템 문서를 만들어줘. '빠른 전투의 긴장감을 높은 대비와 대각선 흐름으로 표현하되 실제 플레이 장면의 판독성을 우선한다'는 방향은 승인됐고, 작은 capsule과 큰 hero, 정적 screenshot과 trailer에서 검증됐다. Steam에서 사용하는 capsule, screenshots, trailers와 thumbnail의 현재 이름·역할·필수 여부·규격·콘텐츠 제한·노출 관계를 Steamworks 공식 자료로 조사해서 별도 store 문서에 정리해라. 일반 앱 마켓의 feature graphic 명칭을 Steam에 억지로 적용하지 말고 실제 이미지나 영상은 만들지 마라.",
       "expected_output": "`app-store-page` 공통 계약과 Steam 고유 자산 어휘·규칙을 공식 자료로 검증한 `stores/steam.md`를 포함한 Design System Document.",
       "files": [],
       "expectations": [
@@ -223,7 +225,7 @@
     {
       "id": 17,
       "required_capabilities": ["web"],
-      "prompt": "Play Store와 Google Play Store, Steam에 함께 배포할 제품의 상점 시각 자산 디자인시스템 문서를 작성해줘. Play Store와 Google Play Store는 같은 상점을 뜻한다. 각 상점의 현재 공식 자료를 따로 조사하고 공통 시각 언어는 공유하되 상점별 규격과 자산 명칭은 별도 문서로 분리해라. 실제 자산 제작과 등록 문구·가격 정보는 제외한다.",
+      "prompt": "Play Store와 Google Play Store, Steam에 함께 배포할 제품의 상점 시각 자산 디자인시스템 문서를 작성해줘. '친근한 협동 경험을 부드러운 형태와 선명한 팀 구분으로 보여준다'는 방향은 승인됐고, 작은 아이콘과 넓은 capsule, 정적 screenshot과 trailer에서 각각 검증됐다. Play Store와 Google Play Store는 같은 상점을 뜻한다. 각 상점의 현재 공식 자료를 따로 조사하고 공통 시각 언어는 공유하되 상점별 규격과 자산 명칭은 별도 문서로 분리해라. 실제 자산 제작과 등록 문구·가격 정보는 제외한다.",
       "expected_output": "별칭을 중복 제거해 `stores/google-play.md`와 `stores/steam.md`만 생성하고 공통 계약을 상점 중립적으로 유지한 `app-store-page` 문서 묶음.",
       "files": [],
       "expectations": [
@@ -237,7 +239,7 @@
     {
       "id": 18,
       "required_capabilities": ["web"],
-      "prompt": "Epic Games Store 상점페이지용 시각 자산 디자인시스템 문서를 작성해줘. 현재 실행 환경에서는 공식 publisher portal의 asset specification 페이지에 접근할 수 없고 별도의 신뢰 가능한 규격값도 제공하지 않는다. 접근 가능한 공식 자료만 조사해 문서를 만들되 제3자 블로그나 기억 속 크기값으로 채우지 말고, 시도한 공식 URL과 확인일, 확인하지 못한 자산 요구사항을 분명히 남겨라.",
+      "prompt": "Epic Games Store 상점페이지용 시각 자산 디자인시스템 문서를 작성해줘. '어두운 환경에서 강한 실루엣과 한 가지 따뜻한 강조색으로 탐험의 긴장감을 전달한다'는 방향은 승인됐고, 작은 표지와 큰 홍보 이미지, 정적 이미지와 움직임에서 검증됐다. 현재 실행 환경에서는 공식 publisher portal의 asset specification 페이지에 접근할 수 없고 별도의 신뢰 가능한 규격값도 제공하지 않는다. 접근 가능한 공식 자료만 조사해 문서를 만들되 제3자 블로그나 기억 속 크기값으로 채우지 말고, 시도한 공식 URL과 확인일, 확인하지 못한 자산 요구사항을 분명히 남겨라.",
       "expected_output": "`stores/epic-games-store.md`에 검증 가능한 시각 자산 정보와 공식 자료 접근 제한·미결정 요구사항을 함께 기록한 부분 생성 결과.",
       "files": [],
       "expectations": [
@@ -252,7 +254,7 @@
       "id": 19,
       "eval_name": "generic-storefront-discovery",
       "required_capabilities": ["web"],
-      "prompt": "출시팀이 Flathub와 Snap Store에 올릴 때 쓸 스크린샷·아이콘·미리보기용 가이드를 `docs/launch-assets`에 정리해줘. 최신 운영자 안내를 확인해 두 상점에서 달라지는 내용은 각각 적고, 공통 시각 원칙은 한곳에서 관리해줘. Steam은 회의에서 비교만 했으니 이번 문서에는 넣지 말아줘.",
+      "prompt": "출시팀이 Flathub와 Snap Store에 올릴 때 쓸 스크린샷·아이콘·미리보기용 가이드를 `docs/launch-assets`에 정리해줘. '기능을 빠르게 이해시키는 차분한 기술 제품이며 장식보다 실제 화면의 판독성을 우선한다'는 방향은 승인됐고, 작은 아이콘과 큰 스크린샷, 밝은 화면과 어두운 화면에서 검증됐다. 최신 운영자 안내를 확인해 두 상점에서 달라지는 내용은 각각 적고, 공통 시각 원칙은 한곳에서 관리해줘. Steam은 회의에서 비교만 했으니 이번 문서에는 넣지 말아줘.",
       "expected_output": "지정한 폴더에 Flathub와 Snap Store 문서를 각각 두고, Steam은 조사하거나 파일을 만들지 않은 시각 자산 문서 묶음.",
       "files": [],
       "expectations": [
@@ -267,7 +269,7 @@
       "id": 20,
       "eval_name": "review-no-mutation",
       "prompt": "마케팅팀이 넘긴 상점용 시각 가이드가 다음 분기에도 써도 될 상태인지 검토해줘. 파일은 절대 고치지 말고, 문제를 발견하면 근거와 영향만 정리해서 알려줘. 빠진 문서가 있더라도 새로 쓰지는 말아줘.",
-      "expected_output": "제공된 파일을 그대로 둔 채 링크, 문서 책임 범위, 조사 시점 문제를 근거와 함께 보고한 검토 결과.",
+      "expected_output": "제공된 파일을 그대로 둔 채 링크, 문서 책임 범위, 조사 시점, 승인된 방향과 대표 검증 부재를 근거와 함께 보고한 검토 결과.",
       "files": [
         "evals/fixtures/design-system-review-only/index.md",
         "evals/fixtures/design-system-review-only/asset-system.md",
@@ -277,7 +279,7 @@
       "expectations": [
         "The operation is review and remains read-only even though a storefront is in scope.",
         "All supplied fixture files remain byte-for-byte unchanged and no file is created, renamed, or deleted.",
-        "The broken delivery link, leaked storefront-specific requirement, and stale research date are reported as findings.",
+        "The broken delivery link, leaked storefront-specific requirement, stale research date, missing approved direction authority, and absent representative validation are reported as findings.",
         "Missing documents are recommendations rather than newly created files.",
         "The completion report distinguishes inspected evidence from unverified current storefront requirements."
       ]
@@ -323,7 +325,7 @@
       "id": 23,
       "eval_name": "mixed-prebuilt-output-sets",
       "required_capabilities": ["web"],
-      "prompt": "새 앱의 화면 구성 원칙, 토큰, 컴포넌트 사용법을 정리하고, itch.io 공개 페이지에 쓸 아이콘·스크린샷·영상 가이드도 함께 작성해줘. 두 종류의 문서는 서로 섞이지 않게 기본 문서 위치를 나눠 쓰고, itch.io 쪽은 현재 운영자 안내를 확인해줘.",
+      "prompt": "새 앱의 화면 구성 원칙, 토큰, 컴포넌트 사용법을 정리하고, itch.io 공개 페이지에 쓸 아이콘·스크린샷·영상 가이드도 함께 작성해줘. 두 세트가 공유할 방향은 '차분하고 정밀한 창작 도구이며 실제 작업물이 먼저 보이고 한 가지 보라색 강조만 사용한다'로 제품·브랜드 책임자가 승인했다. UI 세트는 단순 편집 화면과 정보가 조밀한 자산 목록에서, 상점 세트는 작은 아이콘과 큰 스크린샷 및 정적·영상 자산에서 각각 검증을 마쳤다. 두 종류의 문서는 서로 섞이지 않게 기본 문서 위치를 나눠 쓰고, itch.io 쪽은 현재 운영자 안내를 확인해줘.",
       "expected_output": "제품 UI 문서와 itch.io 시각 자산 문서를 서로 다른 두 문서 묶음으로 작성한 결과.",
       "files": [],
       "expectations": [
@@ -338,7 +340,7 @@
       "id": 24,
       "eval_name": "mixed-document-and-asset-production",
       "required_capabilities": ["web", "image-generation"],
-      "prompt": "Google Play 출시 자료를 `docs/marketing/google-play`에 정리하고, 그 기준을 반영한 실제 feature graphic PNG도 만들어줘. 브랜드 사실은 다음과 같아: 앱 이름은 Orbit Notes, 주 색상은 #2457D6, 보조 색상은 #F5B942, 서체는 Inter, 핵심 메시지는 '생각을 놓치지 마세요'야. 가이드 작성과 이미지 제작은 각각 필요한 작업 방식으로 진행해줘.",
+      "prompt": "Google Play 출시 자료를 `docs/marketing/google-play`에 정리하고, 그 기준을 반영한 실제 feature graphic PNG도 만들어줘. '빠르게 기록할 수 있다는 확신을 넓은 여백과 한 가지 선명한 파란색 행동으로 보여준다'는 방향은 승인됐고, 48px 앱 아이콘과 정보가 많은 스크린샷, 밝은 배경과 어두운 배경에서 검증했다. 브랜드 사실은 다음과 같아: 앱 이름은 Orbit Notes, 주 색상은 #2457D6, 보조 색상은 #F5B942, 서체는 Inter, 핵심 메시지는 '생각을 놓치지 마세요'야. 가이드 작성과 이미지 제작은 각각 필요한 작업 방식으로 진행해줘.",
       "expected_output": "지정한 위치에 Google Play용 시각 자산 문서를 만들고, 제공된 브랜드 사실을 반영한 feature graphic PNG를 별도 이미지 작업으로 만든 결과.",
       "files": [],
       "expectations": [
@@ -381,7 +383,7 @@
     {
       "id": 27,
       "eval_name": "collective-platform-ambiguity",
-      "prompt": "제품 UI 가이드에서 웹과 모바일의 차이를 각각 따로 관리해줘. 웹은 브라우저 제품을 뜻하지만, 모바일은 iOS와 Android를 모두 말하는지 우리 앱의 내부 분류 이름인지는 아직 팀에서 정하지 못했어.",
+      "prompt": "제품 UI 가이드에서 웹과 모바일의 차이를 각각 따로 관리해줘. '조밀한 업무 정보에서도 핵심 행동이 먼저 보이는 차분한 도구'라는 방향은 승인됐고, 단순 폼과 복잡한 표, 키보드와 터치 사용에서 대표 검증도 끝났다. 웹은 브라우저 제품을 뜻하지만, 모바일은 iOS와 Android를 모두 말하는지 우리 앱의 내부 분류 이름인지는 아직 팀에서 정하지 못했어.",
       "expected_output": "웹 범위는 반영하되 모바일이 무엇을 뜻하는지 확인한 뒤에만 모바일용 문서를 작성하는 결과.",
       "files": [],
       "expectations": [
@@ -397,7 +399,7 @@
       "id": 28,
       "eval_name": "supplied-unknown-storefront",
       "denied_capabilities": ["web"],
-      "prompt": "첨부한 Orbit Market Publisher Guide를 바탕으로 Orbit Market 출시용 시각 자산 가이드를 작성해줘. 지금은 인터넷 연결이 없으니 첨부 자료에 있는 내용만 사실로 쓰고, 함께 받은 업계 블로그 글은 참고하지 마. 가이드는 `docs/orbit-market-assets`에 정리해줘.",
+      "prompt": "첨부한 Orbit Market Publisher Guide를 바탕으로 Orbit Market 출시용 시각 자산 가이드를 작성해줘. '실제 제품 장면을 중심에 두고 장식은 한 가지 청록색 강조로 제한한다'는 방향은 승인됐고, 작은 discovery card와 큰 screenshot, 정적 이미지와 silent preview에서 검증됐다. 지금은 인터넷 연결이 없으니 첨부 자료에 있는 내용만 사실로 쓰고, 함께 받은 업계 블로그 글은 참고하지 마. 가이드는 `docs/orbit-market-assets`에 정리해줘.",
       "expected_output": "제공된 운영자 가이드에 근거해 지정한 위치에 Orbit Market 시각 자산 문서를 작성하고, 제3자 블로그의 상충 정보를 요구사항으로 쓰지 않은 결과.",
       "files": [
         "evals/fixtures/supplied-unknown-storefront/orbit-market-publisher-guide.md",
@@ -409,6 +411,73 @@
         "No URL, verification date, or requirement absent from the supplied guide is invented while web access is unavailable.",
         "The conflicting blog claim about a 16:9 banner is not presented as an Orbit Market requirement.",
         "The requested document set is written under `docs/orbit-market-assets` without creating unrelated storefront files."
+      ]
+    },
+    {
+      "id": 29,
+      "eval_name": "qualitative-feedback-translation",
+      "prompt": "첨부한 `result-a.svg`는 마음에 드는데 `result-b.svg`는 설명하기 어렵지만 통일감이 없어. 아직 디자인 시스템 문서나 규칙 파일을 만들거나 고치지는 마. 두 결과의 차이를 눈에 보이는 원인으로 나누고, 내가 좋아한 상위 원칙을 추론한 뒤 중요한 해석 하나만 쉬운 질문으로 확인해줘.",
+      "expected_output": "두 실제 시각 결과를 형태·무게·간격·색상 역할·위계로 비교하고, 표면 복제 대신 재사용 가능한 상위 원칙을 추론한 뒤 파일 변경 없이 쉬운 확인 질문을 제시한 결과.",
+      "files": [
+        "evals/fixtures/design-direction-feedback/result-a.svg",
+        "evals/fixtures/design-direction-feedback/result-b.svg"
+      ],
+      "expectations": [
+        "Both supplied SVG results are inspected and compared using observable causes such as shape grammar, stroke or visual weight, spacing and density, contrast, color roles, hierarchy, and recurring-element alignment.",
+        "The preferred result is translated into reusable upper-level principles rather than copied literally across every component or asset.",
+        "The response distinguishes evidence from inference and summarizes the material inference in plain language before asking the user to confirm or correct it.",
+        "The single confirmation question describes a recognizable outcome and its tradeoff without requiring the user to understand or select an abstract design axis.",
+        "Any exact size, distance, count, ratio, or color value stated in the analysis matches the supplied SVG source or a reliable inspection result; otherwise the response uses qualitative relative language.",
+        "No Design System Document file, rule file, image, or provisional direction artifact is created or modified."
+      ]
+    },
+    {
+      "id": 30,
+      "eval_name": "cross-context-consistency-not-sameness",
+      "prompt": "웹 관리자 제품과 iOS 앱, 그 안에서 쓰는 로고와 기능 아이콘을 하나의 제품 UI 디자인 시스템으로 정리해줘. 승인된 방향은 '차분하고 정밀하며 정보 위계가 먼저 보이되 모서리와 움직임에서 약간의 친근함을 준다'야. 조밀한 웹 데이터 표와 짧은 모바일 완료 흐름, 큰 헤더 로고와 16px 기능 아이콘에서 이 방향을 각각 검증했어. 모든 결과를 같은 모양으로 만들지 말고 무엇이 같아야 하고 무엇이 맥락에 따라 달라져야 하는지 정본에 분리해줘.",
+      "expected_output": "`default` prebuilt 안에서 웹·iOS·로고·아이콘이 승인된 상위 방향을 공유하되 크기·밀도·기능에 따른 변형과 플랫폼 조건을 별도로 소유하는 문서 묶음.",
+      "files": [],
+      "expectations": [
+        "The request remains one `default` product UI output set; no new brand prebuilt or storefront set is invented for the logo and in-product icons.",
+        "The approved direction and its authority appear in `index.md`, while `foundations.md` owns the shared upper-level shape, weight, spacing, hierarchy, icon, logo, and motion principles.",
+        "Invariant, variable, conditional, prohibited, and verification decisions are explicitly distinguishable instead of using an abstract consistency claim.",
+        "Web and iOS receive separate conditional platform adaptations, and logo versus 16px icon differences are treated as appropriate contextual variation rather than forced sameness.",
+        "The supplied dense/simple, web/iOS, and large/small representative evidence is recorded without inventing unapproved token values."
+      ]
+    },
+    {
+      "id": 31,
+      "eval_name": "focused-warning-token-update",
+      "prompt": "기존 제품 UI 디자인 시스템에서 승인 변경 기록에 적힌 경고 색상만 반영해줘. 기존 방향을 다시 탐색하거나 다른 색·간격·컴포넌트 규칙을 손대지 말고, 경고 색상의 정본 값이 실제 경고 알림 소비자까지 이어지는지 확인해. 변경 전후 기본 경고와 경고 안의 링크 상태만 검증하고 현재 파일 이름과 구조를 유지해줘.",
+      "expected_output": "승인된 기존 방향을 재사용하고 경고 색상 정본과 최종 경고 알림 소비자만 갱신하며 나머지 파일을 보존한 좁은 개정 결과.",
+      "files": [
+        "evals/fixtures/design-system-warning-update/index.md",
+        "evals/fixtures/design-system-warning-update/foundations.md",
+        "evals/fixtures/design-system-warning-update/tokens.md",
+        "evals/fixtures/design-system-warning-update/approved-change.md",
+        "evals/fixtures/design-system-warning-update/components/alert.md",
+        "evals/fixtures/design-system-warning-update/components/button.md"
+      ],
+      "expectations": [
+        "The existing approved direction and document-set location are reused without presenting new direction hypotheses or asking for reapproval.",
+        "The warning token changes from `#E5A000` to the approved `#D97706`, and the alert consumer's exact rendered-color record changes to the same value.",
+        "The unchanged foundations, approval record, unrelated button component, filenames, and directory structure are preserved byte-for-byte.",
+        "The result traces the approved value through the canonical token owner to the final alert consumer without changing the options contract or inventing aliases.",
+        "Verification is limited to the default warning and warning-link representative states and does not claim a full-system redesign."
+      ]
+    },
+    {
+      "id": 32,
+      "eval_name": "contradictory-preference-convergence",
+      "prompt": "새 협업 서비스의 디자인 시스템을 만들어줘. 우리 팀은 아주 미니멀하면서도 화려하고 장식적인 느낌을 원해. 주요 사용자는 하루 종일 프로젝트 보드와 문서를 오가는 실무자이고 아직 승인된 방향이나 대표 결과는 없어.",
+      "expected_output": "상충하는 선호를 그대로 충족한다고 가정하지 않고 2~3개의 실질적인 해석, 권장안과 쉬운 선택 질문을 제시한 뒤 파일 변경 없이 중단한 결과.",
+      "files": [],
+      "expectations": [
+        "The response explicitly explains the conflict between continuous-work minimalism and pervasive decorative intensity instead of claiming both can be maximized everywhere.",
+        "Two or three materially different interpretations are proposed, each with a visible outcome, benefit, risk, and suitable context, and one is recommended from the supplied user and task evidence.",
+        "The user is asked no more than three plain-language questions that hide internal design-axis terminology while disclosing practical consequences and tradeoffs.",
+        "Before approval, hypotheses stay at the level of relative tendencies and user-visible outcomes; no unsupported palette, named color family, grid, motif, texture, token, component, or asset rule is presented as a design decision.",
+        "No file or directory is created and the response does not claim that the design system is complete."
       ]
     }
   ]

@@ -1,0 +1,42 @@
+{
+  "schema_version": 3,
+  "status": "completed-independent-grading",
+  "provenance": "independent-luna-grader-output",
+  "eval_id": 7,
+  "grader_task_context_id": "3c6c2e97c6bc4626979528e4f4664129",
+  "model": "gpt-5.6-luna",
+  "reasoning_effort": "medium",
+  "expectations": [
+    {
+      "text": "The artifact is a durable policy or rules document, not a one-time access guide.",
+      "passed": true,
+      "evidence": "The response is structured as a Production Access policy with a policy statement, purpose, scope, normative requirements, exceptions, compliance/reporting, owner, effective date, and revision sections."
+    },
+    {
+      "text": "Scope, covered roles, owner, and effective date are explicit.",
+      "passed": true,
+      "evidence": "The scope section covers all engineers and production access, identifies on-call engineer and incident commander as requesters, and states the effective date as 2026-10-01; the owner is explicitly Platform Security."
+    },
+    {
+      "text": "Required, permitted, and prohibited behavior use consistent normative language.",
+      "passed": true,
+      "evidence": "The policy consistently uses required/prohibitive language such as 해야 한다, 필요하다, 금지, 허용하지 않는다, and 해서는 안 된다 for approvals, logging, duration, permitted purpose, and prohibited conduct."
+    },
+    {
+      "text": "The SEV-1 exception, approving authority, and 24-hour review are explicit.",
+      "passed": true,
+      "evidence": "The SEV-1 section explicitly permits the incident commander to approve urgent access when manager approval cannot wait, limits it to the minimum scope/time, requires security-team logging, and requires post-review within 24 hours."
+    },
+    {
+      "text": "Reporting and violation handling are discoverable without reading a procedure.",
+      "passed": true,
+      "evidence": "The dedicated 준수, 보고 및 조치 section states that discovered or suspected violations must be reported promptly to the security team and that the security team reviews violations and access records and coordinates follow-up."
+    }
+  ],
+  "summary": {
+    "passed": 5,
+    "failed": 0,
+    "total": 5,
+    "pass_rate": 1.0
+  }
+}

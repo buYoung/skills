@@ -1,0 +1,9 @@
+{
+  "schema_version": 1,
+  "eval_id": 3,
+  "reason": "Primary FDD selection now excludes docs/FDD/index.md and chooses the actual feature document.",
+  "model_rerun": false,
+  "prior_artifacts": "revalidation/attempt-1",
+  "result": "completed",
+  "recorded_at": "2026-08-29T09:27:14Z"
+}

@@ -1,0 +1,20 @@
+{
+  "schema_version": 3,
+  "eval_id": 4,
+  "eval_name": "eval-4",
+  "configuration": "current",
+  "run_number": 1,
+  "prompt": "SDK 구현자가 작업 중 바로 찾을 수 있도록 idempotency key의 적용 범위, 키 형식, 24시간 보관, 키와 요청 본문 조합별 서버 응답, 409 조건을 항목과 표 중심으로 한국어로 정리해줘. idempotency key는 POST 요청에 적용되며 자동 재시도를 수행하지 않는다. 같은 논리 작업은 같은 UUID를 재사용하고 새 논리 작업은 새 UUID를 사용한다. 구현자가 특정 조건을 비순차적으로 조회할 수 있어야 하며 개념 소개나 설치 절차보다 정확한 계약이 중요하다.",
+  "expectations": [
+    "The artifact is a reference or specification, not an explanatory overview, action guide, or FDD.",
+    "Scope, terminology, and contract items are organized for non-linear lookup.",
+    "The exact 24-hour, UUID, replay, 409, and no-automatic-retry rules are present without contradiction.",
+    "A reader can find same-key/same-body and same-key/different-body outcomes from a table or equivalent repeated contract structure.",
+    "Canonical tokens such as idempotency key, UUID, POST, and 409 are preserved consistently."
+  ],
+  "case_contract": {
+    "deny_write_tools": true,
+    "allowed_change_paths": []
+  },
+  "task_context_id": "cca94174d96e4f13adba34736e35e346"
+}

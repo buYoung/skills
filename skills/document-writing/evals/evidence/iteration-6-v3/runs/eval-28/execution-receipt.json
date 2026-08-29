@@ -1,0 +1,28 @@
+{
+  "schema_version": 3,
+  "provenance": "harness-derived-from-task-response-and-manifests",
+  "status": "missing-response",
+  "context_id": "8caa5e224ba14a2899aa4c326dd02abb",
+  "model": "gpt-5.6-luna",
+  "reasoning_effort": "medium",
+  "response_sha256": null,
+  "workspace_before_sha256": "2a67f34062b04d28f1b97957d4751a424ce3442151301e5c481d576051c1c061",
+  "workspace_after_sha256": "80f4d0a67b6cd42794ff2093247e32e857d7b2c8869bc07066664b85b5d1b173",
+  "produced_paths": [
+    "docs/orbit-market-assets/asset-system.md",
+    "docs/orbit-market-assets/composition-and-copy.md",
+    "docs/orbit-market-assets/index.md",
+    "docs/orbit-market-assets/screenshots-and-previews.md",
+    "docs/orbit-market-assets/stores/orbit-market.md",
+    "docs/orbit-market-assets/visual-language.md"
+  ],
+  "telemetry": {
+    "status": "unavailable",
+    "duration_ms": null,
+    "total_tokens": null
+  },
+  "capability_evidence": {
+    "status": "unverified",
+    "events": []
+  }
+}

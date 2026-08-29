@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "kind": "diagnostic-correction-addendum",
+  "applies_to": "iteration-6-v3",
+  "production_ready": false,
+  "original_evidence_modified": false,
+  "finding": "The ISO-date detector used a trailing Unicode word boundary. In Korean prose, a particle such as '에' is a Unicode word character, so valid strings such as '2026-08-29에' were incorrectly rejected.",
+  "affected_evals": [15, 16, 17, 18],
+  "correction": "These four verification-date failures are harness false positives. This addendum does not regrade the model outputs, change the original receipts, or promote the iteration.",
+  "replacement_rule": "Recognize a real YYYY-MM-DD calendar date with ASCII-digit lookarounds so adjacent Korean particles are permitted.",
+  "remaining_failures": [
+    "eval 10 did not contain an answerable question mark",
+    "eval 22 did not produce a response",
+    "eval 24 did not preserve the canonical document-set owners",
+    "eval 26 asked more than the single blocking destination question",
+    "eval 27 did not write the confirmed common and web scope",
+    "later missing responses include interrupted or undispatched work"
+  ]
+}

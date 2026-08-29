@@ -1,0 +1,38 @@
+{
+  "eval_id": 11,
+  "eval_name": "existing-design-system-preservation",
+  "configuration": "with_skill",
+  "run_number": 1,
+  "prompt": "지금 팀이 쓰는 제품 UI 문서에 콘텐츠 작성 기준과 접근성 기준을 보완해줘. 이미 정해진 토큰, 코드 예시, 링크, 팀 메모, 연동 약속은 손대지 말고 현재 폴더와 파일 이름을 그대로 써줘. 같은 문서를 사본으로 하나 더 만들지는 말아줘.",
+  "expectations": [
+    "The existing document-set location remains unchanged instead of moving work to a newly chosen default folder.",
+    "The work stays a product UI design-system update rather than becoming a storefront-asset document.",
+    "The exact token value, fenced code block, external link, user-owned team notes, and integration contract are byte-for-byte preserved.",
+    "Content and accessibility each receive one owning file with cross-references rather than duplicate definitions.",
+    "No silent overwrite of an unrelated document and no `-v2`, `-final`, or date-suffixed duplicate is introduced."
+  ],
+  "expected_output": "기존 UI 문서 묶음의 위치와 내용을 보존하면서 콘텐츠와 접근성 기준을 담당 문서로 보완한 결과.",
+  "case_contract": {
+    "fixture_destination": "docs/design-system",
+    "validation": "validate_existing_update.mjs",
+    "allowed_change_paths": [
+      "docs/design-system/**"
+    ],
+    "required_change_paths": [
+      "docs/design-system/content.md",
+      "docs/design-system/accessibility.md"
+    ]
+  },
+  "allowed_workspace_change_paths": [
+    "docs/design-system/**"
+  ],
+  "skill_contract_sha256": "1992556407dd0e1d386fd82315fde0296bce26df2002f5deb5ff62b97ffdf254",
+  "skill_snapshot_before_sha256": "1e9bc77b686a9775a0295e2199cb5bbdb9c59d5ff0cf112d6d36d5cf9fcbd5ec",
+  "skill_snapshot_after_sha256": "1e9bc77b686a9775a0295e2199cb5bbdb9c59d5ff0cf112d6d36d5cf9fcbd5ec",
+  "skill_usage": "required",
+  "executor": "independent-luna-context",
+  "capability_evidence_status": "unverified",
+  "execution_receipt_sha256": "eec84769d65672e03e05bb236a22d114389b42478182812c9da7317bb8328181",
+  "execution_receipt_schema_version": 3,
+  "context_id": "f0962b5a726b47398ab21cedbc7a8eb0"
+}

@@ -1,0 +1,29 @@
+{
+  "eval_id": 8,
+  "eval_name": "eval-8",
+  "configuration": "with_skill",
+  "run_number": 1,
+  "prompt": "어제까지 실행되던 로컬 API가 오늘 DB connection failed로 시작되지 않는다. 당직자가 먼저 안전한 상태를 확인하고 원인을 좁혀 복구한 뒤 검증하거나 상향 보고할 수 있도록 한국어로 작성해줘. 확인 가능한 사실은 Docker와 postgres 컨테이너가 정상 실행 중이어야 하고 저장소 루트에 .env가 있어야 하며 정상 복구 후 'Server running on http://localhost:3000' 로그와 GET /health의 {\"status\":\"ok\"} 응답이 보여야 한다는 것이다. 확인되지 않은 명령은 만들지 말고, 분기 조건·중단 조건·복구 확인·상향 보고 시 첨부할 증거를 포함해라.",
+  "expectations": [
+    "The artifact is a troubleshooting runbook, not a normal setup guide or incident report.",
+    "It starts from the observed failure and orders low-risk checks before recovery actions.",
+    "Diagnostic branches use observable conditions and do not invent shell commands.",
+    "Recovery is verified with the exact server log and health response.",
+    "Stop and escalation conditions identify the evidence to preserve."
+  ],
+  "expected_output": "비정상 시작점에서 증상·진단 분기·복구·검증·에스컬레이션을 제공하는 Troubleshooting runbook.",
+  "case_contract": {
+    "deny_write_tools": true,
+    "allowed_change_paths": []
+  },
+  "allowed_workspace_change_paths": [],
+  "skill_contract_sha256": "1992556407dd0e1d386fd82315fde0296bce26df2002f5deb5ff62b97ffdf254",
+  "skill_snapshot_before_sha256": "1e9bc77b686a9775a0295e2199cb5bbdb9c59d5ff0cf112d6d36d5cf9fcbd5ec",
+  "skill_snapshot_after_sha256": "1e9bc77b686a9775a0295e2199cb5bbdb9c59d5ff0cf112d6d36d5cf9fcbd5ec",
+  "skill_usage": "required",
+  "executor": "independent-luna-context",
+  "capability_evidence_status": "unverified",
+  "execution_receipt_sha256": "b564c4928097f689127acf0c4e50ac586941e51a61eb0d14c949a4b62a5ca726",
+  "execution_receipt_schema_version": 3,
+  "context_id": "a3401ef7856c4464a5ba9186c4247c6f"
+}

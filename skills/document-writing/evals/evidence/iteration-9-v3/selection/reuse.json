@@ -1,0 +1,25 @@
+{
+  "status": "reused",
+  "passed": true,
+  "source_path": "evals/evidence/iteration-13-diagnostic/selection.json",
+  "source_sha256": "2e34b2010d0843f7f9f1380f2193499784f22c54bb69e5464da9abe3f91a3755",
+  "description_sha256": "cd216978ac42daf17ffcf6a94d765bf7b151782f74a2070849f06e628dbdb694",
+  "expected_description_sha256": "cd216978ac42daf17ffcf6a94d765bf7b151782f74a2070849f06e628dbdb694",
+  "dataset_sha256": "ff6335cc71cbee5cf648df5fc486c544176a8b21f21f6f4c840610759bfe7c6d",
+  "expected_dataset_sha256": "ff6335cc71cbee5cf648df5fc486c544176a8b21f21f6f4c840610759bfe7c6d",
+  "metrics": {
+    "runs": 3,
+    "queries_per_run": 60,
+    "total_decisions": 180,
+    "tp": 90,
+    "tn": 90,
+    "fp": 0,
+    "fn": 0,
+    "high_risk_false_positives": 0,
+    "precision": 1.0,
+    "recall": 1.0,
+    "specificity": 1.0,
+    "mismatches": []
+  },
+  "new_selection_executed": false
+}

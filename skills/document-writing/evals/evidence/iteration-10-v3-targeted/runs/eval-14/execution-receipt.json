@@ -1,0 +1,31 @@
+{
+  "schema_version": 3,
+  "provenance": "harness-derived-from-task-response-and-manifests",
+  "status": "completed",
+  "task_context_id": "45cb0aff493848068e634a52e4aa9d23",
+  "model": "gpt-5.6-luna",
+  "reasoning_effort": "medium",
+  "response_sha256": "fb313c506f922243e9287767074e98479ac4a03331f1852cab2b218b531b5305",
+  "workspace_before_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+  "workspace_after_sha256": "676a0929e1b1e1ea68f53ed764be9758163b67fc18aa7d40dabb8c3e870cba0b",
+  "produced_paths": [
+    "docs/design-system-visual-assets/accessibility.md",
+    "docs/design-system-visual-assets/asset-system.md",
+    "docs/design-system-visual-assets/composition-and-copy.md",
+    "docs/design-system-visual-assets/delivery-and-versioning.md",
+    "docs/design-system-visual-assets/index.md",
+    "docs/design-system-visual-assets/localization.md",
+    "docs/design-system-visual-assets/screenshots-and-previews.md",
+    "docs/design-system-visual-assets/stores/google-play.md",
+    "docs/design-system-visual-assets/visual-language.md"
+  ],
+  "telemetry": {
+    "status": "unavailable",
+    "duration_ms": null,
+    "total_tokens": null
+  },
+  "capability_evidence": {
+    "status": "unverified",
+    "events": []
+  }
+}

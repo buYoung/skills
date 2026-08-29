@@ -1,0 +1,24 @@
+{
+  "schema_version": 3,
+  "provenance": "harness-derived-from-task-response-and-manifests",
+  "status": "completed",
+  "task_context_id": "721014f8868f4e5485503c0fddc3955c",
+  "model": "gpt-5.6-luna",
+  "reasoning_effort": "medium",
+  "response_sha256": "e958b9a321f25de04d03fe7e16103757313c8ecf9ceff5e7bd17c4f5701fa577",
+  "workspace_before_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+  "workspace_after_sha256": "601d231d504028483ba2bcb0e4eb1300fb9874a84b191c62a81318bb4bb6c897",
+  "produced_paths": [
+    "docs/design-system-visual-assets/index.md",
+    "docs/design-system-visual-assets/stores/microsoft-store.md"
+  ],
+  "telemetry": {
+    "status": "unavailable",
+    "duration_ms": null,
+    "total_tokens": null
+  },
+  "capability_evidence": {
+    "status": "unverified",
+    "events": []
+  }
+}

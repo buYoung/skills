@@ -1,0 +1,42 @@
+{
+  "schema_version": 3,
+  "status": "completed-independent-grading",
+  "provenance": "independent-luna-grader-output",
+  "eval_id": 22,
+  "grader_task_context_id": "570d1fa8c6714a49b6ab4dd8fa762a41",
+  "model": "gpt-5.6-luna",
+  "reasoning_effort": "medium",
+  "expectations": [
+    {
+      "text": "The existing file is recognized as the Google Play owner within this document set.",
+      "passed": true,
+      "evidence": "deterministic validator confirms the existing path owns Google Play and index.md links it"
+    },
+    {
+      "text": "The existing `stores/play-store-assets.md` path is reused and `stores/google-play.md` is not created.",
+      "passed": true,
+      "evidence": "Produced paths contain only docs/design-system-visual-assets/stores/play-store-assets.md; validator confirms no duplicate owner or unexpected document"
+    },
+    {
+      "text": "No path rename occurs without an explicit migration request.",
+      "passed": true,
+      "evidence": "Deterministic grading confirms the allowed changed path is docs/design-system-visual-assets/stores/play-store-assets.md and no alternate path was added"
+    },
+    {
+      "text": "Other existing files remain unchanged except for required cross-reference updates.",
+      "passed": true,
+      "evidence": "Validator confirms all unrelated fixture files are byte-for-byte preserved"
+    },
+    {
+      "text": "Current first-party requirements and verification metadata are updated without inventing values.",
+      "passed": true,
+      "evidence": "Response states official Play Console Help source and 2026-08-29 verification date; deterministic grading confirms an HTTPS source URL and real ISO verification date"
+    }
+  ],
+  "summary": {
+    "passed": 5,
+    "failed": 0,
+    "total": 5,
+    "pass_rate": 1.0
+  }
+}

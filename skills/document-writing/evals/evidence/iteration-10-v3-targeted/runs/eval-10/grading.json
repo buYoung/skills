@@ -1,0 +1,42 @@
+{
+  "schema_version": 3,
+  "status": "completed-independent-grading",
+  "provenance": "independent-luna-grader-output",
+  "eval_id": 10,
+  "grader_task_context_id": "c9f8778f29d745e1a59fb4dcdbae2d5e",
+  "model": "gpt-5.6-luna",
+  "reasoning_effort": "medium",
+  "expectations": [
+    {
+      "text": "The artifact is routed to Design System Document with the `default` prebuilt, not to FDD, reference/specification, or UI implementation.",
+      "passed": true,
+      "evidence": "The response explicitly frames the requested deliverable as a design-system document and proposes the canonical structure centered on index.md with foundations, tokens, components, patterns, content, accessibility, and governance; it does not route the work to FDD, a reference/specification, or UI implementation."
+    },
+    {
+      "text": "No file or directory is created because neither a design direction nor representative validation has been approved.",
+      "passed": true,
+      "evidence": "The response states that direction approval and representative validation are absent and that no files were created. The execution receipt reports produced_paths as an empty list, and before/after workspace hashes are identical."
+    },
+    {
+      "text": "The response derives two or three materially different direction hypotheses from the supplied product evidence and recommends one with concrete benefits and risks.",
+      "passed": true,
+      "evidence": "The response gives three distinct hypotheses—업무 명확성 우선, 균형형 제품 언어, 브랜드 표현 우선—and recommends 균형형 제품 언어 with stated benefits (preserves all three principles and allows evidence-based expansion) and risks/tradeoffs described for the directions."
+    },
+    {
+      "text": "The user is asked no more than three plain-language questions about recognizable outcomes or use situations; internal design-axis terminology is not required from the user.",
+      "passed": true,
+      "evidence": "The response asks one plain-language approval question about whether to use clear hierarchy, consistent structure, and limited brand expression, and requests representative simple and information-dense situations without requiring internal design-axis terminology. The deterministic validator confirms the question count is between 1 and 3."
+    },
+    {
+      "text": "The response does not invent brand values, token values, component inventory, platforms, or claim that the design-system document is complete.",
+      "passed": true,
+      "evidence": "The response explicitly says brand colors, type, spacing, component list, approval record, and validation results are not available and declines to infer them. It does not name a platform or claim the document set is complete; it conditions creation on later approval and validation."
+    }
+  ],
+  "summary": {
+    "passed": 5,
+    "failed": 0,
+    "total": 5,
+    "pass_rate": 1.0
+  }
+}

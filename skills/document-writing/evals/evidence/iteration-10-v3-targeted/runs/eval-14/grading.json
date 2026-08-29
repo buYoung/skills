@@ -1,0 +1,42 @@
+{
+  "schema_version": 3,
+  "status": "completed-independent-grading",
+  "provenance": "independent-luna-grader-output",
+  "eval_id": 14,
+  "grader_task_context_id": "a8a217fc2f5f457fb44da147094d5a51",
+  "model": "gpt-5.6-luna",
+  "reasoning_effort": "medium",
+  "expectations": [
+    {
+      "text": "The selected prebuilt is `app-store-page` and common visual-asset documents remain store-neutral.",
+      "passed": true,
+      "evidence": "The response reports validation with `--prebuilt app-store-page --store google-play`; common asset-system.md explicitly assigns store-specific specifications to stores/google-play.md and says common files do not duplicate store sizes, counts, formats, or policies."
+    },
+    {
+      "text": "Only the in-scope Google Play adaptation is added as `stores/google-play.md`; the explicitly excluded Apple App Store is neither researched nor given a file.",
+      "passed": true,
+      "evidence": "The receipt lists docs/design-system-visual-assets/stores/google-play.md as the only store adaptation, while index.md and google-play.md explicitly exclude Apple App Store; no Apple store file appears in the workspace file list."
+    },
+    {
+      "text": "Mutable Google Play sizes, counts, formats, and policies are verified from current official Google sources rather than memory.",
+      "passed": true,
+      "evidence": "stores/google-play.md records current app icon, feature graphic, screenshot, preview-video, and device-specific sizes/counts/formats/policy rules and identifies Google Play official Help sources; the deterministic grading also confirms an observable HTTPS source URL and real ISO verification date."
+    },
+    {
+      "text": "The store file records official source URLs and a verification date near mutable requirements.",
+      "passed": true,
+      "evidence": "stores/google-play.md has an 조사 상태와 공식 출처 section immediately before the mutable requirements, with three support.google.com HTTPS URLs and the verification date 2026-08-29."
+    },
+    {
+      "text": "Google Play-specific differences are not generalized into the common visual-asset contract.",
+      "passed": true,
+      "evidence": "asset-system.md states that asset roles are common while store-specific size/count/format/upload requirements are owned only by stores/google-play.md; visual-language.md and delivery-and-versioning.md link to that store document for conditional rules instead of embedding them."
+    }
+  ],
+  "summary": {
+    "passed": 5,
+    "failed": 0,
+    "total": 5,
+    "pass_rate": 1.0
+  }
+}

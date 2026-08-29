@@ -1,0 +1,52 @@
+{
+  "schema_version": 3,
+  "status": "completed-independent-grading",
+  "provenance": "independent-luna-grader-output",
+  "eval_id": 4,
+  "grader_task_context_id": "edcf12e6a62f4e07a40449787677d058",
+  "model": "gpt-5.6-luna",
+  "reasoning_effort": "medium",
+  "expectations": [
+    {
+      "text": "The artifact is a reference or specification, not an explanatory overview, action guide, or FDD.",
+      "passed": true,
+      "evidence": "문서가 POST idempotency key 계약이라는 제목의 참조 사양으로 구성되어 있으며, 빠른 참조 표·계약 표·정의되지 않은 범위를 제공한다. 설명형 개요나 FDD 형식으로 확장되지 않았다."
+    },
+    {
+      "text": "Scope, terminology, and contract items are organized for non-linear lookup.",
+      "passed": true,
+      "evidence": "범위와 목적, 빠른 참조, 키 수명과 재사용 규칙, 키와 요청 본문 조합별 서버 응답, 409 조건, SDK 구현 규칙으로 구획하고 항목·계약 표를 사용해 비선형 조회가 가능하다."
+    },
+    {
+      "text": "The exact 24-hour, UUID, replay, 409, and no-automatic-retry rules are present without contradiction.",
+      "passed": true,
+      "evidence": "POST 적용, UUID 형식, 24시간 보관, 동일 본문에서 최초 처리 결과 재사용, 상이 본문에서 409 Conflict, SDK 자동 재시도 미수행이 빠른 참조 표와 상세 규칙에 일관되게 명시되어 있다."
+    },
+    {
+      "text": "A reader can find same-key/same-body and same-key/different-body outcomes from a table or equivalent repeated contract structure.",
+      "passed": true,
+      "evidence": "‘키와 요청 본문 조합별 서버 응답’ 표가 이미 사용한 키와 최초 요청과 동일한 본문에 대해 결과 재사용을, 이미 사용한 키와 다른 본문에 대해 409 Conflict를 직접 매핑한다. 유효·유효하지 않은 재사용 예시도 이를 반복한다."
+    },
+    {
+      "text": "Canonical tokens such as idempotency key, UUID, POST, and 409 are preserved consistently.",
+      "passed": true,
+      "evidence": "문서 전반에서 idempotency key, UUID, POST, 409 Conflict를 동일한 표기와 의미로 유지하며, 키·본문 조합과 서버 응답의 계약도 같은 용어를 사용한다."
+    }
+  ],
+  "summary": {
+    "passed": 5,
+    "failed": 0,
+    "total": 5,
+    "pass_rate": 1.0
+  },
+  "claims": [],
+  "user_notes_summary": {
+    "uncertainties": [],
+    "needs_review": [],
+    "workarounds": []
+  },
+  "eval_feedback": {
+    "suggestions": [],
+    "overall": "요구된 범위·용어·보관 기간·재사용 및 재생 규칙·409 조건·자동 재시도 금지와 본문 조합별 결과가 참조 사양 구조로 명확하고 일관되게 정리되어 있다."
+  }
+}

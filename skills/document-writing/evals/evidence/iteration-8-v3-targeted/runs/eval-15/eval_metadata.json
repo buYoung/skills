@@ -1,0 +1,32 @@
+{
+  "schema_version": 3,
+  "eval_id": 15,
+  "eval_name": "eval-15",
+  "configuration": "current",
+  "run_number": 1,
+  "prompt": "MS Store의 Windows 11 데스크톱 MSIX 앱 등록용 시각 자산 디자인시스템 문서를 작성해줘. '제품의 정밀함을 우선하고 장식은 핵심 기능을 설명할 때만 사용한다'는 방향은 승인됐고, 작은 앱 아이콘과 큰 갤러리 이미지에서 검증됐다. 앱 아이콘, 스크린샷, trailer와 추가 artwork의 역할·규격·노출 조건·device 변형을 현재 Microsoft 공식 자료에서 다시 조사해 전용 store 문서에 출처와 확인일을 남겨라. 앱 이름, 설명, search terms, 가격, 인증 절차는 범위에서 제외하고 실제 자산도 만들지 마라.",
+  "expectations": [
+    "The `MS Store` alias is normalized to Microsoft Store and exactly one `stores/microsoft-store.md` is created.",
+    "The known MSIX and Windows 11 desktop applicability is recorded without asking the user to choose another Microsoft submission branch.",
+    "Mutable visual asset requirements are researched from current first-party Microsoft Learn pages, with source URLs and a verification date.",
+    "The storefront file covers only visual asset roles, specifications, placement or appearance conditions, and applicable device variants.",
+    "The storefront-specific research excludes listing copy, search terms, pricing, and certification steps; no other storefront file or produced image or video asset is added."
+  ],
+  "case_contract": {
+    "required_capabilities": [
+      "web"
+    ],
+    "allowed_change_paths": [
+      "docs/design-system-visual-assets/**"
+    ],
+    "required_change_paths": [
+      "docs/design-system-visual-assets/index.md",
+      "docs/design-system-visual-assets/stores/microsoft-store.md"
+    ],
+    "source_evidence": {
+      "require_https_url": true,
+      "require_verification_date": true
+    }
+  },
+  "task_context_id": "721014f8868f4e5485503c0fddc3955c"
+}

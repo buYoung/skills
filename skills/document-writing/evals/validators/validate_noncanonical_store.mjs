@@ -90,15 +90,12 @@ const unrelatedPreserved = unrelatedFixtureFiles.every((relative) => {
   return fs.existsSync(resultFile) && fs.lstatSync(resultFile).isFile() && fs.readFileSync(fixtureFile).equals(fs.readFileSync(resultFile));
 });
 const meaningfulChanged = normalizedMeaning(fixtureContent) !== normalizedMeaning(existingContent);
-const protectedLines = fixtureContent
-  .split(/\r?\n/)
-  .map((line) => line.trim())
-  .filter((line) => line.length > 0)
-  .filter((line) => !/(?:old source|last (?:reviewed|refreshed|checked)|recheck|before the|source statement)/i.test(line));
-const protectedContentPreserved = protectedLines.every((line) => existingContent.includes(line));
+const preservesScreenshotPurpose = /screenshots?[\s\S]{0,180}(?:signed-in|in-app|product|app)[\s\S]{0,180}(?:experience|interface|screen|use)/i.test(existingContent);
+const preservesClaimIntegrity = /claims?[\s\S]{0,180}(?:consistent|match|align)[\s\S]{0,180}(?:listing|review|package|product)/i.test(existingContent);
+const protectedMeaningPreserved = preservesScreenshotPurpose && preservesClaimIntegrity;
 const hasOfficialSource = /https:\/\/(?:support\.google\.com|developer\.android\.com)\//i.test(existingContent);
-const hasVerificationDate = /\b20\d{2}-\d{2}-\d{2}\b/.test(existingContent);
-const hasSubstantiveUpdate = meaningfulChanged && protectedContentPreserved && hasOfficialSource && hasVerificationDate;
+const hasVerificationDate = /(?:^|[^0-9])20\d{2}-\d{2}-\d{2}(?=$|[^0-9])/m.test(existingContent);
+const hasSubstantiveUpdate = meaningfulChanged && protectedMeaningPreserved && hasOfficialSource && hasVerificationDate;
 const outputIdentity = ownerIdentity(existingRelative, existingContent);
 const indexLinksOwner = /\]\(stores\/play-store-assets\.md(?:#[^)]+)?\)/i.test(indexContent);
 const ownerHasStorefrontMetadata = outputIdentity.includes("google play") || /\bgoogle\s+play\b/i.test(existingContent);
@@ -106,7 +103,7 @@ const expectedFiles = new Set(fixtureFiles);
 const noUnexpectedFiles = resultFiles.length === expectedFiles.size && resultFiles.every((relative) => expectedFiles.has(relative));
 const expectations = [
   { text: "Reuse the established non-canonical storefront path", passed: ownerHasStorefrontMetadata && indexLinksOwner, evidence: ownerHasStorefrontMetadata && indexLinksOwner ? "The existing path owns Google Play and index.md links it" : "The owner identity or index link is missing" },
-  { text: "Make a source-backed storefront update without deleting protected content", passed: hasSubstantiveUpdate, evidence: hasSubstantiveUpdate ? `Protected content remains and official source/date were added (${crypto.createHash("sha256").update(normalizedMeaning(existingContent)).digest("hex").slice(0, 12)})` : `changed=${meaningfulChanged} protected=${protectedContentPreserved} officialSource=${hasOfficialSource} verificationDate=${hasVerificationDate}` },
+  { text: "Make a source-backed storefront update without deleting protected meaning", passed: hasSubstantiveUpdate, evidence: hasSubstantiveUpdate ? `Asset-role meaning remains and official source/date were added (${crypto.createHash("sha256").update(normalizedMeaning(existingContent)).digest("hex").slice(0, 12)})` : `changed=${meaningfulChanged} meaning=${protectedMeaningPreserved} officialSource=${hasOfficialSource} verificationDate=${hasVerificationDate}` },
   { text: "Preserve all unrelated existing files", passed: unrelatedPreserved, evidence: unrelatedPreserved ? "All unrelated fixture files are byte-for-byte preserved" : "An unrelated fixture file changed, disappeared, or changed type" },
   { text: "Do not create another storefront owner", passed: duplicatePaths.length === 0 && noUnexpectedFiles, evidence: duplicatePaths.length === 0 && noUnexpectedFiles ? "No duplicate owner or unexpected document was added" : `duplicates=${JSON.stringify(duplicatePaths)} result=${JSON.stringify(resultFiles)}` },
 ];

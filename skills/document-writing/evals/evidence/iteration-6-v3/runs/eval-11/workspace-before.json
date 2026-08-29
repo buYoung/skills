@@ -1,0 +1,42 @@
+{
+  "workspace_root": "/Users/buyonglee/Documents/work/private/skills/skills/document-writing-workspace/iteration-6/behavior/job-e3978d153216707524fbaff2/workspace",
+  "root": "/Users/buyonglee/Documents/work/private/skills/skills/document-writing-workspace/iteration-6/behavior/job-e3978d153216707524fbaff2/workspace",
+  "exists": true,
+  "entries": [
+    {
+      "path": "docs",
+      "type": "directory"
+    },
+    {
+      "path": "docs/design-system",
+      "type": "directory"
+    },
+    {
+      "path": "docs/design-system/index.md",
+      "type": "file",
+      "sha256": "41c7053979bb5ae8a19449e229435986567d4416e6160b74665e58efcaf0dd15"
+    },
+    {
+      "path": "docs/design-system/integration-contract.md",
+      "type": "file",
+      "sha256": "d2d7ba46975cdaecd8f6036d0504b34e62cabafe2ddca6e7f6197c781dde8478"
+    },
+    {
+      "path": "docs/design-system/team-notes.md",
+      "type": "file",
+      "sha256": "d51f0e154b5a8a894c3a7fed3f3fee0c3f253cd5a954ea0a0ec212553ea3c737"
+    },
+    {
+      "path": "docs/design-system/tokens.md",
+      "type": "file",
+      "sha256": "feb19dc01669dae4e3ba35755b70f79d74b073f028e5ff7b31c842caed090fe0"
+    }
+  ],
+  "files": {
+    "docs/design-system/index.md": "41c7053979bb5ae8a19449e229435986567d4416e6160b74665e58efcaf0dd15",
+    "docs/design-system/integration-contract.md": "d2d7ba46975cdaecd8f6036d0504b34e62cabafe2ddca6e7f6197c781dde8478",
+    "docs/design-system/team-notes.md": "d51f0e154b5a8a894c3a7fed3f3fee0c3f253cd5a954ea0a0ec212553ea3c737",
+    "docs/design-system/tokens.md": "feb19dc01669dae4e3ba35755b70f79d74b073f028e5ff7b31c842caed090fe0"
+  },
+  "sha256": "f0c4162536e72f51a3b5e780843e73eed1c8baa171da16bdaf95a58d39d33207"
+}

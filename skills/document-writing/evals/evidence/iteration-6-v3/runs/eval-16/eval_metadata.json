@@ -1,0 +1,43 @@
+{
+  "eval_id": 16,
+  "eval_name": "eval-16",
+  "configuration": "with_skill",
+  "run_number": 1,
+  "prompt": "Steam 게임 상점페이지용 시각 자산 디자인시스템 문서를 만들어줘. '빠른 전투의 긴장감을 높은 대비와 대각선 흐름으로 표현하되 실제 플레이 장면의 판독성을 우선한다'는 방향은 승인됐고, 작은 capsule과 큰 hero, 정적 screenshot과 trailer에서 검증됐다. Steam에서 사용하는 capsule, screenshots, trailers와 thumbnail의 현재 이름·역할·필수 여부·규격·콘텐츠 제한·노출 관계를 Steamworks 공식 자료로 조사해서 별도 store 문서에 정리해라. 일반 앱 마켓의 feature graphic 명칭을 Steam에 억지로 적용하지 말고 실제 이미지나 영상은 만들지 마라.",
+  "expectations": [
+    "Steam is supported by `app-store-page` and exactly one `stores/steam.md` is created.",
+    "Current first-party Steamworks graphical asset, asset rule, and trailer material is opened and cited with a verification date.",
+    "The storefront file preserves Steam asset vocabulary such as capsules instead of translating Google Play or Apple asset names into Steam.",
+    "Asset requirements, content restrictions, screenshots, trailers, thumbnails, and cross-asset appearance dependencies are covered while storefront-specific research excludes listing copy, tags, and pricing.",
+    "No visual asset is produced and no Apple, Google Play, or Microsoft Store file is added."
+  ],
+  "expected_output": "`app-store-page` 공통 계약과 Steam 고유 자산 어휘·규칙을 공식 자료로 검증한 `stores/steam.md`를 포함한 Design System Document.",
+  "case_contract": {
+    "required_capabilities": [
+      "web"
+    ],
+    "allowed_change_paths": [
+      "docs/design-system-visual-assets/**"
+    ],
+    "required_change_paths": [
+      "docs/design-system-visual-assets/index.md",
+      "docs/design-system-visual-assets/stores/steam.md"
+    ],
+    "source_evidence": {
+      "require_https_url": true,
+      "require_verification_date": true
+    }
+  },
+  "allowed_workspace_change_paths": [
+    "docs/design-system-visual-assets/**"
+  ],
+  "skill_contract_sha256": "1992556407dd0e1d386fd82315fde0296bce26df2002f5deb5ff62b97ffdf254",
+  "skill_snapshot_before_sha256": "1e9bc77b686a9775a0295e2199cb5bbdb9c59d5ff0cf112d6d36d5cf9fcbd5ec",
+  "skill_snapshot_after_sha256": "1e9bc77b686a9775a0295e2199cb5bbdb9c59d5ff0cf112d6d36d5cf9fcbd5ec",
+  "skill_usage": "required",
+  "executor": "independent-luna-context",
+  "capability_evidence_status": "unverified",
+  "execution_receipt_sha256": "1379f1ac4b3e64ab108545cd93f3e3c727fa9c2d318b81b87bffad96e57d10cd",
+  "execution_receipt_schema_version": 3,
+  "context_id": "7416ba76955d4c3289f43d63272a7860"
+}

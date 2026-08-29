@@ -1,0 +1,29 @@
+{
+  "eval_id": 7,
+  "eval_name": "eval-7",
+  "configuration": "with_skill",
+  "run_number": 1,
+  "prompt": "10월부터 모든 엔지니어에게 반복 적용할 production access 기준을 작성해줘. 접근은 on-call engineer와 incident commander만 요청할 수 있고 manager 승인과 보안팀 기록이 필요하다. 기본 유효시간은 30분이며 고객 데이터 다운로드와 자격 증명 공유는 금지한다. SEV-1에서는 incident commander가 긴급 접근을 승인할 수 있지만 24시간 안에 사후 검토가 필요하다. 위반은 보안팀에 보고하며 정책 소유자는 Platform Security다. 시행일과 예외 승인 권한이 분명해야 한다.",
+  "expectations": [
+    "The artifact is a durable policy or rules document, not a one-time access guide.",
+    "Scope, covered roles, owner, and effective date are explicit.",
+    "Required, permitted, and prohibited behavior use consistent normative language.",
+    "The SEV-1 exception, approving authority, and 24-hour review are explicit.",
+    "Reporting and violation handling are discoverable without reading a procedure."
+  ],
+  "expected_output": "지속적 의무·허용·금지·예외·책임을 정의하는 Policy or rules.",
+  "case_contract": {
+    "deny_write_tools": true,
+    "allowed_change_paths": []
+  },
+  "allowed_workspace_change_paths": [],
+  "skill_contract_sha256": "1992556407dd0e1d386fd82315fde0296bce26df2002f5deb5ff62b97ffdf254",
+  "skill_snapshot_before_sha256": "1e9bc77b686a9775a0295e2199cb5bbdb9c59d5ff0cf112d6d36d5cf9fcbd5ec",
+  "skill_snapshot_after_sha256": "1e9bc77b686a9775a0295e2199cb5bbdb9c59d5ff0cf112d6d36d5cf9fcbd5ec",
+  "skill_usage": "required",
+  "executor": "independent-luna-context",
+  "capability_evidence_status": "unverified",
+  "execution_receipt_sha256": "871188a1e14a301fa8a118d7713a5995007de9ad7306a73426587b120ccce559",
+  "execution_receipt_schema_version": 3,
+  "context_id": "1dd822ed4e6b486fbf5a1eb10af41a30"
+}

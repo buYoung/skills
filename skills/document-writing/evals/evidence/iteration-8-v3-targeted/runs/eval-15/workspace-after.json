@@ -1,0 +1,34 @@
+{
+  "workspace_root": "/Users/buyonglee/Documents/work/private/skills/skills/document-writing-workspace/iteration-8/behavior/job-b70c1df4a842d2b1db9f2924/workspace",
+  "root": "/Users/buyonglee/Documents/work/private/skills/skills/document-writing-workspace/iteration-8/behavior/job-b70c1df4a842d2b1db9f2924/workspace",
+  "exists": true,
+  "entries": [
+    {
+      "path": "docs",
+      "type": "directory"
+    },
+    {
+      "path": "docs/design-system-visual-assets",
+      "type": "directory"
+    },
+    {
+      "path": "docs/design-system-visual-assets/index.md",
+      "type": "file",
+      "sha256": "7302ef330c56953e709705adf677076cef67f4b4ec9980540caa569bda5f0af6"
+    },
+    {
+      "path": "docs/design-system-visual-assets/stores",
+      "type": "directory"
+    },
+    {
+      "path": "docs/design-system-visual-assets/stores/microsoft-store.md",
+      "type": "file",
+      "sha256": "23bb58cc1256007e669adb2d3f19f04a709fb19ae4abe2f0f4c7892108660d63"
+    }
+  ],
+  "files": {
+    "docs/design-system-visual-assets/index.md": "7302ef330c56953e709705adf677076cef67f4b4ec9980540caa569bda5f0af6",
+    "docs/design-system-visual-assets/stores/microsoft-store.md": "23bb58cc1256007e669adb2d3f19f04a709fb19ae4abe2f0f4c7892108660d63"
+  },
+  "sha256": "601d231d504028483ba2bcb0e4eb1300fb9874a84b191c62a81318bb4bb6c897"
+}

@@ -1,0 +1,26 @@
+{
+  "workspace_root": "/Users/buyonglee/Documents/work/private/skills/skills/document-writing-workspace/iteration-6/behavior/job-1df37e14262dd19e1fbb61c2/workspace",
+  "root": "/Users/buyonglee/Documents/work/private/skills/skills/document-writing-workspace/iteration-6/behavior/job-1df37e14262dd19e1fbb61c2/workspace",
+  "exists": true,
+  "entries": [
+    {
+      "path": "input",
+      "type": "directory"
+    },
+    {
+      "path": "input/mobile-growth-blog.md",
+      "type": "file",
+      "sha256": "f0572d8ff60f52d64505ce55020fe40b0761ebdf47480f1dbf2c7914b087977f"
+    },
+    {
+      "path": "input/orbit-market-publisher-guide.md",
+      "type": "file",
+      "sha256": "b8452cd6b06bdc6792a5f778dc64efb77e551e04836d15952605e83fdfefc1bc"
+    }
+  ],
+  "files": {
+    "input/mobile-growth-blog.md": "f0572d8ff60f52d64505ce55020fe40b0761ebdf47480f1dbf2c7914b087977f",
+    "input/orbit-market-publisher-guide.md": "b8452cd6b06bdc6792a5f778dc64efb77e551e04836d15952605e83fdfefc1bc"
+  },
+  "sha256": "2a67f34062b04d28f1b97957d4751a424ce3442151301e5c481d576051c1c061"
+}

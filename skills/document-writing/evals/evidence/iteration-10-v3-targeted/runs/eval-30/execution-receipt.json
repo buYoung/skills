@@ -1,0 +1,34 @@
+{
+  "schema_version": 3,
+  "provenance": "harness-derived-from-task-response-and-manifests",
+  "status": "completed",
+  "task_context_id": "93b6e165dd654055949e7e4458a688f7",
+  "model": "gpt-5.6-luna",
+  "reasoning_effort": "medium",
+  "response_sha256": "9c6b0652b37f9a2f9e3e2e77671a1631808a25a49bfe32f607e6ca64e427828b",
+  "workspace_before_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+  "workspace_after_sha256": "76c6722d52c2fced8a7ad95f8a21fea1d6dedb89f7b42818d4e7922ba610985d",
+  "produced_paths": [
+    "docs/design-system/accessibility.md",
+    "docs/design-system/components/feature-icon.md",
+    "docs/design-system/components/index.md",
+    "docs/design-system/components/logo.md",
+    "docs/design-system/content.md",
+    "docs/design-system/foundations.md",
+    "docs/design-system/governance.md",
+    "docs/design-system/index.md",
+    "docs/design-system/patterns.md",
+    "docs/design-system/platforms/ios.md",
+    "docs/design-system/platforms/web.md",
+    "docs/design-system/tokens.md"
+  ],
+  "telemetry": {
+    "status": "unavailable",
+    "duration_ms": null,
+    "total_tokens": null
+  },
+  "capability_evidence": {
+    "status": "unverified",
+    "events": []
+  }
+}

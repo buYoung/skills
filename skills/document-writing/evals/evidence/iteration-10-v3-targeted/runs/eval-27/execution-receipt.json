@@ -1,0 +1,26 @@
+{
+  "schema_version": 3,
+  "provenance": "harness-derived-from-task-response-and-manifests",
+  "status": "completed",
+  "task_context_id": "be025cd0c1614ec9ba504b42b843998b",
+  "model": "gpt-5.6-luna",
+  "reasoning_effort": "medium",
+  "response_sha256": "a6eac105d9f152e0aaf9a4fb985d5b674a8e5688b4ddc0c09f82b2f9d2fa073b",
+  "workspace_before_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+  "workspace_after_sha256": "7d3d2602afac4c46ddbd15408cda06549d00c767e81c30cf488fd8b7880026ba",
+  "produced_paths": [
+    "docs/design-system/accessibility.md",
+    "docs/design-system/foundations.md",
+    "docs/design-system/index.md",
+    "docs/design-system/platforms/web.md"
+  ],
+  "telemetry": {
+    "status": "unavailable",
+    "duration_ms": null,
+    "total_tokens": null
+  },
+  "capability_evidence": {
+    "status": "unverified",
+    "events": []
+  }
+}

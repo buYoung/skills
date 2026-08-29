@@ -1,0 +1,33 @@
+{
+  "eval_id": 10,
+  "eval_name": "directionless-new-system-gate",
+  "configuration": "with_skill",
+  "run_number": 1,
+  "prompt": "제품 전반에서 디자이너와 프론트엔드 개발자가 함께 사용할 디자인시스템 문서를 만들어줘. 별도 저장 경로나 플랫폼은 지정하지 않는다. 확인된 원칙은 명확성, 일관성, 접근성이다. 현재 브랜드 색상·서체·간격 값과 컴포넌트 목록은 아직 결정되지 않았다. foundations, tokens, components, patterns, content, accessibility, governance의 정본 위치가 분명해야 하고 없는 값은 추정하지 마라.",
+  "expectations": [
+    "The artifact is routed to Design System Document with the `default` prebuilt, not to FDD, reference/specification, or UI implementation.",
+    "No file or directory is created because neither a design direction nor representative validation has been approved.",
+    "The response derives two or three materially different direction hypotheses from the supplied product evidence and recommends one with concrete benefits and risks.",
+    "The user is asked no more than three plain-language questions about recognizable outcomes or use situations; internal design-axis terminology is not required from the user.",
+    "The response does not invent brand values, token values, component inventory, platforms, or claim that the design-system document is complete."
+  ],
+  "expected_output": "`default` prebuilt로 라우팅하되 파일을 만들지 않고, 근거에서 도출한 2~3개 방향과 권장안 및 쉬운 승인 질문을 제시한 결과.",
+  "case_contract": {
+    "deny_write_tools": true,
+    "allowed_change_paths": [],
+    "response": {
+      "min_questions": 1,
+      "max_questions": 3
+    }
+  },
+  "allowed_workspace_change_paths": [],
+  "skill_contract_sha256": "1992556407dd0e1d386fd82315fde0296bce26df2002f5deb5ff62b97ffdf254",
+  "skill_snapshot_before_sha256": "1e9bc77b686a9775a0295e2199cb5bbdb9c59d5ff0cf112d6d36d5cf9fcbd5ec",
+  "skill_snapshot_after_sha256": "1e9bc77b686a9775a0295e2199cb5bbdb9c59d5ff0cf112d6d36d5cf9fcbd5ec",
+  "skill_usage": "required",
+  "executor": "independent-luna-context",
+  "capability_evidence_status": "unverified",
+  "execution_receipt_sha256": "fab5f026c899f14c9aa4deb13da7cfd2518938540bc8ae49e00f18b9b830a26a",
+  "execution_receipt_schema_version": 3,
+  "context_id": "91b899c797c144e9a435041e66c4a912"
+}

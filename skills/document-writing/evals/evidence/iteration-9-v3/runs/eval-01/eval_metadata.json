@@ -1,0 +1,20 @@
+{
+  "schema_version": 3,
+  "eval_id": 1,
+  "eval_name": "eval-1",
+  "configuration": "current",
+  "run_number": 1,
+  "prompt": "신규 입사한 PM과 고객지원 담당자가 idempotency key를 한 번 읽고 이해할 수 있도록 한국어 내부 문서를 작성해줘. 독자는 HTTP 기본 개념은 알지만 분산 시스템 경험은 없다. 확인된 사실은 다음과 같다: 클라이언트는 POST 요청에 키를 보낸다. 서버는 최초 응답을 24시간 저장한다. 같은 키와 같은 요청 본문이면 최초 응답을 반환한다. 같은 키와 다른 요청 본문이면 409를 반환한다. 이 기능이 네트워크 재시도를 자동으로 수행하지는 않는다. 클라이언트는 논리적 작업마다 새 UUID를 생성해야 한다. 결제 버튼을 두 번 누른 사례에서 같은 UUID를 사용해 보호되는 경우, 클릭마다 새 UUID를 만들어 보호되지 않는 경우, 같은 UUID에 다른 본문을 사용해 409가 발생하는 경우를 대비해 설명해라.",
+  "expectations": [
+    "The artifact is an explanatory overview selected from reader intent, not a reference catalog, action guide, or FDD.",
+    "The opening lets the target reader explain what an idempotency key prevents, when the key is reused, and that it does not perform retries.",
+    "The document accurately includes the 24-hour retention, same-key same-body replay, same-key different-body 409, and one-UUID-per-logical-operation rules.",
+    "The duplicate-payment example explicitly contrasts protected same-UUID use, unprotected new-UUID use, and same-UUID different-body misuse.",
+    "The Korean prose introduces the established Korean term with the English term once and preserves POST, UUID, and 409 canonically."
+  ],
+  "case_contract": {
+    "deny_write_tools": true,
+    "allowed_change_paths": []
+  },
+  "task_context_id": "574de36864a74d91839f1e42df25243b"
+}

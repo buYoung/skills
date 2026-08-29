@@ -1,0 +1,46 @@
+{
+  "workspace_root": "/Users/buyonglee/Documents/work/private/skills/skills/document-writing-workspace/iteration-6/behavior/job-870762b5439d6d2a01f8099e/workspace",
+  "root": "/Users/buyonglee/Documents/work/private/skills/skills/document-writing-workspace/iteration-6/behavior/job-870762b5439d6d2a01f8099e/workspace",
+  "exists": true,
+  "entries": [
+    {
+      "path": "docs",
+      "type": "directory"
+    },
+    {
+      "path": "docs/design-system-visual-assets",
+      "type": "directory"
+    },
+    {
+      "path": "docs/design-system-visual-assets/asset-system.md",
+      "type": "file",
+      "sha256": "931e8c697f7337c6f671295c8028817fa58d36d38d3d413c922a92e9c8c18ad7"
+    },
+    {
+      "path": "docs/design-system-visual-assets/brand-notes.md",
+      "type": "file",
+      "sha256": "a63348f65eb486fb29d74a297c555b64c965ee0819786a521a6e25d752b21974"
+    },
+    {
+      "path": "docs/design-system-visual-assets/index.md",
+      "type": "file",
+      "sha256": "d55d03c4eb2014c5b5bd3987a25890357c28754a95e9841466bc5a9dac4fb83e"
+    },
+    {
+      "path": "docs/design-system-visual-assets/stores",
+      "type": "directory"
+    },
+    {
+      "path": "docs/design-system-visual-assets/stores/galaxy-store.md",
+      "type": "file",
+      "sha256": "256fd3f0f298f56556d10a7f1c09fcc9909953fcdcbe7aed03d564d1f8aa68dd"
+    }
+  ],
+  "files": {
+    "docs/design-system-visual-assets/asset-system.md": "931e8c697f7337c6f671295c8028817fa58d36d38d3d413c922a92e9c8c18ad7",
+    "docs/design-system-visual-assets/brand-notes.md": "a63348f65eb486fb29d74a297c555b64c965ee0819786a521a6e25d752b21974",
+    "docs/design-system-visual-assets/index.md": "d55d03c4eb2014c5b5bd3987a25890357c28754a95e9841466bc5a9dac4fb83e",
+    "docs/design-system-visual-assets/stores/galaxy-store.md": "256fd3f0f298f56556d10a7f1c09fcc9909953fcdcbe7aed03d564d1f8aa68dd"
+  },
+  "sha256": "6ab656ec31e6bad854bff1d1266bbbc7ff35e825912c30ec1eedae499030f271"
+}

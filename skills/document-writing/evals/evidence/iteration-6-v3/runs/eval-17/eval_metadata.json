@@ -1,0 +1,43 @@
+{
+  "eval_id": 17,
+  "eval_name": "eval-17",
+  "configuration": "with_skill",
+  "run_number": 1,
+  "prompt": "Play Store와 Google Play Store, Steam에 함께 배포할 제품의 상점 시각 자산 디자인시스템 문서를 작성해줘. '친근한 협동 경험을 부드러운 형태와 선명한 팀 구분으로 보여준다'는 방향은 승인됐고, 작은 아이콘과 넓은 capsule, 정적 screenshot과 trailer에서 각각 검증됐다. Play Store와 Google Play Store는 같은 상점을 뜻한다. 각 상점의 현재 공식 자료를 따로 조사하고 공통 시각 언어는 공유하되 상점별 규격과 자산 명칭은 별도 문서로 분리해라. 실제 자산 제작과 등록 문구·가격 정보는 제외한다.",
+  "expectations": [
+    "`Play Store` and `Google Play Store` deduplicate to one Google Play storefront while Steam remains a separate storefront.",
+    "Exactly `stores/google-play.md` and `stores/steam.md` are created; no alias-named duplicate or merged comparison file replaces them.",
+    "Each storefront is researched independently from its current first-party sources and keeps its own asset vocabulary and requirements.",
+    "Common visual-language and delivery decisions stay storefront-neutral and storefront files cross-reference rather than duplicate them.",
+    "No actual assets or unrequested storefront files are added, and storefront-specific research excludes general listing copy and pricing."
+  ],
+  "expected_output": "별칭을 중복 제거해 `stores/google-play.md`와 `stores/steam.md`만 생성하고 공통 계약을 상점 중립적으로 유지한 `app-store-page` 문서 묶음.",
+  "case_contract": {
+    "required_capabilities": [
+      "web"
+    ],
+    "allowed_change_paths": [
+      "docs/design-system-visual-assets/**"
+    ],
+    "required_change_paths": [
+      "docs/design-system-visual-assets/stores/google-play.md",
+      "docs/design-system-visual-assets/stores/steam.md"
+    ],
+    "source_evidence": {
+      "require_https_url": true,
+      "require_verification_date": true
+    }
+  },
+  "allowed_workspace_change_paths": [
+    "docs/design-system-visual-assets/**"
+  ],
+  "skill_contract_sha256": "1992556407dd0e1d386fd82315fde0296bce26df2002f5deb5ff62b97ffdf254",
+  "skill_snapshot_before_sha256": "1e9bc77b686a9775a0295e2199cb5bbdb9c59d5ff0cf112d6d36d5cf9fcbd5ec",
+  "skill_snapshot_after_sha256": "1e9bc77b686a9775a0295e2199cb5bbdb9c59d5ff0cf112d6d36d5cf9fcbd5ec",
+  "skill_usage": "required",
+  "executor": "independent-luna-context",
+  "capability_evidence_status": "unverified",
+  "execution_receipt_sha256": "7e51e69dc5cc0286724a970d2247c277591d5caf34b63747318166e770f205c7",
+  "execution_receipt_schema_version": 3,
+  "context_id": "2bb6b8067dd44fd0b55e5222961554ac"
+}

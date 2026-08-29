@@ -1,0 +1,36 @@
+{
+  "workspace_root": "/Users/buyonglee/Documents/work/private/skills/skills/document-writing-workspace/iteration-6/behavior/job-5347e2c8ae0128a0dd2e97f2/workspace",
+  "root": "/Users/buyonglee/Documents/work/private/skills/skills/document-writing-workspace/iteration-6/behavior/job-5347e2c8ae0128a0dd2e97f2/workspace",
+  "exists": true,
+  "entries": [
+    {
+      "path": "docs",
+      "type": "directory"
+    },
+    {
+      "path": "docs/design-system",
+      "type": "directory"
+    },
+    {
+      "path": "docs/design-system/incident-exceptions.md",
+      "type": "file",
+      "sha256": "33a089aecde4d70af730e09a98874282b5a9b0c729a53d081c7b54d93bd7e969"
+    },
+    {
+      "path": "docs/design-system/index.md",
+      "type": "file",
+      "sha256": "2113a9e867ffb67465d16466b0fd16d432d7e92adf9ad1a6bfe83d1f70221e24"
+    },
+    {
+      "path": "docs/design-system/request-access.md",
+      "type": "file",
+      "sha256": "5531640f2668d4d7cc7e9cd190e3e4b86e28fab04dab7047e34e36d928345029"
+    }
+  ],
+  "files": {
+    "docs/design-system/incident-exceptions.md": "33a089aecde4d70af730e09a98874282b5a9b0c729a53d081c7b54d93bd7e969",
+    "docs/design-system/index.md": "2113a9e867ffb67465d16466b0fd16d432d7e92adf9ad1a6bfe83d1f70221e24",
+    "docs/design-system/request-access.md": "5531640f2668d4d7cc7e9cd190e3e4b86e28fab04dab7047e34e36d928345029"
+  },
+  "sha256": "af1580460b1c50af62e32c8e0ca7058b6ee7b937c086e64221c49670dbacf190"
+}

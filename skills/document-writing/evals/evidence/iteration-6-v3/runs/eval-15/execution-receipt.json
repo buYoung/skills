@@ -1,0 +1,31 @@
+{
+  "schema_version": 3,
+  "provenance": "harness-derived-from-task-response-and-manifests",
+  "status": "completed",
+  "context_id": "382c13e9854e4dcd87084e93da47c82e",
+  "model": "gpt-5.6-luna",
+  "reasoning_effort": "medium",
+  "response_sha256": "901e6a9e8f3b08a1095d3f01fbe77778a2ec4563742bd35d9dcc02b7dda9ae32",
+  "workspace_before_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+  "workspace_after_sha256": "d095588f7ae9a598fcd6d47f3b8de8758e09ffe04a0631f1cd6e876e3b9e9265",
+  "produced_paths": [
+    "docs/design-system-visual-assets/accessibility.md",
+    "docs/design-system-visual-assets/asset-system.md",
+    "docs/design-system-visual-assets/composition-and-copy.md",
+    "docs/design-system-visual-assets/delivery-and-versioning.md",
+    "docs/design-system-visual-assets/index.md",
+    "docs/design-system-visual-assets/localization.md",
+    "docs/design-system-visual-assets/screenshots-and-previews.md",
+    "docs/design-system-visual-assets/stores/microsoft-store.md",
+    "docs/design-system-visual-assets/visual-language.md"
+  ],
+  "telemetry": {
+    "status": "unavailable",
+    "duration_ms": null,
+    "total_tokens": null
+  },
+  "capability_evidence": {
+    "status": "unverified",
+    "events": []
+  }
+}

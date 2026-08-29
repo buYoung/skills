@@ -1,0 +1,20 @@
+{
+  "schema_version": 3,
+  "eval_id": 2,
+  "eval_name": "eval-2",
+  "configuration": "current",
+  "run_number": 1,
+  "prompt": "처음 합류한 개발자가 로컬 API 서버를 그대로 따라 실행하고 각 단계의 성공 여부를 확인할 수 있도록 한국어 문서를 작성해줘. 사전 조건은 Node.js 22 이상, Docker, Git이다. 순서는 저장소 준비 후 .env.example을 .env로 복사하고, docker compose up -d postgres, npm ci, npm run dev를 실행한다. 정상 로그는 'Server running on http://localhost:3000'이고, GET /health의 정상 응답은 {\"status\":\"ok\"}다. 흔한 문제는 포트 3000 사용 중과 DB connection failed 두 가지다. 확인되지 않은 명령은 새로 만들지 마라.",
+  "expectations": [
+    "The artifact is an action guide selected from the normal starting state, not a troubleshooting runbook or reference.",
+    "Prerequisites appear before ordered actions and include Node.js 22+, Docker, and Git.",
+    "The guide includes the supplied docker compose, npm ci, and npm run dev commands but keeps the unverified .env copy action in prose without deriving cp or another command.",
+    "The exact server log and health response appear as observable success checks.",
+    "The reader can follow the order without hidden prerequisites and can handle only the two supplied local problems."
+  ],
+  "case_contract": {
+    "deny_write_tools": true,
+    "allowed_change_paths": []
+  },
+  "task_context_id": "1351e52dc490475c8987ab1565fc21aa"
+}

@@ -1,0 +1,46 @@
+{
+  "workspace_root": "/Users/buyonglee/Documents/work/private/skills/skills/document-writing-workspace/iteration-10/behavior/job-a0aaf99b2d65984cce6c7abe/workspace",
+  "root": "/Users/buyonglee/Documents/work/private/skills/skills/document-writing-workspace/iteration-10/behavior/job-a0aaf99b2d65984cce6c7abe/workspace",
+  "exists": true,
+  "entries": [
+    {
+      "path": "docs",
+      "type": "directory"
+    },
+    {
+      "path": "docs/design-system",
+      "type": "directory"
+    },
+    {
+      "path": "docs/design-system/accessibility.md",
+      "type": "file",
+      "sha256": "a8d5a10a0ea0c8f3f8cccb2e5ee7b8b4c13463d0de74e4db18340ab1ea126e1a"
+    },
+    {
+      "path": "docs/design-system/foundations.md",
+      "type": "file",
+      "sha256": "ab0e011bec4547db078a8e79fe9beca38b30454737841a4d29cdf80ced8b3be6"
+    },
+    {
+      "path": "docs/design-system/index.md",
+      "type": "file",
+      "sha256": "37602c57018a0216fb072f52aa3540c86ab4ab2ef859bb1539822072f0162905"
+    },
+    {
+      "path": "docs/design-system/platforms",
+      "type": "directory"
+    },
+    {
+      "path": "docs/design-system/platforms/web.md",
+      "type": "file",
+      "sha256": "511a740bf723262844cd47a03efcab2e12bf6127742cf0fbe4a267c711eb08f4"
+    }
+  ],
+  "files": {
+    "docs/design-system/accessibility.md": "a8d5a10a0ea0c8f3f8cccb2e5ee7b8b4c13463d0de74e4db18340ab1ea126e1a",
+    "docs/design-system/foundations.md": "ab0e011bec4547db078a8e79fe9beca38b30454737841a4d29cdf80ced8b3be6",
+    "docs/design-system/index.md": "37602c57018a0216fb072f52aa3540c86ab4ab2ef859bb1539822072f0162905",
+    "docs/design-system/platforms/web.md": "511a740bf723262844cd47a03efcab2e12bf6127742cf0fbe4a267c711eb08f4"
+  },
+  "sha256": "7d3d2602afac4c46ddbd15408cda06549d00c767e81c30cf488fd8b7880026ba"
+}

@@ -1,5 +1,7 @@
 # Storefront research
 
+Storefront research verifies operator-defined constraints; it does not choose or approve the product's design direction. Keep mutable requirements in the storefront file and preserve the approved shared direction in the common visual-language owners.
+
 Use this reference only with the `app-store-page` prebuilt when at least one digital storefront is in scope. The workflow is open-ended: it supports any app, game, software, device, or publisher storefront that can be identified from the user's request and authoritative material. Examples or previously supported stores never form an allowlist.
 
 ## 1. Resolve the in-scope storefront set

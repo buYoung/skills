@@ -1,0 +1,76 @@
+{
+  "workspace_root": "/Users/buyonglee/Documents/work/private/skills/skills/document-writing-workspace/iteration-6/behavior/job-b70c1df4a842d2b1db9f2924/workspace",
+  "root": "/Users/buyonglee/Documents/work/private/skills/skills/document-writing-workspace/iteration-6/behavior/job-b70c1df4a842d2b1db9f2924/workspace",
+  "exists": true,
+  "entries": [
+    {
+      "path": "docs",
+      "type": "directory"
+    },
+    {
+      "path": "docs/design-system-visual-assets",
+      "type": "directory"
+    },
+    {
+      "path": "docs/design-system-visual-assets/accessibility.md",
+      "type": "file",
+      "sha256": "6dc378536000d339c0d473cd882c4a50bd324eac368b6c564b04ec6d7c24a662"
+    },
+    {
+      "path": "docs/design-system-visual-assets/asset-system.md",
+      "type": "file",
+      "sha256": "99e07b3ded74df0f94013b67819d3ae8e6708294866e23157a3d49f1bca515d5"
+    },
+    {
+      "path": "docs/design-system-visual-assets/composition-and-copy.md",
+      "type": "file",
+      "sha256": "da0c380830d0d6e8baf499d9cac66d0611e7cea6d11ba6e3f706170210729de5"
+    },
+    {
+      "path": "docs/design-system-visual-assets/delivery-and-versioning.md",
+      "type": "file",
+      "sha256": "bb254a35131eab4a057e371fc5691c3791cf9a57b0f5d61287b7da263e0d2b69"
+    },
+    {
+      "path": "docs/design-system-visual-assets/index.md",
+      "type": "file",
+      "sha256": "8566e7357dcd2d7020657aab09ca9b1277834e15b9fd33ad1bbef951f0a9c9e1"
+    },
+    {
+      "path": "docs/design-system-visual-assets/localization.md",
+      "type": "file",
+      "sha256": "6a3252c6bb356cf4a760d11d9d36e40b072fbb84a9271ac29ccdf33c191b579d"
+    },
+    {
+      "path": "docs/design-system-visual-assets/screenshots-and-previews.md",
+      "type": "file",
+      "sha256": "322ec6324fc03beed5ef27040cf87bc79392dfe5c3f0b4f35e3e57f806643659"
+    },
+    {
+      "path": "docs/design-system-visual-assets/stores",
+      "type": "directory"
+    },
+    {
+      "path": "docs/design-system-visual-assets/stores/microsoft-store.md",
+      "type": "file",
+      "sha256": "2da57de957b34c7b039e8c58e33ffc68ba06a83771db074f451befaeed82d35c"
+    },
+    {
+      "path": "docs/design-system-visual-assets/visual-language.md",
+      "type": "file",
+      "sha256": "8378544805f91b41fd97a95a791c46aaadbc02e23cf4029b83a0e50e1747a801"
+    }
+  ],
+  "files": {
+    "docs/design-system-visual-assets/accessibility.md": "6dc378536000d339c0d473cd882c4a50bd324eac368b6c564b04ec6d7c24a662",
+    "docs/design-system-visual-assets/asset-system.md": "99e07b3ded74df0f94013b67819d3ae8e6708294866e23157a3d49f1bca515d5",
+    "docs/design-system-visual-assets/composition-and-copy.md": "da0c380830d0d6e8baf499d9cac66d0611e7cea6d11ba6e3f706170210729de5",
+    "docs/design-system-visual-assets/delivery-and-versioning.md": "bb254a35131eab4a057e371fc5691c3791cf9a57b0f5d61287b7da263e0d2b69",
+    "docs/design-system-visual-assets/index.md": "8566e7357dcd2d7020657aab09ca9b1277834e15b9fd33ad1bbef951f0a9c9e1",
+    "docs/design-system-visual-assets/localization.md": "6a3252c6bb356cf4a760d11d9d36e40b072fbb84a9271ac29ccdf33c191b579d",
+    "docs/design-system-visual-assets/screenshots-and-previews.md": "322ec6324fc03beed5ef27040cf87bc79392dfe5c3f0b4f35e3e57f806643659",
+    "docs/design-system-visual-assets/stores/microsoft-store.md": "2da57de957b34c7b039e8c58e33ffc68ba06a83771db074f451befaeed82d35c",
+    "docs/design-system-visual-assets/visual-language.md": "8378544805f91b41fd97a95a791c46aaadbc02e23cf4029b83a0e50e1747a801"
+  },
+  "sha256": "d095588f7ae9a598fcd6d47f3b8de8758e09ffe04a0631f1cd6e876e3b9e9265"
+}

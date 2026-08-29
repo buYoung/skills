@@ -1,0 +1,42 @@
+{
+  "schema_version": 3,
+  "status": "completed-independent-grading",
+  "provenance": "independent-luna-grader-output",
+  "eval_id": 9,
+  "grader_task_context_id": "947e6ce557d943b7bc23f7a80598e733",
+  "model": "gpt-5.6-luna",
+  "reasoning_effort": "medium",
+  "expectations": [
+    {
+      "text": "The artifact is a record or meeting notes, not an analysis report or proposal.",
+      "passed": true,
+      "evidence": "The document is explicitly titled '장애 회의 기록' and uses meeting-record sections for participants, summary, chronological events, decisions and agreements, follow-up actions, and unresolved items; it does not analyze causes or propose new actions."
+    },
+    {
+      "text": "Participants, timeline, decision, action owner and due date, and open security check are explicit.",
+      "passed": true,
+      "evidence": "Participants Mina, Ravi, and Jisoo are listed; the 09:02–09:35 sequence is given in both summary and a time-ordered table; Mina's 09:18 rollback decision is explicit; the follow-up table assigns Ravi and the due date '금요일'; and the unresolved section states that no personal-information exposure was confirmed while the security-team check remains open."
+    },
+    {
+      "text": "The document preserves that deployment correlation was not confirmed as cause.",
+      "passed": true,
+      "evidence": "At 09:12 the record says Ravi reported a temporal correlation with the prior deployment, followed by the explicit statement that it was not confirmed as the cause."
+    },
+    {
+      "text": "No new root-cause analysis, recommendation, owner, or deadline is invented.",
+      "passed": true,
+      "evidence": "The response does not identify a root cause or add recommendations. Its only action is the provided log-retention and deployment-change review, assigned to the provided owner Ravi with the provided due date '금요일'; noting that date, place, or channel were not supplied avoids inventing them."
+    },
+    {
+      "text": "An absent reader can reconstruct the event sequence and distinguish facts, agreement, and open questions.",
+      "passed": true,
+      "evidence": "The summary and chronological table reconstruct detection, incident start, unconfirmed deployment correlation, rollback, normalization, and team agreement. Separate headings for '결정 및 합의' and '미해결 사항' distinguish agreed actions from the still-open security-team check and the fact that exposure was not confirmed."
+    }
+  ],
+  "summary": {
+    "passed": 5,
+    "failed": 0,
+    "total": 5,
+    "pass_rate": 1.0
+  }
+}

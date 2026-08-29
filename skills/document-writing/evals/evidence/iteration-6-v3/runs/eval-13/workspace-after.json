@@ -1,0 +1,80 @@
+{
+  "workspace_root": "/Users/buyonglee/Documents/work/private/skills/skills/document-writing-workspace/iteration-6/behavior/job-141ce9d943f994d5f3731aa5/workspace",
+  "root": "/Users/buyonglee/Documents/work/private/skills/skills/document-writing-workspace/iteration-6/behavior/job-141ce9d943f994d5f3731aa5/workspace",
+  "exists": true,
+  "entries": [
+    {
+      "path": "docs",
+      "type": "directory"
+    },
+    {
+      "path": "docs/design-system",
+      "type": "directory"
+    },
+    {
+      "path": "docs/design-system/accessibility.md",
+      "type": "file",
+      "sha256": "e3fda2d74c8d67f8d5dedf9da53e9bdddbcfae43f6db2f24ea8c8bc1824afd27"
+    },
+    {
+      "path": "docs/design-system/components",
+      "type": "directory"
+    },
+    {
+      "path": "docs/design-system/components/index.md",
+      "type": "file",
+      "sha256": "65fc88351d16ab548539cfac99727cee616a8aa7a8ae716f13809617a165070f"
+    },
+    {
+      "path": "docs/design-system/content.md",
+      "type": "file",
+      "sha256": "7a3bfd4da334ddcc7b7f0bd102ff1e53ec5bd27b9d6ed89bffad5310dce023df"
+    },
+    {
+      "path": "docs/design-system/foundations.md",
+      "type": "file",
+      "sha256": "b9df7fa04bf07454d1389eb73a8a7d24eac575c76e5c273e2b2296ad1cbb739c"
+    },
+    {
+      "path": "docs/design-system/governance.md",
+      "type": "file",
+      "sha256": "cb7ded7478e7bae1b2506654cd1a5b34e9486ca5b998139578f4f0743cb47a65"
+    },
+    {
+      "path": "docs/design-system/index.md",
+      "type": "file",
+      "sha256": "945556b462c9bfea8010c55d21f02830eb36c800a4caca01868c65031b87ea7a"
+    },
+    {
+      "path": "docs/design-system/patterns.md",
+      "type": "file",
+      "sha256": "ee81217179a7af2aeb3622fa14da08adffbd62c58313b5454c1464215b8d837a"
+    },
+    {
+      "path": "docs/design-system/platforms",
+      "type": "directory"
+    },
+    {
+      "path": "docs/design-system/platforms/web.md",
+      "type": "file",
+      "sha256": "e645abca6c621dd067f50593988485214d122be95f04cc6a8216e530228c5cea"
+    },
+    {
+      "path": "docs/design-system/tokens.md",
+      "type": "file",
+      "sha256": "76a137448d6943099ba46dfbdd301291e2bc86e49d504eebf4fa1e1740c89985"
+    }
+  ],
+  "files": {
+    "docs/design-system/accessibility.md": "e3fda2d74c8d67f8d5dedf9da53e9bdddbcfae43f6db2f24ea8c8bc1824afd27",
+    "docs/design-system/components/index.md": "65fc88351d16ab548539cfac99727cee616a8aa7a8ae716f13809617a165070f",
+    "docs/design-system/content.md": "7a3bfd4da334ddcc7b7f0bd102ff1e53ec5bd27b9d6ed89bffad5310dce023df",
+    "docs/design-system/foundations.md": "b9df7fa04bf07454d1389eb73a8a7d24eac575c76e5c273e2b2296ad1cbb739c",
+    "docs/design-system/governance.md": "cb7ded7478e7bae1b2506654cd1a5b34e9486ca5b998139578f4f0743cb47a65",
+    "docs/design-system/index.md": "945556b462c9bfea8010c55d21f02830eb36c800a4caca01868c65031b87ea7a",
+    "docs/design-system/patterns.md": "ee81217179a7af2aeb3622fa14da08adffbd62c58313b5454c1464215b8d837a",
+    "docs/design-system/platforms/web.md": "e645abca6c621dd067f50593988485214d122be95f04cc6a8216e530228c5cea",
+    "docs/design-system/tokens.md": "76a137448d6943099ba46dfbdd301291e2bc86e49d504eebf4fa1e1740c89985"
+  },
+  "sha256": "96db0aff852c732d5ee71be8781c2824c3c87bdb50e1bec93445da4e21744aac"
+}

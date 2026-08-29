@@ -1,0 +1,58 @@
+{
+  "workspace_root": "/Users/buyonglee/Documents/work/private/skills/skills/document-writing-workspace/iteration-11/behavior/job-a0aaf99b2d65984cce6c7abe/workspace",
+  "root": "/Users/buyonglee/Documents/work/private/skills/skills/document-writing-workspace/iteration-11/behavior/job-a0aaf99b2d65984cce6c7abe/workspace",
+  "exists": true,
+  "entries": [
+    {
+      "path": "docs",
+      "type": "directory"
+    },
+    {
+      "path": "docs/design-system",
+      "type": "directory"
+    },
+    {
+      "path": "docs/design-system/accessibility.md",
+      "type": "file",
+      "sha256": "9052d7aa5c51ac2a2bd4d9f786273db0ac2fa40feb973b550937a69744a8e6f0"
+    },
+    {
+      "path": "docs/design-system/foundations.md",
+      "type": "file",
+      "sha256": "da6f2943da6aaeac692a1ab1d2efe271bcdfdc783b40f452095d7448ab7b6572"
+    },
+    {
+      "path": "docs/design-system/governance.md",
+      "type": "file",
+      "sha256": "c5cca2e70abba2a8d86f2c8504a9158b271c90953c2b3dda189ad01a49f31e29"
+    },
+    {
+      "path": "docs/design-system/index.md",
+      "type": "file",
+      "sha256": "43f78e16ebccc98c02895f74d651b0db99272237d0d918c54c5da731d3bc2608"
+    },
+    {
+      "path": "docs/design-system/patterns.md",
+      "type": "file",
+      "sha256": "a29dcc63aa527f279b97ea4893b2eed983942aa5fae63dc99c021da2ee9b3527"
+    },
+    {
+      "path": "docs/design-system/platforms",
+      "type": "directory"
+    },
+    {
+      "path": "docs/design-system/platforms/web.md",
+      "type": "file",
+      "sha256": "9b12a9edfa81bff065de5bca8ea34d105c140ab5793e20750d31a73e4c86560a"
+    }
+  ],
+  "files": {
+    "docs/design-system/accessibility.md": "9052d7aa5c51ac2a2bd4d9f786273db0ac2fa40feb973b550937a69744a8e6f0",
+    "docs/design-system/foundations.md": "da6f2943da6aaeac692a1ab1d2efe271bcdfdc783b40f452095d7448ab7b6572",
+    "docs/design-system/governance.md": "c5cca2e70abba2a8d86f2c8504a9158b271c90953c2b3dda189ad01a49f31e29",
+    "docs/design-system/index.md": "43f78e16ebccc98c02895f74d651b0db99272237d0d918c54c5da731d3bc2608",
+    "docs/design-system/patterns.md": "a29dcc63aa527f279b97ea4893b2eed983942aa5fae63dc99c021da2ee9b3527",
+    "docs/design-system/platforms/web.md": "9b12a9edfa81bff065de5bca8ea34d105c140ab5793e20750d31a73e4c86560a"
+  },
+  "sha256": "c090fc20723e15e085c3da1dd0ba871e8878fa2895fec3d1869860d6724d7e08"
+}

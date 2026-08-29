@@ -1,0 +1,34 @@
+{
+  "schema_version": 3,
+  "eval_id": 31,
+  "eval_name": "focused-warning-token-update",
+  "configuration": "current",
+  "run_number": 1,
+  "prompt": "기존 제품 UI 디자인 시스템에서 승인 변경 기록에 적힌 경고 색상만 반영해줘. 기존 방향을 다시 탐색하거나 다른 색·간격·컴포넌트 규칙을 손대지 말고, 경고 색상의 정본 값이 실제 경고 알림 소비자까지 이어지는지 확인해. 변경 전후 기본 경고와 경고 안의 링크 상태만 검증하고 현재 파일 이름과 구조를 유지해줘.",
+  "expectations": [
+    "The existing approved direction and document-set location are reused without presenting new direction hypotheses or asking for reapproval.",
+    "The warning token changes from `#E5A000` to the approved `#D97706`, and the alert consumer's exact rendered-color record changes to the same value.",
+    "The unchanged foundations, approval record, unrelated button component, filenames, and directory structure are preserved byte-for-byte.",
+    "The result traces the approved value through the canonical token owner to the final alert consumer without changing the options contract or inventing aliases.",
+    "Verification is limited to the default warning and warning-link representative states and does not claim a full-system redesign."
+  ],
+  "case_contract": {
+    "fixture_destination": "docs/design-system",
+    "validation": "validate_warning_update.mjs",
+    "allowed_change_paths": [
+      "docs/design-system/tokens.md",
+      "docs/design-system/components/alert.md"
+    ],
+    "required_change_paths": [
+      "docs/design-system/tokens.md",
+      "docs/design-system/components/alert.md"
+    ],
+    "forbidden_change_paths": [
+      "docs/design-system/index.md",
+      "docs/design-system/foundations.md",
+      "docs/design-system/approved-change.md",
+      "docs/design-system/components/button.md"
+    ]
+  },
+  "task_context_id": "2bc9628efe0a4ea99dd71959f918a1c4"
+}

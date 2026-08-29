@@ -1,0 +1,264 @@
+{
+  "status": "completed",
+  "validators": [
+    {
+      "name": "validate_eval_run.py",
+      "return_code": 0,
+      "stdout": "{\n  \"checks\": [\n    \"before/after manifests describe the same workspace\",\n    \"before manifest tree hash is canonical\",\n    \"after manifest tree hash is canonical\",\n    \"before manifest matches canonical package fixtures\",\n    \"before manifest directories match canonical package fixtures\",\n    \"after manifest matches the preserved workspace files\",\n    \"after manifest tree hash matches the preserved workspace\",\n    \"workspace change set is available\",\n    \"changed path is allowed: docs/design-system/accessibility.md\",\n    \"changed path is not forbidden: docs/design-system/accessibility.md\",\n    \"changed path is allowed: docs/design-system/components/feature-icon.md\",\n    \"changed path is not forbidden: docs/design-system/components/feature-icon.md\",\n    \"changed path is allowed: docs/design-system/components/index.md\",\n    \"changed path is not forbidden: docs/design-system/components/index.md\",\n    \"changed path is allowed: docs/design-system/components/logo.md\",\n    \"changed path is not forbidden: docs/design-system/components/logo.md\",\n    \"changed path is allowed: docs/design-system/content.md\",\n    \"changed path is not forbidden: docs/design-system/content.md\",\n    \"changed path is allowed: docs/design-system/foundations.md\",\n    \"changed path is not forbidden: docs/design-system/foundations.md\",\n    \"changed path is allowed: docs/design-system/governance.md\",\n    \"changed path is not forbidden: docs/design-system/governance.md\",\n    \"changed path is allowed: docs/design-system/index.md\",\n    \"changed path is not forbidden: docs/design-system/index.md\",\n    \"changed path is allowed: docs/design-system/patterns.md\",\n    \"changed path is not forbidden: docs/design-system/patterns.md\",\n    \"changed path is allowed: docs/design-system/platforms/ios.md\",\n    \"changed path is not forbidden: docs/design-system/platforms/ios.md\",\n    \"changed path is allowed: docs/design-system/platforms/web.md\",\n    \"changed path is not forbidden: docs/design-system/platforms/web.md\",\n    \"changed path is allowed: docs/design-system/tokens.md\",\n    \"changed path is not forbidden: docs/design-system/tokens.md\",\n    \"required change occurred: docs/design-system/index.md\",\n    \"required change occurred: docs/design-system/foundations.md\",\n    \"required change occurred: docs/design-system/platforms/web.md\",\n    \"required change occurred: docs/design-system/platforms/ios.md\",\n    \"execution receipt uses schema 3\",\n    \"execution receipt is harness-derived\",\n    \"execution receipt status is derived from response presence\",\n    \"execution receipt task_context_id matches task\",\n    \"execution receipt model matches task\",\n    \"execution receipt reasoning_effort matches task\",\n    \"response hash matches receipt\",\n    \"before manifest hash matches receipt\",\n    \"after manifest hash matches receipt\",\n    \"produced paths are derived from manifest diff\",\n    \"missing telemetry stays unavailable and null\",\n    \"missing capability evidence stays unverified\"\n  ],\n  \"failures\": []\n}\n",
+      "stderr": ""
+    }
+  ],
+  "expectations": [
+    {
+      "text": "validate_eval_run.py: before/after manifests describe the same workspace",
+      "passed": true,
+      "evidence": "deterministic check"
+    },
+    {
+      "text": "validate_eval_run.py: before manifest tree hash is canonical",
+      "passed": true,
+      "evidence": "deterministic check"
+    },
+    {
+      "text": "validate_eval_run.py: after manifest tree hash is canonical",
+      "passed": true,
+      "evidence": "deterministic check"
+    },
+    {
+      "text": "validate_eval_run.py: before manifest matches canonical package fixtures",
+      "passed": true,
+      "evidence": "deterministic check"
+    },
+    {
+      "text": "validate_eval_run.py: before manifest directories match canonical package fixtures",
+      "passed": true,
+      "evidence": "deterministic check"
+    },
+    {
+      "text": "validate_eval_run.py: after manifest matches the preserved workspace files",
+      "passed": true,
+      "evidence": "deterministic check"
+    },
+    {
+      "text": "validate_eval_run.py: after manifest tree hash matches the preserved workspace",
+      "passed": true,
+      "evidence": "deterministic check"
+    },
+    {
+      "text": "validate_eval_run.py: workspace change set is available",
+      "passed": true,
+      "evidence": "deterministic check"
+    },
+    {
+      "text": "validate_eval_run.py: changed path is allowed: docs/design-system/accessibility.md",
+      "passed": true,
+      "evidence": "deterministic check"
+    },
+    {
+      "text": "validate_eval_run.py: changed path is not forbidden: docs/design-system/accessibility.md",
+      "passed": true,
+      "evidence": "deterministic check"
+    },
+    {
+      "text": "validate_eval_run.py: changed path is allowed: docs/design-system/components/feature-icon.md",
+      "passed": true,
+      "evidence": "deterministic check"
+    },
+    {
+      "text": "validate_eval_run.py: changed path is not forbidden: docs/design-system/components/feature-icon.md",
+      "passed": true,
+      "evidence": "deterministic check"
+    },
+    {
+      "text": "validate_eval_run.py: changed path is allowed: docs/design-system/components/index.md",
+      "passed": true,
+      "evidence": "deterministic check"
+    },
+    {
+      "text": "validate_eval_run.py: changed path is not forbidden: docs/design-system/components/index.md",
+      "passed": true,
+      "evidence": "deterministic check"
+    },
+    {
+      "text": "validate_eval_run.py: changed path is allowed: docs/design-system/components/logo.md",
+      "passed": true,
+      "evidence": "deterministic check"
+    },
+    {
+      "text": "validate_eval_run.py: changed path is not forbidden: docs/design-system/components/logo.md",
+      "passed": true,
+      "evidence": "deterministic check"
+    },
+    {
+      "text": "validate_eval_run.py: changed path is allowed: docs/design-system/content.md",
+      "passed": true,
+      "evidence": "deterministic check"
+    },
+    {
+      "text": "validate_eval_run.py: changed path is not forbidden: docs/design-system/content.md",
+      "passed": true,
+      "evidence": "deterministic check"
+    },
+    {
+      "text": "validate_eval_run.py: changed path is allowed: docs/design-system/foundations.md",
+      "passed": true,
+      "evidence": "deterministic check"
+    },
+    {
+      "text": "validate_eval_run.py: changed path is not forbidden: docs/design-system/foundations.md",
+      "passed": true,
+      "evidence": "deterministic check"
+    },
+    {
+      "text": "validate_eval_run.py: changed path is allowed: docs/design-system/governance.md",
+      "passed": true,
+      "evidence": "deterministic check"
+    },
+    {
+      "text": "validate_eval_run.py: changed path is not forbidden: docs/design-system/governance.md",
+      "passed": true,
+      "evidence": "deterministic check"
+    },
+    {
+      "text": "validate_eval_run.py: changed path is allowed: docs/design-system/index.md",
+      "passed": true,
+      "evidence": "deterministic check"
+    },
+    {
+      "text": "validate_eval_run.py: changed path is not forbidden: docs/design-system/index.md",
+      "passed": true,
+      "evidence": "deterministic check"
+    },
+    {
+      "text": "validate_eval_run.py: changed path is allowed: docs/design-system/patterns.md",
+      "passed": true,
+      "evidence": "deterministic check"
+    },
+    {
+      "text": "validate_eval_run.py: changed path is not forbidden: docs/design-system/patterns.md",
+      "passed": true,
+      "evidence": "deterministic check"
+    },
+    {
+      "text": "validate_eval_run.py: changed path is allowed: docs/design-system/platforms/ios.md",
+      "passed": true,
+      "evidence": "deterministic check"
+    },
+    {
+      "text": "validate_eval_run.py: changed path is not forbidden: docs/design-system/platforms/ios.md",
+      "passed": true,
+      "evidence": "deterministic check"
+    },
+    {
+      "text": "validate_eval_run.py: changed path is allowed: docs/design-system/platforms/web.md",
+      "passed": true,
+      "evidence": "deterministic check"
+    },
+    {
+      "text": "validate_eval_run.py: changed path is not forbidden: docs/design-system/platforms/web.md",
+      "passed": true,
+      "evidence": "deterministic check"
+    },
+    {
+      "text": "validate_eval_run.py: changed path is allowed: docs/design-system/tokens.md",
+      "passed": true,
+      "evidence": "deterministic check"
+    },
+    {
+      "text": "validate_eval_run.py: changed path is not forbidden: docs/design-system/tokens.md",
+      "passed": true,
+      "evidence": "deterministic check"
+    },
+    {
+      "text": "validate_eval_run.py: required change occurred: docs/design-system/index.md",
+      "passed": true,
+      "evidence": "deterministic check"
+    },
+    {
+      "text": "validate_eval_run.py: required change occurred: docs/design-system/foundations.md",
+      "passed": true,
+      "evidence": "deterministic check"
+    },
+    {
+      "text": "validate_eval_run.py: required change occurred: docs/design-system/platforms/web.md",
+      "passed": true,
+      "evidence": "deterministic check"
+    },
+    {
+      "text": "validate_eval_run.py: required change occurred: docs/design-system/platforms/ios.md",
+      "passed": true,
+      "evidence": "deterministic check"
+    },
+    {
+      "text": "validate_eval_run.py: execution receipt uses schema 3",
+      "passed": true,
+      "evidence": "deterministic check"
+    },
+    {
+      "text": "validate_eval_run.py: execution receipt is harness-derived",
+      "passed": true,
+      "evidence": "deterministic check"
+    },
+    {
+      "text": "validate_eval_run.py: execution receipt status is derived from response presence",
+      "passed": true,
+      "evidence": "deterministic check"
+    },
+    {
+      "text": "validate_eval_run.py: execution receipt task_context_id matches task",
+      "passed": true,
+      "evidence": "deterministic check"
+    },
+    {
+      "text": "validate_eval_run.py: execution receipt model matches task",
+      "passed": true,
+      "evidence": "deterministic check"
+    },
+    {
+      "text": "validate_eval_run.py: execution receipt reasoning_effort matches task",
+      "passed": true,
+      "evidence": "deterministic check"
+    },
+    {
+      "text": "validate_eval_run.py: response hash matches receipt",
+      "passed": true,
+      "evidence": "deterministic check"
+    },
+    {
+      "text": "validate_eval_run.py: before manifest hash matches receipt",
+      "passed": true,
+      "evidence": "deterministic check"
+    },
+    {
+      "text": "validate_eval_run.py: after manifest hash matches receipt",
+      "passed": true,
+      "evidence": "deterministic check"
+    },
+    {
+      "text": "validate_eval_run.py: produced paths are derived from manifest diff",
+      "passed": true,
+      "evidence": "deterministic check"
+    },
+    {
+      "text": "validate_eval_run.py: missing telemetry stays unavailable and null",
+      "passed": true,
+      "evidence": "deterministic check"
+    },
+    {
+      "text": "validate_eval_run.py: missing capability evidence stays unverified",
+      "passed": true,
+      "evidence": "deterministic check"
+    },
+    {
+      "text": "Execution skill snapshot remains unchanged",
+      "passed": true,
+      "evidence": "before=afa3038c912aa7c14d826457e2bf44b2ad23b474d95f49a38d59f87450d6425a after=afa3038c912aa7c14d826457e2bf44b2ad23b474d95f49a38d59f87450d6425a"
+    }
+  ],
+  "summary": {
+    "passed": 49,
+    "failed": 0,
+    "total": 49,
+    "pass_rate": 1.0
+  }
+}

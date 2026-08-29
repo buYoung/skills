@@ -1,0 +1,147 @@
+{
+  "status": "completed",
+  "validators": [
+    {
+      "name": "validate_eval_run.py",
+      "command": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/Users/buyonglee/Documents/work/private/skills/skills/document-writing/scripts/validate_eval_run.py",
+        "--suite",
+        "/Users/buyonglee/Documents/work/private/skills/skills/document-writing/evals/production-suite.json",
+        "--run",
+        "/Users/buyonglee/Documents/work/private/skills/skills/document-writing-workspace/iteration-6/behavior/job-6770efef5004c6a4cc2141e0"
+      ],
+      "return_code": 1,
+      "stdout": "{\n  \"checks\": [\n    \"before/after manifests describe the same workspace\",\n    \"before manifest tree hash is canonical\",\n    \"after manifest tree hash is canonical\",\n    \"before manifest matches canonical package fixtures\",\n    \"before manifest directories match canonical package fixtures\",\n    \"after manifest matches the preserved workspace files\",\n    \"after manifest tree hash matches the preserved workspace\",\n    \"workspace change set is available\",\n    \"execution receipt uses schema 3\",\n    \"execution receipt is harness-derived\",\n    \"execution receipt status is derived from response presence\",\n    \"execution receipt context_id matches task\",\n    \"execution receipt model matches task\",\n    \"execution receipt reasoning_effort matches task\",\n    \"response hash matches receipt\",\n    \"before manifest hash matches receipt\",\n    \"after manifest hash matches receipt\",\n    \"produced paths are derived from manifest diff\",\n    \"missing telemetry stays unavailable and null\",\n    \"missing capability evidence stays unverified\",\n    \"write-disabled workspace is unchanged\",\n    \"response question count >= 1\"\n  ],\n  \"failures\": [\n    \"response question count <= 1\"\n  ]\n}\n",
+      "stderr": ""
+    }
+  ],
+  "expectations": [
+    {
+      "text": "validate_eval_run.py: before/after manifests describe the same workspace",
+      "passed": true,
+      "evidence": "deterministic validator check"
+    },
+    {
+      "text": "validate_eval_run.py: before manifest tree hash is canonical",
+      "passed": true,
+      "evidence": "deterministic validator check"
+    },
+    {
+      "text": "validate_eval_run.py: after manifest tree hash is canonical",
+      "passed": true,
+      "evidence": "deterministic validator check"
+    },
+    {
+      "text": "validate_eval_run.py: before manifest matches canonical package fixtures",
+      "passed": true,
+      "evidence": "deterministic validator check"
+    },
+    {
+      "text": "validate_eval_run.py: before manifest directories match canonical package fixtures",
+      "passed": true,
+      "evidence": "deterministic validator check"
+    },
+    {
+      "text": "validate_eval_run.py: after manifest matches the preserved workspace files",
+      "passed": true,
+      "evidence": "deterministic validator check"
+    },
+    {
+      "text": "validate_eval_run.py: after manifest tree hash matches the preserved workspace",
+      "passed": true,
+      "evidence": "deterministic validator check"
+    },
+    {
+      "text": "validate_eval_run.py: workspace change set is available",
+      "passed": true,
+      "evidence": "deterministic validator check"
+    },
+    {
+      "text": "validate_eval_run.py: execution receipt uses schema 3",
+      "passed": true,
+      "evidence": "deterministic validator check"
+    },
+    {
+      "text": "validate_eval_run.py: execution receipt is harness-derived",
+      "passed": true,
+      "evidence": "deterministic validator check"
+    },
+    {
+      "text": "validate_eval_run.py: execution receipt status is derived from response presence",
+      "passed": true,
+      "evidence": "deterministic validator check"
+    },
+    {
+      "text": "validate_eval_run.py: execution receipt context_id matches task",
+      "passed": true,
+      "evidence": "deterministic validator check"
+    },
+    {
+      "text": "validate_eval_run.py: execution receipt model matches task",
+      "passed": true,
+      "evidence": "deterministic validator check"
+    },
+    {
+      "text": "validate_eval_run.py: execution receipt reasoning_effort matches task",
+      "passed": true,
+      "evidence": "deterministic validator check"
+    },
+    {
+      "text": "validate_eval_run.py: response hash matches receipt",
+      "passed": true,
+      "evidence": "deterministic validator check"
+    },
+    {
+      "text": "validate_eval_run.py: before manifest hash matches receipt",
+      "passed": true,
+      "evidence": "deterministic validator check"
+    },
+    {
+      "text": "validate_eval_run.py: after manifest hash matches receipt",
+      "passed": true,
+      "evidence": "deterministic validator check"
+    },
+    {
+      "text": "validate_eval_run.py: produced paths are derived from manifest diff",
+      "passed": true,
+      "evidence": "deterministic validator check"
+    },
+    {
+      "text": "validate_eval_run.py: missing telemetry stays unavailable and null",
+      "passed": true,
+      "evidence": "deterministic validator check"
+    },
+    {
+      "text": "validate_eval_run.py: missing capability evidence stays unverified",
+      "passed": true,
+      "evidence": "deterministic validator check"
+    },
+    {
+      "text": "validate_eval_run.py: write-disabled workspace is unchanged",
+      "passed": true,
+      "evidence": "deterministic validator check"
+    },
+    {
+      "text": "validate_eval_run.py: response question count >= 1",
+      "passed": true,
+      "evidence": "deterministic validator check"
+    },
+    {
+      "text": "validate_eval_run.py: response question count <= 1",
+      "passed": false,
+      "evidence": "deterministic validator failure"
+    },
+    {
+      "text": "Execution skill snapshot remains unchanged",
+      "passed": true,
+      "evidence": "before=1e9bc77b686a9775a0295e2199cb5bbdb9c59d5ff0cf112d6d36d5cf9fcbd5ec after=1e9bc77b686a9775a0295e2199cb5bbdb9c59d5ff0cf112d6d36d5cf9fcbd5ec uses_skill=True"
+    }
+  ],
+  "summary": {
+    "passed": 23,
+    "failed": 1,
+    "total": 24,
+    "pass_rate": 0.9583333333333334
+  }
+}

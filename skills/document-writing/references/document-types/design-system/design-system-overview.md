@@ -2,13 +2,14 @@
 
 ## Purpose
 
-Provide a durable, navigable source for reusable visual and interaction decisions. A Design System Document governs either product UI or any digital storefront's listing assets; it does not produce the interface or assets themselves.
+Discover and approve a coherent design direction, validate that direction in contrasting representative situations, and provide a durable, navigable source for the resulting reusable visual and interaction decisions. A Design System Document governs either product UI or any digital storefront's listing assets; it does not produce the interface or assets itself.
 
 ## Select this type when
 
 - Product teams need shared foundations, tokens, components, content rules, accessibility decisions, or interaction patterns.
 - Brand, product, marketing, or localization teams need one visual system for digital storefront icons, screenshots, previews or trailers, capsules, heroes, feature graphics, and other listing assets.
 - Readers must know which document owns a decision and how common rules adapt to a named platform or store.
+- Teams need to distinguish the upper-level direction that remains consistent from the forms, density, states, and platform or storefront behavior that should vary by context.
 
 ## Route elsewhere when
 
@@ -44,8 +45,9 @@ If the user explicitly asks for a chat-only draft, return the coordinated Markdo
 
 ## Load next
 
-- For create, rewrite, update, or normalize: read [design-system-authoring.md](design-system-authoring.md) and the selected prebuilt.
-- For review or fact-check: read [design-system-review.md](design-system-review.md) and the selected prebuilt.
+- For every operation: read [design-direction-workflow.md](design-direction-workflow.md) and classify the maturity of each output set.
+- For create, rewrite, update, or normalize: then read [design-system-authoring.md](design-system-authoring.md) and the selected prebuilt.
+- For review or fact-check: then read [design-system-review.md](design-system-review.md) and the selected prebuilt.
 - When a product platform is explicitly in scope for `default`: also read [platform-adaptation.md](platform-adaptation.md).
 - When a storefront is in scope for `app-store-page`: also read [storefront-research.md](storefront-research.md). Its review and fact-check paths are read-only.
 - When modifying or reviewing an existing set: also read the shared existing-document-edits reference.
@@ -55,7 +57,10 @@ If the user explicitly asks for a chat-only draft, return the coordinated Markdo
 
 - Treat each output set as one coordinated document set with `index.md` as its map, not as unrelated Markdown files.
 - Give each concept one stable name and one canonical owning file. Cross-reference that owner instead of copying the decision.
-- Preserve common rules separately from platform- or store-specific differences.
+- Record only an approved direction, its rationale, and its representative validation; rejected hypotheses stay out of the canonical set unless the user requests a separate decision history.
+- Classify direction-bearing decisions as invariant, variable, conditional, prohibited, or verification decisions. Preserve common rules separately from platform- or store-specific differences.
+- Do not write a new or direction-changing set while direction approval or representative validation is still missing. Present direction hypotheses and the required user decision in the conversation instead.
+- Reuse an explicit approved direction from an authoritative existing source. Do not infer approval from visual similarity alone or reopen broad exploration for a narrow change whose affected decision flow is already clear.
 - For every in-scope storefront, create or update one storefront file only during create, update, rewrite, or normalize, after either current first-party research or the explicit capability-limited fallback. Review and fact-check report missing, stale, or conflicting storefront information without changing files.
 - Do not invent tokens, values, sizes, policies, brand decisions, platform behavior, or marketplace requirements.
 - Mark a necessary but unresolved decision explicitly. Do not create empty ceremonial sections or placeholder platform, store, or item files.

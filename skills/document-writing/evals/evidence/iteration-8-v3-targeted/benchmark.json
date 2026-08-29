@@ -1,0 +1,182 @@
+{
+  "schema_version": 3,
+  "status": "diagnostic-failed",
+  "metadata": {
+    "skill_name": "document-writing",
+    "timestamp": "2026-08-29T09:00:10Z",
+    "evals_run": [
+      22,
+      15,
+      10,
+      26,
+      27,
+      24
+    ],
+    "configuration": "current",
+    "runs_per_eval": 1
+  },
+  "runs": [
+    {
+      "eval_id": 22,
+      "eval_name": "reuse-noncanonical-storefront-path",
+      "configuration": "current",
+      "run_number": 1,
+      "job_id": "job-6f03500b074a13fba8450771",
+      "task_context_id": "1a7afe48c74d45b293f81a3668ff0b69",
+      "grader_task_context_id": "ee1cb2657357421b9a075f437e189b95",
+      "response_present": true,
+      "execution": {
+        "receipt_status": "completed",
+        "receipt_valid": true,
+        "valid": true
+      },
+      "deterministic_status": "pass",
+      "grading": {
+        "status": "completed",
+        "format_valid": true,
+        "semantic_passed": true,
+        "pass_rate": 1.0
+      },
+      "scoreable": true
+    },
+    {
+      "eval_id": 15,
+      "eval_name": "eval-15",
+      "configuration": "current",
+      "run_number": 1,
+      "job_id": "job-b70c1df4a842d2b1db9f2924",
+      "task_context_id": "721014f8868f4e5485503c0fddc3955c",
+      "grader_task_context_id": null,
+      "response_present": true,
+      "execution": {
+        "receipt_status": "completed",
+        "receipt_valid": true,
+        "valid": true
+      },
+      "deterministic_status": "pass",
+      "grading": {
+        "status": "not-run",
+        "format_valid": false,
+        "semantic_passed": false,
+        "pass_rate": null
+      },
+      "scoreable": false
+    },
+    {
+      "eval_id": 10,
+      "eval_name": "directionless-new-system-gate",
+      "configuration": "current",
+      "run_number": 1,
+      "job_id": "job-0718d2d8de6b366c889f3ac4",
+      "task_context_id": null,
+      "grader_task_context_id": null,
+      "response_present": false,
+      "execution": {
+        "receipt_status": "not-prepared",
+        "receipt_valid": false,
+        "valid": false
+      },
+      "deterministic_status": "not-run",
+      "grading": {
+        "status": "not-run",
+        "format_valid": false,
+        "semantic_passed": false,
+        "pass_rate": null
+      },
+      "scoreable": false
+    },
+    {
+      "eval_id": 26,
+      "eval_name": "multifile-root-given-as-markdown",
+      "configuration": "current",
+      "run_number": 1,
+      "job_id": "job-6770efef5004c6a4cc2141e0",
+      "task_context_id": null,
+      "grader_task_context_id": null,
+      "response_present": false,
+      "execution": {
+        "receipt_status": "not-prepared",
+        "receipt_valid": false,
+        "valid": false
+      },
+      "deterministic_status": "not-run",
+      "grading": {
+        "status": "not-run",
+        "format_valid": false,
+        "semantic_passed": false,
+        "pass_rate": null
+      },
+      "scoreable": false
+    },
+    {
+      "eval_id": 27,
+      "eval_name": "collective-platform-ambiguity",
+      "configuration": "current",
+      "run_number": 1,
+      "job_id": "job-a0aaf99b2d65984cce6c7abe",
+      "task_context_id": null,
+      "grader_task_context_id": null,
+      "response_present": false,
+      "execution": {
+        "receipt_status": "not-prepared",
+        "receipt_valid": false,
+        "valid": false
+      },
+      "deterministic_status": "not-run",
+      "grading": {
+        "status": "not-run",
+        "format_valid": false,
+        "semantic_passed": false,
+        "pass_rate": null
+      },
+      "scoreable": false
+    },
+    {
+      "eval_id": 24,
+      "eval_name": "mixed-document-and-asset-production",
+      "configuration": "current",
+      "run_number": 1,
+      "job_id": "job-5df6de9e7da34a986bd512c6",
+      "task_context_id": null,
+      "grader_task_context_id": null,
+      "response_present": false,
+      "execution": {
+        "receipt_status": "not-prepared",
+        "receipt_valid": false,
+        "valid": false
+      },
+      "deterministic_status": "not-run",
+      "grading": {
+        "status": "not-run",
+        "format_valid": false,
+        "semantic_passed": false,
+        "pass_rate": null
+      },
+      "scoreable": false
+    }
+  ],
+  "summary": {
+    "scope_kind": "targeted",
+    "planned_execution_tasks": 6,
+    "responses_present": 2,
+    "valid_execution_receipts": 2,
+    "deterministic_passed": 2,
+    "deterministic_failed": 0,
+    "completed_independent_gradings": 1,
+    "semantic_passed": 1,
+    "macro_pass_rate": 1.0,
+    "hard_gates": {
+      "direction-approval-no-premature-write": "fail",
+      "existing-document-preservation": "not-in-scope",
+      "review-no-mutation": "not-in-scope",
+      "collision-no-overwrite": "not-in-scope",
+      "web-unavailable-no-hallucination": "not-in-scope",
+      "qualitative-feedback-translation": "not-in-scope",
+      "cross-context-consistency-not-sameness": "not-in-scope",
+      "focused-update-propagation": "not-in-scope",
+      "contradictory-preference-convergence": "not-in-scope"
+    },
+    "all_scope_passed": false,
+    "production_eligible": false
+  }
+}

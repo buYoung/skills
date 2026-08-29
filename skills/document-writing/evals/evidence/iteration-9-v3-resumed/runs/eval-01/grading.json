@@ -1,0 +1,42 @@
+{
+  "schema_version": 3,
+  "status": "completed-independent-grading",
+  "provenance": "independent-luna-grader-output",
+  "eval_id": 1,
+  "grader_task_context_id": "4fa7f0d672f3486bb984c2bbb48a953a",
+  "model": "gpt-5.6-luna",
+  "reasoning_effort": "medium",
+  "expectations": [
+    {
+      "text": "The artifact is an explanatory overview selected from reader intent, not a reference catalog, action guide, or FDD.",
+      "passed": true,
+      "evidence": "The document is titled 'Idempotency key 한 번에 이해하기', identifies 신규 PM과 고객지원 담당자 as readers, and explains the concept, rules, and examples as a cohesive overview without catalog, task-list, or feature-design-doc structure."
+    },
+    {
+      "text": "The opening lets the target reader explain what an idempotency key prevents, when the key is reused, and that it does not perform retries.",
+      "passed": true,
+      "evidence": "The opening states that re-arriving POST requests for one logical operation can reuse the initial response, later explains reusing the same key for the same work, and explicitly says the key does not automatically perform network retries."
+    },
+    {
+      "text": "The document accurately includes the 24-hour retention, same-key same-body replay, same-key different-body 409, and one-UUID-per-logical-operation rules.",
+      "passed": true,
+      "evidence": "The '서버가 요청을 처리하는 방식' section states that the initial response is stored for 24 hours, same key plus same body returns the initial response, same key plus different body returns 409, and the document repeatedly states that each logical operation gets a new UUID."
+    },
+    {
+      "text": "The duplicate-payment example explicitly contrasts protected same-UUID use, unprotected new-UUID use, and same-UUID different-body misuse.",
+      "passed": true,
+      "evidence": "The section '결제 버튼을 두 번 누른 세 가지 사례' separately covers same UUID with the same body as duplicate protection, new UUID per click as not protected, and the same UUID with a changed amount as a 409 conflict."
+    },
+    {
+      "text": "The Korean prose introduces the established Korean term with the English term once and preserves POST, UUID, and 409 canonically.",
+      "passed": true,
+      "evidence": "The prose uses the Korean term '멱등성 키' in the title and surrounding explanation with the English term 'idempotency key', while preserving POST, UUID, and 409 in their canonical forms throughout."
+    }
+  ],
+  "summary": {
+    "passed": 5,
+    "failed": 0,
+    "total": 5,
+    "pass_rate": 1.0
+  }
+}

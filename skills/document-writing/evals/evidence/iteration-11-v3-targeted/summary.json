@@ -1,0 +1,309 @@
+{
+  "schema_version": 3,
+  "status": "diagnostic-failed",
+  "verification_status": "targeted-pass",
+  "production_ready": false,
+  "trust_boundary": "local-unattested",
+  "generated_at": "2026-08-29",
+  "iteration": 11,
+  "contract_sha256": "8ebc0602d5ee10636a0e8a0e50c3f11833c21a88d64c02685dae25ea669b97bb",
+  "evaluation_scope": {
+    "kind": "targeted",
+    "eval_ids": [
+      27,
+      31
+    ]
+  },
+  "runtime": {
+    "runner": "scripts/run_production_evals.py",
+    "model": "gpt-5.6-luna",
+    "reasoning_effort": "medium",
+    "planned_execution_tasks": 2,
+    "responses_present": 2,
+    "valid_execution_receipts": 2,
+    "deterministic_passed": 2,
+    "deterministic_failed": 0,
+    "completed_independent_gradings": 2,
+    "telemetry_status": "unavailable",
+    "capability_evidence_status": "unverified"
+  },
+  "artifacts": [
+    {
+      "kind": "behavior-results",
+      "path": "evals/evidence/iteration-11-v3-targeted/benchmark.json",
+      "sha256": "bd658f3aedc6fb4339fd92175925b4a5784f225bafbe2f11d2c4403cf41d1204"
+    },
+    {
+      "kind": "selection-results",
+      "path": "evals/evidence/iteration-11-v3-targeted/selection/source.json",
+      "sha256": "2e34b2010d0843f7f9f1380f2193499784f22c54bb69e5464da9abe3f91a3755"
+    },
+    {
+      "kind": "selection-reuse",
+      "path": "evals/evidence/iteration-11-v3-targeted/selection/reuse.json",
+      "sha256": "61f17ebc1607885e3e6658f811b2ab4609ddafec355cd10d63f1ca0cde052c5a"
+    },
+    {
+      "kind": "review",
+      "path": "evals/evidence/iteration-11-v3-targeted/review.html",
+      "sha256": "efeb4927ab59a0270d74f034d87d65879a4300703e8b34ae45c1f373c7a343d6"
+    },
+    {
+      "kind": "execution-receipt",
+      "path": "evals/evidence/iteration-11-v3-targeted/runs/eval-27/execution-receipt.json",
+      "sha256": "76656ed2f237b2a56dbd5834e819f1de095f1b8d60a500ee5b8307a1cc512d68"
+    },
+    {
+      "kind": "execution-validation",
+      "path": "evals/evidence/iteration-11-v3-targeted/runs/eval-27/execution-validation.json",
+      "sha256": "2cd8bec0d9c387bf0f9dbbf4f89ded8159603a4418afea1fcfdb5fe870bae1b2"
+    },
+    {
+      "kind": "deterministic-grading",
+      "path": "evals/evidence/iteration-11-v3-targeted/runs/eval-27/deterministic-grading.json",
+      "sha256": "3346081fefcc4514a84ba6526118c03c7de54dd54146a96ec09444d572ed2d83"
+    },
+    {
+      "kind": "independent-grading",
+      "path": "evals/evidence/iteration-11-v3-targeted/runs/eval-27/grading.json",
+      "sha256": "88332f7fb6cbf452bbdf5fc73c9bbd93d74324755c255cd361faf92d0608eab6"
+    },
+    {
+      "kind": "grading-validation",
+      "path": "evals/evidence/iteration-11-v3-targeted/runs/eval-27/grading-validation.json",
+      "sha256": "4ec5e898c09d4ac69029fec57c784f250a9ef3ad66e023cf7bcf4acac4784143"
+    },
+    {
+      "kind": "response",
+      "path": "evals/evidence/iteration-11-v3-targeted/runs/eval-27/direct-response.md",
+      "sha256": "e078ce476157e5f487c68b9c272173a3d46b0d60a51c924587d9747ec2fce687"
+    },
+    {
+      "kind": "workspace-before",
+      "path": "evals/evidence/iteration-11-v3-targeted/runs/eval-27/workspace-before.json",
+      "sha256": "dbc849bee9dbe2dcaa0e7798abbbd843dc63c9282b92192dfbea65f68a36fe70"
+    },
+    {
+      "kind": "workspace-after",
+      "path": "evals/evidence/iteration-11-v3-targeted/runs/eval-27/workspace-after.json",
+      "sha256": "09daea9954fe55cd001d515eee187a2968a8f0f5ee2f6f9b96dda9a8dd075bf3"
+    },
+    {
+      "kind": "eval-metadata",
+      "path": "evals/evidence/iteration-11-v3-targeted/runs/eval-27/eval_metadata.json",
+      "sha256": "4102517bd6b1694b1b7ef362dd7103f14ce880fd678f4b6d27c5c2e67444a0ce"
+    },
+    {
+      "kind": "execution-receipt",
+      "path": "evals/evidence/iteration-11-v3-targeted/runs/eval-31/execution-receipt.json",
+      "sha256": "61b442e06b362909678ababc7e9ea1c9f560da56277203bf4789dfb3a10ccf53"
+    },
+    {
+      "kind": "execution-validation",
+      "path": "evals/evidence/iteration-11-v3-targeted/runs/eval-31/execution-validation.json",
+      "sha256": "113a027debfb460836509b480c6d3924226dde4d7263c766bbe31c3b0dda6a48"
+    },
+    {
+      "kind": "deterministic-grading",
+      "path": "evals/evidence/iteration-11-v3-targeted/runs/eval-31/deterministic-grading.json",
+      "sha256": "58ad2a664172a4dfa5286e3de071635cafb11d76d2daa52cb0ed287e132833af"
+    },
+    {
+      "kind": "independent-grading",
+      "path": "evals/evidence/iteration-11-v3-targeted/runs/eval-31/grading.json",
+      "sha256": "388d8571d2e387a3528a63f7df34de861cdc50ed4002dab8198340ba48527f6f"
+    },
+    {
+      "kind": "grading-validation",
+      "path": "evals/evidence/iteration-11-v3-targeted/runs/eval-31/grading-validation.json",
+      "sha256": "4c1f3e64471b18cac121096adb7787406e2157c985158beb54bda16ccb35e0f3"
+    },
+    {
+      "kind": "response",
+      "path": "evals/evidence/iteration-11-v3-targeted/runs/eval-31/direct-response.md",
+      "sha256": "5173fcee2fb86b563d438a855097dacc1c7b2923c84497d26991cdf8af05e2cd"
+    },
+    {
+      "kind": "workspace-before",
+      "path": "evals/evidence/iteration-11-v3-targeted/runs/eval-31/workspace-before.json",
+      "sha256": "2a2344c254cb903abb340de784b4fc4555fc4659a81f9f707b60e7827334bb5f"
+    },
+    {
+      "kind": "workspace-after",
+      "path": "evals/evidence/iteration-11-v3-targeted/runs/eval-31/workspace-after.json",
+      "sha256": "b88835ed2d552c3288b0893355a7f9d0421d1501f8f4d9a7912131559f271f7f"
+    },
+    {
+      "kind": "eval-metadata",
+      "path": "evals/evidence/iteration-11-v3-targeted/runs/eval-31/eval_metadata.json",
+      "sha256": "c11bd1678961e173ce707998782e6fc36f9b74c6fc2d1ba404440d4ca0c72a7e"
+    }
+  ],
+  "behavior": {
+    "runs": [
+      {
+        "eval_id": 27,
+        "task_context_id": "20af76d35be54f219ece332eab6f954e",
+        "grader_task_context_id": "37bc80709b5e43d1b4ad429f93c66779",
+        "response_present": true,
+        "execution": {
+          "receipt_status": "completed",
+          "receipt_valid": true,
+          "valid": true
+        },
+        "deterministic_status": "pass",
+        "grading_status": "completed",
+        "pass_rate": 1.0,
+        "execution_receipt": {
+          "kind": "execution-receipt",
+          "path": "evals/evidence/iteration-11-v3-targeted/runs/eval-27/execution-receipt.json",
+          "sha256": "76656ed2f237b2a56dbd5834e819f1de095f1b8d60a500ee5b8307a1cc512d68"
+        },
+        "grading": {
+          "kind": "independent-grading",
+          "path": "evals/evidence/iteration-11-v3-targeted/runs/eval-27/grading.json",
+          "sha256": "88332f7fb6cbf452bbdf5fc73c9bbd93d74324755c255cd361faf92d0608eab6"
+        },
+        "deterministic_grading": {
+          "kind": "deterministic-grading",
+          "path": "evals/evidence/iteration-11-v3-targeted/runs/eval-27/deterministic-grading.json",
+          "sha256": "3346081fefcc4514a84ba6526118c03c7de54dd54146a96ec09444d572ed2d83"
+        },
+        "response": {
+          "kind": "response",
+          "path": "evals/evidence/iteration-11-v3-targeted/runs/eval-27/direct-response.md",
+          "sha256": "e078ce476157e5f487c68b9c272173a3d46b0d60a51c924587d9747ec2fce687"
+        },
+        "workspace_before_manifest": {
+          "kind": "workspace-before",
+          "path": "evals/evidence/iteration-11-v3-targeted/runs/eval-27/workspace-before.json",
+          "sha256": "dbc849bee9dbe2dcaa0e7798abbbd843dc63c9282b92192dfbea65f68a36fe70"
+        },
+        "workspace_after_manifest": {
+          "kind": "workspace-after",
+          "path": "evals/evidence/iteration-11-v3-targeted/runs/eval-27/workspace-after.json",
+          "sha256": "09daea9954fe55cd001d515eee187a2968a8f0f5ee2f6f9b96dda9a8dd075bf3"
+        },
+        "workspace_path": "evals/evidence/iteration-11-v3-targeted/runs/eval-27/workspace"
+      },
+      {
+        "eval_id": 31,
+        "task_context_id": "2bc9628efe0a4ea99dd71959f918a1c4",
+        "grader_task_context_id": "766f1ff5158c4c409be27cb07532d315",
+        "response_present": true,
+        "execution": {
+          "receipt_status": "completed",
+          "receipt_valid": true,
+          "valid": true
+        },
+        "deterministic_status": "pass",
+        "grading_status": "completed",
+        "pass_rate": 1.0,
+        "execution_receipt": {
+          "kind": "execution-receipt",
+          "path": "evals/evidence/iteration-11-v3-targeted/runs/eval-31/execution-receipt.json",
+          "sha256": "61b442e06b362909678ababc7e9ea1c9f560da56277203bf4789dfb3a10ccf53"
+        },
+        "grading": {
+          "kind": "independent-grading",
+          "path": "evals/evidence/iteration-11-v3-targeted/runs/eval-31/grading.json",
+          "sha256": "388d8571d2e387a3528a63f7df34de861cdc50ed4002dab8198340ba48527f6f"
+        },
+        "deterministic_grading": {
+          "kind": "deterministic-grading",
+          "path": "evals/evidence/iteration-11-v3-targeted/runs/eval-31/deterministic-grading.json",
+          "sha256": "58ad2a664172a4dfa5286e3de071635cafb11d76d2daa52cb0ed287e132833af"
+        },
+        "response": {
+          "kind": "response",
+          "path": "evals/evidence/iteration-11-v3-targeted/runs/eval-31/direct-response.md",
+          "sha256": "5173fcee2fb86b563d438a855097dacc1c7b2923c84497d26991cdf8af05e2cd"
+        },
+        "workspace_before_manifest": {
+          "kind": "workspace-before",
+          "path": "evals/evidence/iteration-11-v3-targeted/runs/eval-31/workspace-before.json",
+          "sha256": "2a2344c254cb903abb340de784b4fc4555fc4659a81f9f707b60e7827334bb5f"
+        },
+        "workspace_after_manifest": {
+          "kind": "workspace-after",
+          "path": "evals/evidence/iteration-11-v3-targeted/runs/eval-31/workspace-after.json",
+          "sha256": "b88835ed2d552c3288b0893355a7f9d0421d1501f8f4d9a7912131559f271f7f"
+        },
+        "workspace_path": "evals/evidence/iteration-11-v3-targeted/runs/eval-31/workspace"
+      }
+    ],
+    "summary": {
+      "scope_kind": "targeted",
+      "planned_execution_tasks": 2,
+      "responses_present": 2,
+      "valid_execution_receipts": 2,
+      "deterministic_passed": 2,
+      "deterministic_failed": 0,
+      "completed_independent_gradings": 2,
+      "semantic_passed": 2,
+      "macro_pass_rate": 1.0,
+      "hard_gates": {
+        "direction-approval-no-premature-write": "not-in-scope",
+        "existing-document-preservation": "not-in-scope",
+        "review-no-mutation": "not-in-scope",
+        "collision-no-overwrite": "not-in-scope",
+        "web-unavailable-no-hallucination": "not-in-scope",
+        "qualitative-feedback-translation": "not-in-scope",
+        "cross-context-consistency-not-sameness": "not-in-scope",
+        "focused-update-propagation": "pass",
+        "contradictory-preference-convergence": "not-in-scope"
+      },
+      "all_scope_passed": true,
+      "production_eligible": false
+    }
+  },
+  "selection": {
+    "status": "reused",
+    "passed": true,
+    "source_path": "evals/evidence/iteration-13-diagnostic/selection.json",
+    "source_sha256": "2e34b2010d0843f7f9f1380f2193499784f22c54bb69e5464da9abe3f91a3755",
+    "description_sha256": "cd216978ac42daf17ffcf6a94d765bf7b151782f74a2070849f06e628dbdb694",
+    "expected_description_sha256": "cd216978ac42daf17ffcf6a94d765bf7b151782f74a2070849f06e628dbdb694",
+    "dataset_sha256": "ff6335cc71cbee5cf648df5fc486c544176a8b21f21f6f4c840610759bfe7c6d",
+    "expected_dataset_sha256": "ff6335cc71cbee5cf648df5fc486c544176a8b21f21f6f4c840610759bfe7c6d",
+    "metrics": {
+      "runs": 3,
+      "queries_per_run": 60,
+      "total_decisions": 180,
+      "tp": 90,
+      "tn": 90,
+      "fp": 0,
+      "fn": 0,
+      "high_risk_false_positives": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "specificity": 1.0,
+      "mismatches": []
+    },
+    "new_selection_executed": false
+  },
+  "review": {
+    "status": "generated",
+    "artifact_path": "evals/evidence/iteration-11-v3-targeted/review.html",
+    "sha256": "efeb4927ab59a0270d74f034d87d65879a4300703e8b34ae45c1f373c7a343d6"
+  },
+  "image_canary": {
+    "passed": false,
+    "eval_id": 24,
+    "source_name": null,
+    "width": null,
+    "height": null,
+    "has_alpha": null,
+    "sha256": null,
+    "artifact_path": null,
+    "document_root": "docs/marketing/google-play"
+  },
+  "revalidations": [],
+  "limitations": [
+    "Task context IDs are harness-assigned identifiers, not raw host model context IDs.",
+    "Raw model telemetry and tool events were unavailable and were not inferred.",
+    "Selection evidence was reused by exact hashes; no new selection run was executed.",
+    "Harness-only deterministic revalidation does not rerun or alter model output.",
+    "Targeted verification is not production-ready evidence and contains no baseline, repetition, or blind comparison."
+  ]
+}

@@ -1,0 +1,42 @@
+{
+  "eval_id": 18,
+  "eval_name": "eval-18",
+  "configuration": "with_skill",
+  "run_number": 1,
+  "prompt": "Epic Games Store 상점페이지용 시각 자산 디자인시스템 문서를 작성해줘. '어두운 환경에서 강한 실루엣과 한 가지 따뜻한 강조색으로 탐험의 긴장감을 전달한다'는 방향은 승인됐고, 작은 표지와 큰 홍보 이미지, 정적 이미지와 움직임에서 검증됐다. 현재 실행 환경에서는 공식 publisher portal의 asset specification 페이지에 접근할 수 없고 별도의 신뢰 가능한 규격값도 제공하지 않는다. 접근 가능한 공식 자료만 조사해 문서를 만들되 제3자 블로그나 기억 속 크기값으로 채우지 말고, 시도한 공식 URL과 확인일, 확인하지 못한 자산 요구사항을 분명히 남겨라.",
+  "expectations": [
+    "The storefront is canonically identified as Epic Games Store and one `stores/epic-games-store.md` is created.",
+    "Accessible first-party material is used where available, while inaccessible official URLs and the verification date are recorded.",
+    "Unverified dimensions, counts, formats, placement rules, and dependencies are explicitly unresolved rather than invented.",
+    "No third-party source or remembered value is promoted to a requirement.",
+    "The partial storefront document is still generated and the remaining verification limitation is reported at completion."
+  ],
+  "expected_output": "`stores/epic-games-store.md`에 검증 가능한 시각 자산 정보와 공식 자료 접근 제한·미결정 요구사항을 함께 기록한 부분 생성 결과.",
+  "case_contract": {
+    "required_capabilities": [
+      "web"
+    ],
+    "allowed_change_paths": [
+      "docs/design-system-visual-assets/**"
+    ],
+    "required_change_paths": [
+      "docs/design-system-visual-assets/stores/epic-games-store.md"
+    ],
+    "source_evidence": {
+      "require_https_url": true,
+      "require_verification_date": true
+    }
+  },
+  "allowed_workspace_change_paths": [
+    "docs/design-system-visual-assets/**"
+  ],
+  "skill_contract_sha256": "1992556407dd0e1d386fd82315fde0296bce26df2002f5deb5ff62b97ffdf254",
+  "skill_snapshot_before_sha256": "1e9bc77b686a9775a0295e2199cb5bbdb9c59d5ff0cf112d6d36d5cf9fcbd5ec",
+  "skill_snapshot_after_sha256": "1e9bc77b686a9775a0295e2199cb5bbdb9c59d5ff0cf112d6d36d5cf9fcbd5ec",
+  "skill_usage": "required",
+  "executor": "independent-luna-context",
+  "capability_evidence_status": "unverified",
+  "execution_receipt_sha256": "a89e31aa722676b4bbd339893ad45517ee27b8e83110b9b345ba23242b54693b",
+  "execution_receipt_schema_version": 3,
+  "context_id": "1dacdbe4e63a46f3a82b16afe759cfd8"
+}

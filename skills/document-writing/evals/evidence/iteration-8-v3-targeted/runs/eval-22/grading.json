@@ -1,0 +1,42 @@
+{
+  "schema_version": 3,
+  "status": "completed-independent-grading",
+  "provenance": "independent-luna-grader-output",
+  "eval_id": 22,
+  "grader_task_context_id": "ee1cb2657357421b9a075f437e189b95",
+  "model": "gpt-5.6-luna",
+  "reasoning_effort": "medium",
+  "expectations": [
+    {
+      "text": "The existing file is recognized as the Google Play owner within this document set.",
+      "passed": true,
+      "evidence": "workspace/docs/design-system-visual-assets/index.md maps ‘Google Play listing artwork’ to stores/play-store-assets.md, whose heading and content identify Google Play requirements."
+    },
+    {
+      "text": "The existing `stores/play-store-assets.md` path is reused and `stores/google-play.md` is not created.",
+      "passed": true,
+      "evidence": "The workspace contains stores/play-store-assets.md and no stores/google-play.md; the document map continues to link the established path."
+    },
+    {
+      "text": "No path rename occurs without an explicit migration request.",
+      "passed": true,
+      "evidence": "execution-receipt.json lists only docs/design-system-visual-assets/stores/play-store-assets.md as produced, with no renamed or replacement storefront path."
+    },
+    {
+      "text": "Other existing files remain unchanged except for required cross-reference updates.",
+      "passed": true,
+      "evidence": "The receipt reports a single produced path, while the workspace retains index.md and release-coordination.md; deterministic grading reports all unrelated fixture files byte-for-byte preserved."
+    },
+    {
+      "text": "Current first-party requirements and verification metadata are updated without inventing values.",
+      "passed": true,
+      "evidence": "play-store-assets.md records current Google Play image requirements, cites the first-party support.google.com URL, and records the verification date 2026-08-29; deterministic grading confirms an HTTPS source URL and real ISO verification date."
+    }
+  ],
+  "summary": {
+    "passed": 5,
+    "failed": 0,
+    "total": 5,
+    "pass_rate": 1.0
+  }
+}

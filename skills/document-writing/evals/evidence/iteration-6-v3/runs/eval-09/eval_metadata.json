@@ -1,0 +1,29 @@
+{
+  "eval_id": 9,
+  "eval_name": "eval-9",
+  "configuration": "with_skill",
+  "run_number": 1,
+  "prompt": "다음 장애 회의 메모를 나중에 참석하지 않은 사람이 사실대로 재구성할 수 있도록 한국어로 정리해줘. 원인 분석이나 새로운 권고는 추가하지 마라. 09:02 모니터링이 API 5xx 증가 감지. 09:05 온콜 Mina가 incident 시작. 09:12 Ravi가 직전 배포와 시간상 연관이 있다고 말했지만 원인으로 확정하지 않음. 09:18 Mina가 롤백 결정. 09:26 5xx 정상화. 09:35 팀이 로그 보존과 배포 변경점 확인에 합의. 담당자는 Ravi, 기한은 금요일. 개인정보 노출은 확인되지 않았고 보안팀 확인은 아직 열려 있다. 참석자는 Mina, Ravi, Jisoo다.",
+  "expectations": [
+    "The artifact is a record or meeting notes, not an analysis report or proposal.",
+    "Participants, timeline, decision, action owner and due date, and open security check are explicit.",
+    "The document preserves that deployment correlation was not confirmed as cause.",
+    "No new root-cause analysis, recommendation, owner, or deadline is invented.",
+    "An absent reader can reconstruct the event sequence and distinguish facts, agreement, and open questions."
+  ],
+  "expected_output": "사건 메타데이터·연대기·결정·액션·미해결 사항을 보존하는 Record or meeting notes.",
+  "case_contract": {
+    "deny_write_tools": true,
+    "allowed_change_paths": []
+  },
+  "allowed_workspace_change_paths": [],
+  "skill_contract_sha256": "1992556407dd0e1d386fd82315fde0296bce26df2002f5deb5ff62b97ffdf254",
+  "skill_snapshot_before_sha256": "1e9bc77b686a9775a0295e2199cb5bbdb9c59d5ff0cf112d6d36d5cf9fcbd5ec",
+  "skill_snapshot_after_sha256": "1e9bc77b686a9775a0295e2199cb5bbdb9c59d5ff0cf112d6d36d5cf9fcbd5ec",
+  "skill_usage": "required",
+  "executor": "independent-luna-context",
+  "capability_evidence_status": "unverified",
+  "execution_receipt_sha256": "4e08903b6047fd0affe5b194c97a8af9395d42f516f04447c5946a3872599932",
+  "execution_receipt_schema_version": 3,
+  "context_id": "4b233965ebf34462b25cc80559ce9254"
+}

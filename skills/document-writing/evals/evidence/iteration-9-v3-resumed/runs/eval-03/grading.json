@@ -1,0 +1,72 @@
+{
+  "schema_version": 3,
+  "status": "completed-independent-grading",
+  "provenance": "independent-luna-grader-output",
+  "eval_id": 3,
+  "grader_task_context_id": "c475d2ac2c5f403b81287ce11906fd0c",
+  "model": "gpt-5.6-luna",
+  "reasoning_effort": "medium",
+  "expectations": [
+    {
+      "text": "The artifact is routed to Feature Design Doc from semantic intent and passes the bundled validator in strict mode with the full profile.",
+      "passed": true,
+      "evidence": "The artifact frontmatter declares doc-type: Feature Design Doc and profile: full. The deterministic grading record reports validate_fdd.py --strict return_code 0, profile full, passed true, major_count 0, and no findings."
+    },
+    {
+      "text": "All required numbered sections and six cross-cutting concerns are present.",
+      "passed": true,
+      "evidence": "saved-search-filters.md contains numbered sections 1 through 13, including the required feature-definition, flow, design, policy, alternatives, scope, and risks sections. Section 11 contains Security, Privacy, Permissions, Observability, Accessibility, and Internationalization."
+    },
+    {
+      "text": "Ownership, 20-item limit, case-insensitive uniqueness, server-side JSON persistence, and partial application have clear canonical owning sections.",
+      "passed": true,
+      "evidence": "The canonical policy rules appear in section 9: Ownership and Visibility, Name Uniqueness, Capacity, Degradation, and Persistence and Data Minimization. These sections explicitly state owner-only visibility, a maximum of 20 per user-workspace pair, case-insensitive uniqueness, server JSON persistence, and valid-only partial application with notice."
+    },
+    {
+      "text": "Flows, Scope, Cross-cutting Concerns, and Result Semantics project only their responsibility instead of fully restating exact policy rules and rationale.",
+      "passed": true,
+      "evidence": "The flows describe user-visible save, apply, rename, delete, failure, and partial-success sequences; Scope lists v1.0 inclusions and exclusions; Cross-cutting Concerns addresses security, privacy, permissions, observability, accessibility, and internationalization. The design and failure sections reference the policies as needed without turning each area into a duplicate policy rationale."
+    },
+    {
+      "text": "The v1.0 exclusions and both evidence-backed rejected alternatives appear in the correct responsibilities.",
+      "passed": true,
+      "evidence": "Section 12 excludes shared filters, default filters, custom sorting, and localStorage for v1.0. Section 10 records localStorage as rejected because it does not support multi-device use, and workspace-shared filters as rejected because permissions and ownership become complex and exceed the v1.0 personal-filter scope."
+    },
+    {
+      "text": "The document contains no implementation task sequence, source file path, function name, or PR breakdown.",
+      "passed": true,
+      "evidence": "The document explicitly states it is not an implementation task list, file/function guide, work sequence, or test plan. Its content remains feature decisions, policies, flows, scope, risks, and open questions; no source paths, function names, or PR breakdown are present."
+    }
+  ],
+  "summary": {
+    "passed": 6,
+    "failed": 0,
+    "total": 6,
+    "pass_rate": 1.0
+  },
+  "claims": [
+    {
+      "claim": "The generated artifact passes strict full-profile FDD structural validation.",
+      "type": "process",
+      "verified": true,
+      "evidence": "deterministic-grading.json records validate_fdd.py --strict with return_code 0, passed true, profile full, and zero findings."
+    },
+    {
+      "claim": "The artifact preserves the supplied product decisions without adding implementation scope.",
+      "type": "quality",
+      "verified": true,
+      "evidence": "The document covers the supplied ownership, persistence, capacity, uniqueness, partial-application, security, privacy, accessibility, internationalization, observability, exclusions, and rejected alternatives, while explicitly disclaiming implementation actions."
+    }
+  ],
+  "user_notes_summary": {
+    "uncertainties": [
+      "The document leaves name length and whitespace rules, observability retention, and condition/search-value size as NEEDS INPUT items, consistent with information not supplied by the prompt."
+    ],
+    "needs_review": [],
+    "workarounds": []
+  },
+  "eval_feedback": {
+    "suggestions": [],
+    "overall": "All six task-specific expectations are satisfied; the artifact is structurally valid and keeps policy ownership and scope boundaries clear."
+  }
+}

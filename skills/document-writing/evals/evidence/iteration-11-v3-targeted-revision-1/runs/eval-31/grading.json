@@ -1,0 +1,42 @@
+{
+  "schema_version": 3,
+  "status": "completed-independent-grading",
+  "provenance": "independent-luna-grader-output",
+  "eval_id": 31,
+  "grader_task_context_id": "766f1ff5158c4c409be27cb07532d315",
+  "model": "gpt-5.6-luna",
+  "reasoning_effort": "medium",
+  "expectations": [
+    {
+      "text": "The existing approved direction and document-set location are reused without presenting new direction hypotheses or asking for reapproval.",
+      "passed": true,
+      "evidence": "The response states that the approved warning-color change was applied and that the approved design direction was not changed; it presents no new direction hypotheses and asks for no reapproval."
+    },
+    {
+      "text": "The warning token changes from `#E5A000` to the approved `#D97706`, and the alert consumer's exact rendered-color record changes to the same value.",
+      "passed": true,
+      "evidence": "The response records `color.status.warning`: `#E5A000` → `#D97706` and says the alert's rendering marker color is `#D97706`; deterministic grading confirms both the canonical token replacement and final alert consumer value."
+    },
+    {
+      "text": "The unchanged foundations, approval record, unrelated button component, filenames, and directory structure are preserved byte-for-byte.",
+      "passed": true,
+      "evidence": "The execution receipt lists only the token and alert files as produced paths. Deterministic grading confirms no file or directory was created, removed, or renamed and that approved-change.md, components/button.md, foundations.md, and index.md were preserved."
+    },
+    {
+      "text": "The result traces the approved value through the canonical token owner to the final alert consumer without changing the options contract or inventing aliases.",
+      "passed": true,
+      "evidence": "The response explicitly identifies the canonical warning token and its propagation to the final warning-alert rendering marker; deterministic grading confirms the canonical token update and consumer propagation with no stale warning value."
+    },
+    {
+      "text": "Verification is limited to the default warning and warning-link representative states and does not claim a full-system redesign.",
+      "passed": true,
+      "evidence": "The response limits verification to the default warning and warning-link states, states their structure and wording were retained, and explicitly says the approved direction and unrelated design rules were not changed."
+    }
+  ],
+  "summary": {
+    "passed": 5,
+    "failed": 0,
+    "total": 5,
+    "pass_rate": 1.0
+  }
+}

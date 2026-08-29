@@ -1,0 +1,160 @@
+{
+  "status": "completed",
+  "validators": [
+    {
+      "name": "validate_warning_update.mjs",
+      "return_code": 1,
+      "stdout": "{\n  \"expectations\": [\n    {\n      \"text\": \"Preserve the exact document tree\",\n      \"passed\": true,\n      \"evidence\": \"No file or directory was created, removed, or renamed\"\n    },\n    {\n      \"text\": \"Change only the canonical warning token value\",\n      \"passed\": false,\n      \"evidence\": \"tokens.md differs beyond the approved #E5A000 to #D97706 replacement\"\n    },\n    {\n      \"text\": \"Propagate the warning value to the final alert consumer\",\n      \"passed\": false,\n      \"evidence\": \"alertExact=false oldRemoved=false newPropagated=false\"\n    },\n    {\n      \"text\": \"Preserve unrelated direction, approval, and component files byte-for-byte\",\n      \"passed\": true,\n      \"evidence\": \"Preserved approved-change.md, components/button.md, foundations.md, index.md\"\n    }\n  ]\n}\n",
+      "stderr": ""
+    },
+    {
+      "name": "validate_eval_run.py",
+      "return_code": 1,
+      "stdout": "{\n  \"checks\": [\n    \"before/after manifests describe the same workspace\",\n    \"before manifest tree hash is canonical\",\n    \"after manifest tree hash is canonical\",\n    \"before manifest matches canonical package fixtures\",\n    \"before manifest directories match canonical package fixtures\",\n    \"after manifest matches the preserved workspace files\",\n    \"after manifest tree hash matches the preserved workspace\",\n    \"execution receipt uses schema 3\",\n    \"execution receipt is harness-derived\",\n    \"execution receipt status is derived from response presence\",\n    \"execution receipt task_context_id matches task\",\n    \"execution receipt model matches task\",\n    \"execution receipt reasoning_effort matches task\",\n    \"response hash matches receipt\",\n    \"before manifest hash matches receipt\",\n    \"after manifest hash matches receipt\",\n    \"produced paths are derived from manifest diff\",\n    \"missing telemetry stays unavailable and null\",\n    \"missing capability evidence stays unverified\"\n  ],\n  \"failures\": [\n    \"workspace change set is available\",\n    \"required change occurred: docs/design-system/tokens.md\",\n    \"required change occurred: docs/design-system/components/alert.md\"\n  ]\n}\n",
+      "stderr": ""
+    }
+  ],
+  "expectations": [
+    {
+      "text": "Preserve the exact document tree",
+      "passed": true,
+      "evidence": "No file or directory was created, removed, or renamed"
+    },
+    {
+      "text": "Change only the canonical warning token value",
+      "passed": false,
+      "evidence": "tokens.md differs beyond the approved #E5A000 to #D97706 replacement"
+    },
+    {
+      "text": "Propagate the warning value to the final alert consumer",
+      "passed": false,
+      "evidence": "alertExact=false oldRemoved=false newPropagated=false"
+    },
+    {
+      "text": "Preserve unrelated direction, approval, and component files byte-for-byte",
+      "passed": true,
+      "evidence": "Preserved approved-change.md, components/button.md, foundations.md, index.md"
+    },
+    {
+      "text": "validate_eval_run.py: before/after manifests describe the same workspace",
+      "passed": true,
+      "evidence": "deterministic check"
+    },
+    {
+      "text": "validate_eval_run.py: before manifest tree hash is canonical",
+      "passed": true,
+      "evidence": "deterministic check"
+    },
+    {
+      "text": "validate_eval_run.py: after manifest tree hash is canonical",
+      "passed": true,
+      "evidence": "deterministic check"
+    },
+    {
+      "text": "validate_eval_run.py: before manifest matches canonical package fixtures",
+      "passed": true,
+      "evidence": "deterministic check"
+    },
+    {
+      "text": "validate_eval_run.py: before manifest directories match canonical package fixtures",
+      "passed": true,
+      "evidence": "deterministic check"
+    },
+    {
+      "text": "validate_eval_run.py: after manifest matches the preserved workspace files",
+      "passed": true,
+      "evidence": "deterministic check"
+    },
+    {
+      "text": "validate_eval_run.py: after manifest tree hash matches the preserved workspace",
+      "passed": true,
+      "evidence": "deterministic check"
+    },
+    {
+      "text": "validate_eval_run.py: execution receipt uses schema 3",
+      "passed": true,
+      "evidence": "deterministic check"
+    },
+    {
+      "text": "validate_eval_run.py: execution receipt is harness-derived",
+      "passed": true,
+      "evidence": "deterministic check"
+    },
+    {
+      "text": "validate_eval_run.py: execution receipt status is derived from response presence",
+      "passed": true,
+      "evidence": "deterministic check"
+    },
+    {
+      "text": "validate_eval_run.py: execution receipt task_context_id matches task",
+      "passed": true,
+      "evidence": "deterministic check"
+    },
+    {
+      "text": "validate_eval_run.py: execution receipt model matches task",
+      "passed": true,
+      "evidence": "deterministic check"
+    },
+    {
+      "text": "validate_eval_run.py: execution receipt reasoning_effort matches task",
+      "passed": true,
+      "evidence": "deterministic check"
+    },
+    {
+      "text": "validate_eval_run.py: response hash matches receipt",
+      "passed": true,
+      "evidence": "deterministic check"
+    },
+    {
+      "text": "validate_eval_run.py: before manifest hash matches receipt",
+      "passed": true,
+      "evidence": "deterministic check"
+    },
+    {
+      "text": "validate_eval_run.py: after manifest hash matches receipt",
+      "passed": true,
+      "evidence": "deterministic check"
+    },
+    {
+      "text": "validate_eval_run.py: produced paths are derived from manifest diff",
+      "passed": true,
+      "evidence": "deterministic check"
+    },
+    {
+      "text": "validate_eval_run.py: missing telemetry stays unavailable and null",
+      "passed": true,
+      "evidence": "deterministic check"
+    },
+    {
+      "text": "validate_eval_run.py: missing capability evidence stays unverified",
+      "passed": true,
+      "evidence": "deterministic check"
+    },
+    {
+      "text": "validate_eval_run.py: workspace change set is available",
+      "passed": false,
+      "evidence": "deterministic failure"
+    },
+    {
+      "text": "validate_eval_run.py: required change occurred: docs/design-system/tokens.md",
+      "passed": false,
+      "evidence": "deterministic failure"
+    },
+    {
+      "text": "validate_eval_run.py: required change occurred: docs/design-system/components/alert.md",
+      "passed": false,
+      "evidence": "deterministic failure"
+    },
+    {
+      "text": "Execution skill snapshot remains unchanged",
+      "passed": true,
+      "evidence": "before=afa3038c912aa7c14d826457e2bf44b2ad23b474d95f49a38d59f87450d6425a after=afa3038c912aa7c14d826457e2bf44b2ad23b474d95f49a38d59f87450d6425a"
+    }
+  ],
+  "summary": {
+    "passed": 22,
+    "failed": 5,
+    "total": 27,
+    "pass_rate": 0.8148148148148148
+  }
+}

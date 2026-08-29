@@ -1,0 +1,40 @@
+{
+  "eval_id": 25,
+  "eval_name": "web-unavailable-generic-storefront",
+  "configuration": "with_skill",
+  "run_number": 1,
+  "prompt": "지금은 인터넷을 쓸 수 없는 상태야. 파트너가 'Nova Market에도 내자'고만 했는데 어떤 운영 서비스인지, 공식 안내가 어디 있는지는 못 받았어. 상점용 이미지 가이드를 써야 한다면 추측으로 사이트나 규격을 채우지 말고, 먼저 무엇을 확인해야 하는지 정리해줘.",
+  "expectations": [
+    "The request is handled as an unresolved storefront-document task rather than rejected because Nova Market is unfamiliar.",
+    "No operator, official domain, attempted URL, source title, verification date, or mutable requirement is invented.",
+    "The result records that online research is unavailable and requests an official publisher guide or operator identity.",
+    "No partial storefront file presents assumptions as facts.",
+    "The completion report states that current storefront requirements remain unverified."
+  ],
+  "expected_output": "상점의 운영 주체와 공식 자료가 확인되지 않았음을 명확히 하고, 추측한 URL·규격 없이 필요한 확인 자료를 요청한 결과.",
+  "case_contract": {
+    "denied_capabilities": [
+      "web"
+    ],
+    "deny_write_tools": true,
+    "allowed_change_paths": [],
+    "response": {
+      "max_questions": 3
+    },
+    "source_evidence": {
+      "forbid_https_url": true,
+      "forbid_verification_date": true,
+      "forbid_dimensions": true
+    }
+  },
+  "allowed_workspace_change_paths": [],
+  "skill_contract_sha256": "1992556407dd0e1d386fd82315fde0296bce26df2002f5deb5ff62b97ffdf254",
+  "skill_snapshot_before_sha256": "1e9bc77b686a9775a0295e2199cb5bbdb9c59d5ff0cf112d6d36d5cf9fcbd5ec",
+  "skill_snapshot_after_sha256": "1e9bc77b686a9775a0295e2199cb5bbdb9c59d5ff0cf112d6d36d5cf9fcbd5ec",
+  "skill_usage": "required",
+  "executor": "independent-luna-context",
+  "capability_evidence_status": "unverified",
+  "execution_receipt_sha256": "0d746a8e044a0079f2a749a036e4da195e533cb86b9b447021947f45aaf7ad4f",
+  "execution_receipt_schema_version": 3,
+  "context_id": "3b97b37fc6394222ae68de82fbeda5d8"
+}

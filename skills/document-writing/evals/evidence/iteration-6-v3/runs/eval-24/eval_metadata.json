@@ -1,0 +1,53 @@
+{
+  "eval_id": 24,
+  "eval_name": "mixed-document-and-asset-production",
+  "configuration": "with_skill",
+  "run_number": 1,
+  "prompt": "Google Play 출시 자료를 `docs/marketing/google-play`에 정리하고, 그 기준을 반영한 실제 feature graphic PNG도 만들어줘. '빠르게 기록할 수 있다는 확신을 넓은 여백과 한 가지 선명한 파란색 행동으로 보여준다'는 방향은 승인됐고, 48px 앱 아이콘과 정보가 많은 스크린샷, 밝은 배경과 어두운 배경에서 검증했다. 브랜드 사실은 다음과 같아: 앱 이름은 Orbit Notes, 주 색상은 #2457D6, 보조 색상은 #F5B942, 서체는 Inter, 핵심 메시지는 '생각을 놓치지 마세요'야. 가이드 작성과 이미지 제작은 각각 필요한 작업 방식으로 진행해줘.",
+  "expectations": [
+    "The document portion creates the requested storefront-asset guide and is not suppressed by the image request.",
+    "Google Play's current visual-asset requirements are checked from official material.",
+    "The PNG request is explicitly separated and handed to an image-production tool.",
+    "The document-writing portion does not claim to have produced the image.",
+    "Neither requested deliverable is silently discarded."
+  ],
+  "expected_output": "지정한 위치에 Google Play용 시각 자산 문서를 만들고, 제공된 브랜드 사실을 반영한 feature graphic PNG를 별도 이미지 작업으로 만든 결과.",
+  "case_contract": {
+    "required_capabilities": [
+      "web",
+      "image-generation"
+    ],
+    "allowed_change_paths": [
+      "docs/marketing/google-play/**"
+    ],
+    "required_change_paths": [
+      "docs/marketing/google-play/index.md",
+      "docs/marketing/google-play/stores/google-play.md",
+      "docs/marketing/google-play/orbit-notes-feature-graphic-1024x500.png"
+    ],
+    "source_evidence": {
+      "require_https_url": true,
+      "require_verification_date": true
+    },
+    "png": [
+      {
+        "path": "docs/marketing/google-play/orbit-notes-feature-graphic-1024x500.png",
+        "width": 1024,
+        "height": 500,
+        "has_alpha": false
+      }
+    ]
+  },
+  "allowed_workspace_change_paths": [
+    "docs/marketing/google-play/**"
+  ],
+  "skill_contract_sha256": "1992556407dd0e1d386fd82315fde0296bce26df2002f5deb5ff62b97ffdf254",
+  "skill_snapshot_before_sha256": "1e9bc77b686a9775a0295e2199cb5bbdb9c59d5ff0cf112d6d36d5cf9fcbd5ec",
+  "skill_snapshot_after_sha256": "1e9bc77b686a9775a0295e2199cb5bbdb9c59d5ff0cf112d6d36d5cf9fcbd5ec",
+  "skill_usage": "required",
+  "executor": "independent-luna-context",
+  "capability_evidence_status": "unverified",
+  "execution_receipt_sha256": "9bb92bd8161a2dcc34280a97b92a302339d8a4f9e37b9706e8b5e2f391b543a5",
+  "execution_receipt_schema_version": 3,
+  "context_id": "59e79acfd339456a8dcbfd591b3daf8d"
+}

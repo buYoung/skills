@@ -1,0 +1,35 @@
+{
+  "eval_id": 21,
+  "eval_name": "collision-no-overwrite",
+  "configuration": "with_skill",
+  "run_number": 1,
+  "prompt": "팀 폴더에 있는 기존 `index.md` 자리에서 제품 UI 가이드를 시작해줘. 혹시 그 폴더가 다른 문서에 쓰이고 있다면 내용은 건드리지 말고, 어디에 둘지 결정하는 데 필요한 질문 하나만 해줘. 파일 이름 뒤에 버전을 붙여 새 사본을 만들지는 말아줘.",
+  "expectations": [
+    "The supplied index is identified as an unrelated production-access handbook rather than a UI design-system set.",
+    "No supplied file is changed and no sibling, versioned, or default-root design-system file is created.",
+    "The assistant asks one concise question to resolve which document belongs in the location or where the new guide should go.",
+    "The request is not treated as authorization to normalize the unrelated policy.",
+    "The response reports the collision without claiming a document was produced."
+  ],
+  "expected_output": "기존 보안 운영 문서와의 충돌을 발견하고 아무 파일도 바꾸지 않은 채 저장 위치를 묻는 결과.",
+  "case_contract": {
+    "fixture_destination": "docs/design-system",
+    "validation": "validate_preservation.mjs --exact-tree",
+    "deny_write_tools": true,
+    "allowed_change_paths": [],
+    "response": {
+      "min_questions": 1,
+      "max_questions": 1
+    }
+  },
+  "allowed_workspace_change_paths": [],
+  "skill_contract_sha256": "1992556407dd0e1d386fd82315fde0296bce26df2002f5deb5ff62b97ffdf254",
+  "skill_snapshot_before_sha256": "1e9bc77b686a9775a0295e2199cb5bbdb9c59d5ff0cf112d6d36d5cf9fcbd5ec",
+  "skill_snapshot_after_sha256": "1e9bc77b686a9775a0295e2199cb5bbdb9c59d5ff0cf112d6d36d5cf9fcbd5ec",
+  "skill_usage": "required",
+  "executor": "independent-luna-context",
+  "capability_evidence_status": "unverified",
+  "execution_receipt_sha256": "f7d145f14ad73efd455891b8144097b78131f3ca416088dc143d1f4430d7cb4e",
+  "execution_receipt_schema_version": 3,
+  "context_id": "0d7487093fe049919c3abe28e904fa91"
+}

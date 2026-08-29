@@ -71,13 +71,27 @@ For each output set, choose exactly one prebuilt from semantic intent:
 | `default` | Product UI foundations, tokens, components, content, accessibility, and patterns | `docs/design-system` |
 | `app-store-page` | A digital storefront listing's visual assets, using whatever asset vocabulary and media types its operator defines | `docs/design-system-visual-assets` |
 
-The requested output path never changes a prebuilt. Resolve each root in this order: a user-specified directory for that set, the location of the existing document set being changed or reviewed, then the selected prebuilt's default output root. Read only the prebuilt reference for that output set.
+The requested output path never changes a prebuilt. Resolve each root in this order: a user-specified directory for that set, the location of the existing document set being changed or reviewed, then the selected prebuilt's default output root. A user-specified directory replaces only the prebuilt root; it does not collapse a multi-file set into `README.md` or another single file. Read only the prebuilt reference for that output set.
+
+Resolve blocking decisions in dependency order: operation and document type, destination collision or invalid path shape, included output sets and platforms or storefronts, then design direction and representative validation. Ask only the earliest unresolved decision. Do not combine a destination question with later direction or validation questions because the user cannot act on those later decisions until the destination is resolved.
+
+After selecting a prebuilt, apply [design-direction-workflow.md](references/document-types/design-system/design-direction-workflow.md) to each output set before writing. Classify the set as direction exploration, direction comparison, selected-direction refinement, design-system documentation, existing-system review, or existing-system revision. Inspect supplied sources, the repository, existing results, and authoritative decisions before asking the user anything.
+
+For a new set without an approved direction, present two or three materially different directions and one evidence-based recommendation in the conversation. Keep unapproved hypotheses at the level of relative tendencies and user-visible outcomes; do not prescribe a palette, named color family, grid, motif, texture, token, component, or asset rule unless supplied evidence already establishes it. Ask only one to three plain-language questions about recognizable impressions or use situations; keep the internal analytical axes out of the question while explaining the visible consequence and risk of each choice. Every requested user decision must appear as an answerable sentence ending in `?` or `？`; an imperative such as “choose one” is not a question. Do not create or modify Design System Document files until the user explicitly approves a direction.
+
+After approval, require at least two contrasting representative results or authoritative validation records. When they are unavailable, propose the representative situations and ask the user to provide results or authorize production as a separate deliverable. Do not finalize or write a provisional document set while either direction approval or representative validation is missing.
+
+An explicit approved direction in an authoritative existing source does not need to be reapproved. A narrow update may proceed without broad exploration when its affected direction, owning decisions, and final consumers are clear. Inventory the entire existing set—not only writable files—and follow its index and approval/change/decision owners before saying that an approved value is unavailable. When one conditional branch remains unresolved after the direction and representative validation are approved, write the unaffected common and confirmed conditional owners, record the unresolved branch without inventing it, and end the response with one direct question about that branch. Do not hold back confirmed work or create a file for the unresolved branch. Review and fact-check remain read-only and report missing direction or validation evidence as findings.
 
 If the user explicitly requests both product UI and storefront visual asset systems, split the request into two coordinated Design System Document output sets and apply `default` and `app-store-page` independently. Use their separate default roots unless the user supplies one directory for each; ask once before writing if one custom root does not establish the two destinations.
 
+Two sets for the same product and brand may share an approved upper-level direction when authoritative evidence supports it, but validate and document each set's contextual adaptations independently.
+
 For `app-store-page`, first resolve the storefronts actually included in the requested deliverable. Excluded storefronts and names used only for comparison, examples, or background are not targets. For create, update, rewrite, or normalize, follow the storefront research workflow for each in-scope target, including its explicit web-unavailable fallback, and create or update one storefront document. When both web research and the storefront identity or official material are unavailable, create no partial document: state the capability limit, request the operator identity or official guide, and leave mutable requirements unverified. For review or fact-check, research as available and report findings without changing files.
 
-When a request combines a document with actual UI, image, or video production, keep the document portion under this skill and route the production portion to the appropriate capability as a separate deliverable. Do not let either portion suppress or silently replace the other.
+When a request combines a document with actual UI, image, or video production, keep the document portion under this skill and route the production portion to the appropriate capability as a separate deliverable. Do not let either portion suppress or silently replace the other. In the completion report, label document outputs and production outputs separately and attribute each to its owning workflow; do not imply that document authoring itself produced a binary asset.
+
+Before reporting a new saved Design System Document set as complete, run `scripts/validate_design_system_output.py` from the supplied skill package when available. Pass the resolved root, selected prebuilt, and every explicitly included platform or storefront. For a requested PNG deliverable, also pass the verified count, dimensions, and alpha contract. Treat a validator failure as an incomplete result and fix the owner tree or binary output before completion.
 
 ### 5. Apply the FDD gate
 
@@ -137,6 +151,8 @@ Before delivery, confirm:
 - No empty, duplicated, or ceremonial sections remain.
 - The result still matches the selected document type.
 - For a multi-file Design System Document, every substantive supplied decision is in the owning prebuilt file, every required owner is linked from `index.md`, and the actual changed paths match the files the completion will claim.
+- For a Design System Document create, rewrite, normalize, or direction-changing update, one approved direction is stated in one or two sentences; invariant, variable, conditional, prohibited, and verification decisions are distinguishable; and at least two contrasting representative situations support it.
+- No Design System Document file was created or modified while a required direction approval or representative validation decision was still awaiting the user.
 - No supplied or verified value has been replaced by convention, and no unsupported value, policy, platform behavior, or storefront requirement has been added.
 - Any unresolved choice that requires the user is asked once as a direct question in the user-facing response, not left only as an internal decision note.
 
@@ -159,3 +175,5 @@ When editing, preserve fenced code blocks, paths, identifiers, exact logs, quota
 ## Completion
 
 Before reporting completion, compare the resolved output contract and promised paths with the actual final artifact tree. Fix missing owners, links, or files first; if they cannot be produced, report the work as incomplete instead of claiming completion. Report the selected document type, the artifact produced or reviewed, validation performed, and any limitation that remains unverified. Never claim an unrun check passed.
+
+For a Design System Document, also report the maturity state, the authority for the approved direction, the representative situations checked, and any unresolved decision. Do not report the set as complete when direction approval or representative validation is absent.

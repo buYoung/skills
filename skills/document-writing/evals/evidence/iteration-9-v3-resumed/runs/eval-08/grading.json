@@ -1,0 +1,42 @@
+{
+  "schema_version": 3,
+  "status": "completed-independent-grading",
+  "provenance": "independent-luna-grader-output",
+  "eval_id": 8,
+  "grader_task_context_id": "95432d8b57364dc480be84ca30c3255a",
+  "model": "gpt-5.6-luna",
+  "reasoning_effort": "medium",
+  "expectations": [
+    {
+      "text": "The artifact is a troubleshooting runbook, not a normal setup guide or incident report.",
+      "passed": true,
+      "evidence": "The document is explicitly titled '로컬 API DB connection failed 장애 대응 런북' and is organized around symptoms, immediate safety checks, diagnostic branches, recovery, verification, stop conditions, and escalation rather than setup instructions or a retrospective incident narrative."
+    },
+    {
+      "text": "It starts from the observed failure and orders low-risk checks before recovery actions.",
+      "passed": true,
+      "evidence": "The opening states the observed startup failure and impact, then requires recording current output, confirming the repository root, checking only .env existence, and checking Docker/postgres status before the separate recovery procedure. It explicitly prohibits configuration changes or restarts when prerequisites are unconfirmed."
+    },
+    {
+      "text": "Diagnostic branches use observable conditions and do not invent shell commands.",
+      "passed": true,
+      "evidence": "The quick-triage table and branches are based on observable conditions such as Docker/postgres normality, .env presence, configuration-target alignment, and PostgreSQL log categories. The runbook says to use existing documented or approved procedures and explicitly avoids creating unverified commands."
+    },
+    {
+      "text": "Recovery is verified with the exact server log and health response.",
+      "passed": true,
+      "evidence": "The recovery-verification section requires the exact log 'Server running on http://localhost:3000' and an approved GET /health check whose body is exactly '{\"status\":\"ok\"}', and it refuses to mark recovery complete if either condition is absent."
+    },
+    {
+      "text": "Stop and escalation conditions identify the evidence to preserve.",
+      "passed": true,
+      "evidence": "The stop section covers missing .env, unknown container state, destructive database actions, sensitive-data risk, repeated failure, unavailable logs/status, and failed verification. The escalation section specifies preserving timestamps, root/.env presence without values, Docker/postgres state, masked API and PostgreSQL logs, actions and before/after results, configuration-key alignment, exact success observations, unknowns, and the reason for stopping."
+    }
+  ],
+  "summary": {
+    "passed": 5,
+    "failed": 0,
+    "total": 5,
+    "pass_rate": 1.0
+  }
+}

@@ -1,0 +1,42 @@
+{
+  "schema_version": 3,
+  "status": "completed-independent-grading",
+  "provenance": "independent-luna-grader-output",
+  "eval_id": 2,
+  "grader_task_context_id": "52487f1b1f584402bdb1e925bee1955f",
+  "model": "gpt-5.6-luna",
+  "reasoning_effort": "medium",
+  "expectations": [
+    {
+      "text": "The artifact is an action guide selected from the normal starting state, not a troubleshooting runbook or reference.",
+      "passed": true,
+      "evidence": "The document is titled '로컬 API 서버 실행 가이드' and uses prerequisites, numbered execution steps, checks, and a short common-problems section, making it an action guide rather than a reference catalog or troubleshooting-first runbook."
+    },
+    {
+      "text": "Prerequisites appear before ordered actions and include Node.js 22+, Docker, and Git.",
+      "passed": true,
+      "evidence": "The '사전 조건' section precedes '실행 절차' and explicitly lists Node.js 22 이상, Docker, and Git."
+    },
+    {
+      "text": "The guide includes the supplied docker compose, npm ci, and npm run dev commands but keeps the unverified .env copy action in prose without deriving cp or another command.",
+      "passed": true,
+      "evidence": "The document contains exact fenced commands 'docker compose up -d postgres', 'npm ci', and 'npm run dev'. The .env.example-to-.env operation is described in Korean prose and no cp, copy, or other derived copy command is introduced."
+    },
+    {
+      "text": "The exact server log and health response appear as observable success checks.",
+      "passed": true,
+      "evidence": "The development-server check contains the exact log 'Server running on http://localhost:3000', and completion verification contains the GET /health request with the exact JSON response {\"status\":\"ok\"}."
+    },
+    {
+      "text": "The reader can follow the order without hidden prerequisites and can handle only the two supplied local problems.",
+      "passed": true,
+      "evidence": "The guide states repository-root context, environment-file presence, database start, dependency installation, server startup, and final health verification in the requested order. Its common-problems section contains only '포트 3000 사용 중' and 'DB connection failed'; it avoids inventing diagnostic commands or additional problem categories."
+    }
+  ],
+  "summary": {
+    "passed": 5,
+    "failed": 0,
+    "total": 5,
+    "pass_rate": 1.0
+  }
+}

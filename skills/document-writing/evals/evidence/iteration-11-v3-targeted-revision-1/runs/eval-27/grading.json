@@ -1,0 +1,42 @@
+{
+  "schema_version": 3,
+  "status": "completed-independent-grading",
+  "provenance": "independent-luna-grader-output",
+  "eval_id": 27,
+  "grader_task_context_id": "37bc80709b5e43d1b4ad429f93c66779",
+  "model": "gpt-5.6-luna",
+  "reasoning_effort": "medium",
+  "expectations": [
+    {
+      "text": "The common design-system contract remains platform-neutral.",
+      "passed": true,
+      "evidence": "The workspace keeps shared principles and contracts in foundations.md, patterns.md, and accessibility.md, while documenting platform differences as conditional adaptations rather than redefining the common contract."
+    },
+    {
+      "text": "The response explicitly preserves the confirmed web adaptation as `platforms/web.md` for completion after clarification; it is not silently dropped.",
+      "passed": true,
+      "evidence": "The response explicitly states that the web browser differences are in platforms/web.md, and the workspace contains docs/design-system/platforms/web.md with web adaptation rules and verification."
+    },
+    {
+      "text": "The assistant asks one concise question to resolve whether mobile is the team's own platform name or a label covering concrete platforms.",
+      "passed": true,
+      "evidence": "The response ends with one concise question: whether mobile means both iOS and Android or is the app's internal classification name."
+    },
+    {
+      "text": "It does not invent iOS or Android scope from convention.",
+      "passed": true,
+      "evidence": "The response says mobile-specific scope was not arbitrarily finalized, and the workspace creates no iOS or Android adaptation files or rules."
+    },
+    {
+      "text": "The unresolved platform decision is not represented as a completed adaptation.",
+      "passed": true,
+      "evidence": "The workspace marks mobile as undecided in index.md and governance.md, states that no mobile-specific file will be created before the decision, and only the confirmed web adaptation is present."
+    }
+  ],
+  "summary": {
+    "passed": 5,
+    "failed": 0,
+    "total": 5,
+    "pass_rate": 1.0
+  }
+}

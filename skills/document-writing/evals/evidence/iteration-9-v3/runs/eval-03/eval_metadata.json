@@ -1,0 +1,26 @@
+{
+  "schema_version": 3,
+  "eval_id": 3,
+  "eval_name": "eval-3",
+  "configuration": "current",
+  "run_number": 1,
+  "prompt": "관리자 웹 대시보드의 Saved Search Filters v1.0에 대해 구현자가 현재 결정 원본으로 사용할 문서를 한국어 본문으로 작성해줘. 주 사용자는 반복적으로 같은 사용자 검색을 수행하는 워크스페이스 관리자이며 현재는 매번 필터를 다시 설정해야 한다. 사용자는 현재 필터 조합을 이름과 함께 저장하고 목록에서 적용·이름 변경·삭제할 수 있다. 필터는 사용자와 워크스페이스별로 서버에 JSON으로 저장하며 최대 20개다. 이름은 같은 사용자·워크스페이스 안에서 대소문자를 구분하지 않고 고유해야 하며 중복 이름은 거부한다. 소유자만 자신의 필터를 볼 수 있다. 저장 후 검색 조건의 필드가 제거되면 유효한 조건만 적용하고 부분 적용 안내를 보여준다. v1.0에서 공유 필터, 기본 필터 지정, 사용자 지정 정렬은 제외한다. localStorage 방식은 여러 기기에서 사용할 수 없어 제외했고 워크스페이스 공유 방식은 권한과 소유권 복잡성 때문에 제외했다. 보안은 기존 관리자 인증을 사용하고 모든 조회·변경에서 소유권을 검사한다. 개인정보 원문은 저장하지 않고 필드와 연산자, 검색값만 저장한다. 저장·적용·부분 적용·삭제 결과를 관측할 수 있어야 한다. 키보드만으로 목록 작업이 가능해야 하고 이름과 안내 문구는 유니코드 및 번역을 지원해야 한다. 단일 웹 플랫폼이지만 새 영속 데이터 모델과 권한 검사가 있다. 구현 작업 목록이나 파일·함수 이름은 포함하지 마라.",
+  "expectations": [
+    "The artifact is routed to Feature Design Doc from semantic intent and passes the bundled validator in strict mode with the full profile.",
+    "All required numbered sections and six cross-cutting concerns are present.",
+    "Ownership, 20-item limit, case-insensitive uniqueness, server-side JSON persistence, and partial application have clear canonical owning sections.",
+    "Flows, Scope, Cross-cutting Concerns, and Result Semantics project only their responsibility instead of fully restating exact policy rules and rationale.",
+    "The v1.0 exclusions and both evidence-backed rejected alternatives appear in the correct responsibilities.",
+    "The document contains no implementation task sequence, source file path, function name, or PR breakdown."
+  ],
+  "case_contract": {
+    "validation": "validate_fdd.py --strict",
+    "allowed_change_paths": [
+      "docs/FDD/**"
+    ],
+    "required_change_paths": [
+      "docs/FDD/*.md"
+    ]
+  },
+  "task_context_id": "598f7eb21b9943b387db0530c6353a17"
+}

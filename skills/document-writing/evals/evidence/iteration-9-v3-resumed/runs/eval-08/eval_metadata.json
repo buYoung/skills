@@ -1,0 +1,20 @@
+{
+  "schema_version": 3,
+  "eval_id": 8,
+  "eval_name": "eval-8",
+  "configuration": "current",
+  "run_number": 1,
+  "prompt": "어제까지 실행되던 로컬 API가 오늘 DB connection failed로 시작되지 않는다. 당직자가 먼저 안전한 상태를 확인하고 원인을 좁혀 복구한 뒤 검증하거나 상향 보고할 수 있도록 한국어로 작성해줘. 확인 가능한 사실은 Docker와 postgres 컨테이너가 정상 실행 중이어야 하고 저장소 루트에 .env가 있어야 하며 정상 복구 후 'Server running on http://localhost:3000' 로그와 GET /health의 {\"status\":\"ok\"} 응답이 보여야 한다는 것이다. 확인되지 않은 명령은 만들지 말고, 분기 조건·중단 조건·복구 확인·상향 보고 시 첨부할 증거를 포함해라.",
+  "expectations": [
+    "The artifact is a troubleshooting runbook, not a normal setup guide or incident report.",
+    "It starts from the observed failure and orders low-risk checks before recovery actions.",
+    "Diagnostic branches use observable conditions and do not invent shell commands.",
+    "Recovery is verified with the exact server log and health response.",
+    "Stop and escalation conditions identify the evidence to preserve."
+  ],
+  "case_contract": {
+    "deny_write_tools": true,
+    "allowed_change_paths": []
+  },
+  "task_context_id": "cbb11d909448454a8258631d2a37700b"
+}

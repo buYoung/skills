@@ -1,0 +1,14 @@
+{
+  "schema_version": 3,
+  "provenance": "harness-execution-validation",
+  "eval_id": 31,
+  "status": "hard-gate-failed",
+  "valid": false,
+  "reasons": [
+    "Change only the canonical warning token value",
+    "Propagate the warning value to the final alert consumer",
+    "validate_eval_run.py: workspace change set is available",
+    "validate_eval_run.py: required change occurred: docs/design-system/tokens.md",
+    "validate_eval_run.py: required change occurred: docs/design-system/components/alert.md"
+  ]
+}

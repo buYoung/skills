@@ -1,0 +1,640 @@
+{
+  "schema_version": 3,
+  "status": "diagnostic-failed",
+  "verification_status": "targeted-failed",
+  "production_ready": false,
+  "trust_boundary": "local-unattested",
+  "generated_at": "2026-08-29",
+  "iteration": 10,
+  "contract_sha256": "d9236cf37c4c5d5e36c3428397cce114860f5b28a5947087b60f55b537eb8d4c",
+  "evaluation_scope": {
+    "kind": "targeted",
+    "eval_ids": [
+      10,
+      14,
+      22,
+      27,
+      30,
+      31
+    ]
+  },
+  "runtime": {
+    "runner": "scripts/run_production_evals.py",
+    "model": "gpt-5.6-luna",
+    "reasoning_effort": "medium",
+    "planned_execution_tasks": 6,
+    "responses_present": 6,
+    "valid_execution_receipts": 6,
+    "deterministic_passed": 4,
+    "deterministic_failed": 2,
+    "completed_independent_gradings": 4,
+    "telemetry_status": "unavailable",
+    "capability_evidence_status": "unverified"
+  },
+  "artifacts": [
+    {
+      "kind": "behavior-results",
+      "path": "evals/evidence/iteration-10-v3-targeted/benchmark.json",
+      "sha256": "084e55392841659fe215bd2e8acdadbec2bfb1cf0c2b70ea417edf2fdecd0b93"
+    },
+    {
+      "kind": "selection-results",
+      "path": "evals/evidence/iteration-10-v3-targeted/selection/source.json",
+      "sha256": "2e34b2010d0843f7f9f1380f2193499784f22c54bb69e5464da9abe3f91a3755"
+    },
+    {
+      "kind": "selection-reuse",
+      "path": "evals/evidence/iteration-10-v3-targeted/selection/reuse.json",
+      "sha256": "61f17ebc1607885e3e6658f811b2ab4609ddafec355cd10d63f1ca0cde052c5a"
+    },
+    {
+      "kind": "execution-receipt",
+      "path": "evals/evidence/iteration-10-v3-targeted/runs/eval-10/execution-receipt.json",
+      "sha256": "a77f4ae946eec9ce9cfe89cc6ec732ac904ef67b8bbb69aa7157b4a6b8d2e0bb"
+    },
+    {
+      "kind": "execution-validation",
+      "path": "evals/evidence/iteration-10-v3-targeted/runs/eval-10/execution-validation.json",
+      "sha256": "3a7fb446aa5f8e94bd0b58b64a304e85c1563cc4a1863f3b8756c1ac13521ff1"
+    },
+    {
+      "kind": "deterministic-grading",
+      "path": "evals/evidence/iteration-10-v3-targeted/runs/eval-10/deterministic-grading.json",
+      "sha256": "08e417569d7a4bbaacad30a6736a20d1f46d3ccb60260b479362a70ff5cc5b53"
+    },
+    {
+      "kind": "independent-grading",
+      "path": "evals/evidence/iteration-10-v3-targeted/runs/eval-10/grading.json",
+      "sha256": "5ac3732910e7c20068db92836af20465ced66f0b752554af306cd0478b9464c2"
+    },
+    {
+      "kind": "grading-validation",
+      "path": "evals/evidence/iteration-10-v3-targeted/runs/eval-10/grading-validation.json",
+      "sha256": "8cd6e88f76f63b06168f2a178e2e23ecceb84f80e0858355b63d75d5973483d4"
+    },
+    {
+      "kind": "response",
+      "path": "evals/evidence/iteration-10-v3-targeted/runs/eval-10/direct-response.md",
+      "sha256": "795dce11474ea92fb9eda2da6a7adbfe14f173a4f9e399c2628c7e49df798c0a"
+    },
+    {
+      "kind": "workspace-before",
+      "path": "evals/evidence/iteration-10-v3-targeted/runs/eval-10/workspace-before.json",
+      "sha256": "c3827b7c00d785bd46f18178dc2fba2b1d3c2524333885c471c46fdf15e900b4"
+    },
+    {
+      "kind": "workspace-after",
+      "path": "evals/evidence/iteration-10-v3-targeted/runs/eval-10/workspace-after.json",
+      "sha256": "c3827b7c00d785bd46f18178dc2fba2b1d3c2524333885c471c46fdf15e900b4"
+    },
+    {
+      "kind": "eval-metadata",
+      "path": "evals/evidence/iteration-10-v3-targeted/runs/eval-10/eval_metadata.json",
+      "sha256": "b0f6f2753df856a84b286cc5cf76da876e6f32244dab269371d8d33c840772d0"
+    },
+    {
+      "kind": "execution-receipt",
+      "path": "evals/evidence/iteration-10-v3-targeted/runs/eval-14/execution-receipt.json",
+      "sha256": "d26d164f736b64942d3f874627b424ebc6eb9f516ae31adccfc0839e316eceb8"
+    },
+    {
+      "kind": "execution-validation",
+      "path": "evals/evidence/iteration-10-v3-targeted/runs/eval-14/execution-validation.json",
+      "sha256": "3e641405aa8d319cb41aa07a9846d090f39ead403ecd1343fe91d88801b542ff"
+    },
+    {
+      "kind": "deterministic-grading",
+      "path": "evals/evidence/iteration-10-v3-targeted/runs/eval-14/deterministic-grading.json",
+      "sha256": "c4ba1d93059d91192d7a841739b7492272dfbfa5a9c3bb27ef1a026d4cf482c3"
+    },
+    {
+      "kind": "independent-grading",
+      "path": "evals/evidence/iteration-10-v3-targeted/runs/eval-14/grading.json",
+      "sha256": "d3a483fd9bde71ecb1a434b7e11c7c9c5db6b5553361bd7433a567aa497894f3"
+    },
+    {
+      "kind": "grading-validation",
+      "path": "evals/evidence/iteration-10-v3-targeted/runs/eval-14/grading-validation.json",
+      "sha256": "f20b33dfa2c7bfe045b9fe3ce0e686c655091ade924f17a323cc16a1e561bf4b"
+    },
+    {
+      "kind": "response",
+      "path": "evals/evidence/iteration-10-v3-targeted/runs/eval-14/direct-response.md",
+      "sha256": "fb313c506f922243e9287767074e98479ac4a03331f1852cab2b218b531b5305"
+    },
+    {
+      "kind": "workspace-before",
+      "path": "evals/evidence/iteration-10-v3-targeted/runs/eval-14/workspace-before.json",
+      "sha256": "d0860113ee6fe9b52ca8f271b675bb5f773ed005309801c46a80bdeb703217b8"
+    },
+    {
+      "kind": "workspace-after",
+      "path": "evals/evidence/iteration-10-v3-targeted/runs/eval-14/workspace-after.json",
+      "sha256": "82188bf292945eac6652c1fbbad963740361e7bdd6249f0f2cebc612fa0268c8"
+    },
+    {
+      "kind": "eval-metadata",
+      "path": "evals/evidence/iteration-10-v3-targeted/runs/eval-14/eval_metadata.json",
+      "sha256": "0743a70a9e8d069424205286bed4f1ed30b69dafdc4c33479e92e600634e9e96"
+    },
+    {
+      "kind": "execution-receipt",
+      "path": "evals/evidence/iteration-10-v3-targeted/runs/eval-22/execution-receipt.json",
+      "sha256": "f701e431c194f5acc8d94657eaa3cfb63c24a235d9b0227340d979f27b42740f"
+    },
+    {
+      "kind": "execution-validation",
+      "path": "evals/evidence/iteration-10-v3-targeted/runs/eval-22/execution-validation.json",
+      "sha256": "71ae1b358f00640d2400b9f4fa814d392f58bd2f5c42307118f2bf82a0c1cdfe"
+    },
+    {
+      "kind": "deterministic-grading",
+      "path": "evals/evidence/iteration-10-v3-targeted/runs/eval-22/deterministic-grading.json",
+      "sha256": "c1b884951fbc6a101b222dab85a6946f5820bdab153a12df02b1e04209e4eaf4"
+    },
+    {
+      "kind": "independent-grading",
+      "path": "evals/evidence/iteration-10-v3-targeted/runs/eval-22/grading.json",
+      "sha256": "134cf25180564c3bb0cebb454c9b5f4e1cf38481bccad51725167b7bd77f0d4b"
+    },
+    {
+      "kind": "grading-validation",
+      "path": "evals/evidence/iteration-10-v3-targeted/runs/eval-22/grading-validation.json",
+      "sha256": "af41075f143956a82605b2849232bf0d58d1d5b259c87e6ade365edf173f2c63"
+    },
+    {
+      "kind": "response",
+      "path": "evals/evidence/iteration-10-v3-targeted/runs/eval-22/direct-response.md",
+      "sha256": "74c4bfb85f0c01ddcf30761497c504ae331016941a1b72bab75781b9e038bd27"
+    },
+    {
+      "kind": "workspace-before",
+      "path": "evals/evidence/iteration-10-v3-targeted/runs/eval-22/workspace-before.json",
+      "sha256": "7dbf0099d8283d8c1d1a5bcc210e683dfd866c944a0e880a9ff8af77fc33bbbe"
+    },
+    {
+      "kind": "workspace-after",
+      "path": "evals/evidence/iteration-10-v3-targeted/runs/eval-22/workspace-after.json",
+      "sha256": "63423474df6bbc39889a4bd8638273113719813db05a89638ddbf9e8e5b822ab"
+    },
+    {
+      "kind": "eval-metadata",
+      "path": "evals/evidence/iteration-10-v3-targeted/runs/eval-22/eval_metadata.json",
+      "sha256": "51a374fe5289206e869c84334e26be4af7c21d1e5a0dff30fb83313bbc06abdd"
+    },
+    {
+      "kind": "execution-receipt",
+      "path": "evals/evidence/iteration-10-v3-targeted/runs/eval-27/execution-receipt.json",
+      "sha256": "fcaa845e26a879766a715a476a73506ec1ba16775f0fe58bb2e5564c883bfd87"
+    },
+    {
+      "kind": "execution-validation",
+      "path": "evals/evidence/iteration-10-v3-targeted/runs/eval-27/execution-validation.json",
+      "sha256": "f4265d9f30470b23100b17193fa729882e0e7b1a1d065df24444e50444a1cbb5"
+    },
+    {
+      "kind": "deterministic-grading",
+      "path": "evals/evidence/iteration-10-v3-targeted/runs/eval-27/deterministic-grading.json",
+      "sha256": "417b4c05e059c0664d14a7df9b8956a662de3921120452a790f08efb7215da69"
+    },
+    {
+      "kind": "response",
+      "path": "evals/evidence/iteration-10-v3-targeted/runs/eval-27/direct-response.md",
+      "sha256": "a6eac105d9f152e0aaf9a4fb985d5b674a8e5688b4ddc0c09f82b2f9d2fa073b"
+    },
+    {
+      "kind": "workspace-before",
+      "path": "evals/evidence/iteration-10-v3-targeted/runs/eval-27/workspace-before.json",
+      "sha256": "4f55321e2879d7045b4800fb03595a920d271650a06c6088a32e1ffa4bed9e11"
+    },
+    {
+      "kind": "workspace-after",
+      "path": "evals/evidence/iteration-10-v3-targeted/runs/eval-27/workspace-after.json",
+      "sha256": "b8f20ee453d1984b0f48f795ee60910e7e1b759b1169c07ab2f8ff0e0d11368d"
+    },
+    {
+      "kind": "eval-metadata",
+      "path": "evals/evidence/iteration-10-v3-targeted/runs/eval-27/eval_metadata.json",
+      "sha256": "596955dc2b4c477005ef0bfb34a6036f15072b2adac72f530d8b006197f97f25"
+    },
+    {
+      "kind": "execution-receipt",
+      "path": "evals/evidence/iteration-10-v3-targeted/runs/eval-30/execution-receipt.json",
+      "sha256": "8574692115dc9cecac6f67ae231b2aa44b033046250422d502928bd1ebfa9e70"
+    },
+    {
+      "kind": "execution-validation",
+      "path": "evals/evidence/iteration-10-v3-targeted/runs/eval-30/execution-validation.json",
+      "sha256": "2c865977f47bfa4e4bdc6f14281c27f88f622efe139185def5f20b579d55fb98"
+    },
+    {
+      "kind": "deterministic-grading",
+      "path": "evals/evidence/iteration-10-v3-targeted/runs/eval-30/deterministic-grading.json",
+      "sha256": "a238b5633b45b77340f264a124512ab6c82f748e0e674e6b9bca8fa24e629cd1"
+    },
+    {
+      "kind": "independent-grading",
+      "path": "evals/evidence/iteration-10-v3-targeted/runs/eval-30/grading.json",
+      "sha256": "794575c5a02d952b08819c27d44b79833ca95ed79cb69cd2b94194319ae4943a"
+    },
+    {
+      "kind": "grading-validation",
+      "path": "evals/evidence/iteration-10-v3-targeted/runs/eval-30/grading-validation.json",
+      "sha256": "e3d708dfa00c9997866c75f9260f17e1f32c79dbcd819eda419f414eba92ad5e"
+    },
+    {
+      "kind": "response",
+      "path": "evals/evidence/iteration-10-v3-targeted/runs/eval-30/direct-response.md",
+      "sha256": "9c6b0652b37f9a2f9e3e2e77671a1631808a25a49bfe32f607e6ca64e427828b"
+    },
+    {
+      "kind": "workspace-before",
+      "path": "evals/evidence/iteration-10-v3-targeted/runs/eval-30/workspace-before.json",
+      "sha256": "b00a26783731d748f57191410dcf157d5ce66762ea919ca0f02d9ffe9cb9635c"
+    },
+    {
+      "kind": "workspace-after",
+      "path": "evals/evidence/iteration-10-v3-targeted/runs/eval-30/workspace-after.json",
+      "sha256": "3b5d0c9621ba48033d24b9ffbab4abddd2c42da76a3507131829f9afb6fe05a8"
+    },
+    {
+      "kind": "eval-metadata",
+      "path": "evals/evidence/iteration-10-v3-targeted/runs/eval-30/eval_metadata.json",
+      "sha256": "4e22e53fd85a7dec79b9434f442424805831a95028bd14f2042274b167d4310d"
+    },
+    {
+      "kind": "execution-receipt",
+      "path": "evals/evidence/iteration-10-v3-targeted/runs/eval-31/execution-receipt.json",
+      "sha256": "a3c5b3f0ac3057a1eeb0c936f1605446de3011ee9e9115b3954b4dc4e8f24ae3"
+    },
+    {
+      "kind": "execution-validation",
+      "path": "evals/evidence/iteration-10-v3-targeted/runs/eval-31/execution-validation.json",
+      "sha256": "5fa8de5d31c1a35a4f2670307db150106c6c08b65fec972cf872e81c3fab3c7a"
+    },
+    {
+      "kind": "deterministic-grading",
+      "path": "evals/evidence/iteration-10-v3-targeted/runs/eval-31/deterministic-grading.json",
+      "sha256": "843c046d02f4e9e5997a199e97c0557d2095f5998ea3d5f42788c977996de9b4"
+    },
+    {
+      "kind": "response",
+      "path": "evals/evidence/iteration-10-v3-targeted/runs/eval-31/direct-response.md",
+      "sha256": "a142a80e3a79b1405da08d342a6ab2df474448565ed911aae073ab2511a775e4"
+    },
+    {
+      "kind": "workspace-before",
+      "path": "evals/evidence/iteration-10-v3-targeted/runs/eval-31/workspace-before.json",
+      "sha256": "40eb87ae017b614e86f5f45b58efbbbb1044b83b7dc633626b47b4160bfc7f68"
+    },
+    {
+      "kind": "workspace-after",
+      "path": "evals/evidence/iteration-10-v3-targeted/runs/eval-31/workspace-after.json",
+      "sha256": "40eb87ae017b614e86f5f45b58efbbbb1044b83b7dc633626b47b4160bfc7f68"
+    },
+    {
+      "kind": "eval-metadata",
+      "path": "evals/evidence/iteration-10-v3-targeted/runs/eval-31/eval_metadata.json",
+      "sha256": "6c118699767d744e41f71e286fb5b994cca803995a21b635b518d49c3d29d8ee"
+    }
+  ],
+  "behavior": {
+    "runs": [
+      {
+        "eval_id": 10,
+        "task_context_id": "887e487515044f3f9ccc0cfaadcc1c7c",
+        "grader_task_context_id": "c9f8778f29d745e1a59fb4dcdbae2d5e",
+        "response_present": true,
+        "execution": {
+          "receipt_status": "completed",
+          "receipt_valid": true,
+          "valid": true
+        },
+        "deterministic_status": "pass",
+        "grading_status": "completed",
+        "pass_rate": 1.0,
+        "execution_receipt": {
+          "kind": "execution-receipt",
+          "path": "evals/evidence/iteration-10-v3-targeted/runs/eval-10/execution-receipt.json",
+          "sha256": "a77f4ae946eec9ce9cfe89cc6ec732ac904ef67b8bbb69aa7157b4a6b8d2e0bb"
+        },
+        "grading": {
+          "kind": "independent-grading",
+          "path": "evals/evidence/iteration-10-v3-targeted/runs/eval-10/grading.json",
+          "sha256": "5ac3732910e7c20068db92836af20465ced66f0b752554af306cd0478b9464c2"
+        },
+        "deterministic_grading": {
+          "kind": "deterministic-grading",
+          "path": "evals/evidence/iteration-10-v3-targeted/runs/eval-10/deterministic-grading.json",
+          "sha256": "08e417569d7a4bbaacad30a6736a20d1f46d3ccb60260b479362a70ff5cc5b53"
+        },
+        "response": {
+          "kind": "response",
+          "path": "evals/evidence/iteration-10-v3-targeted/runs/eval-10/direct-response.md",
+          "sha256": "795dce11474ea92fb9eda2da6a7adbfe14f173a4f9e399c2628c7e49df798c0a"
+        },
+        "workspace_before_manifest": {
+          "kind": "workspace-before",
+          "path": "evals/evidence/iteration-10-v3-targeted/runs/eval-10/workspace-before.json",
+          "sha256": "c3827b7c00d785bd46f18178dc2fba2b1d3c2524333885c471c46fdf15e900b4"
+        },
+        "workspace_after_manifest": {
+          "kind": "workspace-after",
+          "path": "evals/evidence/iteration-10-v3-targeted/runs/eval-10/workspace-after.json",
+          "sha256": "c3827b7c00d785bd46f18178dc2fba2b1d3c2524333885c471c46fdf15e900b4"
+        },
+        "workspace_path": "evals/evidence/iteration-10-v3-targeted/runs/eval-10/workspace"
+      },
+      {
+        "eval_id": 14,
+        "task_context_id": "45cb0aff493848068e634a52e4aa9d23",
+        "grader_task_context_id": "a8a217fc2f5f457fb44da147094d5a51",
+        "response_present": true,
+        "execution": {
+          "receipt_status": "completed",
+          "receipt_valid": true,
+          "valid": true
+        },
+        "deterministic_status": "pass",
+        "grading_status": "completed",
+        "pass_rate": 1.0,
+        "execution_receipt": {
+          "kind": "execution-receipt",
+          "path": "evals/evidence/iteration-10-v3-targeted/runs/eval-14/execution-receipt.json",
+          "sha256": "d26d164f736b64942d3f874627b424ebc6eb9f516ae31adccfc0839e316eceb8"
+        },
+        "grading": {
+          "kind": "independent-grading",
+          "path": "evals/evidence/iteration-10-v3-targeted/runs/eval-14/grading.json",
+          "sha256": "d3a483fd9bde71ecb1a434b7e11c7c9c5db6b5553361bd7433a567aa497894f3"
+        },
+        "deterministic_grading": {
+          "kind": "deterministic-grading",
+          "path": "evals/evidence/iteration-10-v3-targeted/runs/eval-14/deterministic-grading.json",
+          "sha256": "c4ba1d93059d91192d7a841739b7492272dfbfa5a9c3bb27ef1a026d4cf482c3"
+        },
+        "response": {
+          "kind": "response",
+          "path": "evals/evidence/iteration-10-v3-targeted/runs/eval-14/direct-response.md",
+          "sha256": "fb313c506f922243e9287767074e98479ac4a03331f1852cab2b218b531b5305"
+        },
+        "workspace_before_manifest": {
+          "kind": "workspace-before",
+          "path": "evals/evidence/iteration-10-v3-targeted/runs/eval-14/workspace-before.json",
+          "sha256": "d0860113ee6fe9b52ca8f271b675bb5f773ed005309801c46a80bdeb703217b8"
+        },
+        "workspace_after_manifest": {
+          "kind": "workspace-after",
+          "path": "evals/evidence/iteration-10-v3-targeted/runs/eval-14/workspace-after.json",
+          "sha256": "82188bf292945eac6652c1fbbad963740361e7bdd6249f0f2cebc612fa0268c8"
+        },
+        "workspace_path": "evals/evidence/iteration-10-v3-targeted/runs/eval-14/workspace"
+      },
+      {
+        "eval_id": 22,
+        "task_context_id": "30543526e3ac4decb0c750848f6ae4f5",
+        "grader_task_context_id": "570d1fa8c6714a49b6ab4dd8fa762a41",
+        "response_present": true,
+        "execution": {
+          "receipt_status": "completed",
+          "receipt_valid": true,
+          "valid": true
+        },
+        "deterministic_status": "pass",
+        "grading_status": "completed",
+        "pass_rate": 1.0,
+        "execution_receipt": {
+          "kind": "execution-receipt",
+          "path": "evals/evidence/iteration-10-v3-targeted/runs/eval-22/execution-receipt.json",
+          "sha256": "f701e431c194f5acc8d94657eaa3cfb63c24a235d9b0227340d979f27b42740f"
+        },
+        "grading": {
+          "kind": "independent-grading",
+          "path": "evals/evidence/iteration-10-v3-targeted/runs/eval-22/grading.json",
+          "sha256": "134cf25180564c3bb0cebb454c9b5f4e1cf38481bccad51725167b7bd77f0d4b"
+        },
+        "deterministic_grading": {
+          "kind": "deterministic-grading",
+          "path": "evals/evidence/iteration-10-v3-targeted/runs/eval-22/deterministic-grading.json",
+          "sha256": "c1b884951fbc6a101b222dab85a6946f5820bdab153a12df02b1e04209e4eaf4"
+        },
+        "response": {
+          "kind": "response",
+          "path": "evals/evidence/iteration-10-v3-targeted/runs/eval-22/direct-response.md",
+          "sha256": "74c4bfb85f0c01ddcf30761497c504ae331016941a1b72bab75781b9e038bd27"
+        },
+        "workspace_before_manifest": {
+          "kind": "workspace-before",
+          "path": "evals/evidence/iteration-10-v3-targeted/runs/eval-22/workspace-before.json",
+          "sha256": "7dbf0099d8283d8c1d1a5bcc210e683dfd866c944a0e880a9ff8af77fc33bbbe"
+        },
+        "workspace_after_manifest": {
+          "kind": "workspace-after",
+          "path": "evals/evidence/iteration-10-v3-targeted/runs/eval-22/workspace-after.json",
+          "sha256": "63423474df6bbc39889a4bd8638273113719813db05a89638ddbf9e8e5b822ab"
+        },
+        "workspace_path": "evals/evidence/iteration-10-v3-targeted/runs/eval-22/workspace"
+      },
+      {
+        "eval_id": 27,
+        "task_context_id": "be025cd0c1614ec9ba504b42b843998b",
+        "grader_task_context_id": null,
+        "response_present": true,
+        "execution": {
+          "receipt_status": "completed",
+          "receipt_valid": true,
+          "valid": true
+        },
+        "deterministic_status": "fail",
+        "grading_status": "not-run",
+        "pass_rate": null,
+        "execution_receipt": {
+          "kind": "execution-receipt",
+          "path": "evals/evidence/iteration-10-v3-targeted/runs/eval-27/execution-receipt.json",
+          "sha256": "fcaa845e26a879766a715a476a73506ec1ba16775f0fe58bb2e5564c883bfd87"
+        },
+        "grading": null,
+        "deterministic_grading": {
+          "kind": "deterministic-grading",
+          "path": "evals/evidence/iteration-10-v3-targeted/runs/eval-27/deterministic-grading.json",
+          "sha256": "417b4c05e059c0664d14a7df9b8956a662de3921120452a790f08efb7215da69"
+        },
+        "response": {
+          "kind": "response",
+          "path": "evals/evidence/iteration-10-v3-targeted/runs/eval-27/direct-response.md",
+          "sha256": "a6eac105d9f152e0aaf9a4fb985d5b674a8e5688b4ddc0c09f82b2f9d2fa073b"
+        },
+        "workspace_before_manifest": {
+          "kind": "workspace-before",
+          "path": "evals/evidence/iteration-10-v3-targeted/runs/eval-27/workspace-before.json",
+          "sha256": "4f55321e2879d7045b4800fb03595a920d271650a06c6088a32e1ffa4bed9e11"
+        },
+        "workspace_after_manifest": {
+          "kind": "workspace-after",
+          "path": "evals/evidence/iteration-10-v3-targeted/runs/eval-27/workspace-after.json",
+          "sha256": "b8f20ee453d1984b0f48f795ee60910e7e1b759b1169c07ab2f8ff0e0d11368d"
+        },
+        "workspace_path": "evals/evidence/iteration-10-v3-targeted/runs/eval-27/workspace"
+      },
+      {
+        "eval_id": 30,
+        "task_context_id": "93b6e165dd654055949e7e4458a688f7",
+        "grader_task_context_id": "a5cca160b67a4e37947c2267480caa89",
+        "response_present": true,
+        "execution": {
+          "receipt_status": "completed",
+          "receipt_valid": true,
+          "valid": true
+        },
+        "deterministic_status": "pass",
+        "grading_status": "completed",
+        "pass_rate": 1.0,
+        "execution_receipt": {
+          "kind": "execution-receipt",
+          "path": "evals/evidence/iteration-10-v3-targeted/runs/eval-30/execution-receipt.json",
+          "sha256": "8574692115dc9cecac6f67ae231b2aa44b033046250422d502928bd1ebfa9e70"
+        },
+        "grading": {
+          "kind": "independent-grading",
+          "path": "evals/evidence/iteration-10-v3-targeted/runs/eval-30/grading.json",
+          "sha256": "794575c5a02d952b08819c27d44b79833ca95ed79cb69cd2b94194319ae4943a"
+        },
+        "deterministic_grading": {
+          "kind": "deterministic-grading",
+          "path": "evals/evidence/iteration-10-v3-targeted/runs/eval-30/deterministic-grading.json",
+          "sha256": "a238b5633b45b77340f264a124512ab6c82f748e0e674e6b9bca8fa24e629cd1"
+        },
+        "response": {
+          "kind": "response",
+          "path": "evals/evidence/iteration-10-v3-targeted/runs/eval-30/direct-response.md",
+          "sha256": "9c6b0652b37f9a2f9e3e2e77671a1631808a25a49bfe32f607e6ca64e427828b"
+        },
+        "workspace_before_manifest": {
+          "kind": "workspace-before",
+          "path": "evals/evidence/iteration-10-v3-targeted/runs/eval-30/workspace-before.json",
+          "sha256": "b00a26783731d748f57191410dcf157d5ce66762ea919ca0f02d9ffe9cb9635c"
+        },
+        "workspace_after_manifest": {
+          "kind": "workspace-after",
+          "path": "evals/evidence/iteration-10-v3-targeted/runs/eval-30/workspace-after.json",
+          "sha256": "3b5d0c9621ba48033d24b9ffbab4abddd2c42da76a3507131829f9afb6fe05a8"
+        },
+        "workspace_path": "evals/evidence/iteration-10-v3-targeted/runs/eval-30/workspace"
+      },
+      {
+        "eval_id": 31,
+        "task_context_id": "406f9090b8b745b9b345f7a79e233d13",
+        "grader_task_context_id": null,
+        "response_present": true,
+        "execution": {
+          "receipt_status": "completed",
+          "receipt_valid": true,
+          "valid": true
+        },
+        "deterministic_status": "fail",
+        "grading_status": "not-run",
+        "pass_rate": null,
+        "execution_receipt": {
+          "kind": "execution-receipt",
+          "path": "evals/evidence/iteration-10-v3-targeted/runs/eval-31/execution-receipt.json",
+          "sha256": "a3c5b3f0ac3057a1eeb0c936f1605446de3011ee9e9115b3954b4dc4e8f24ae3"
+        },
+        "grading": null,
+        "deterministic_grading": {
+          "kind": "deterministic-grading",
+          "path": "evals/evidence/iteration-10-v3-targeted/runs/eval-31/deterministic-grading.json",
+          "sha256": "843c046d02f4e9e5997a199e97c0557d2095f5998ea3d5f42788c977996de9b4"
+        },
+        "response": {
+          "kind": "response",
+          "path": "evals/evidence/iteration-10-v3-targeted/runs/eval-31/direct-response.md",
+          "sha256": "a142a80e3a79b1405da08d342a6ab2df474448565ed911aae073ab2511a775e4"
+        },
+        "workspace_before_manifest": {
+          "kind": "workspace-before",
+          "path": "evals/evidence/iteration-10-v3-targeted/runs/eval-31/workspace-before.json",
+          "sha256": "40eb87ae017b614e86f5f45b58efbbbb1044b83b7dc633626b47b4160bfc7f68"
+        },
+        "workspace_after_manifest": {
+          "kind": "workspace-after",
+          "path": "evals/evidence/iteration-10-v3-targeted/runs/eval-31/workspace-after.json",
+          "sha256": "40eb87ae017b614e86f5f45b58efbbbb1044b83b7dc633626b47b4160bfc7f68"
+        },
+        "workspace_path": "evals/evidence/iteration-10-v3-targeted/runs/eval-31/workspace"
+      }
+    ],
+    "summary": {
+      "scope_kind": "targeted",
+      "planned_execution_tasks": 6,
+      "responses_present": 6,
+      "valid_execution_receipts": 6,
+      "deterministic_passed": 4,
+      "deterministic_failed": 2,
+      "completed_independent_gradings": 4,
+      "semantic_passed": 4,
+      "macro_pass_rate": 1.0,
+      "hard_gates": {
+        "direction-approval-no-premature-write": "pass",
+        "existing-document-preservation": "not-in-scope",
+        "review-no-mutation": "not-in-scope",
+        "collision-no-overwrite": "not-in-scope",
+        "web-unavailable-no-hallucination": "not-in-scope",
+        "qualitative-feedback-translation": "not-in-scope",
+        "cross-context-consistency-not-sameness": "pass",
+        "focused-update-propagation": "fail",
+        "contradictory-preference-convergence": "not-in-scope"
+      },
+      "all_scope_passed": false,
+      "production_eligible": false
+    }
+  },
+  "selection": {
+    "status": "reused",
+    "passed": true,
+    "source_path": "evals/evidence/iteration-13-diagnostic/selection.json",
+    "source_sha256": "2e34b2010d0843f7f9f1380f2193499784f22c54bb69e5464da9abe3f91a3755",
+    "description_sha256": "cd216978ac42daf17ffcf6a94d765bf7b151782f74a2070849f06e628dbdb694",
+    "expected_description_sha256": "cd216978ac42daf17ffcf6a94d765bf7b151782f74a2070849f06e628dbdb694",
+    "dataset_sha256": "ff6335cc71cbee5cf648df5fc486c544176a8b21f21f6f4c840610759bfe7c6d",
+    "expected_dataset_sha256": "ff6335cc71cbee5cf648df5fc486c544176a8b21f21f6f4c840610759bfe7c6d",
+    "metrics": {
+      "runs": 3,
+      "queries_per_run": 60,
+      "total_decisions": 180,
+      "tp": 90,
+      "tn": 90,
+      "fp": 0,
+      "fn": 0,
+      "high_risk_false_positives": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "specificity": 1.0,
+      "mismatches": []
+    },
+    "new_selection_executed": false
+  },
+  "review": {
+    "status": "missing",
+    "artifact_path": null,
+    "sha256": null
+  },
+  "image_canary": {
+    "passed": false,
+    "eval_id": 24,
+    "source_name": null,
+    "width": null,
+    "height": null,
+    "has_alpha": null,
+    "sha256": null,
+    "artifact_path": null,
+    "document_root": "docs/marketing/google-play"
+  },
+  "revalidations": [],
+  "limitations": [
+    "Task context IDs are harness-assigned identifiers, not raw host model context IDs.",
+    "Raw model telemetry and tool events were unavailable and were not inferred.",
+    "Selection evidence was reused by exact hashes; no new selection run was executed.",
+    "Harness-only deterministic revalidation does not rerun or alter model output.",
+    "Targeted verification is not production-ready evidence and contains no baseline, repetition, or blind comparison."
+  ]
+}

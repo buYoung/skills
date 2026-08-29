@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
-"""Validate one recorded production evaluation run from a suite contract.
+"""Validate observable schema-v3 outcomes for one production eval run.
 
-The validator is intentionally independent of an LLM runner.  It verifies the
-runner's manifests and transcripts so CI can reject stale, incomplete, or
-fabricated evidence without needing model credentials.
+The validator trusts neither worker self-report nor inferred tool use. It checks
+the harness receipt, response, workspace manifests, allowlisted paths, source
+markers, and binary PNG structure directly from recorded files.
 """
 
 from __future__ import annotations
@@ -17,11 +17,13 @@ import struct
 import sys
 import zlib
 from dataclasses import dataclass, field
+from datetime import date
 from pathlib import Path, PurePosixPath
 from typing import Any
 
 
 PNG_SIGNATURE = b"\x89PNG\r\n\x1a\n"
+ISO_DATE_RE = re.compile(r"(?<![0-9])20[0-9]{2}-[0-9]{2}-[0-9]{2}(?![0-9])")
 
 
 @dataclass
@@ -394,6 +396,10 @@ def validate_png(path: Path, specification: dict[str, Any], report: Report) -> N
         report.check(width == specification["width"], f"PNG width matches contract: {path.name}")
     if "height" in specification:
         report.check(height == specification["height"], f"PNG height matches contract: {path.name}")
+    if "has_alpha" in specification:
+        has_alpha = color_type in {4, 6} or any(chunk_type == b"tRNS" for chunk_type, _data in chunks)
+        report.check(has_alpha is specification["has_alpha"], f"PNG alpha matches contract: {path.name}")
+    report.check(hashlib.sha256(content).hexdigest() != hashlib.sha256(b"").hexdigest(), f"PNG SHA-256 is derived from non-empty bytes: {path.name}")
 
 
 def as_string_list(value: Any, description: str) -> list[str]:
@@ -404,26 +410,69 @@ def as_string_list(value: Any, description: str) -> list[str]:
     return value
 
 
-def select_case(suite: dict[str, Any], case_name: str) -> dict[str, Any]:
-    cases = suite.get("cases")
-    if isinstance(cases, dict):
-        case = cases.get(case_name)
-    elif isinstance(cases, list):
-        case = next((item for item in cases if isinstance(item, dict) and item.get("name") == case_name), None)
-    else:
-        raise UsageError("production suite cases must be an object or array")
-    return require_object(case, f"production suite case {case_name}")
+def select_case(suite: dict[str, Any], eval_id: int) -> dict[str, Any]:
+    behavior = require_object(suite.get("behavior"), "production suite behavior")
+    contracts = require_object(behavior.get("case_contracts"), "behavior case contracts")
+    return require_object(contracts.get(str(eval_id)), f"production suite case {eval_id}")
+
+
+def count_user_questions(response: str) -> int:
+    without_fences = re.sub(r"```[\s\S]*?```", "", response)
+    without_inline_code = re.sub(r"`[^`\n]*`", "", without_fences)
+    without_urls = re.sub(r"https?://\S+", "", without_inline_code)
+    return without_urls.count("?") + without_urls.count("？")
+
+
+def iso_dates(text: str) -> list[str]:
+    values: list[str] = []
+    for match in ISO_DATE_RE.finditer(text):
+        value = match.group(0)
+        try:
+            date.fromisoformat(value)
+        except ValueError:
+            continue
+        values.append(value)
+    return values
+
+
+def changed_file_paths(before_payload: dict[str, Any], after_payload: dict[str, Any]) -> list[str]:
+    before = manifest_entry_state(before_payload)
+    after = manifest_entry_state(after_payload)
+    changed: list[str] = []
+    for path in sorted(set(before) | set(after)):
+        if before.get(path) == after.get(path):
+            continue
+        state = after.get(path) or before.get(path) or ""
+        if state.startswith("file:"):
+            changed.append(path)
+    return changed
+
+
+def observable_output_text(run_root: Path, changed: list[str], response: str) -> str:
+    sections = [response]
+    workspace = run_root / "workspace"
+    for relative in changed:
+        path = workspace / relative
+        if path.is_file() and path.suffix.lower() in {".md", ".txt", ".json", ".yaml", ".yml"}:
+            sections.append(path.read_text(encoding="utf-8", errors="replace"))
+    return "\n\n".join(sections)
 
 
 def validate(suite_path: Path, run_root: Path, case_override: str | None) -> int:
     suite = require_object(load_json(suite_path), "production suite")
-    metadata = require_object(load_json(run_root / "run.json"), "run metadata")
-    case_name = case_override or metadata.get("case_name")
-    case = select_case(suite, require_string(case_name, "case name"))
+    if suite.get("schema_version") != 3:
+        raise UsageError("production suite must use schema_version 3")
+    metadata = require_object(load_json(run_root / "eval_metadata.json"), "eval metadata")
+    eval_id = metadata.get("eval_id")
+    if not isinstance(eval_id, int) or isinstance(eval_id, bool):
+        raise UsageError("eval metadata eval_id must be an integer")
+    if case_override not in {None, f"eval-{eval_id}", str(eval_id)}:
+        raise UsageError("case override does not match eval metadata")
+    case = select_case(suite, eval_id)
     report = Report()
 
-    before_path = resolve_run_file(run_root, metadata, "before_manifest", "before-manifest.json")
-    after_path = resolve_run_file(run_root, metadata, "after_manifest", "after-manifest.json")
+    before_path = run_root / "before-manifest.json"
+    after_path = run_root / "after-manifest.json"
     before_payload = require_object(load_json(before_path), "before manifest")
     after_payload = require_object(load_json(after_path), "after manifest")
     before_workspace, before = normalize_manifest(before_payload, "before")
@@ -445,92 +494,87 @@ def validate(suite_path: Path, run_root: Path, case_override: str | None) -> int
     report.check(after_payload.get("sha256") == actual_tree_hash, "after manifest tree hash matches the preserved workspace")
     before_state = manifest_entry_state(before_payload)
     after_state = manifest_entry_state(after_payload)
-    changes = {path for path in set(before_state) | set(after_state) if before_state.get(path) != after_state.get(path)}
+    changes = changed_file_paths(before_payload, after_payload)
     allowed = as_string_list(case.get("allowed_change_paths"), "allowed_change_paths")
     forbidden = as_string_list(case.get("forbidden_change_paths"), "forbidden_change_paths")
     required = as_string_list(case.get("required_change_paths"), "required_change_paths")
     report.check(bool(changes) or not required, "workspace change set is available")
-    for changed in sorted(changes):
+    for changed in changes:
         report.check(matches_path(changed, allowed), f"changed path is allowed: {changed}")
         report.check(not matches_path(changed, forbidden), f"changed path is not forbidden: {changed}")
     for expected in required:
         report.check(any(fnmatch.fnmatchcase(path, expected) for path in changes), f"required change occurred: {expected}")
 
-    response_path = resolve_run_file(run_root, metadata, "response", "response.txt")
+    response_path = run_root / "direct-response.md"
     try:
         response = response_path.read_text(encoding="utf-8")
     except FileNotFoundError as error:
         raise UsageError(f"missing response file: {response_path}") from error
-    transcript_path = resolve_run_file(run_root, metadata, "transcript", "transcript.stream.jsonl")
-    events, transcript_response = transcript_evidence(transcript_path)
-    report.check(response.strip() == transcript_response.strip(), "response is derived from the recorded transcript")
+    receipt = require_object(load_json(run_root / "execution-receipt.json"), "execution receipt")
+    task = require_object(load_json(run_root / "direct-task.json"), "direct task")
+    report.check(receipt.get("schema_version") == 3, "execution receipt uses schema 3")
+    report.check(receipt.get("provenance") == "harness-derived-from-task-response-and-manifests", "execution receipt is harness-derived")
+    report.check(receipt.get("status") == "completed", "execution receipt status is derived from response presence")
+    for field in ("task_context_id", "model", "reasoning_effort"):
+        report.check(receipt.get(field) == task.get(field), f"execution receipt {field} matches task")
+    report.check(receipt.get("response_sha256") == hashlib.sha256(response_path.read_bytes()).hexdigest(), "response hash matches receipt")
+    report.check(receipt.get("workspace_before_sha256") == before_payload.get("sha256"), "before manifest hash matches receipt")
+    report.check(receipt.get("workspace_after_sha256") == after_payload.get("sha256"), "after manifest hash matches receipt")
+    report.check(receipt.get("produced_paths") == changes, "produced paths are derived from manifest diff")
+    report.check(receipt.get("telemetry") == {"status": "unavailable", "duration_ms": None, "total_tokens": None}, "missing telemetry stays unavailable and null")
+    report.check(receipt.get("capability_evidence") == {"status": "unverified", "events": []}, "missing capability evidence stays unverified")
+    if case.get("deny_write_tools") is True:
+        report.check(not changes, "write-disabled workspace is unchanged")
+
     response_rules = require_object(case.get("response", {}), "response rules")
-    question_count = len(re.findall(r"(?:^|\n)\s*(?:[-*]\s*)?[^\n?]{1,240}\?\s*$", response))
+    question_count = count_user_questions(response)
+    min_questions = response_rules.get("min_questions")
+    if min_questions is not None:
+        if not isinstance(min_questions, int) or isinstance(min_questions, bool) or min_questions < 0:
+            raise UsageError("response min_questions must be a non-negative integer")
+        report.check(question_count >= min_questions, f"response question count >= {min_questions}")
     max_questions = response_rules.get("max_questions")
     if max_questions is not None:
-        if not isinstance(max_questions, int) or max_questions < 0:
+        if not isinstance(max_questions, int) or isinstance(max_questions, bool) or max_questions < 0:
             raise UsageError("response max_questions must be a non-negative integer")
+        if min_questions is not None and max_questions < min_questions:
+            raise UsageError("response max_questions must be greater than or equal to min_questions")
         report.check(question_count <= max_questions, f"response question count <= {max_questions}")
     for pattern in as_string_list(response_rules.get("required_patterns"), "response required_patterns"):
         report.check(re.search(pattern, response, re.IGNORECASE | re.MULTILINE) is not None, f"response contains required pattern: {pattern}")
     for pattern in as_string_list(response_rules.get("forbidden_patterns"), "response forbidden_patterns"):
         report.check(re.search(pattern, response, re.IGNORECASE | re.MULTILINE) is None, f"response excludes forbidden pattern: {pattern}")
 
-    events_path = resolve_run_file(run_root, metadata, "tool_events", "tool-events.json")
-    events_payload = load_json(events_path)
-    report.check(
-        isinstance(events_payload, dict)
-        and events_payload.get("provenance") == "agent-reported-not-raw-telemetry",
-        "tool events disclose agent-reported provenance",
-    )
-    recorded_events = load_events(events_path)
-    recorded_by_id = {
-        event.get("tool_use_id"): event
-        for event in recorded_events
-        if isinstance(event.get("tool_use_id"), str)
-    }
-    for event in events:
-        tool_use_id = event.get("tool_use_id")
-        recorded = recorded_by_id.get(tool_use_id) if isinstance(tool_use_id, str) else None
-        report.check(
-            recorded is not None
-            and event_tool_name(recorded) == event_tool_name(event)
-            and recorded.get("input") == event.get("input")
-            and str(recorded.get("status")) == str(event.get("status"))
-            and recorded.get("output") == event.get("output"),
-            f"reported tool claim matches reconstructed transcript: {tool_use_id or event_tool_name(event)}",
-        )
-    forbidden_tools = as_string_list(case.get("forbidden_tool_calls"), "forbidden_tool_calls")
-    for pattern in forbidden_tools:
-        report.check(not any(re.search(pattern, event_tool_name(event), re.IGNORECASE) for event in events), f"forbidden reported capability claim is absent: {pattern}")
-    for pattern in as_string_list(case.get("required_tool_calls"), "required_tool_calls"):
-        report.check(any(re.search(pattern, event_tool_name(event), re.IGNORECASE) for event in events), f"required reported capability claim is present: {pattern}")
-    for pattern in as_string_list(case.get("required_web_events"), "required_web_events"):
-        found = any(
-            re.search(r"^(?:WebFetch|web[_ -]?(?:open|fetch)|browser.*(?:open|fetch))$", event_tool_name(event), re.IGNORECASE)
-            and re.search(pattern, event_request_text(event), re.IGNORECASE)
-            and str(event.get("status", "unknown")).lower() in {"success", "ok", "completed"}
-            for event in events
-        )
-        report.check(found, f"successful reported web open/fetch claim matches: {pattern}")
-    for pattern in as_string_list(case.get("forbidden_web_events"), "forbidden_web_events"):
-        found = any(
-            re.search(r"^(?:WebSearch|WebFetch|web[_ -]?(?:search|open|fetch)|browser.*(?:search|open|fetch))$", event_tool_name(event), re.IGNORECASE)
-            and re.search(pattern, event_request_text(event), re.IGNORECASE)
-            for event in events
-        )
-        report.check(not found, f"no reported web research claim matches excluded scope: {pattern}")
+    source_rules = require_object(case.get("source_evidence", {}), "source evidence rules")
+    observable = observable_output_text(run_root, changes, response)
+    if source_rules.get("require_https_url") is True:
+        report.check(re.search(r"https://[^\s)>\]]+", observable) is not None, "observable output records an HTTPS source URL")
+    if source_rules.get("require_verification_date") is True:
+        report.check(bool(iso_dates(observable)), "observable output records a real ISO verification date")
+    if source_rules.get("forbid_https_url") is True:
+        report.check(re.search(r"https?://", observable) is None, "observable output does not invent a URL")
+    if source_rules.get("forbid_verification_date") is True:
+        report.check(not iso_dates(observable), "observable output does not invent a verification date")
+    if source_rules.get("forbid_dimensions") is True:
+        report.check(re.search(r"\b\d{2,4}\s*[x×]\s*\d{2,4}\b", observable, re.IGNORECASE) is None, "observable output does not invent dimensions")
 
     png_rules = case.get("png")
     if png_rules is not None:
-        if not isinstance(png_rules, list) or not all(isinstance(item, dict) for item in png_rules):
-            raise UsageError("png must be an array of objects")
-        for item in png_rules:
-            relative = require_string(item.get("path"), "PNG path")
-            candidate = (run_root / relative).resolve()
-            if run_root not in candidate.parents:
-                raise UsageError(f"PNG path escapes run root: {relative}")
-            validate_png(candidate, item, report)
+        if not isinstance(png_rules, dict):
+            raise UsageError("png must be an object")
+        root_value = require_string(png_rules.get("root"), "PNG root")
+        png_root = (run_root / "workspace" / root_value).resolve()
+        workspace_root = (run_root / "workspace").resolve()
+        if workspace_root not in png_root.parents:
+            raise UsageError(f"PNG root escapes workspace: {root_value}")
+        pattern = require_string(png_rules.get("glob", "*.png"), "PNG glob")
+        candidates = sorted(png_root.glob(pattern)) if png_root.is_dir() else []
+        expected_count = png_rules.get("count")
+        if not isinstance(expected_count, int) or isinstance(expected_count, bool) or expected_count < 0:
+            raise UsageError("PNG count must be a non-negative integer")
+        report.check(len(candidates) == expected_count, f"PNG count matches contract: {expected_count}")
+        if len(candidates) == expected_count == 1:
+            validate_png(candidates[0], png_rules, report)
 
     report.emit()
     return 0 if not report.failures else 1

@@ -1,0 +1,12 @@
+{
+  "schema_version": 3,
+  "provenance": "harness-validation-of-independent-grading",
+  "eval_id": 15,
+  "status": "grading-error",
+  "format_valid": false,
+  "semantic_passed": false,
+  "reasons": [
+    "grading task or output is missing"
+  ],
+  "grading_sha256": null
+}

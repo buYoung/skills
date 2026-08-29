@@ -1,0 +1,166 @@
+{
+  "status": "completed",
+  "validators": [
+    {
+      "name": "validate_fdd.py --strict",
+      "command": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/Users/buyonglee/Documents/work/private/skills/skills/document-writing-workspace/iteration-6/behavior/job-6b04b22bfaff39d1e169b0c8/skill-snapshot/scripts/validate_fdd.py",
+        "/Users/buyonglee/Documents/work/private/skills/skills/document-writing-workspace/iteration-6/behavior/job-6b04b22bfaff39d1e169b0c8/workspace/docs/FDD/saved-search-filters-v1.md",
+        "--format",
+        "json",
+        "--strict"
+      ],
+      "return_code": 0,
+      "stdout": "{\n  \"file\": \"/Users/buyonglee/Documents/work/private/skills/skills/document-writing-workspace/iteration-6/behavior/job-6b04b22bfaff39d1e169b0c8/workspace/docs/FDD/saved-search-filters-v1.md\",\n  \"profile\": \"full\",\n  \"passed\": true,\n  \"major_count\": 0,\n  \"findings\": [],\n  \"optional_sections\": {\n    \"14. Platform Design\": false,\n    \"15. Result Semantics\": false,\n    \"16. Future Extensions\": false\n  }\n}\n",
+      "stderr": ""
+    },
+    {
+      "name": "validate_eval_run.py",
+      "command": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/Users/buyonglee/Documents/work/private/skills/skills/document-writing/scripts/validate_eval_run.py",
+        "--suite",
+        "/Users/buyonglee/Documents/work/private/skills/skills/document-writing/evals/production-suite.json",
+        "--run",
+        "/Users/buyonglee/Documents/work/private/skills/skills/document-writing-workspace/iteration-6/behavior/job-6b04b22bfaff39d1e169b0c8"
+      ],
+      "return_code": 0,
+      "stdout": "{\n  \"checks\": [\n    \"before/after manifests describe the same workspace\",\n    \"before manifest tree hash is canonical\",\n    \"after manifest tree hash is canonical\",\n    \"before manifest matches canonical package fixtures\",\n    \"before manifest directories match canonical package fixtures\",\n    \"after manifest matches the preserved workspace files\",\n    \"after manifest tree hash matches the preserved workspace\",\n    \"workspace change set is available\",\n    \"changed path is allowed: docs/FDD/saved-search-filters-v1.md\",\n    \"changed path is not forbidden: docs/FDD/saved-search-filters-v1.md\",\n    \"required change occurred: docs/FDD/*.md\",\n    \"execution receipt uses schema 3\",\n    \"execution receipt is harness-derived\",\n    \"execution receipt status is derived from response presence\",\n    \"execution receipt context_id matches task\",\n    \"execution receipt model matches task\",\n    \"execution receipt reasoning_effort matches task\",\n    \"response hash matches receipt\",\n    \"before manifest hash matches receipt\",\n    \"after manifest hash matches receipt\",\n    \"produced paths are derived from manifest diff\",\n    \"missing telemetry stays unavailable and null\",\n    \"missing capability evidence stays unverified\"\n  ],\n  \"failures\": []\n}\n",
+      "stderr": ""
+    }
+  ],
+  "expectations": [
+    {
+      "text": "validate_fdd.py --strict passes strict FDD structure validation",
+      "passed": true,
+      "evidence": "profile=full major_count=0 findings=0"
+    },
+    {
+      "text": "validate_eval_run.py: before/after manifests describe the same workspace",
+      "passed": true,
+      "evidence": "deterministic validator check"
+    },
+    {
+      "text": "validate_eval_run.py: before manifest tree hash is canonical",
+      "passed": true,
+      "evidence": "deterministic validator check"
+    },
+    {
+      "text": "validate_eval_run.py: after manifest tree hash is canonical",
+      "passed": true,
+      "evidence": "deterministic validator check"
+    },
+    {
+      "text": "validate_eval_run.py: before manifest matches canonical package fixtures",
+      "passed": true,
+      "evidence": "deterministic validator check"
+    },
+    {
+      "text": "validate_eval_run.py: before manifest directories match canonical package fixtures",
+      "passed": true,
+      "evidence": "deterministic validator check"
+    },
+    {
+      "text": "validate_eval_run.py: after manifest matches the preserved workspace files",
+      "passed": true,
+      "evidence": "deterministic validator check"
+    },
+    {
+      "text": "validate_eval_run.py: after manifest tree hash matches the preserved workspace",
+      "passed": true,
+      "evidence": "deterministic validator check"
+    },
+    {
+      "text": "validate_eval_run.py: workspace change set is available",
+      "passed": true,
+      "evidence": "deterministic validator check"
+    },
+    {
+      "text": "validate_eval_run.py: changed path is allowed: docs/FDD/saved-search-filters-v1.md",
+      "passed": true,
+      "evidence": "deterministic validator check"
+    },
+    {
+      "text": "validate_eval_run.py: changed path is not forbidden: docs/FDD/saved-search-filters-v1.md",
+      "passed": true,
+      "evidence": "deterministic validator check"
+    },
+    {
+      "text": "validate_eval_run.py: required change occurred: docs/FDD/*.md",
+      "passed": true,
+      "evidence": "deterministic validator check"
+    },
+    {
+      "text": "validate_eval_run.py: execution receipt uses schema 3",
+      "passed": true,
+      "evidence": "deterministic validator check"
+    },
+    {
+      "text": "validate_eval_run.py: execution receipt is harness-derived",
+      "passed": true,
+      "evidence": "deterministic validator check"
+    },
+    {
+      "text": "validate_eval_run.py: execution receipt status is derived from response presence",
+      "passed": true,
+      "evidence": "deterministic validator check"
+    },
+    {
+      "text": "validate_eval_run.py: execution receipt context_id matches task",
+      "passed": true,
+      "evidence": "deterministic validator check"
+    },
+    {
+      "text": "validate_eval_run.py: execution receipt model matches task",
+      "passed": true,
+      "evidence": "deterministic validator check"
+    },
+    {
+      "text": "validate_eval_run.py: execution receipt reasoning_effort matches task",
+      "passed": true,
+      "evidence": "deterministic validator check"
+    },
+    {
+      "text": "validate_eval_run.py: response hash matches receipt",
+      "passed": true,
+      "evidence": "deterministic validator check"
+    },
+    {
+      "text": "validate_eval_run.py: before manifest hash matches receipt",
+      "passed": true,
+      "evidence": "deterministic validator check"
+    },
+    {
+      "text": "validate_eval_run.py: after manifest hash matches receipt",
+      "passed": true,
+      "evidence": "deterministic validator check"
+    },
+    {
+      "text": "validate_eval_run.py: produced paths are derived from manifest diff",
+      "passed": true,
+      "evidence": "deterministic validator check"
+    },
+    {
+      "text": "validate_eval_run.py: missing telemetry stays unavailable and null",
+      "passed": true,
+      "evidence": "deterministic validator check"
+    },
+    {
+      "text": "validate_eval_run.py: missing capability evidence stays unverified",
+      "passed": true,
+      "evidence": "deterministic validator check"
+    },
+    {
+      "text": "Execution skill snapshot remains unchanged",
+      "passed": true,
+      "evidence": "before=1e9bc77b686a9775a0295e2199cb5bbdb9c59d5ff0cf112d6d36d5cf9fcbd5ec after=1e9bc77b686a9775a0295e2199cb5bbdb9c59d5ff0cf112d6d36d5cf9fcbd5ec uses_skill=True"
+    }
+  ],
+  "summary": {
+    "passed": 25,
+    "failed": 0,
+    "total": 25,
+    "pass_rate": 1.0
+  }
+}

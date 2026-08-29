@@ -1,0 +1,24 @@
+{
+  "schema_version": 3,
+  "provenance": "harness-derived-from-task-response-and-manifests",
+  "status": "completed",
+  "task_context_id": "598f7eb21b9943b387db0530c6353a17",
+  "model": "gpt-5.6-luna",
+  "reasoning_effort": "medium",
+  "response_sha256": "96ec59ceb5b31378805e647ad382c4fe37cf413360da5ca0fecca2a7bd4f8e1a",
+  "workspace_before_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+  "workspace_after_sha256": "0922e83bb72561992aaaa4d8f3ece73b5fa5853aee4ed02574a48ac0bd32b05c",
+  "produced_paths": [
+    "docs/FDD/index.md",
+    "docs/FDD/saved-search-filters.md"
+  ],
+  "telemetry": {
+    "status": "unavailable",
+    "duration_ms": null,
+    "total_tokens": null
+  },
+  "capability_evidence": {
+    "status": "unverified",
+    "events": []
+  }
+}

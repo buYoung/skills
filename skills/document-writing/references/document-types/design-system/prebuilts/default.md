@@ -2,7 +2,7 @@
 
 ## Purpose and default root
 
-Use this prebuilt for a platform-neutral product UI design system covering foundations, tokens, components, patterns, content, accessibility, and governance. Its default output root is `docs/design-system`.
+Use this prebuilt for a platform-neutral product UI design system covering an approved design direction, foundations, tokens, components, patterns, content, accessibility, and governance. Its default output root is `docs/design-system`.
 
 ## Base document set
 
@@ -28,19 +28,19 @@ The displayed root is replaced by the resolved output root and serves as a respo
 
 ### `index.md`
 
-Define the system's purpose, scope, readers, principles, document map, authoritative sources, and precedence for resolving conflicts. Identify the canonical owner of each major decision area.
+Define the system's purpose, scope, readers, approved design direction in one or two sentences, direction authority, relevant axes, validation status, document map, authoritative sources, and precedence for resolving conflicts. Identify the canonical owner of each major decision area. Do not include rejected direction hypotheses.
 
 ### `foundations.md`
 
-Own the supported foundations for color, typography, spacing, sizing, layout, shape, depth, icons and imagery, and motion. Include only supplied or verified decisions; make absent necessary decisions explicit.
+Own the upper-level visual principles and invariant decisions for color, typography, spacing, sizing, layout, shape, depth, icons and imagery, and motion. Identify which decisions may vary, the conditions that permit variation, prohibited expression, and observable verification criteria. Include only approved, supplied, or verified decisions; make absent necessary decisions explicit.
 
 ### `tokens.md`
 
-Own token hierarchy, naming, semantic mappings, aliases, themes or modes, and deprecation rules. Distinguish source tokens, semantic aliases, and component bindings when those layers are supported by the evidence. Do not invent token names or values.
+Own approved token values and meanings, token hierarchy, naming, semantic mappings, aliases, themes or modes, and deprecation rules. Distinguish source tokens, semantic aliases, and component bindings when those layers are supported by the evidence. Do not use tokens to invent or stand in for an unapproved direction, and do not invent token names or values.
 
 ### `patterns.md`
 
-Own reusable interaction and composition patterns that span components, including their intent, participating elements, states, behavior, responsive adaptation, and relevant accessibility consequences.
+Own reusable interaction and composition patterns that span components, including their intent, participating elements, states, behavior, responsive adaptation, relevant accessibility consequences, and how invariant direction principles permit contextual variation.
 
 ### `content.md`
 
@@ -48,11 +48,11 @@ Own interface voice, terminology, labels, instructions, validation and error lan
 
 ### `accessibility.md`
 
-Own cross-system accessibility requirements, including perception, keyboard and alternative input, semantics, focus, contrast, scaling, reduced motion, and testing expectations supported by the inputs. Component-specific consequences remain in the component file and cross-reference this contract.
+Own cross-system accessibility requirements, including perception, keyboard and alternative input, semantics, focus, contrast, scaling, reduced motion, and testing expectations supported by the inputs. Explain where accessibility constrains or corrects the approved direction. Component-specific consequences remain in the component file and cross-reference this contract.
 
 ### `governance.md`
 
-Own contribution, review, decision authority, status, release, adoption, change, compatibility, and deprecation processes. Do not assign owners or lifecycle states that were not supplied.
+Own contribution, review, direction approval, representative validation, direction-change triggers, decision authority, status, release, adoption, compatibility, and deprecation processes. Record the approved direction and validation result without preserving rejected hypotheses unless the user requests a separate history. Do not assign owners or lifecycle states that were not supplied.
 
 ### `components/index.md`
 
@@ -78,6 +78,8 @@ Use this order so component contracts remain comparable:
 
 Omit a non-applicable section instead of filling it ceremonially. Mark a necessary unresolved decision where readers need to see the gap.
 
+State how the component preserves invariant direction principles, which variants or states are variable, which adaptations are conditional, what use is prohibited, and which observable cases verify the result. Do not force every component to use identical shape, density, or expression when its function requires a documented variation.
+
 ### `platforms/<platform-name>.md`
 
-Create only for a platform explicitly named by the user. Record that platform's input, navigation, units, native-component, accessibility, and motion differences according to [platform-adaptation.md](../platform-adaptation.md). When no platform is specified, keep the common contract platform-neutral and create no platform file.
+Create only for a platform explicitly named by the user. Record conditional input, navigation, units, native-component, accessibility, motion, density, and expression differences according to [platform-adaptation.md](../platform-adaptation.md), while preserving the approved upper-level direction. When no platform is specified, keep the common contract platform-neutral and create no platform file.

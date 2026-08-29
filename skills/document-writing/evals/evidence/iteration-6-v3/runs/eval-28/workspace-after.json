@@ -1,0 +1,74 @@
+{
+  "workspace_root": "/Users/buyonglee/Documents/work/private/skills/skills/document-writing-workspace/iteration-6/behavior/job-1df37e14262dd19e1fbb61c2/workspace",
+  "root": "/Users/buyonglee/Documents/work/private/skills/skills/document-writing-workspace/iteration-6/behavior/job-1df37e14262dd19e1fbb61c2/workspace",
+  "exists": true,
+  "entries": [
+    {
+      "path": "docs",
+      "type": "directory"
+    },
+    {
+      "path": "docs/orbit-market-assets",
+      "type": "directory"
+    },
+    {
+      "path": "docs/orbit-market-assets/asset-system.md",
+      "type": "file",
+      "sha256": "fa2548d4a108da5137518b27e90a26a3236805bfe8a94c9ee5860326b7649320"
+    },
+    {
+      "path": "docs/orbit-market-assets/composition-and-copy.md",
+      "type": "file",
+      "sha256": "b4aeca7075204c6c9ce883b339b3518c9c4972ffe5b054c1dac3755729d5a393"
+    },
+    {
+      "path": "docs/orbit-market-assets/index.md",
+      "type": "file",
+      "sha256": "8d32dff3bb95ff5271a2b8e949666723af0dcdace9e177d805b865ca33ef9a4f"
+    },
+    {
+      "path": "docs/orbit-market-assets/screenshots-and-previews.md",
+      "type": "file",
+      "sha256": "3163d106fcaf7b39f4a873b34caae69e93a6ef39762f0e2bac33d0950fa126b7"
+    },
+    {
+      "path": "docs/orbit-market-assets/stores",
+      "type": "directory"
+    },
+    {
+      "path": "docs/orbit-market-assets/stores/orbit-market.md",
+      "type": "file",
+      "sha256": "dba7f55ad9a4efee7897a5786b3cf9608f1c2ff66d3b10c3cb075ef021bc3d70"
+    },
+    {
+      "path": "docs/orbit-market-assets/visual-language.md",
+      "type": "file",
+      "sha256": "45ee4b14498b75cac487925cdbfe3536dfeeef5e76149986aea28ccb4fa8fcf0"
+    },
+    {
+      "path": "input",
+      "type": "directory"
+    },
+    {
+      "path": "input/mobile-growth-blog.md",
+      "type": "file",
+      "sha256": "f0572d8ff60f52d64505ce55020fe40b0761ebdf47480f1dbf2c7914b087977f"
+    },
+    {
+      "path": "input/orbit-market-publisher-guide.md",
+      "type": "file",
+      "sha256": "b8452cd6b06bdc6792a5f778dc64efb77e551e04836d15952605e83fdfefc1bc"
+    }
+  ],
+  "files": {
+    "docs/orbit-market-assets/asset-system.md": "fa2548d4a108da5137518b27e90a26a3236805bfe8a94c9ee5860326b7649320",
+    "docs/orbit-market-assets/composition-and-copy.md": "b4aeca7075204c6c9ce883b339b3518c9c4972ffe5b054c1dac3755729d5a393",
+    "docs/orbit-market-assets/index.md": "8d32dff3bb95ff5271a2b8e949666723af0dcdace9e177d805b865ca33ef9a4f",
+    "docs/orbit-market-assets/screenshots-and-previews.md": "3163d106fcaf7b39f4a873b34caae69e93a6ef39762f0e2bac33d0950fa126b7",
+    "docs/orbit-market-assets/stores/orbit-market.md": "dba7f55ad9a4efee7897a5786b3cf9608f1c2ff66d3b10c3cb075ef021bc3d70",
+    "docs/orbit-market-assets/visual-language.md": "45ee4b14498b75cac487925cdbfe3536dfeeef5e76149986aea28ccb4fa8fcf0",
+    "input/mobile-growth-blog.md": "f0572d8ff60f52d64505ce55020fe40b0761ebdf47480f1dbf2c7914b087977f",
+    "input/orbit-market-publisher-guide.md": "b8452cd6b06bdc6792a5f778dc64efb77e551e04836d15952605e83fdfefc1bc"
+  },
+  "sha256": "80f4d0a67b6cd42794ff2093247e32e857d7b2c8869bc07066664b85b5d1b173"
+}

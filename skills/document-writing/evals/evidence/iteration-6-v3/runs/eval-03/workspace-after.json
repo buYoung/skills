@@ -1,0 +1,24 @@
+{
+  "workspace_root": "/Users/buyonglee/Documents/work/private/skills/skills/document-writing-workspace/iteration-6/behavior/job-6b04b22bfaff39d1e169b0c8/workspace",
+  "root": "/Users/buyonglee/Documents/work/private/skills/skills/document-writing-workspace/iteration-6/behavior/job-6b04b22bfaff39d1e169b0c8/workspace",
+  "exists": true,
+  "entries": [
+    {
+      "path": "docs",
+      "type": "directory"
+    },
+    {
+      "path": "docs/FDD",
+      "type": "directory"
+    },
+    {
+      "path": "docs/FDD/saved-search-filters-v1.md",
+      "type": "file",
+      "sha256": "05ac67a74759139fb9ef41c31cca82f25bc7d6f34d6ddc7c2e57f5d588bf1854"
+    }
+  ],
+  "files": {
+    "docs/FDD/saved-search-filters-v1.md": "05ac67a74759139fb9ef41c31cca82f25bc7d6f34d6ddc7c2e57f5d588bf1854"
+  },
+  "sha256": "3b6b2eee42d7d93d03a71284425850c7c5e24638fb9a46efd4eadc50de2e59bb"
+}

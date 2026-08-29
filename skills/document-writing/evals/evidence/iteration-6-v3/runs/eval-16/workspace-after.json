@@ -1,0 +1,76 @@
+{
+  "workspace_root": "/Users/buyonglee/Documents/work/private/skills/skills/document-writing-workspace/iteration-6/behavior/job-b2a5a9ce92c2541a569324e3/workspace",
+  "root": "/Users/buyonglee/Documents/work/private/skills/skills/document-writing-workspace/iteration-6/behavior/job-b2a5a9ce92c2541a569324e3/workspace",
+  "exists": true,
+  "entries": [
+    {
+      "path": "docs",
+      "type": "directory"
+    },
+    {
+      "path": "docs/design-system-visual-assets",
+      "type": "directory"
+    },
+    {
+      "path": "docs/design-system-visual-assets/accessibility.md",
+      "type": "file",
+      "sha256": "c192dcfcd93c07d4813dd343bdc571acd1168d5c09b49ab6d531e46384144b78"
+    },
+    {
+      "path": "docs/design-system-visual-assets/asset-system.md",
+      "type": "file",
+      "sha256": "66462f7a1aaa8b318ad5618526af2962ded43d2a3c5570e5c9d8c6e13072724a"
+    },
+    {
+      "path": "docs/design-system-visual-assets/composition-and-copy.md",
+      "type": "file",
+      "sha256": "e160c66bb9e302bb52aa73243ea9211e5f37ca374e22adfce5a0dde4a28d221b"
+    },
+    {
+      "path": "docs/design-system-visual-assets/delivery-and-versioning.md",
+      "type": "file",
+      "sha256": "fb20a5e921ff56dda9acf63ed997df26ba00beb26c763ab8e87684c358924fab"
+    },
+    {
+      "path": "docs/design-system-visual-assets/index.md",
+      "type": "file",
+      "sha256": "aa0423518190c8038db7ea9f634b34bf4f46f3d9507cd69afdb75989b53a1ea4"
+    },
+    {
+      "path": "docs/design-system-visual-assets/localization.md",
+      "type": "file",
+      "sha256": "82125785a092709831801dbba827ea9770f19193777d596100c2d1f67b6c4a11"
+    },
+    {
+      "path": "docs/design-system-visual-assets/screenshots-and-previews.md",
+      "type": "file",
+      "sha256": "a3ab8ca24c1e0fb218cb466ab5c84996a2397fe54558b229607f7049160ae9f0"
+    },
+    {
+      "path": "docs/design-system-visual-assets/stores",
+      "type": "directory"
+    },
+    {
+      "path": "docs/design-system-visual-assets/stores/steam.md",
+      "type": "file",
+      "sha256": "10ad4291a8759eee3484762df7c4f1095545f0ce93e958c29dcb7eb75f21f55a"
+    },
+    {
+      "path": "docs/design-system-visual-assets/visual-language.md",
+      "type": "file",
+      "sha256": "903af8aff9bdae586f6eb10d25e133630d5f944610192542c9a063289b54e245"
+    }
+  ],
+  "files": {
+    "docs/design-system-visual-assets/accessibility.md": "c192dcfcd93c07d4813dd343bdc571acd1168d5c09b49ab6d531e46384144b78",
+    "docs/design-system-visual-assets/asset-system.md": "66462f7a1aaa8b318ad5618526af2962ded43d2a3c5570e5c9d8c6e13072724a",
+    "docs/design-system-visual-assets/composition-and-copy.md": "e160c66bb9e302bb52aa73243ea9211e5f37ca374e22adfce5a0dde4a28d221b",
+    "docs/design-system-visual-assets/delivery-and-versioning.md": "fb20a5e921ff56dda9acf63ed997df26ba00beb26c763ab8e87684c358924fab",
+    "docs/design-system-visual-assets/index.md": "aa0423518190c8038db7ea9f634b34bf4f46f3d9507cd69afdb75989b53a1ea4",
+    "docs/design-system-visual-assets/localization.md": "82125785a092709831801dbba827ea9770f19193777d596100c2d1f67b6c4a11",
+    "docs/design-system-visual-assets/screenshots-and-previews.md": "a3ab8ca24c1e0fb218cb466ab5c84996a2397fe54558b229607f7049160ae9f0",
+    "docs/design-system-visual-assets/stores/steam.md": "10ad4291a8759eee3484762df7c4f1095545f0ce93e958c29dcb7eb75f21f55a",
+    "docs/design-system-visual-assets/visual-language.md": "903af8aff9bdae586f6eb10d25e133630d5f944610192542c9a063289b54e245"
+  },
+  "sha256": "6eb7aca975883fa0f331524e7be948e16d9447fd12b99bcdc1510387a40f1f9d"
+}

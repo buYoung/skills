@@ -1,0 +1,20 @@
+{
+  "schema_version": 3,
+  "eval_id": 6,
+  "eval_name": "eval-6",
+  "configuration": "current",
+  "run_number": 1,
+  "prompt": "4주간 고객지원 AI 보조 도구 시범 운영에서 확인된 성과와 부작용을 경영진이 이해할 수 있도록 작성해줘. 상담원 20명이 참여했고 평균 처리시간은 12% 감소했으며 CSAT는 3포인트 상승했다. 초기 교육에는 8시간이 들었고 라이선스는 상담원당 월 25달러다. 개인정보 검토는 아직 완료되지 않았다. 확인된 사실, 해석, 한계, 추가로 확인할 사항을 구분하고 예산 승인이나 특정 선택을 요구하지 마라.",
+  "expectations": [
+    "The artifact is an analysis report, not a proposal or chronological record.",
+    "Scope and evidence are stated before findings and interpretation.",
+    "Observed facts, interpretation, and limitations are visibly separated.",
+    "The document does not request approval or present a recommendation as predetermined.",
+    "The opening summarizes what the pilot shows without overstating the evidence."
+  ],
+  "case_contract": {
+    "deny_write_tools": true,
+    "allowed_change_paths": []
+  },
+  "task_context_id": "b8004ba284094147b7528122de10f523"
+}

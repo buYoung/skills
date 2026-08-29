@@ -1,0 +1,36 @@
+{
+  "schema_version": 3,
+  "eval_id": 22,
+  "eval_name": "reuse-noncanonical-storefront-path",
+  "configuration": "current",
+  "run_number": 1,
+  "prompt": "기존 출시 가이드에서 Google Play용 이미지 요구사항만 최신 운영자 자료로 갱신해줘. 현재 연결된 담당 파일의 이름과 위치는 유지하고, 같은 내용을 새 파일로 나누거나 이름을 바꾸지 말아줘.",
+  "expectations": [
+    "The existing file is recognized as the Google Play owner within this document set.",
+    "The existing `stores/play-store-assets.md` path is reused and `stores/google-play.md` is not created.",
+    "No path rename occurs without an explicit migration request.",
+    "Other existing files remain unchanged except for required cross-reference updates.",
+    "Current first-party requirements and verification metadata are updated without inventing values."
+  ],
+  "case_contract": {
+    "fixture_destination": "docs/design-system-visual-assets",
+    "required_capabilities": [
+      "web"
+    ],
+    "validation": "validate_noncanonical_store.mjs",
+    "allowed_change_paths": [
+      "docs/design-system-visual-assets/stores/play-store-assets.md"
+    ],
+    "required_change_paths": [
+      "docs/design-system-visual-assets/stores/play-store-assets.md"
+    ],
+    "forbidden_change_paths": [
+      "docs/design-system-visual-assets/stores/google-play.md"
+    ],
+    "source_evidence": {
+      "require_https_url": true,
+      "require_verification_date": true
+    }
+  },
+  "task_context_id": "b6b7d8e2eb664b989993484773e84ddf"
+}

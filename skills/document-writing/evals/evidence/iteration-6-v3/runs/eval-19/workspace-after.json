@@ -1,0 +1,70 @@
+{
+  "workspace_root": "/Users/buyonglee/Documents/work/private/skills/skills/document-writing-workspace/iteration-6/behavior/job-51c9953ef5f60ea713770303/workspace",
+  "root": "/Users/buyonglee/Documents/work/private/skills/skills/document-writing-workspace/iteration-6/behavior/job-51c9953ef5f60ea713770303/workspace",
+  "exists": true,
+  "entries": [
+    {
+      "path": "docs",
+      "type": "directory"
+    },
+    {
+      "path": "docs/launch-assets",
+      "type": "directory"
+    },
+    {
+      "path": "docs/launch-assets/accessibility.md",
+      "type": "file",
+      "sha256": "ea45c278722b9f55cd428e42792b9d58fa245922cafbeca931cb30d642fa81fa"
+    },
+    {
+      "path": "docs/launch-assets/asset-system.md",
+      "type": "file",
+      "sha256": "07d315c7402eb1349e3ec00722e18d30a4c5369729315e8fe2d2a4aef48798f0"
+    },
+    {
+      "path": "docs/launch-assets/delivery-and-versioning.md",
+      "type": "file",
+      "sha256": "8b9681436815e997fc81274649359e0d6064156f5896a20388927b1fe6ad9320"
+    },
+    {
+      "path": "docs/launch-assets/index.md",
+      "type": "file",
+      "sha256": "e072dec17c6df587ba1f6b2e4bd38d31d29436e40b29a6314237e9af632ccfa5"
+    },
+    {
+      "path": "docs/launch-assets/screenshots-and-previews.md",
+      "type": "file",
+      "sha256": "a8342202101677a26319fa43026007e527d834f8298eca5b6b80c1900397342b"
+    },
+    {
+      "path": "docs/launch-assets/stores",
+      "type": "directory"
+    },
+    {
+      "path": "docs/launch-assets/stores/flathub.md",
+      "type": "file",
+      "sha256": "7f308a87a821dc2dbd92b6870368cdcb1ec32e94e102888c5914b8403b29dc75"
+    },
+    {
+      "path": "docs/launch-assets/stores/snap-store.md",
+      "type": "file",
+      "sha256": "4a295487504c21a492e18633c57e90c6154ffd8ff9ed290b9a4f9a92ce5345cf"
+    },
+    {
+      "path": "docs/launch-assets/visual-language.md",
+      "type": "file",
+      "sha256": "afbcae4f7508a4eecead4ee039eec304646da1f8295dc54a1c75cd0f083d60ff"
+    }
+  ],
+  "files": {
+    "docs/launch-assets/accessibility.md": "ea45c278722b9f55cd428e42792b9d58fa245922cafbeca931cb30d642fa81fa",
+    "docs/launch-assets/asset-system.md": "07d315c7402eb1349e3ec00722e18d30a4c5369729315e8fe2d2a4aef48798f0",
+    "docs/launch-assets/delivery-and-versioning.md": "8b9681436815e997fc81274649359e0d6064156f5896a20388927b1fe6ad9320",
+    "docs/launch-assets/index.md": "e072dec17c6df587ba1f6b2e4bd38d31d29436e40b29a6314237e9af632ccfa5",
+    "docs/launch-assets/screenshots-and-previews.md": "a8342202101677a26319fa43026007e527d834f8298eca5b6b80c1900397342b",
+    "docs/launch-assets/stores/flathub.md": "7f308a87a821dc2dbd92b6870368cdcb1ec32e94e102888c5914b8403b29dc75",
+    "docs/launch-assets/stores/snap-store.md": "4a295487504c21a492e18633c57e90c6154ffd8ff9ed290b9a4f9a92ce5345cf",
+    "docs/launch-assets/visual-language.md": "afbcae4f7508a4eecead4ee039eec304646da1f8295dc54a1c75cd0f083d60ff"
+  },
+  "sha256": "38e5cec65305981bd31582a31d43c4078322e59fa356642e7783bbb02813b02b"
+}

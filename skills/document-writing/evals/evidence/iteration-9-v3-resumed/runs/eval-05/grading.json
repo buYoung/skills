@@ -1,0 +1,42 @@
+{
+  "schema_version": 3,
+  "status": "completed-independent-grading",
+  "provenance": "independent-luna-grader-output",
+  "eval_id": 5,
+  "grader_task_context_id": "8923fa82824449fcbf789d0f6fdaa135",
+  "model": "gpt-5.6-luna",
+  "reasoning_effort": "medium",
+  "expectations": [
+    {
+      "text": "The artifact is a proposal centered on a concrete approval decision, not merely an analysis report.",
+      "passed": true,
+      "evidence": "The document is explicitly titled '전사 확대 의사결정 제안', opens with '권고 및 결정 요청', recommends approving a 4-week additional pilot, and asks executives to approve that specific commitment."
+    },
+    {
+      "text": "The recommendation and requested decision are visible near the opening.",
+      "passed": true,
+      "evidence": "The opening section states '권고: 4주 추가 시범 운영을 승인해 주십시오' and immediately gives the requested decision to approve the additional pilot and revisit the 100-person budget."
+    },
+    {
+      "text": "All three options are compared against consistent criteria including evidence, cost, and privacy risk.",
+      "passed": true,
+      "evidence": "The comparison table covers 현상 유지, 100명으로 확대, and 4주 추가 시범 운영 using the same 효과, 비용, 준비도와 위험, 가역성, 결정 속도, and 종합 판단 columns. It cites the 12% handling-time reduction and 3-point CSAT increase, gives the current or estimated license costs, and addresses the incomplete privacy review for each option."
+    },
+    {
+      "text": "Facts, estimates, assumptions, and recommendation are distinguishable.",
+      "passed": true,
+      "evidence": "Observed pilot facts are stated separately in '판단 배경' (20 agents, 4 weeks, 12% reduction, 3-point CSAT increase, 8-hour training, and $25 per agent per month); the $2,500 monthly 100-person license figure is explicitly calculated, while additional-pilot cost and the meaning of 8 training hours are identified as dependent on participation and needing confirmation. The recommendation is explicitly labelled '권고'."
+    },
+    {
+      "text": "The ending states the exact decision or commitment required.",
+      "passed": true,
+      "evidence": "The final '승인 요청' section precisely asks management not to approve the 100-person expansion now, but to approve a 4-week additional pilot, then resubmit the 100-person budget after privacy review and results are available."
+    }
+  ],
+  "summary": {
+    "passed": 5,
+    "failed": 0,
+    "total": 5,
+    "pass_rate": 1.0
+  }
+}

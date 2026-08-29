@@ -1,0 +1,76 @@
+{
+  "workspace_root": "/Users/buyonglee/Documents/work/private/skills/skills/document-writing-workspace/iteration-6/behavior/job-76d66e9c078aca9aa20f1b8c/workspace",
+  "root": "/Users/buyonglee/Documents/work/private/skills/skills/document-writing-workspace/iteration-6/behavior/job-76d66e9c078aca9aa20f1b8c/workspace",
+  "exists": true,
+  "entries": [
+    {
+      "path": "docs",
+      "type": "directory"
+    },
+    {
+      "path": "docs/design-system-visual-assets",
+      "type": "directory"
+    },
+    {
+      "path": "docs/design-system-visual-assets/accessibility.md",
+      "type": "file",
+      "sha256": "d76bdfb5d20053ad14e1f03c3d5f31f81cb7f6d2d45cf20c1c0a032cac2c1dc9"
+    },
+    {
+      "path": "docs/design-system-visual-assets/asset-system.md",
+      "type": "file",
+      "sha256": "b13df519d2e1ed064d814c0469ea34b8e322f6ffcc26e7841c845d826f79f4fe"
+    },
+    {
+      "path": "docs/design-system-visual-assets/composition-and-copy.md",
+      "type": "file",
+      "sha256": "d0c39a590ba63660b0952f22f0904995e5dc2019bbd883ebbbc3eede9e79f94c"
+    },
+    {
+      "path": "docs/design-system-visual-assets/delivery-and-versioning.md",
+      "type": "file",
+      "sha256": "c831f7d13971a4eaf8fe039b902d0a76f4ed00c32b871815cc8d21ea9b4ff542"
+    },
+    {
+      "path": "docs/design-system-visual-assets/index.md",
+      "type": "file",
+      "sha256": "122fc3bb8f17d2ff626848e655874772fa679f0780e617f389f8662e6b6a54ad"
+    },
+    {
+      "path": "docs/design-system-visual-assets/localization.md",
+      "type": "file",
+      "sha256": "01589b241bc6644d6d436a425bbf71f05211e61b2a1f2eb03446a0f247b4f630"
+    },
+    {
+      "path": "docs/design-system-visual-assets/screenshots-and-previews.md",
+      "type": "file",
+      "sha256": "e588ed870262d984b1e2023a6c6a0a8e18020b6dd401e4418ac9763eb31415b3"
+    },
+    {
+      "path": "docs/design-system-visual-assets/stores",
+      "type": "directory"
+    },
+    {
+      "path": "docs/design-system-visual-assets/stores/epic-games-store.md",
+      "type": "file",
+      "sha256": "34a4ae202ab9fc5c20e7170c9ad21e26b4ae7b5129b02a8e3f4c8eb8d942cf39"
+    },
+    {
+      "path": "docs/design-system-visual-assets/visual-language.md",
+      "type": "file",
+      "sha256": "b42998b568b16582fddd98ce32f9089a206c3a1af23d997dc1b605173b870d5b"
+    }
+  ],
+  "files": {
+    "docs/design-system-visual-assets/accessibility.md": "d76bdfb5d20053ad14e1f03c3d5f31f81cb7f6d2d45cf20c1c0a032cac2c1dc9",
+    "docs/design-system-visual-assets/asset-system.md": "b13df519d2e1ed064d814c0469ea34b8e322f6ffcc26e7841c845d826f79f4fe",
+    "docs/design-system-visual-assets/composition-and-copy.md": "d0c39a590ba63660b0952f22f0904995e5dc2019bbd883ebbbc3eede9e79f94c",
+    "docs/design-system-visual-assets/delivery-and-versioning.md": "c831f7d13971a4eaf8fe039b902d0a76f4ed00c32b871815cc8d21ea9b4ff542",
+    "docs/design-system-visual-assets/index.md": "122fc3bb8f17d2ff626848e655874772fa679f0780e617f389f8662e6b6a54ad",
+    "docs/design-system-visual-assets/localization.md": "01589b241bc6644d6d436a425bbf71f05211e61b2a1f2eb03446a0f247b4f630",
+    "docs/design-system-visual-assets/screenshots-and-previews.md": "e588ed870262d984b1e2023a6c6a0a8e18020b6dd401e4418ac9763eb31415b3",
+    "docs/design-system-visual-assets/stores/epic-games-store.md": "34a4ae202ab9fc5c20e7170c9ad21e26b4ae7b5129b02a8e3f4c8eb8d942cf39",
+    "docs/design-system-visual-assets/visual-language.md": "b42998b568b16582fddd98ce32f9089a206c3a1af23d997dc1b605173b870d5b"
+  },
+  "sha256": "d55d08324db67ba704532a0a1d6d49bf1da73990075da3ba7df8eb38191391e6"
+}

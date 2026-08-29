@@ -1,0 +1,42 @@
+{
+  "schema_version": 3,
+  "status": "completed-independent-grading",
+  "provenance": "independent-luna-grader-output",
+  "eval_id": 10,
+  "grader_task_context_id": "fd0f0a3cc3704061be4ce193ba9b1c39",
+  "model": "gpt-5.6-luna",
+  "reasoning_effort": "medium",
+  "expectations": [
+    {
+      "text": "The artifact is routed to Design System Document with the `default` prebuilt, not to FDD, reference/specification, or UI implementation.",
+      "passed": true,
+      "evidence": "The response explicitly identifies the requested deliverable as a `Design System Document`, gives the standard design-system document structure and canonical `docs/design-system/` location, and does not frame it as an FDD, reference/specification, or UI implementation."
+    },
+    {
+      "text": "No file or directory is created because neither a design direction nor representative validation has been approved.",
+      "passed": true,
+      "evidence": "The workspace manifests and execution receipt show identical before/after hashes and no produced paths. The response also states that it will not record unconfirmed values before direction approval and representative validation."
+    },
+    {
+      "text": "The response derives two or three materially different direction hypotheses from the supplied product evidence and recommends one with concrete benefits and risks.",
+      "passed": true,
+      "evidence": "Three distinct hypotheses are presented: restrained function-first, expression-enhanced clarity, and high-density work efficiency. Each includes benefits, risks, and suitable situations; the first is explicitly recommended because it most directly serves clarity, consistency, and accessibility."
+    },
+    {
+      "text": "The user is asked no more than three plain-language questions about recognizable outcomes or use situations; internal design-axis terminology is not required from the user.",
+      "passed": false,
+      "evidence": "The response asks only one plain-language question, so it satisfies the numerical limit, but that question asks whether to adopt option 1 rather than asking about a recognizable outcome or use situation. No user-facing question elicits a target situation or desired result."
+    },
+    {
+      "text": "The response does not invent brand values, token values, component inventory, platforms, or claim that the design-system document is complete.",
+      "passed": true,
+      "evidence": "It explicitly says brand colors, type, spacing values, and the component list are undecided and does not supply any values or platform-specific inventory. It describes a future file set conditionally and says the canonical set will not be finalized until approval and validation; it does not claim the document is complete."
+    }
+  ],
+  "summary": {
+    "passed": 4,
+    "failed": 1,
+    "total": 5,
+    "pass_rate": 0.8
+  }
+}

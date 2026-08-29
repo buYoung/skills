@@ -1,0 +1,20 @@
+{
+  "schema_version": 3,
+  "eval_id": 7,
+  "eval_name": "eval-7",
+  "configuration": "current",
+  "run_number": 1,
+  "prompt": "10월부터 모든 엔지니어에게 반복 적용할 production access 기준을 작성해줘. 접근은 on-call engineer와 incident commander만 요청할 수 있고 manager 승인과 보안팀 기록이 필요하다. 기본 유효시간은 30분이며 고객 데이터 다운로드와 자격 증명 공유는 금지한다. SEV-1에서는 incident commander가 긴급 접근을 승인할 수 있지만 24시간 안에 사후 검토가 필요하다. 위반은 보안팀에 보고하며 정책 소유자는 Platform Security다. 시행일과 예외 승인 권한이 분명해야 한다.",
+  "expectations": [
+    "The artifact is a durable policy or rules document, not a one-time access guide.",
+    "Scope, covered roles, owner, and effective date are explicit.",
+    "Required, permitted, and prohibited behavior use consistent normative language.",
+    "The SEV-1 exception, approving authority, and 24-hour review are explicit.",
+    "Reporting and violation handling are discoverable without reading a procedure."
+  ],
+  "case_contract": {
+    "deny_write_tools": true,
+    "allowed_change_paths": []
+  },
+  "task_context_id": "0eeea22215e744b18c3b482a25f60d3f"
+}

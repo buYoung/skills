@@ -1,0 +1,34 @@
+{
+  "workspace_root": "/Users/buyonglee/Documents/work/private/skills/skills/document-writing-workspace/iteration-6/behavior/job-5df6de9e7da34a986bd512c6/workspace",
+  "root": "/Users/buyonglee/Documents/work/private/skills/skills/document-writing-workspace/iteration-6/behavior/job-5df6de9e7da34a986bd512c6/workspace",
+  "exists": true,
+  "entries": [
+    {
+      "path": "docs",
+      "type": "directory"
+    },
+    {
+      "path": "docs/marketing",
+      "type": "directory"
+    },
+    {
+      "path": "docs/marketing/google-play",
+      "type": "directory"
+    },
+    {
+      "path": "docs/marketing/google-play/README.md",
+      "type": "file",
+      "sha256": "3b65577741ac2195186bc48d4e45c45250c56d76998d9e1235fc5f68c30e8845"
+    },
+    {
+      "path": "docs/marketing/google-play/orbit-notes-feature-graphic.png",
+      "type": "file",
+      "sha256": "2f7a001823019a6c2096d80632f21d6bcdba837624d97d65b919d50e1c173f8c"
+    }
+  ],
+  "files": {
+    "docs/marketing/google-play/README.md": "3b65577741ac2195186bc48d4e45c45250c56d76998d9e1235fc5f68c30e8845",
+    "docs/marketing/google-play/orbit-notes-feature-graphic.png": "2f7a001823019a6c2096d80632f21d6bcdba837624d97d65b919d50e1c173f8c"
+  },
+  "sha256": "892c0066e0d464c1104be1e727f4308e4cf3cb732d079dbedb247222eec480cd"
+}

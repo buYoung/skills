@@ -1,0 +1,46 @@
+{
+  "workspace_root": "/Users/buyonglee/Documents/work/private/skills/skills/document-writing-workspace/iteration-6/behavior/job-64e0a1030ec08b21033eb96d/workspace",
+  "root": "/Users/buyonglee/Documents/work/private/skills/skills/document-writing-workspace/iteration-6/behavior/job-64e0a1030ec08b21033eb96d/workspace",
+  "exists": true,
+  "entries": [
+    {
+      "path": "docs",
+      "type": "directory"
+    },
+    {
+      "path": "docs/design-system-visual-assets",
+      "type": "directory"
+    },
+    {
+      "path": "docs/design-system-visual-assets/index.md",
+      "type": "file",
+      "sha256": "ad9e927af8e7d3ae70456b25d7d1a4ec81c42a3896016e1cf3b1e407be0a65fc"
+    },
+    {
+      "path": "docs/design-system-visual-assets/stores",
+      "type": "directory"
+    },
+    {
+      "path": "docs/design-system-visual-assets/stores/google-play.md",
+      "type": "file",
+      "sha256": "52fa3f284973235ba7bae0bb220857103f9b91f1cd2858b35317d12cf767e373"
+    },
+    {
+      "path": "docs/design-system-visual-assets/stores/steam.md",
+      "type": "file",
+      "sha256": "03b3240ebf01825dc2f261fbe58e6e9dabb947e15408ed9cee2d577a526c6ac3"
+    },
+    {
+      "path": "docs/design-system-visual-assets/visual-language.md",
+      "type": "file",
+      "sha256": "f6fa807a2eb6be69e35316e2ae92902d557be6639544e3473a3d8d8e76306bcc"
+    }
+  ],
+  "files": {
+    "docs/design-system-visual-assets/index.md": "ad9e927af8e7d3ae70456b25d7d1a4ec81c42a3896016e1cf3b1e407be0a65fc",
+    "docs/design-system-visual-assets/stores/google-play.md": "52fa3f284973235ba7bae0bb220857103f9b91f1cd2858b35317d12cf767e373",
+    "docs/design-system-visual-assets/stores/steam.md": "03b3240ebf01825dc2f261fbe58e6e9dabb947e15408ed9cee2d577a526c6ac3",
+    "docs/design-system-visual-assets/visual-language.md": "f6fa807a2eb6be69e35316e2ae92902d557be6639544e3473a3d8d8e76306bcc"
+  },
+  "sha256": "7b2967961345a3f2f29d05674d73d833ebd705391c683b1e4cb7b56c6a6661a1"
+}

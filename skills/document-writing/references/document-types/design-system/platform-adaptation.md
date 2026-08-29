@@ -5,10 +5,12 @@ Use this reference when the user explicitly names a product platform for `defaul
 ## Common separation rule
 
 - Keep the shared contract neutral; do not make one platform the implicit default.
+- Preserve the approved upper-level design direction while adapting only what the platform or storefront context genuinely changes.
 - Put only differences, constraints, mappings, and exceptions in the conditional file.
 - Link to the canonical common decision instead of duplicating it.
 - Do not generalize one platform requirement into the shared system.
-- Use stable kebab-case filenames based on the canonical platform name.
+- Do not treat a necessary platform difference as visual inconsistency or force identical form across different input, density, scale, or native-control contexts.
+- Use stable kebab-case filenames based on the canonical platform name. Normalize browser products, web admin tools, and web dashboards to `platforms/web.md`; product purpose or audience does not create `web-admin.md` or `dashboard.md`. Keep product-subtype differences as sections or conditions inside the canonical platform file.
 
 ## Product platforms for `default`
 

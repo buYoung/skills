@@ -1,0 +1,36 @@
+{
+  "eval_id": 13,
+  "eval_name": "eval-13",
+  "configuration": "with_skill",
+  "run_number": 1,
+  "prompt": "웹 제품용 디자인시스템 문서를 작성해줘. '차분하고 정밀한 업무 도구이며 복잡한 정보에서도 한 가지 핵심 행동이 먼저 보인다'는 방향은 제품 책임자가 승인했다. 단순 설정 화면과 정보가 조밀한 데이터 표에서 이 방향과 접근성을 이미 검증했다. 공통 foundations, tokens, components, patterns를 플랫폼 중립적으로 정의하되 웹에서만 달라지는 키보드·포인터 입력, 탐색, CSS 단위, 네이티브 요소 우선순위, 접근성 semantics, reduced motion 차이를 별도 문서에 기록해라. iOS와 Android는 범위가 아니다.",
+  "expectations": [
+    "The selected prebuilt is `default` and common documents remain platform-neutral.",
+    "Exactly the explicitly requested web adaptation is added as `platforms/web.md`.",
+    "The web file covers input, navigation, units, native elements, accessibility, and motion differences by referencing common owners.",
+    "No iOS or Android platform document is created.",
+    "Web-specific differences are not generalized into the common design-system contract."
+  ],
+  "expected_output": "`default` prebuilt의 공통 계약과 조건부 `platforms/web.md`만 포함한 Design System Document.",
+  "case_contract": {
+    "allowed_change_paths": [
+      "docs/design-system/**"
+    ],
+    "required_change_paths": [
+      "docs/design-system/index.md",
+      "docs/design-system/platforms/web.md"
+    ]
+  },
+  "allowed_workspace_change_paths": [
+    "docs/design-system/**"
+  ],
+  "skill_contract_sha256": "1992556407dd0e1d386fd82315fde0296bce26df2002f5deb5ff62b97ffdf254",
+  "skill_snapshot_before_sha256": "1e9bc77b686a9775a0295e2199cb5bbdb9c59d5ff0cf112d6d36d5cf9fcbd5ec",
+  "skill_snapshot_after_sha256": "1e9bc77b686a9775a0295e2199cb5bbdb9c59d5ff0cf112d6d36d5cf9fcbd5ec",
+  "skill_usage": "required",
+  "executor": "independent-luna-context",
+  "capability_evidence_status": "unverified",
+  "execution_receipt_sha256": "7fd9d22844aa310b0770d829da6ee8a03d6cf82a3c6570c1dad86c52a4ce2c8b",
+  "execution_receipt_schema_version": 3,
+  "context_id": "0cbc8cd2bea643c182ec969710b1589e"
+}

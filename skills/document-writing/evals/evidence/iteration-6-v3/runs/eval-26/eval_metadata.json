@@ -1,0 +1,33 @@
+{
+  "eval_id": 26,
+  "eval_name": "multifile-root-given-as-markdown",
+  "configuration": "with_skill",
+  "run_number": 1,
+  "prompt": "새 제품 UI 가이드를 `docs/design-system.md`에 저장해줘. 아직 그 경로에는 아무것도 없어.",
+  "expectations": [
+    "The skill recognizes that the requested UI guide is a multi-file document set that needs a directory root.",
+    "It does not create a directory named `design-system.md` or collapse the requested document set into one Markdown file.",
+    "It asks one concise question to choose the set root or clarify a chat-only single-file draft.",
+    "No default-root duplicate is created while the user-specified destination remains unresolved.",
+    "The request remains a product UI design-system request; the path shape does not turn it into a different document type."
+  ],
+  "expected_output": "여러 문서로 구성되는 가이드의 저장 폴더를 확인하고, 지정한 파일 경로를 임의로 폴더나 한 문서로 바꾸지 않은 결과.",
+  "case_contract": {
+    "deny_write_tools": true,
+    "allowed_change_paths": [],
+    "response": {
+      "min_questions": 1,
+      "max_questions": 1
+    }
+  },
+  "allowed_workspace_change_paths": [],
+  "skill_contract_sha256": "1992556407dd0e1d386fd82315fde0296bce26df2002f5deb5ff62b97ffdf254",
+  "skill_snapshot_before_sha256": "1e9bc77b686a9775a0295e2199cb5bbdb9c59d5ff0cf112d6d36d5cf9fcbd5ec",
+  "skill_snapshot_after_sha256": "1e9bc77b686a9775a0295e2199cb5bbdb9c59d5ff0cf112d6d36d5cf9fcbd5ec",
+  "skill_usage": "required",
+  "executor": "independent-luna-context",
+  "capability_evidence_status": "unverified",
+  "execution_receipt_sha256": "915001394aad43295b2e0107bb71c7a13748fbcbe8e57224c0ead55948e72496",
+  "execution_receipt_schema_version": 3,
+  "context_id": "8c9d18ad5382401cbb8ad9d2045ce76a"
+}

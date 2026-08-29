@@ -1,0 +1,42 @@
+{
+  "schema_version": 3,
+  "status": "completed-independent-grading",
+  "provenance": "independent-luna-grader-output",
+  "eval_id": 30,
+  "grader_task_context_id": "a5cca160b67a4e37947c2267480caa89",
+  "model": "gpt-5.6-luna",
+  "reasoning_effort": "medium",
+  "expectations": [
+    {
+      "text": "The request remains one `default` product UI output set; no new brand prebuilt or storefront set is invented for the logo and in-product icons.",
+      "passed": true,
+      "evidence": "docs/design-system/index.md defines one product UI design system covering the web admin product, iOS app, logo, and feature icons; components/index.md lists logo and feature icon as component documents without introducing a separate brand or storefront set."
+    },
+    {
+      "text": "The approved direction and its authority appear in `index.md`, while `foundations.md` owns the shared upper-level shape, weight, spacing, hierarchy, icon, logo, and motion principles.",
+      "passed": true,
+      "evidence": "docs/design-system/index.md records the approved direction and identifies the user request and representative validation results as authority. docs/design-system/foundations.md owns shared principles and its decision table covers hierarchy, spacing/layout, form, logo/icon scale, and motion."
+    },
+    {
+      "text": "Invariant, variable, conditional, prohibited, and verification decisions are explicitly distinguishable instead of using an abstract consistency claim.",
+      "passed": true,
+      "evidence": "docs/design-system/index.md has a decision-classification table with separate rows for 불변, 가변, 조건부, 금지, and 검증; docs/design-system/foundations.md repeats these distinctions by design area."
+    },
+    {
+      "text": "Web and iOS receive separate conditional platform adaptations, and logo versus 16px icon differences are treated as appropriate contextual variation rather than forced sameness.",
+      "passed": true,
+      "evidence": "docs/design-system/platforms/web.md and docs/design-system/platforms/ios.md separately own platform-specific conditional adaptations and verification. docs/design-system/components/logo.md permits larger-header presence, while components/feature-icon.md prioritizes a simplified, legible 16px silhouette; patterns.md explicitly says these differences are not to be corrected as inconsistency."
+    },
+    {
+      "text": "The supplied dense/simple, web/iOS, and large/small representative evidence is recorded without inventing unapproved token values.",
+      "passed": true,
+      "evidence": "docs/design-system/index.md, foundations.md, patterns.md, and governance.md record the dense web table, short iOS completion flow, large header logo, and 16px feature icon evidence. docs/design-system/tokens.md marks concrete values as 미결정 and says not to add convention-based values, which is consistent with the supplied evidence."
+    }
+  ],
+  "summary": {
+    "passed": 5,
+    "failed": 0,
+    "total": 5,
+    "pass_rate": 1.0
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "schema_version": 3,
+  "provenance": "harness-derived-from-task-response-and-manifests",
+  "status": "completed",
+  "context_id": "7416ba76955d4c3289f43d63272a7860",
+  "model": "gpt-5.6-luna",
+  "reasoning_effort": "medium",
+  "response_sha256": "a610e41ea328e204632774e46d4d8d25ae86bdc7df0aeef82d141326e6203a4f",
+  "workspace_before_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+  "workspace_after_sha256": "6eb7aca975883fa0f331524e7be948e16d9447fd12b99bcdc1510387a40f1f9d",
+  "produced_paths": [
+    "docs/design-system-visual-assets/accessibility.md",
+    "docs/design-system-visual-assets/asset-system.md",
+    "docs/design-system-visual-assets/composition-and-copy.md",
+    "docs/design-system-visual-assets/delivery-and-versioning.md",
+    "docs/design-system-visual-assets/index.md",
+    "docs/design-system-visual-assets/localization.md",
+    "docs/design-system-visual-assets/screenshots-and-previews.md",
+    "docs/design-system-visual-assets/stores/steam.md",
+    "docs/design-system-visual-assets/visual-language.md"
+  ],
+  "telemetry": {
+    "status": "unavailable",
+    "duration_ms": null,
+    "total_tokens": null
+  },
+  "capability_evidence": {
+    "status": "unverified",
+    "events": []
+  }
+}

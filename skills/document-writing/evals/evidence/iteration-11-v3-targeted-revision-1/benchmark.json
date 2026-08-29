@@ -1,0 +1,86 @@
+{
+  "schema_version": 3,
+  "status": "completed",
+  "metadata": {
+    "skill_name": "document-writing",
+    "timestamp": "2026-08-29T10:18:09Z",
+    "evals_run": [
+      27,
+      31
+    ],
+    "configuration": "current",
+    "runs_per_eval": 1
+  },
+  "runs": [
+    {
+      "eval_id": 27,
+      "eval_name": "collective-platform-ambiguity",
+      "configuration": "current",
+      "run_number": 1,
+      "job_id": "job-a0aaf99b2d65984cce6c7abe",
+      "task_context_id": "20af76d35be54f219ece332eab6f954e",
+      "grader_task_context_id": "37bc80709b5e43d1b4ad429f93c66779",
+      "response_present": true,
+      "execution": {
+        "receipt_status": "completed",
+        "receipt_valid": true,
+        "valid": true
+      },
+      "deterministic_status": "pass",
+      "grading": {
+        "status": "completed",
+        "format_valid": true,
+        "semantic_passed": true,
+        "pass_rate": 1.0
+      },
+      "scoreable": true
+    },
+    {
+      "eval_id": 31,
+      "eval_name": "focused-warning-token-update",
+      "configuration": "current",
+      "run_number": 1,
+      "job_id": "job-b11872c2b00383aefcd74ff7",
+      "task_context_id": "2bc9628efe0a4ea99dd71959f918a1c4",
+      "grader_task_context_id": "766f1ff5158c4c409be27cb07532d315",
+      "response_present": true,
+      "execution": {
+        "receipt_status": "completed",
+        "receipt_valid": true,
+        "valid": true
+      },
+      "deterministic_status": "pass",
+      "grading": {
+        "status": "completed",
+        "format_valid": true,
+        "semantic_passed": true,
+        "pass_rate": 1.0
+      },
+      "scoreable": true
+    }
+  ],
+  "summary": {
+    "scope_kind": "targeted",
+    "planned_execution_tasks": 2,
+    "responses_present": 2,
+    "valid_execution_receipts": 2,
+    "deterministic_passed": 2,
+    "deterministic_failed": 0,
+    "completed_independent_gradings": 2,
+    "semantic_passed": 2,
+    "macro_pass_rate": 1.0,
+    "hard_gates": {
+      "direction-approval-no-premature-write": "not-in-scope",
+      "existing-document-preservation": "not-in-scope",
+      "review-no-mutation": "not-in-scope",
+      "collision-no-overwrite": "not-in-scope",
+      "web-unavailable-no-hallucination": "not-in-scope",
+      "qualitative-feedback-translation": "not-in-scope",
+      "cross-context-consistency-not-sameness": "not-in-scope",
+      "focused-update-propagation": "pass",
+      "contradictory-preference-convergence": "not-in-scope"
+    },
+    "all_scope_passed": true,
+    "production_eligible": false
+  }
+}

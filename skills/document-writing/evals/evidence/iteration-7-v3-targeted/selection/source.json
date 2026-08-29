@@ -1,0 +1,926 @@
+{
+  "schema_version": 1,
+  "scope": "description-only binary routing; not proof of automatic Codex skill invocation",
+  "metrics": {
+    "runs": 3,
+    "queries_per_run": 60,
+    "total_decisions": 180,
+    "tp": 90,
+    "tn": 90,
+    "fp": 0,
+    "fn": 0,
+    "high_risk_false_positives": 0,
+    "precision": 1.0,
+    "recall": 1.0,
+    "specificity": 1.0,
+    "mismatches": []
+  },
+  "runs": [
+    [
+      {
+        "id": 1,
+        "selected": true,
+        "reason": "디자인 시스템의 지속적인 팀 기준 문서를 작성하려는 요청이다."
+      },
+      {
+        "id": 2,
+        "selected": true,
+        "reason": "iOS 특화 내용을 포함한 재사용 가능한 디자인 가이드 문서를 만들려는 요청이다."
+      },
+      {
+        "id": 3,
+        "selected": true,
+        "reason": "디자인 시스템 토큰과 거버넌스의 지속 기준을 문서화하려는 요청이다."
+      },
+      {
+        "id": 4,
+        "selected": true,
+        "reason": "기존 디자인 가이드를 접근성 관점에서 검토하고 발견사항을 보고하려는 요청이다."
+      },
+      {
+        "id": 5,
+        "selected": true,
+        "reason": "스토어 자산 선택과 납품 기준을 다음 릴리스에도 사용할 문서로 남기려는 요청이다."
+      },
+      {
+        "id": 6,
+        "selected": true,
+        "reason": "앱 스토어 등록 자산의 메시지와 운영 기준을 팀 정본 문서로 만들려는 요청이다."
+      },
+      {
+        "id": 7,
+        "selected": true,
+        "reason": "스토어 등록 자산 검토 방식을 반복 사용 가능한 가이드로 정리하려는 요청이다."
+      },
+      {
+        "id": 8,
+        "selected": true,
+        "reason": "VR 스토어 이미지 자산 규칙을 문서화하고 실제 제작은 제외하려는 요청이다."
+      },
+      {
+        "id": 9,
+        "selected": true,
+        "reason": "Roku 스토어 자산의 사용 규칙과 변형을 팀 문서로 만들려는 요청이다."
+      },
+      {
+        "id": 10,
+        "selected": true,
+        "reason": "제품 디자인 시스템과 스토어 자산 가이드라는 두 지속 문서를 작성하려는 요청이다."
+      },
+      {
+        "id": 11,
+        "selected": true,
+        "reason": "기존 디자인 가이드의 접근성 내용을 보존 조건과 함께 갱신하려는 요청이다."
+      },
+      {
+        "id": 12,
+        "selected": true,
+        "reason": "기존 상점 자산 문서에 F-Droid 규칙을 근거와 함께 추가하려는 요청이다."
+      },
+      {
+        "id": 13,
+        "selected": true,
+        "reason": "다중 플랫폼 고객지원 도구의 컴포넌트 기준을 지속 문서로 정리하려는 요청이다."
+      },
+      {
+        "id": 14,
+        "selected": true,
+        "reason": "Itch.io 자산 제작 전에 화면 순서와 현지화 계획을 문서화하려는 요청이다."
+      },
+      {
+        "id": 15,
+        "selected": true,
+        "reason": "차량 인포테인먼트 앱의 디자인 원칙을 지속 가능한 문서로 남기려는 요청이다."
+      },
+      {
+        "id": 16,
+        "selected": true,
+        "reason": "조달 포털의 디자인 시스템 핸드북을 작성하려는 요청이다."
+      },
+      {
+        "id": 17,
+        "selected": true,
+        "reason": "Snap Store 등록 시각 자산의 역할과 운영 책임을 문서화하려는 요청이다."
+      },
+      {
+        "id": 18,
+        "selected": true,
+        "reason": "기존 컴포넌트 라이브러리 문서를 검토하고 문서 기반 발견사항을 제공하려는 요청이다."
+      },
+      {
+        "id": 19,
+        "selected": true,
+        "reason": "Samsung 스토어 자산 제작과 인계를 위한 재사용 가능한 팀 기준을 문서화하려는 요청이다."
+      },
+      {
+        "id": 20,
+        "selected": true,
+        "reason": "기존 메모를 오류 상태 컴포넌트 문서로 전환하려는 요청이다."
+      },
+      {
+        "id": 21,
+        "selected": true,
+        "reason": "GOG 게임 출시를 위한 스토어 자산 시스템과 규칙 문서를 만들려는 요청이다."
+      },
+      {
+        "id": 22,
+        "selected": true,
+        "reason": "제품 UI 문서와 스토어 이미지 문서라는 두 지속 산출물을 작성하려는 요청이다."
+      },
+      {
+        "id": 23,
+        "selected": true,
+        "reason": "기존 Microsoft Store 시각 자산 가이드를 검토하고 갱신하려는 요청이다."
+      },
+      {
+        "id": 24,
+        "selected": true,
+        "reason": "스마트워치 앱의 디자인 지침을 지속적으로 참조할 문서로 만들려는 요청이다."
+      },
+      {
+        "id": 25,
+        "selected": true,
+        "reason": "웹 관리자 UI 기준과 Steamworks 자산 가이드를 문서로 분리해 작성하려는 요청이다."
+      },
+      {
+        "id": 26,
+        "selected": true,
+        "reason": "기존 Flathub 자산 가이드를 검토하고 필요한 부분을 갱신하려는 요청이다."
+      },
+      {
+        "id": 27,
+        "selected": true,
+        "reason": "기존 디자인 시스템 문서에 Android 플랫폼별 주의를 추가해 갱신하려는 요청이다."
+      },
+      {
+        "id": 28,
+        "selected": true,
+        "reason": "Pico Store VR 앱 자산 역할과 인계 체크리스트를 문서화하려는 요청이다."
+      },
+      {
+        "id": 29,
+        "selected": true,
+        "reason": "기존 UI 가이드를 읽기 전용으로 감사하고 문서형 발견사항을 제공하려는 요청이다."
+      },
+      {
+        "id": 30,
+        "selected": true,
+        "reason": "F-Droid 자산 규칙과 출처를 문서화하는 작업이 포함된 요청이다."
+      },
+      {
+        "id": 31,
+        "selected": false,
+        "reason": "승인된 문서를 건드리지 않고 PNG 이미지만 제작하는 순수 자산 제작 요청이다."
+      },
+      {
+        "id": 32,
+        "selected": false,
+        "reason": "React 로그인 화면의 코드를 구현하는 요청이다."
+      },
+      {
+        "id": 33,
+        "selected": false,
+        "reason": "이벤트 처리 아키텍처를 설계하는 시스템 아키텍처 요청이다."
+      },
+      {
+        "id": 34,
+        "selected": false,
+        "reason": "디자인 시스템 도입을 위한 실행 계획과 담당자 표를 만드는 요청이다."
+      },
+      {
+        "id": 35,
+        "selected": false,
+        "reason": "매장 비교와 주말 방문 추천을 요구하는 소매점 추천 요청이다."
+      },
+      {
+        "id": 36,
+        "selected": false,
+        "reason": "문서 없이 채팅에서 세 줄로 비교하는 짧은 답변 요청이다."
+      },
+      {
+        "id": 37,
+        "selected": false,
+        "reason": "짧은 채팅에서 버튼 색상 의견만 묻는 요청이다."
+      },
+      {
+        "id": 38,
+        "selected": false,
+        "reason": "Figma 라이브러리에 실제 컴포넌트를 구성하는 순수 제작 요청이다."
+      },
+      {
+        "id": 39,
+        "selected": false,
+        "reason": "Notion 내용을 Storybook 코드 예제로 옮기는 구현 요청이다."
+      },
+      {
+        "id": 40,
+        "selected": false,
+        "reason": "짧은 문구 10개를 제안하는 순수 카피 생성 요청이다."
+      },
+      {
+        "id": 41,
+        "selected": false,
+        "reason": "최적화 작업을 Jira 티켓으로 쪼개는 실행 계획 요청이다."
+      },
+      {
+        "id": 42,
+        "selected": false,
+        "reason": "상품 이미지를 만들고 배경을 제거하는 순수 이미지 제작 요청이다."
+      },
+      {
+        "id": 43,
+        "selected": false,
+        "reason": "한 문장으로 원인만 답하는 짧은 채팅 답변 요청이다."
+      },
+      {
+        "id": 44,
+        "selected": false,
+        "reason": "API 공유 구조를 설계하는 아키텍처 설계 요청이다."
+      },
+      {
+        "id": 45,
+        "selected": false,
+        "reason": "한 문단 설명만 요구하는 짧은 채팅 답변 요청이다."
+      },
+      {
+        "id": 46,
+        "selected": false,
+        "reason": "Steam 게임 캡슐 이미지를 생성하는 순수 이미지 제작 요청이다."
+      },
+      {
+        "id": 47,
+        "selected": false,
+        "reason": "마켓플레이스 결제 마이크로서비스 아키텍처를 설계하는 요청이다."
+      },
+      {
+        "id": 48,
+        "selected": false,
+        "reason": "React 저장소 변경을 위한 2스프린트 구현 계획 요청이다."
+      },
+      {
+        "id": 49,
+        "selected": false,
+        "reason": "매장 재고를 비교하는 소매점 추천 요청이다."
+      },
+      {
+        "id": 50,
+        "selected": false,
+        "reason": "저장 파일 없이 채팅에서 네 항목으로 비교하는 짧은 답변 요청이다."
+      },
+      {
+        "id": 51,
+        "selected": false,
+        "reason": "문서 작성 없이 동영상만 편집·내보내는 순수 제작 요청이다."
+      },
+      {
+        "id": 52,
+        "selected": false,
+        "reason": "SwiftUI 날짜 선택기를 구현하고 테스트하는 코드 변경 요청이다."
+      },
+      {
+        "id": 53,
+        "selected": false,
+        "reason": "두 문장으로 개념만 설명하는 짧은 채팅 답변 요청이다."
+      },
+      {
+        "id": 54,
+        "selected": false,
+        "reason": "보고서 없이 채팅에서 두 항목으로 비교하는 짧은 답변 요청이다."
+      },
+      {
+        "id": 55,
+        "selected": false,
+        "reason": "문서 갱신 없이 PNG를 생성·내보내는 순수 이미지 제작 요청이다."
+      },
+      {
+        "id": 56,
+        "selected": false,
+        "reason": "PostgreSQL 스키마를 설계하는 구현·데이터 아키텍처 요청이다."
+      },
+      {
+        "id": 57,
+        "selected": false,
+        "reason": "Compose 마이그레이션을 위한 로드맵과 PR 순서를 만드는 실행 계획 요청이다."
+      },
+      {
+        "id": 58,
+        "selected": false,
+        "reason": "매장과 전자제품 몰 중 구매처를 비교하는 소매점 추천 요청이다."
+      },
+      {
+        "id": 59,
+        "selected": false,
+        "reason": "최신 규격을 한 줄로만 묻는 짧은 채팅 답변 요청이다."
+      },
+      {
+        "id": 60,
+        "selected": false,
+        "reason": "문서 파일 없이 채팅에서 작은 표로 비교하는 짧은 답변 요청이다."
+      }
+    ],
+    [
+      {
+        "id": 1,
+        "selected": true,
+        "reason": "디자인 시스템을 팀이 지속적으로 참조할 수 있는 문서로 정리하려는 요청이다."
+      },
+      {
+        "id": 2,
+        "selected": true,
+        "reason": "iOS 공통 및 플랫폼별 디자인 가이드를 지속 문서로 만들려는 요청이다."
+      },
+      {
+        "id": 3,
+        "selected": true,
+        "reason": "디자인 토큰 운영 기준을 팀의 지속적인 판단을 위한 문서로 남기려는 요청이다."
+      },
+      {
+        "id": 4,
+        "selected": true,
+        "reason": "기존 디자인 가이드를 검토하고 발견사항을 보고서 형태로 남기려는 요청이다."
+      },
+      {
+        "id": 5,
+        "selected": true,
+        "reason": "릴리스마다 재사용할 상점 자산 기준과 운영 기준을 문서화하려는 요청이다."
+      },
+      {
+        "id": 6,
+        "selected": true,
+        "reason": "앱 상점 등록 자산의 메시지와 운영 기준을 팀 정본 문서로 남기려는 요청이다."
+      },
+      {
+        "id": 7,
+        "selected": true,
+        "reason": "다음 릴리스에도 적용할 수 있는 Snap Store 자산 검토 가이드를 만들려는 요청이다."
+      },
+      {
+        "id": 8,
+        "selected": true,
+        "reason": "VR 상점 이미지 자산의 역할과 규칙을 문서로 정리하려는 요청이다."
+      },
+      {
+        "id": 9,
+        "selected": true,
+        "reason": "Roku 상점 자산 규칙과 현지화 기준을 팀 문서로 만들려는 요청이다."
+      },
+      {
+        "id": 10,
+        "selected": true,
+        "reason": "제품 디자인 시스템과 상점 자산 가이드라는 두 지속 문서를 정리하려는 요청이다."
+      },
+      {
+        "id": 11,
+        "selected": true,
+        "reason": "기존 디자인 가이드의 내용을 최신 원칙에 맞게 갱신하려는 요청이다."
+      },
+      {
+        "id": 12,
+        "selected": true,
+        "reason": "기존 상점 자산 문서에 F-Droid 규칙을 근거와 함께 추가하려는 요청이다."
+      },
+      {
+        "id": 13,
+        "selected": true,
+        "reason": "다중 플랫폼 고객지원 도구의 컴포넌트 기준을 문서화하려는 요청이다."
+      },
+      {
+        "id": 14,
+        "selected": true,
+        "reason": "Itch.io 자산 제작에 앞서 재사용 가능한 자산 기획 문서를 만들려는 요청이다."
+      },
+      {
+        "id": 15,
+        "selected": true,
+        "reason": "차량용 앱의 디자인 원칙을 지속 참조할 문서로 남기려는 요청이다."
+      },
+      {
+        "id": 16,
+        "selected": true,
+        "reason": "조달 포털의 지속적인 디자인 시스템 핸드북을 작성하려는 요청이다."
+      },
+      {
+        "id": 17,
+        "selected": true,
+        "reason": "Snap Store 상점 이미지 운영 기준을 문서화하려는 요청이다."
+      },
+      {
+        "id": 18,
+        "selected": true,
+        "reason": "기존 컴포넌트 문서를 검토해 findings 보고서를 제공하려는 요청이다."
+      },
+      {
+        "id": 19,
+        "selected": true,
+        "reason": "Samsung 상점 자산의 재사용 가능한 팀 기준 문서를 만들려는 요청이다."
+      },
+      {
+        "id": 20,
+        "selected": true,
+        "reason": "기존 노트를 컴포넌트 문서로 전환하려는 요청이다."
+      },
+      {
+        "id": 21,
+        "selected": true,
+        "reason": "GOG 상점 자산 시스템과 운영 규칙을 지속 문서로 만들려는 요청이다."
+      },
+      {
+        "id": 22,
+        "selected": true,
+        "reason": "모바일 UI 문서와 상점 이미지 문서라는 두 내구성 있는 산출물을 요청한다."
+      },
+      {
+        "id": 23,
+        "selected": true,
+        "reason": "기존 Microsoft Store 시각 자산 가이드를 갱신하고 검증하려는 요청이다."
+      },
+      {
+        "id": 24,
+        "selected": true,
+        "reason": "스마트워치 앱 디자인 가이드라인을 문서로 작성하려는 요청이다."
+      },
+      {
+        "id": 25,
+        "selected": true,
+        "reason": "공통 UI 규칙과 Steamworks 자산 규칙을 분리한 문서로 정리하려는 요청이다."
+      },
+      {
+        "id": 26,
+        "selected": true,
+        "reason": "기존 Flathub 자산 가이드를 검토하고 필요한 부분을 갱신하려는 요청이다."
+      },
+      {
+        "id": 27,
+        "selected": true,
+        "reason": "기존 디자인 시스템 문서에 Android 플랫폼별 내용을 보강하려는 요청이다."
+      },
+      {
+        "id": 28,
+        "selected": true,
+        "reason": "Pico Store 자산 역할과 인수인계 체크리스트를 문서화하려는 요청이다."
+      },
+      {
+        "id": 29,
+        "selected": true,
+        "reason": "기존 UI 가이드를 읽기 전용으로 감사하고 findings를 보고하려는 요청이다."
+      },
+      {
+        "id": 30,
+        "selected": true,
+        "reason": "F-Droid 자산 규칙과 출처를 먼저 지속 문서로 정리하려는 혼합 요청이다."
+      },
+      {
+        "id": 31,
+        "selected": false,
+        "reason": "승인된 문서를 건드리지 않고 PNG 이미지만 제작하는 순수 자산 제작 요청이다."
+      },
+      {
+        "id": 32,
+        "selected": false,
+        "reason": "React 로그인 화면 구현이라는 코드 변경 요청이다."
+      },
+      {
+        "id": 33,
+        "selected": false,
+        "reason": "이벤트 처리 구조와 아키텍처 설계를 요구하는 아키텍처 요청이다."
+      },
+      {
+        "id": 34,
+        "selected": false,
+        "reason": "6주 실행 계획과 담당자 표라는 구현 계획 요청이다."
+      },
+      {
+        "id": 35,
+        "selected": false,
+        "reason": "매장 방문 추천을 요구하는 소매점 비교 요청이다."
+      },
+      {
+        "id": 36,
+        "selected": false,
+        "reason": "채팅에서 세 줄로 답하는 짧은 비교 요청이며 문서를 만들지 않는다."
+      },
+      {
+        "id": 37,
+        "selected": false,
+        "reason": "버튼 색상에 대한 짧은 의견을 묻는 채팅 질문이다."
+      },
+      {
+        "id": 38,
+        "selected": false,
+        "reason": "Figma 라이브러리 구성이라는 순수 제작 작업이다."
+      },
+      {
+        "id": 39,
+        "selected": false,
+        "reason": "React Storybook 코드 예제를 작성하는 코드 변경 요청이다."
+      },
+      {
+        "id": 40,
+        "selected": false,
+        "reason": "짧은 문구 10개를 제안하는 순수 채팅 답변 요청이다."
+      },
+      {
+        "id": 41,
+        "selected": false,
+        "reason": "Jira 티켓과 우선순위를 만드는 실행 계획 요청이다."
+      },
+      {
+        "id": 42,
+        "selected": false,
+        "reason": "상품 이미지 제작과 배경 제거라는 순수 이미지 제작 요청이다."
+      },
+      {
+        "id": 43,
+        "selected": false,
+        "reason": "원인만 한 문장으로 답하는 짧은 채팅 질문이다."
+      },
+      {
+        "id": 44,
+        "selected": false,
+        "reason": "API 공유 방식과 구조를 설계하는 아키텍처 요청이다."
+      },
+      {
+        "id": 45,
+        "selected": false,
+        "reason": "한 문단 설명만 요구하는 짧은 채팅 답변이다."
+      },
+      {
+        "id": 46,
+        "selected": false,
+        "reason": "게임 capsule 이미지 제작만 요구하는 순수 이미지 제작 요청이다."
+      },
+      {
+        "id": 47,
+        "selected": false,
+        "reason": "마이크로서비스 아키텍처 설계를 요구하는 아키텍처 요청이다."
+      },
+      {
+        "id": 48,
+        "selected": false,
+        "reason": "두 스프린트 구현 계획을 요구하는 구현 계획 요청이다."
+      },
+      {
+        "id": 49,
+        "selected": false,
+        "reason": "매장 재고 비교라는 소매점 추천 요청이다."
+      },
+      {
+        "id": 50,
+        "selected": false,
+        "reason": "문서 없이 채팅에서 네 bullet로 비교하는 짧은 답변 요청이다."
+      },
+      {
+        "id": 51,
+        "selected": false,
+        "reason": "문서 작성 없이 trailer MP4만 편집·내보내는 순수 제작 요청이다."
+      },
+      {
+        "id": 52,
+        "selected": false,
+        "reason": "SwiftUI date picker 구현과 테스트라는 코드 변경 요청이다."
+      },
+      {
+        "id": 53,
+        "selected": false,
+        "reason": "두 문장으로 답하는 짧은 개념 설명 요청이다."
+      },
+      {
+        "id": 54,
+        "selected": false,
+        "reason": "보고서 없이 채팅에서 짧게 비교하는 요청이다."
+      },
+      {
+        "id": 55,
+        "selected": false,
+        "reason": "문서 갱신 없이 PNG를 생성·내보내는 순수 자산 제작 요청이다."
+      },
+      {
+        "id": 56,
+        "selected": false,
+        "reason": "PostgreSQL 스키마 설계라는 구현·데이터 아키텍처 요청이다."
+      },
+      {
+        "id": 57,
+        "selected": false,
+        "reason": "Compose 마이그레이션 로드맵과 PR 순서라는 구현 계획 요청이다."
+      },
+      {
+        "id": 58,
+        "selected": false,
+        "reason": "소매점에서 제품을 구매할 곳을 비교·추천하는 요청이다."
+      },
+      {
+        "id": 59,
+        "selected": false,
+        "reason": "최신 크기 한 줄만 묻는 짧은 채팅 질문이다."
+      },
+      {
+        "id": 60,
+        "selected": false,
+        "reason": "문서나 팀 가이드 없이 채팅 표로만 비교하는 요청이다."
+      }
+    ],
+    [
+      {
+        "id": 1,
+        "selected": true,
+        "reason": "B2B SaaS의 재사용 가능한 디자인 시스템 문서를 작성하려는 요청이다."
+      },
+      {
+        "id": 2,
+        "selected": true,
+        "reason": "iOS 습관 앱의 지속적인 디자인 가이드를 문서화하려는 요청이다."
+      },
+      {
+        "id": 3,
+        "selected": true,
+        "reason": "디자인 시스템 토큰과 거버넌스 기준을 팀 정본으로 남기려는 요청이다."
+      },
+      {
+        "id": 4,
+        "selected": true,
+        "reason": "기존 디자인 가이드를 접근성 관점에서 검토하고 발견사항을 보고하려는 요청이다."
+      },
+      {
+        "id": 5,
+        "selected": true,
+        "reason": "스토어 자산 선택과 납품 기준을 이후 재사용할 문서로 남기려는 요청이다."
+      },
+      {
+        "id": 6,
+        "selected": true,
+        "reason": "앱 스토어 등록 자산의 메시지와 운영 기준을 팀 문서로 정리하려는 요청이다."
+      },
+      {
+        "id": 7,
+        "selected": true,
+        "reason": "Snap Store 자산 검토 기준을 다음 릴리스에도 쓸 문서로 정리하려는 요청이다."
+      },
+      {
+        "id": 8,
+        "selected": true,
+        "reason": "Quest Store 상점 이미지 규칙을 문서화하려는 요청이며 실제 제작은 제외한다."
+      },
+      {
+        "id": 9,
+        "selected": true,
+        "reason": "Roku Channel Store 자산 규칙과 변형을 팀 문서로 만들려는 요청이다."
+      },
+      {
+        "id": 10,
+        "selected": true,
+        "reason": "제품 디자인 시스템과 스토어 자산 가이드라는 두 지속 문서를 정리하려는 요청이다."
+      },
+      {
+        "id": 11,
+        "selected": true,
+        "reason": "기존 디자인 가이드의 접근성 동작을 보존 조건과 함께 갱신하려는 요청이다."
+      },
+      {
+        "id": 12,
+        "selected": true,
+        "reason": "기존 상점 자산 문서에 F-Droid 규칙을 근거와 함께 추가하려는 요청이다."
+      },
+      {
+        "id": 13,
+        "selected": true,
+        "reason": "멀티플랫폼 고객지원 도구의 컴포넌트 기준을 문서화하려는 요청이다."
+      },
+      {
+        "id": 14,
+        "selected": true,
+        "reason": "itch.io 자산 제작 전에 재사용 가능한 자산 기획 문서를 만들려는 요청이다."
+      },
+      {
+        "id": 15,
+        "selected": true,
+        "reason": "차량 인포테인먼트 앱의 디자인 원칙을 지속 문서로 남기려는 요청이다."
+      },
+      {
+        "id": 16,
+        "selected": true,
+        "reason": "조달 포털의 살아 있는 디자인 시스템 핸드북을 만들려는 요청이다."
+      },
+      {
+        "id": 17,
+        "selected": true,
+        "reason": "Snap Store 등록 자산의 운영·현지화 기준을 문서화하려는 요청이다."
+      },
+      {
+        "id": 18,
+        "selected": true,
+        "reason": "기존 컴포넌트 라이브러리 문서를 검토하고 findings를 산출하려는 요청이다."
+      },
+      {
+        "id": 19,
+        "selected": true,
+        "reason": "Samsung Galaxy Store 자산 기준을 팀의 재사용 가능한 정본으로 남기려는 요청이다."
+      },
+      {
+        "id": 20,
+        "selected": true,
+        "reason": "기존 메모를 오류 상태 컴포넌트 문서로 전환하려는 요청이다."
+      },
+      {
+        "id": 21,
+        "selected": true,
+        "reason": "GOG 게임 출시용 스토어 자산 시스템을 문서로 만들려는 요청이다."
+      },
+      {
+        "id": 22,
+        "selected": true,
+        "reason": "모바일 UI 문서와 Epic Games Store 자산 문서라는 두 지속 산출물을 만들려는 요청이다."
+      },
+      {
+        "id": 23,
+        "selected": true,
+        "reason": "Microsoft Store 시각 자산 가이드를 기존 문서 기반으로 갱신하려는 요청이다."
+      },
+      {
+        "id": 24,
+        "selected": true,
+        "reason": "스마트워치 앱의 디자인 가이드라인을 지속 문서로 작성하려는 요청이다."
+      },
+      {
+        "id": 25,
+        "selected": true,
+        "reason": "웹 관리자 UI와 Steamworks 자산을 분리한 디자인 문서들을 정리하려는 요청이다."
+      },
+      {
+        "id": 26,
+        "selected": true,
+        "reason": "기존 Flathub 자산 가이드를 검토하고 필요한 부분을 갱신하려는 요청이다."
+      },
+      {
+        "id": 27,
+        "selected": true,
+        "reason": "기존 디자인 시스템 문서에 Android별 주의사항을 추가 갱신하려는 요청이다."
+      },
+      {
+        "id": 28,
+        "selected": true,
+        "reason": "Pico Store VR 앱 자산 역할과 인계 체크리스트를 문서화하려는 요청이다."
+      },
+      {
+        "id": 29,
+        "selected": true,
+        "reason": "기존 UI 가이드를 읽기 전용으로 감사하고 findings를 산출하려는 요청이다."
+      },
+      {
+        "id": 30,
+        "selected": true,
+        "reason": "F-Droid 자산 규칙과 출처를 문서화하는 단계가 명시된 요청이다."
+      },
+      {
+        "id": 31,
+        "selected": false,
+        "reason": "승인된 문서를 건드리지 않고 PNG 이미지만 제작하는 순수 제작 요청이다."
+      },
+      {
+        "id": 32,
+        "selected": false,
+        "reason": "React 로그인 화면 구현을 요구하는 코드 변경 요청이다."
+      },
+      {
+        "id": 33,
+        "selected": false,
+        "reason": "이벤트 처리 아키텍처 설계를 요구하는 시스템 아키텍처 요청이다."
+      },
+      {
+        "id": 34,
+        "selected": false,
+        "reason": "6주 실행 계획과 담당자 표를 요구하는 구현 계획 요청이다."
+      },
+      {
+        "id": 35,
+        "selected": false,
+        "reason": "매장 비교와 주말 방문 추천을 요구하는 소매점 추천 요청이다."
+      },
+      {
+        "id": 36,
+        "selected": false,
+        "reason": "문서 없이 채팅에서 세 줄로 답하는 짧은 비교 요청이다."
+      },
+      {
+        "id": 37,
+        "selected": false,
+        "reason": "버튼 색에 대한 짧은 채팅 조언만 요청한다."
+      },
+      {
+        "id": 38,
+        "selected": false,
+        "reason": "Figma 라이브러리 구성이라는 순수 도구 제작 작업이다."
+      },
+      {
+        "id": 39,
+        "selected": false,
+        "reason": "Notion 내용을 React Storybook 코드로 옮기는 구현 요청이다."
+      },
+      {
+        "id": 40,
+        "selected": false,
+        "reason": "짧은 문구 10개를 제안하는 순수 카피 생성 요청이다."
+      },
+      {
+        "id": 41,
+        "selected": false,
+        "reason": "Jira 티켓과 우선순위를 만드는 구현 계획 요청이다."
+      },
+      {
+        "id": 42,
+        "selected": false,
+        "reason": "상품 이미지를 만들고 배경 제거하는 순수 이미지 제작 요청이다."
+      },
+      {
+        "id": 43,
+        "selected": false,
+        "reason": "한 문장 원인 설명만 요구하는 짧은 채팅 답변이다."
+      },
+      {
+        "id": 44,
+        "selected": false,
+        "reason": "REST와 GraphQL 기반 구조를 설계하는 아키텍처 요청이다."
+      },
+      {
+        "id": 45,
+        "selected": false,
+        "reason": "한 문단 설명만 요구하는 짧은 채팅 답변이다."
+      },
+      {
+        "id": 46,
+        "selected": false,
+        "reason": "Steam 게임용 이미지를 생성하는 순수 이미지 제작 요청이다."
+      },
+      {
+        "id": 47,
+        "selected": false,
+        "reason": "마켓플레이스 결제 마이크로서비스 아키텍처 설계 요청이다."
+      },
+      {
+        "id": 48,
+        "selected": false,
+        "reason": "React 저장소의 컴포넌트 교체 2스프린트 구현 계획 요청이다."
+      },
+      {
+        "id": 49,
+        "selected": false,
+        "reason": "런던 매장 재고 비교를 묻는 소매점 추천 요청이다."
+      },
+      {
+        "id": 50,
+        "selected": false,
+        "reason": "문서 없이 채팅에서 네 개 항목으로 비교하려는 요청이다."
+      },
+      {
+        "id": 51,
+        "selected": false,
+        "reason": "문서 변경 없이 트레일러 MP4를 편집·내보내는 순수 제작 요청이다."
+      },
+      {
+        "id": 52,
+        "selected": false,
+        "reason": "SwiftUI 날짜 선택기를 구현하고 테스트하는 코드 변경 요청이다."
+      },
+      {
+        "id": 53,
+        "selected": false,
+        "reason": "두 문장으로 답하는 짧은 개념 설명 요청이다."
+      },
+      {
+        "id": 54,
+        "selected": false,
+        "reason": "보고서 없이 채팅에서 두 bullet로 비교하는 요청이다."
+      },
+      {
+        "id": 55,
+        "selected": false,
+        "reason": "문서 갱신 없이 PNG를 생성·내보내는 순수 이미지 제작 요청이다."
+      },
+      {
+        "id": 56,
+        "selected": false,
+        "reason": "PostgreSQL 스키마를 설계하는 구현·아키텍처 요청이다."
+      },
+      {
+        "id": 57,
+        "selected": false,
+        "reason": "Compose 마이그레이션 로드맵과 PR 순서를 만드는 구현 계획 요청이다."
+      },
+      {
+        "id": 58,
+        "selected": false,
+        "reason": "매장과 전자제품 매장 중 구매처를 비교 추천하는 소매점 요청이다."
+      },
+      {
+        "id": 59,
+        "selected": false,
+        "reason": "최신 크기 한 줄만 요구하는 짧은 채팅 답변이다."
+      },
+      {
+        "id": 60,
+        "selected": false,
+        "reason": "문서 파일 없이 채팅 표 하나로 비교하는 요청이다."
+      }
+    ]
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "schema_version": 3,
+  "provenance": "harness-execution-validation",
+  "eval_id": 22,
+  "status": "hard-gate-failed",
+  "valid": false,
+  "reasons": [
+    "Make a source-backed storefront update without deleting protected content"
+  ]
+}

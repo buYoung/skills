@@ -1,0 +1,33 @@
+{
+  "eval_id": 12,
+  "eval_name": "directionless-storefront-system-gate",
+  "configuration": "with_skill",
+  "run_number": 1,
+  "prompt": "우리 모바일 앱의 앱 마켓 상점페이지에서 아이콘, 스크린샷, 미리보기, feature graphic, 프로모션 이미지와 짧은 메시지가 하나의 시각 언어를 따르도록 디자인시스템 문서로 정리해줘. 특정 상점이나 저장 경로는 아직 정하지 않았고 실제 이미지 제작은 하지 않는다. 화면 선택과 이야기 순서, 브랜드 연속성, localization, accessibility, 원본·내보내기·버전 관리 규칙을 다뤄라.",
+  "expectations": [
+    "The artifact is routed to Design System Document with `app-store-page`, not to `default` or an image-generation workflow.",
+    "No document file, image, or video is produced because the shared visual direction and representative validation are unapproved.",
+    "The response proposes two or three materially different storefront-neutral directions and recommends one using the supplied asset roles and audience context.",
+    "The approval question uses plain descriptions of visible outcomes rather than asking the user to choose abstract design axes.",
+    "No storefront file, mutable dimensions, counts, formats, policy, or completion claim is invented because no storefront or direction was approved."
+  ],
+  "expected_output": "`app-store-page` prebuilt로 라우팅하되 파일이나 자산을 만들지 않고, 상점 중립적인 방향 가설과 권장안 및 쉬운 승인 질문을 제시한 결과.",
+  "case_contract": {
+    "deny_write_tools": true,
+    "allowed_change_paths": [],
+    "response": {
+      "min_questions": 1,
+      "max_questions": 3
+    }
+  },
+  "allowed_workspace_change_paths": [],
+  "skill_contract_sha256": "1992556407dd0e1d386fd82315fde0296bce26df2002f5deb5ff62b97ffdf254",
+  "skill_snapshot_before_sha256": "1e9bc77b686a9775a0295e2199cb5bbdb9c59d5ff0cf112d6d36d5cf9fcbd5ec",
+  "skill_snapshot_after_sha256": "1e9bc77b686a9775a0295e2199cb5bbdb9c59d5ff0cf112d6d36d5cf9fcbd5ec",
+  "skill_usage": "required",
+  "executor": "independent-luna-context",
+  "capability_evidence_status": "unverified",
+  "execution_receipt_sha256": "a3b2e19021aa3efe61a666f2e6f30752d2fa71ed767c41308f751527f277faef",
+  "execution_receipt_schema_version": 3,
+  "context_id": "5596cbcdb48c4cb492ede8215feab154"
+}

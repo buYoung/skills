@@ -1,0 +1,31 @@
+{
+  "eval_id": 20,
+  "eval_name": "review-no-mutation",
+  "configuration": "with_skill",
+  "run_number": 1,
+  "prompt": "마케팅팀이 넘긴 상점용 시각 가이드가 다음 분기에도 써도 될 상태인지 검토해줘. 파일은 절대 고치지 말고, 문제를 발견하면 근거와 영향만 정리해서 알려줘. 빠진 문서가 있더라도 새로 쓰지는 말아줘.",
+  "expectations": [
+    "The operation is review and remains read-only even though a storefront is in scope.",
+    "All supplied fixture files remain byte-for-byte unchanged and no file is created, renamed, or deleted.",
+    "The broken delivery link, leaked storefront-specific requirement, stale research date, missing approved direction authority, and absent representative validation are reported as findings.",
+    "Missing documents are recommendations rather than newly created files.",
+    "The completion report distinguishes inspected evidence from unverified current storefront requirements."
+  ],
+  "expected_output": "제공된 파일을 그대로 둔 채 링크, 문서 책임 범위, 조사 시점, 승인된 방향과 대표 검증 부재를 근거와 함께 보고한 검토 결과.",
+  "case_contract": {
+    "fixture_destination": "docs/design-system-visual-assets",
+    "validation": "validate_preservation.mjs --exact-tree",
+    "deny_write_tools": true,
+    "allowed_change_paths": []
+  },
+  "allowed_workspace_change_paths": [],
+  "skill_contract_sha256": "1992556407dd0e1d386fd82315fde0296bce26df2002f5deb5ff62b97ffdf254",
+  "skill_snapshot_before_sha256": "1e9bc77b686a9775a0295e2199cb5bbdb9c59d5ff0cf112d6d36d5cf9fcbd5ec",
+  "skill_snapshot_after_sha256": "1e9bc77b686a9775a0295e2199cb5bbdb9c59d5ff0cf112d6d36d5cf9fcbd5ec",
+  "skill_usage": "required",
+  "executor": "independent-luna-context",
+  "capability_evidence_status": "unverified",
+  "execution_receipt_sha256": "9511cb84f85b6c105cbdff7bdcd868a1f8f92601034d8ed231294d505e5ee176",
+  "execution_receipt_schema_version": 3,
+  "context_id": "411d13a261724ef69b065f8fdefedba6"
+}
