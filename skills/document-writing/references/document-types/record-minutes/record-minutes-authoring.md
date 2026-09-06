@@ -6,7 +6,7 @@ Identify the event, date, participants, source material, purpose, required level
 
 ## Drafting sequence
 
-1. Establish event metadata and source coverage.
+1. Establish event metadata and source coverage. Classify timestamps as event occurrence, statement or decision time, or meeting time before placing them; do not infer meeting duration from the first and last events in a log.
 2. Write a short factual summary.
 3. Organize the record by chronology or topic.
 4. Separate discussion from decisions.
@@ -14,6 +14,8 @@ Identify the event, date, participants, source material, purpose, required level
 6. Preserve unresolved disagreement and open questions.
 7. Link supporting material.
 8. Mark paraphrase, inference, or missing source coverage when material.
+
+Before delivery, compare time labels with the source: keep unknown timestamp roles explicit and confirm that the record's coverage range has not become an unsupported meeting time.
 
 ## Fidelity rules
 

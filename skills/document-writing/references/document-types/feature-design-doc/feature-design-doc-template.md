@@ -18,6 +18,8 @@ not:
 
 # [Feature Name] Feature Design Doc
 
+Authoring guidance: use the [internal decision note and ownership rules](feature-design-doc-section-responsibilities.md#internal-decision-note-before-drafting) before filling this template. Prompts and examples do not supply product decisions. Keep unsupported choices explicit, and define each exact rule once at its owner. These authoring instructions are not additional output sections.
+
 ## 1. Document Intent
 
 This document is the source of design decisions, not implementation actions.
@@ -149,6 +151,8 @@ Guidance:
 
 Describe user-visible flows, not implementation steps.
 
+Use supported actions and outcomes from the decision note. Refer to the owning policy or result definition for branch rules; an unprovided secondary or failure flow remains unresolved rather than being invented.
+
 ### 7.1 Main Flow
 
 ```text
@@ -182,6 +186,8 @@ Avoid file paths, function names, and PR ordering unless they are essential to t
 
 Describe how the system behaves.
 
+Check each behavior against the decision note, including implied state changes and claims that something remains unchanged. Describe local effects and refer to exact rules owned elsewhere; mark unsupported behavior with [NEEDS INPUT: ...].
+
 Examples:
 
 - What is captured?
@@ -206,6 +212,8 @@ Describe entities and important fields conceptually.
 
 Describe expected failure categories and how the system should respond.
 
+Include only supported categories and responses. The examples below prompt source checks, not mandatory design choices. Keep missing failure policies open and refer to their owner instead of choosing a conventional fallback.
+
 Examples:
 
 - Missing resource
@@ -223,6 +231,8 @@ Detailed user-visible result states may be placed in `Result Semantics`.
 Use this section for decisions that resolve ambiguity.
 
 Each policy should include the decision and rationale.
+
+Use only decisions backed by the note's inputs. Define the exact rule, numeric values, exceptions, and branch conditions here when this is their owner; other sections refer here. Missing policy or rationale is an open question, not permission to decide it while writing.
 
 ### 9.1 [Policy Area]
 
@@ -285,6 +295,8 @@ Why not chosen:
 > `Not applicable: [short reason]`
 >
 > Silence is not distinguishable from accidental omission.
+> If applicability or behavior is unknown, use [NEEDS INPUT: ...] rather than
+> inventing a rule or a non-applicability reason.
 >
 > Compact profile only: the six subsections below may be replaced by a
 > single list with one line per concern, e.g.

@@ -15,6 +15,10 @@
 
 ## Responsibility boundaries
 
+### Time and source coverage
+
+Distinguish when an event occurred, when a statement or decision was made, and when the meeting was held. Put event times in the event record and statement or decision times with their attribution; meeting metadata contains only supported meeting dates and times. The first and last logged events establish source coverage, not meeting start and end. Label an unknown meeting time as unknown or omit that field.
+
 ### Record
 
 Capture material statements, events, and evidence without turning them into recommendations.

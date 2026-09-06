@@ -10,10 +10,12 @@ Run the FDD validator. Treat its findings as the structural baseline rather than
 
 ## 2. Review semantic placement
 
+Execute the [semantic review procedure](feature-design-doc-validation.md#semantic-review-procedure) in read-only mode, using the source checks in step 3 as evidence. Reconstruct the internal decision note for the reviewed scope, compare actual claims with available authority, and identify unsupported certainty and repeated exact definitions. Report missing evidence as a verification gap rather than assuming invention.
+
 Check that:
 
 - Feature identity, non-goals, version scope, policies, alternatives, and result states occupy their assigned sections.
-- Cross-cutting concerns contain real answers or reasoned non-applicability.
+- Cross-cutting concerns contain supported answers, explicit unresolved questions, or reasoned non-applicability; unknown applicability has not been presented as non-applicability.
 - Alternatives are traceable rather than invented.
 - Implementation actions have not leaked into design sections.
 

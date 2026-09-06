@@ -40,11 +40,13 @@ For an implemented feature:
 
 Use external research only when the feature depends on an external standard, protocol, regulation, file format, cryptographic primitive, or platform API. Prefer primary sources. Skip generic web research for purely internal behavior.
 
+Build the [internal decision note](feature-design-doc-section-responsibilities.md#internal-decision-note-before-drafting) from these inputs before drafting. Separate supported decisions from open choices and assign their evidence and owning sections.
+
 ## 4. Draft top-down
 
-Follow the canonical template. Keep identity, non-goals, release scope, alternatives, policies, failure handling, and result states in their assigned sections.
+Follow the canonical template using the decision note. Keep identity, non-goals, release scope, alternatives, policies, failure handling, and result states in their assigned sections. Define exact rules only at their owner; other sections explain their local effects and refer to that definition. Leave unsupported behavior unresolved instead of completing template prompts by convention.
 
-For all cross-cutting concerns, provide concrete content or "Not applicable: <reason>". Do not leave silent gaps.
+For all cross-cutting concerns, provide supported concrete content, "Not applicable: <reason>" when justified, or an explicit missing-input marker. Do not leave silent gaps or treat unknown applicability as non-applicability.
 
 Use the full profile by default. Use compact only when all of these are true:
 
@@ -58,7 +60,7 @@ Use the full profile by default. Use compact only when all of these are true:
 
 Batch all remaining [NEEDS INPUT: ...] markers for the user. When no live user exists, retain the markers and identify the draft as incomplete.
 
-Run the structural validator, fix critical findings, and either fix or explicitly accept each major finding with a reason. Then perform the semantic responsibility and implementation-leakage review.
+Run the structural validator, fix critical findings, and either fix or explicitly accept each major finding with a reason. Then execute the [semantic review procedure](feature-design-doc-validation.md#semantic-review-procedure) on the actual draft against its inputs and decision note, correcting unsupported new decisions and duplicate definitions before delivery. If unresolved choices remain and no live user can answer, retain supported content and unresolved markers and report the result as an incomplete draft.
 
 ## 6. Save and index
 

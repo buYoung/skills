@@ -7,6 +7,7 @@ A reader who was absent should be able to identify what occurred, who was involv
 ## Findings to surface
 
 - Event metadata or source coverage is missing.
+- Event occurrence times, statement or decision times, and meeting times are conflated; meeting start or end is inferred from the first or last logged event rather than supported meeting metadata.
 - Discussion is presented as a decision.
 - Attribution is unsupported or inconsistent.
 - Chronology has been lost where sequence affects meaning.

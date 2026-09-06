@@ -45,7 +45,7 @@ It reports optional numbered sections without deciding whether their semantic tr
 
 ## Model responsibility
 
-After structural validation, review:
+After structural validation, execute the procedure below. Its review scope includes:
 
 - Section responsibility placement
 - Implementation leakage
@@ -56,3 +56,15 @@ After structural validation, review:
 - Whether lifecycle status, decision authority, verification basis, and reported coverage match the evidence, including pre-implementation and partial-update cases
 
 A structural pass is not a semantic pass. Never report the FDD as fully verified when only the script ran.
+
+## Semantic review procedure
+
+Run this as a distinct pass after drafting or editing, and during review or fact-check. Use the actual resulting document, authoritative inputs, and the [internal decision note](feature-design-doc-section-responsibilities.md#internal-decision-note-before-drafting), not memory of the writing plan. If a file was saved, read its current contents before comparing them; for a conversation-only draft, inspect the complete proposed Markdown.
+
+1. Establish the authorized check scope and evidence basis. Reconstruct the note if none exists. For a focused update or review, inspect changed sections and the owners and dependent references needed to assess their effects; do not turn this into an unrelated whole-document rewrite.
+2. Compare material claims in that text with the inputs and note. Pay particular attention to exact values, positive and negative policies, preconditions, exception branches, failure outcomes, and state changes. Identify statements that gained certainty or introduced a choice without support. Check in the reverse direction that supplied decisions were not lost or weakened. Do not use the new draft itself as evidence for its additions.
+3. Trace every current exact rule in scope to its one owning section and inspect other occurrences, including paraphrases. Retain the definition and supported rationale at the owner; elsewhere retain only the section-specific effect and a reference. Check that consolidation preserves meaning and references resolve. Preserve historical and protected exact text under the section-responsibility rules.
+4. Apply the remaining model-responsibility checks above, including implementation leakage and metadata coverage. In authoring modes, correct unsupported additions introduced by the work and duplicate current definitions within scope, leaving true choices explicitly open. For pre-existing conflicting or unverified decisions, report the gap and preserve their authority/history unless the request and evidence authorize changing them. In review-only modes, report findings and proposed corrections without writing any files or metadata.
+5. Re-read corrected passages with their owners and dependent references to confirm the identified issues were addressed without losing supported decisions. If edits changed structural elements, rerun the structural validator. Report structural results separately from the semantic comparison actually performed, its sources and scope, and remaining open questions; do not claim either check from the other.
+
+This pass requires an actual comparison, not another checklist declaration. It does not require a separate review file, a new tool, or a sub-agent. Apply the existing incomplete-draft and metadata contracts when input or verification is unavailable; a semantic pass alone does not establish implementation conformance.
