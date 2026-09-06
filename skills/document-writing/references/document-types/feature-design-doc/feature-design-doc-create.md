@@ -44,7 +44,7 @@ Build the [internal decision note](feature-design-doc-section-responsibilities.m
 
 ## 4. Draft top-down
 
-Follow the canonical template using the decision note. Keep identity, non-goals, release scope, alternatives, policies, failure handling, and result states in their assigned sections. Define exact rules only at their owner; other sections explain their local effects and refer to that definition. Leave unsupported behavior unresolved instead of completing template prompts by convention.
+Follow the canonical template using the decision note. Keep identity, non-goals, release scope, alternatives, policies, failure handling, and result states in their assigned sections. Keep authoritative rule definitions at their owner; other sections may give concise linked summaries, local effects, and user outcomes under the section-responsibility rules. Leave unsupported behavior unresolved instead of completing template prompts by convention.
 
 For all cross-cutting concerns, provide supported concrete content, "Not applicable: <reason>" when justified, or an explicit missing-input marker. Do not leave silent gaps or treat unknown applicability as non-applicability.
 

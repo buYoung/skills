@@ -18,7 +18,7 @@ not:
 
 # [Feature Name] Feature Design Doc
 
-Authoring guidance: use the [internal decision note and ownership rules](feature-design-doc-section-responsibilities.md#internal-decision-note-before-drafting) before filling this template. Prompts and examples do not supply product decisions. Keep unsupported choices explicit, and define each exact rule once at its owner. These authoring instructions are not additional output sections.
+Authoring guidance: use the [internal decision note and ownership rules](feature-design-doc-section-responsibilities.md#internal-decision-note-before-drafting) before filling this template. Prompts and examples do not supply product decisions. Keep unsupported choices explicit and authoritative rule definitions at their owner; concise linked summaries and contextual effects are allowed elsewhere. These authoring instructions are not additional output sections.
 
 ## 1. Document Intent
 
@@ -186,7 +186,7 @@ Avoid file paths, function names, and PR ordering unless they are essential to t
 
 Describe how the system behaves.
 
-Check each behavior against the decision note, including implied state changes and claims that something remains unchanged. Describe local effects and refer to exact rules owned elsewhere; mark unsupported behavior with [NEEDS INPUT: ...].
+Check each behavior against the decision note, including implied state changes and claims that something remains unchanged. Describe local effects while preserving or clearly referencing the owning policy's applicability conditions; a broader concept definition does not broaden that policy. Mark material unsupported behavior within the requested scope with [NEEDS INPUT: ...].
 
 Examples:
 
@@ -212,7 +212,7 @@ Describe entities and important fields conceptually.
 
 Describe expected failure categories and how the system should respond.
 
-Include only supported categories and responses. The examples below prompt source checks, not mandatory design choices. Keep missing failure policies open and refer to their owner instead of choosing a conventional fallback.
+Include only supported categories and responses, preserving or clearly referencing the owning policy's conditions for each response. The examples below prompt source checks, not mandatory design choices. Keep material missing failure policies within the requested scope open and refer to their owner instead of choosing a conventional fallback.
 
 Examples:
 
@@ -232,7 +232,7 @@ Use this section for decisions that resolve ambiguity.
 
 Each policy should include the decision and rationale.
 
-Use only decisions backed by the note's inputs. Define the exact rule, numeric values, exceptions, and branch conditions here when this is their owner; other sections refer here. Missing policy or rationale is an open question, not permission to decide it while writing.
+Use only decisions backed by the note's inputs. Define the exact rule, numeric values, exceptions, and branch conditions here when this is their owner; other sections may summarize the policy or explain its effects with a reference here. Missing policy or rationale is an open question, not permission to decide it while writing.
 
 ### 9.1 [Policy Area]
 

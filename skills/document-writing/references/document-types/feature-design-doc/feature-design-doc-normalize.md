@@ -8,7 +8,7 @@ Read the canonical template, section responsibilities, implementation-leakage ru
 
 1. Confirm the artifact is genuinely an FDD.
 2. Build the [internal decision note](feature-design-doc-section-responsibilities.md#internal-decision-note-before-drafting) from the original and supplied sources, mapping each statement to its design responsibility and preserving unresolved status.
-3. Move design content into the correct FDD section. Consolidate current exact definitions at their owner and retain contextual effects with references elsewhere; do not resolve missing behavior to fill the template.
+3. Move design content into the correct FDD section. Consolidate current authoritative definitions at their owner and retain concise linked summaries and contextual effects elsewhere under the section-responsibility rules; do not resolve missing behavior to fill the template.
 4. Remove implementation actions from the FDD while reporting where they belong.
 5. Preserve decisions and history.
 6. Report material movements.

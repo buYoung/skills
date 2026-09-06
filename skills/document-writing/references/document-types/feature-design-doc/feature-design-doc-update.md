@@ -9,7 +9,7 @@ FDD updates are append-oriented: current facts change in place, but decision his
 1. Confirm the existing file is the canonical FDD for the feature.
 2. Identify changed behavior, policies, scope, result states, platform constraints, risks, or decisions. Build the [internal decision note](feature-design-doc-section-responsibilities.md#internal-decision-note-before-drafting), separating retained decisions, supported changes, and unresolved choices with evidence and owners.
 3. Compare the document with current implementation when implementation is in scope.
-4. Update factual sections in place, defining each changed exact rule once at its owner and updating dependent effects and references without inventing missing behavior.
+4. Update factual sections in place, keeping each changed rule's authoritative definition at its owner and updating dependent summaries, effects, and references under the section-responsibility rules without inventing missing behavior.
 5. Preserve decision history.
 6. Append Revision History.
 7. Record verification scope and update metadata according to the validation reference.
