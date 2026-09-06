@@ -19,6 +19,6 @@ Help a reader understand a concept, system, policy rationale, change, or context
 
 ## Load next
 
-- For create, rewrite, or update: read [explanation-structure.md](explanation-structure.md) and [explanation-authoring.md](explanation-authoring.md).
+- For create, rewrite, update, or normalize: read [explanation-structure.md](explanation-structure.md) and [explanation-authoring.md](explanation-authoring.md). For normalize, follow the shared [existing-document-edits.md](../../shared/existing-document-edits.md) rules for preserving meaning and reporting structural changes.
 - For review or fact-check: read [explanation-structure.md](explanation-structure.md) and [explanation-review.md](explanation-review.md).
 - Use the shared source-grounding reference when factual claims need verification.

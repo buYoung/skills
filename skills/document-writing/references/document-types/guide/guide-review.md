@@ -14,6 +14,7 @@ Review the guide as a reader who has the stated prerequisites but no author cont
 - A destructive action lacks a warning or rollback.
 - Troubleshooting dominates enough that the artifact should be a runbook.
 - Version or environment assumptions are unstated.
+- A restart or retry repeats a state-changing step without explaining its supported behavior.
 
 ## Quality bar
 

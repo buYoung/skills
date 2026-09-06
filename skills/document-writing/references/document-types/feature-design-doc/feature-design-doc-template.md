@@ -2,10 +2,10 @@
 doc-type: Feature Design Doc
 profile: full # full | compact — see feature-design-doc-create.md
 feature-name: [kebab-case-feature-name]
-status: active # active | superseded
+status: draft # draft | active | superseded — see feature-design-doc-validation.md
 created: [YYYY-MM-DD]
-last-verified: [YYYY-MM-DD]
-verified-against: [commit hash the doc was last checked against]
+last-verified: unverified # YYYY-MM-DD only after a whole-document check
+verified-against: unverified # commit hash | not-applicable-pre-implementation | unverified
 tags: [] # search keywords / aliases for discovery
 related: [] # relative paths to related FDDs
 purpose: Source of design decisions, not implementation actions
@@ -27,6 +27,11 @@ cross-cutting concerns, and alternatives considered.
 
 Implementation plans, task ordering, file paths, function names, and PR breakdowns
 are produced separately.
+
+State whether the design is a draft or an authoritative decision source, identify
+the supplied decision authority, and describe what was actually verified. For
+pre-implementation documents, distinguish design-source review from implementation
+conformance. Use the metadata rules in `feature-design-doc-validation.md`.
 
 ---
 

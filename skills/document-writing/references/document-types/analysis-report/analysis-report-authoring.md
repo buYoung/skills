@@ -19,6 +19,7 @@ Identify the analytical question, audience, decision context, time boundary, dat
 
 - Use consistent denominators, time periods, and comparison baselines.
 - Explain material data transformations.
+- For quantitative analysis, preserve the aggregation unit, inclusion or exclusion criteria, missing-data treatment, calculation basis, and source snapshot or date when they affect the conclusion. Record what was actually used and flag unavailable methods; do not invent them to make the analysis appear reproducible.
 - Avoid implying causation from correlation.
 - Label estimates and assumptions.
 - Prefer exact sourced values over adjectives such as "large" or "significant".

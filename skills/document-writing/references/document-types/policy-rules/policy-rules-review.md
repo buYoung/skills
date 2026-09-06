@@ -13,6 +13,7 @@ A covered reader should be able to determine whether the policy applies, what th
 - Exception approval is unowned.
 - A procedure is embedded without clarifying whether every step is mandatory.
 - The effective date or revision status is unclear.
+- A draft or approved-but-not-yet-effective policy is presented as already in force without supporting authority.
 - The artifact is actually a guide, proposal, or FDD.
 
 ## Quality bar

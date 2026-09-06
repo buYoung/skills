@@ -23,6 +23,7 @@ Identify the system, supported environment, symptoms, impact, observability sour
 - Prefer read-only checks before mutations.
 - Avoid commands with unresolved targets or broad globs.
 - Do not promise recovery without a verification step.
+- When recovery requires waiting, polling, or retrying, preserve verified waiting limits, retry bounds, and stop or escalation criteria. If a material bound is unknown, mark it unresolved and direct the operator to the escalation owner before repeating an unbounded action; do not invent a duration or retry count.
 
 ## Avoid
 

@@ -22,6 +22,7 @@ Identify the target outcome, starting state, reader permissions, environment, re
 - Separate commands that run in different directories or environments.
 - Warn before destructive, irreversible, or service-disrupting actions.
 - Offer rollback when a step changes durable state and rollback is practical.
+- When a task can be interrupted or repeated, explain the supported restart point and any effect of repeating completed steps. Do not assume a command is safe to rerun without evidence.
 
 ## Avoid
 

@@ -11,6 +11,7 @@ A reader who was absent should be able to identify what occurred, who was involv
 - Attribution is unsupported or inconsistent.
 - Chronology has been lost where sequence affects meaning.
 - Action items lack known owners or dates without being marked incomplete.
+- An agreed action was omitted because its owner or due date was unresolved.
 - Corrections erase rather than amend history.
 - Analysis or recommendations overshadow the record.
 - The artifact is actually a report, policy, proposal, or FDD.

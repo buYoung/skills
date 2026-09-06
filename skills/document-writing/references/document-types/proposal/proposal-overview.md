@@ -21,6 +21,6 @@ A request to review an existing document is an operation, not evidence that the 
 
 ## Load next
 
-- For create, rewrite, or update: read [proposal-structure.md](proposal-structure.md) and [proposal-authoring.md](proposal-authoring.md).
+- For create, rewrite, update, or normalize: read [proposal-structure.md](proposal-structure.md) and [proposal-authoring.md](proposal-authoring.md). For normalize, follow the shared [existing-document-edits.md](../../shared/existing-document-edits.md) rules for preserving meaning and reporting structural changes.
 - For review or fact-check: read [proposal-structure.md](proposal-structure.md) and [proposal-review.md](proposal-review.md).
 - Use the shared source-grounding reference for factual, financial, or comparative claims.

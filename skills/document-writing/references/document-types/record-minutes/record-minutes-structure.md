@@ -9,7 +9,7 @@
 5. Concise summary
 6. Chronological or topic-based record
 7. Decisions and agreements
-8. Action items, when requested
+8. Agreed action items, when present in the source or explicitly requested
 9. Open questions and follow-up
 10. Attachments or source links
 
@@ -25,7 +25,7 @@ Record what was actually agreed, by whom, and any effective condition. Do not in
 
 ### Action items
 
-Include owner and due date only when known. Mark missing ownership rather than inventing it.
+Preserve the agreed action even when its owner or due date is unknown. Include only known values and mark missing ownership or timing explicitly rather than inventing it or omitting the action.
 
 ## Ordering
 

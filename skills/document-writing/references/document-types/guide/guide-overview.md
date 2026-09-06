@@ -18,5 +18,5 @@ Enable a reader to complete a known task from a normal starting state by followi
 
 ## Load next
 
-- For create, rewrite, or update: read [guide-structure.md](guide-structure.md) and [guide-authoring.md](guide-authoring.md).
+- For create, rewrite, update, or normalize: read [guide-structure.md](guide-structure.md) and [guide-authoring.md](guide-authoring.md). For normalize, follow the shared [existing-document-edits.md](../../shared/existing-document-edits.md) rules for preserving meaning and reporting structural changes.
 - For review or fact-check: read [guide-structure.md](guide-structure.md) and [guide-review.md](guide-review.md).

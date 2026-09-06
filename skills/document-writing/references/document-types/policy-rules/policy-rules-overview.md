@@ -19,6 +19,6 @@ Define durable obligations, permissions, prohibitions, exceptions, and ownership
 
 ## Load next
 
-- For create, rewrite, or update: read [policy-rules-structure.md](policy-rules-structure.md) and [policy-rules-authoring.md](policy-rules-authoring.md).
+- For create, rewrite, update, or normalize: read [policy-rules-structure.md](policy-rules-structure.md) and [policy-rules-authoring.md](policy-rules-authoring.md). For normalize, follow the shared [existing-document-edits.md](../../shared/existing-document-edits.md) rules for preserving meaning and reporting structural changes.
 - For review or fact-check: read [policy-rules-structure.md](policy-rules-structure.md) and [policy-rules-review.md](policy-rules-review.md).
 - Use source grounding when laws, standards, contracts, or external obligations are cited.

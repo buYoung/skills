@@ -15,7 +15,7 @@
 
 Organize by the keys readers already know: endpoint, command, field, option, state, concept, or error code. Use tables only when every row shares meaningful columns.
 
-When the reader needs an implementation-time lookup surface, place every user-requested contract item in a quick-reference table immediately after the title and scope. Put terminology before that table only when the table cannot be interpreted without it.
+When the reader needs an implementation-time lookup surface, make every user-requested contract item discoverable from a quick-reference table immediately after the title and scope. For a large contract, use that table as an index linking to canonical detail sections instead of duplicating every rule in one oversized table. Put terminology before the table only when it cannot be interpreted without it.
 
 For each contract item, include only applicable fields such as:
 

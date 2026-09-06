@@ -4,6 +4,8 @@
 
 Identify the governing authority, audience, covered activities, effective date, owner, obligations, exceptions, enforcement model, and related higher-order requirements.
 
+Distinguish a review draft, an approved policy awaiting its effective date, and a policy already in force using supplied authority. Writing or editing the text does not approve or enact it. Preserve the existing status during a wording-only change; mark unknown approval or effective dates as unresolved instead of inventing them. This is a document-state rule, not a requirement to obtain new approval before authoring a requested draft.
+
 ## Drafting sequence
 
 1. State the governing rule in plain language.

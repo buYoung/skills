@@ -17,6 +17,8 @@ Use this reference whenever the user supplies an existing document for update, r
 - Rewrite: improve the requested content while retaining authoritative meaning and constraints.
 - Normalize: move content into the right structural responsibilities and report what moved.
 
+For normalization, use the selected type's structure and authoring references to map existing content into its owning sections. Preserve supported meaning, exact text, and history; do not invent missing content or change decisions merely to fill the default structure. Use the type's review criteria to check the result and report material moves and unresolved gaps. A type-specific normalization workflow takes precedence over this generic sequence.
+
 ## Collision handling
 
 Inspect the target before writing. Do not overwrite a different artifact, fork arbitrary version files, or create date-suffixed copies to avoid deciding which document is canonical. Ask when canonical ownership cannot be inferred safely.

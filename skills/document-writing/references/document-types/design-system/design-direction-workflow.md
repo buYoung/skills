@@ -19,6 +19,22 @@ An explicit approval recorded in an authoritative existing source counts as appr
 
 When two output sets govern the same product and brand, they may share one approved upper-level direction when authoritative evidence supports that relationship. Their contextual rules and representative validation remain separate.
 
+## Authoring decision order
+
+This table is the canonical operation gate. After gathering available evidence, apply the first matching row to each output set. Resolve operation and type first, then destination, whole-set scope, direction, and representative validation. A missing fact confined to one conditional owner is not a whole-set blocker. For storefront scope and source availability, also apply the whole-set stop and fallback in [storefront-research.md](storefront-research.md).
+
+| First matching condition | Action and completion boundary |
+| --- | --- |
+| Review or fact-check | Remain read-only. Report missing approval, validation, owners, or source evidence as findings; do not request approval to perform the review. |
+| Destination collision, invalid multi-file root, or unresolved scope blocks the whole set | Ask only the earliest blocking question. Do not write files or ask later direction or validation questions. |
+| Focused existing revision preserves the approved direction and its affected decision chain is known | Reuse the established approval. Trace the authority through owning rules, aliases or bindings, and final consumers; update only affected owners and verify affected representative states. Do not require unrelated exploration or two new whole-system examples. Report historical evidence gaps and the actual verification scope without claiming the entire set was validated. |
+| Authoring lacks approval for the requested direction | Follow the direction proposal and feedback sections below. Ask the user to approve or correct the recommendation; write no document set while approval is missing. |
+| Other authoring has an approved direction but lacks two contrasting representative results or authoritative validation records | Follow the representative validation section below. Ask for existing results or authorization for a separate production deliverable; write no provisional set. |
+| Direction and representative validation are established, but one conditional branch remains unresolved | Apply the partial-authoring rule below: write confirmed common and conditional owners first, record the pending branch, omit its file, then ask one direct question. Report partial completion. |
+| Direction, representative validation, and required scope are established | Author the supported owners and verify the resolved output contract before reporting completion. |
+
+An existing approval for the requested direction is sufficient; do not ask for it again or reuse an old direction's approval for a replacement. A revision that changes the direction does not qualify for the focused-revision row. An unanswered decision is never approval. The remaining sections explain how to carry out these actions and do not override this ordering.
+
 ## Gather evidence before asking
 
 Inspect what is available before asking the user:
@@ -119,7 +135,7 @@ Classify the approved decisions:
 
 ## Validate representative results
 
-Do not finalize a direction from prose alone or from one favorable result. Validate at least two contrasting representative situations chosen for the governed system, such as:
+For work requiring direction validation under the decision table, do not finalize a direction from prose alone or from one favorable result. Validate at least two contrasting representative situations chosen for the governed system, such as:
 
 - Simple and information-dense views
 - Default and interaction or error states
@@ -144,15 +160,6 @@ Revise at the owning level and repeat the affected representative checks. Do not
 
 ## Ready-to-document gate
 
-Proceed to authoring or finalization only when all of these are true:
-
-- An authoritative existing source or the user explicitly approves one design direction.
-- The direction can be stated in one or two sentences.
-- The relevant design axes and core principles are clear.
-- Invariant, variable, conditional, prohibited, and verification decisions are distinguishable.
-- At least two contrasting representative situations support the direction.
-- Platform- or storefront-specific adaptation is separate from the common direction.
-- Material qualitative feedback has been translated into confirmed rules.
-- Any remaining decision is explicitly unresolved rather than hidden.
+Use the authoring decision table to determine whether the current operation may proceed and whether completion is whole-set, focused, or partial. For the permitted scope, confirm that the approved direction can be stated in one or two sentences, relevant axes and principles are clear, decision classes are distinguishable, contextual adaptations are separate, and material qualitative feedback has been confirmed. Keep remaining decisions explicit.
 
 Record only the approved direction, its supporting rationale, and validation result in the canonical document set. Do not preserve rejected direction hypotheses in the final source of truth unless the user explicitly asks for a separate decision history.

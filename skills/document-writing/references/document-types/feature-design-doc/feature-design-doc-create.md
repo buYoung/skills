@@ -22,6 +22,8 @@ Establish in one batched round:
 4. Primary users or actors
 5. Target version or release boundary
 
+Establish whether the supplied decisions are a draft or the authoritative current design, and apply the status and verification metadata rules in [feature-design-doc-validation.md](feature-design-doc-validation.md). An implementation that does not yet exist has no verified implementation commit; identify the design sources instead.
+
 For solo or continuous-delivery work without a release train, use "as implemented (YYYY-MM-DD)" when documenting current behavior.
 
 If no live user can answer, infer only what evidence supports and mark true gaps with [NEEDS INPUT: ...].
@@ -62,4 +64,4 @@ Run the structural validator, fix critical findings, and either fix or explicitl
 
 Save to `docs/FDD/<kebab-case-feature-name>.md`. If the file exists, stop and switch to Update. Do not create versioned or date-suffixed duplicates.
 
-Maintain `docs/FDD/index.md` with one entry per FDD: linked feature name, one-sentence definition, profile, status, and last-verified date.
+Maintain `docs/FDD/index.md` with one entry per FDD: linked feature name, one-sentence definition, profile, status, and the document's `last-verified` value (a date or `unverified`). Do not turn an unknown verification date into the save date.

@@ -12,7 +12,7 @@ FDD updates are append-oriented: current facts change in place, but decision his
 4. Update factual sections in place.
 5. Preserve decision history.
 6. Append Revision History.
-7. Refresh verification metadata.
+7. Record verification scope and update metadata according to the validation reference.
 8. Validate and update the index.
 
 ## Factual sections
@@ -27,7 +27,7 @@ Record known document-versus-implementation deviations that remain unresolved.
 
 ## Metadata and index
 
-Refresh last-verified and verified-against. Update tags, related paths, status, and the index entry only when their meaning changed.
+Apply [feature-design-doc-validation.md](feature-design-doc-validation.md) for status and verification metadata. A partial update records its checks and unchecked remainder in Revision History without advancing the previous whole-document `last-verified` or `verified-against`. Refresh those fields only after a whole-document check. Update tags, related paths, status, and the index entry only when their meaning changed.
 
 ## Final verification
 

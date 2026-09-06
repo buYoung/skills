@@ -19,6 +19,6 @@ Help an operator diagnose and recover from an abnormal state safely, using obser
 
 ## Load next
 
-- For create, rewrite, or update: read [troubleshooting-runbook-structure.md](troubleshooting-runbook-structure.md) and [troubleshooting-runbook-authoring.md](troubleshooting-runbook-authoring.md).
+- For create, rewrite, update, or normalize: read [troubleshooting-runbook-structure.md](troubleshooting-runbook-structure.md) and [troubleshooting-runbook-authoring.md](troubleshooting-runbook-authoring.md). For normalize, follow the shared [existing-document-edits.md](../../shared/existing-document-edits.md) rules for preserving meaning and reporting structural changes.
 - For review or fact-check: read [troubleshooting-runbook-structure.md](troubleshooting-runbook-structure.md) and [troubleshooting-runbook-review.md](troubleshooting-runbook-review.md).
 - Use source grounding when commands, system behavior, or escalation data must be verified.

@@ -91,17 +91,17 @@ def validate(
     if png_count is not None:
         png_files = sorted(root.glob("*.png"))
         check(len(png_files) == png_count, f"document root contains exactly {png_count} PNG file(s)")
-        if len(png_files) == png_count == 1:
-            inspected = inspect_png(png_files[0])
-            check(inspected is not None, "PNG is structurally complete")
+        for png_path in png_files:
+            inspected = inspect_png(png_path)
+            check(inspected is not None, f"PNG is structurally complete: {png_path.name}")
             if inspected is not None:
                 width, height, has_alpha = inspected
                 if png_width is not None:
-                    check(width == png_width, f"PNG width is {png_width}")
+                    check(width == png_width, f"PNG width is {png_width}: {png_path.name}")
                 if png_height is not None:
-                    check(height == png_height, f"PNG height is {png_height}")
+                    check(height == png_height, f"PNG height is {png_height}: {png_path.name}")
                 if png_alpha is not None:
-                    check(has_alpha is png_alpha, f"PNG alpha is {png_alpha}")
+                    check(has_alpha is png_alpha, f"PNG alpha is {png_alpha}: {png_path.name}")
     return {"checks": checks, "failures": failures}
 
 

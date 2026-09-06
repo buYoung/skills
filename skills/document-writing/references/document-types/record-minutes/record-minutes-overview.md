@@ -19,6 +19,6 @@ Preserve what happened, who participated, what was said or agreed, and what rema
 
 ## Load next
 
-- For create, rewrite, or update: read [record-minutes-structure.md](record-minutes-structure.md) and [record-minutes-authoring.md](record-minutes-authoring.md).
+- For create, rewrite, update, or normalize: read [record-minutes-structure.md](record-minutes-structure.md) and [record-minutes-authoring.md](record-minutes-authoring.md). For normalize, follow the shared [existing-document-edits.md](../../shared/existing-document-edits.md) rules for preserving meaning and reporting structural changes.
 - For review or fact-check: read [record-minutes-structure.md](record-minutes-structure.md) and [record-minutes-review.md](record-minutes-review.md).
 - Use the shared existing-document reference before modifying an append-only or historical record.

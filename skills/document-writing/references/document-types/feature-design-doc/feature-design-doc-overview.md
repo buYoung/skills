@@ -25,6 +25,7 @@ FDD contains product and system design decisions. It does not contain implementa
 | --- | --- | --- |
 | Create | No FDD exists and the user wants a new or just-built feature documented | [feature-design-doc-create.md](feature-design-doc-create.md) |
 | Update | The canonical FDD exists and behavior or decisions changed | [feature-design-doc-update.md](feature-design-doc-update.md) |
+| Rewrite | The user wants the existing FDD reworded while retaining its design decisions | [feature-design-doc-normalize.md](feature-design-doc-normalize.md); improve wording within the existing responsibilities and preserve decisions and history |
 | Fact-check | The user asks to review, validate, audit, or verify an existing FDD | [feature-design-doc-fact-check.md](feature-design-doc-fact-check.md) |
 | Normalize | Existing content mixes design and implementation or uses the wrong sections | [feature-design-doc-normalize.md](feature-design-doc-normalize.md) |
 
@@ -47,3 +48,4 @@ Follow the selected mode. Load these only when that mode directs:
 - Body language: user's primary language
 - Numbered template headings and frontmatter keys: preserve the canonical English contract
 - Unknown decisions: mark explicitly rather than inventing
+- Status and verification basis: follow [feature-design-doc-validation.md](feature-design-doc-validation.md), including pre-implementation and partial-update cases

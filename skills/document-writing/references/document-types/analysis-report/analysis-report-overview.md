@@ -19,6 +19,6 @@ Communicate evidence, findings, interpretation, implications, and limitations so
 
 ## Load next
 
-- For create, rewrite, or update: read [analysis-report-structure.md](analysis-report-structure.md) and [analysis-report-authoring.md](analysis-report-authoring.md).
+- For create, rewrite, update, or normalize: read [analysis-report-structure.md](analysis-report-structure.md) and [analysis-report-authoring.md](analysis-report-authoring.md). For normalize, follow the shared [existing-document-edits.md](../../shared/existing-document-edits.md) rules for preserving meaning and reporting structural changes.
 - For review or fact-check: read [analysis-report-structure.md](analysis-report-structure.md) and [analysis-report-review.md](analysis-report-review.md).
 - Use the shared source-grounding reference for all material findings.

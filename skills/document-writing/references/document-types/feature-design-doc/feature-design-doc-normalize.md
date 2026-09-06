@@ -14,6 +14,8 @@ Read the canonical template, section responsibilities, implementation-leakage ru
 6. Report material movements.
 7. Validate the normalized document.
 
+Preserve lifecycle status and factual verification metadata unless the work also establishes a new design authority or performs a factual check. Record normalization and its actual scope in Revision History according to [feature-design-doc-validation.md](feature-design-doc-validation.md); structural conformance alone does not renew factual verification.
+
 Do not silently delete useful implementation content. Identify it as belonging in an implementation plan or other downstream artifact.
 
 Normalization edits a decision record. Do not overwrite the original in place without authorization when the request is review-only or the canonical ownership is unclear.

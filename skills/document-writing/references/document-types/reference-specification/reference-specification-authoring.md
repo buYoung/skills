@@ -15,6 +15,8 @@ Identify the authority for the contract, supported version, audience vocabulary,
 7. Add exceptions beside the affected contract.
 8. Check every cross-reference and identifier.
 
+When revising a versioned contract, compare the affected items with the previous authoritative version. Identify changes that preserve compatibility and changes that require consumer adaptation, with their applicability and effective version. Keep uncertain compatibility explicit; do not turn this comparison into an implementation task plan.
+
 ## Precision rules
 
 - Use "must", "should", and "may" consistently when normative strength matters.

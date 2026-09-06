@@ -20,6 +20,6 @@ Provide an exact, stable, non-linear lookup surface for definitions, fields, opt
 
 ## Load next
 
-- For create, rewrite, or update: read [reference-specification-structure.md](reference-specification-structure.md) and [reference-specification-authoring.md](reference-specification-authoring.md).
+- For create, rewrite, update, or normalize: read [reference-specification-structure.md](reference-specification-structure.md) and [reference-specification-authoring.md](reference-specification-authoring.md). For normalize, follow the shared [existing-document-edits.md](../../shared/existing-document-edits.md) rules for preserving meaning and reporting structural changes.
 - For review or fact-check: read [reference-specification-structure.md](reference-specification-structure.md) and [reference-specification-review.md](reference-specification-review.md).
 - Read the shared source-grounding reference whenever the contract must be verified against implementation or an external standard.

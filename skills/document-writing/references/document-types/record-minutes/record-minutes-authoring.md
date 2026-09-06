@@ -10,7 +10,7 @@ Identify the event, date, participants, source material, purpose, required level
 2. Write a short factual summary.
 3. Organize the record by chronology or topic.
 4. Separate discussion from decisions.
-5. Record action items only with supported owners and dates.
+5. Preserve agreed action items even when an owner or due date is missing. Record only supported owners and dates, and mark each missing value as unresolved.
 6. Preserve unresolved disagreement and open questions.
 7. Link supporting material.
 8. Mark paraphrase, inference, or missing source coverage when material.

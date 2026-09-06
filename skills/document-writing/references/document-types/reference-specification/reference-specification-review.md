@@ -13,6 +13,7 @@ A reader should be able to locate an item by its known name and determine its ex
 - Examples imply a rule not stated in the contract.
 - Defaults, units, or failure states are ambiguous.
 - Cross-references or identifiers do not resolve.
+- A revised contract changes consumer obligations without identifying the affected items, version, or compatibility impact.
 - The artifact is actually an overview, guide, policy, or FDD.
 
 ## Quality bar

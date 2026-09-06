@@ -10,7 +10,7 @@
 6. Roles and responsibilities
 7. Exceptions and approval authority
 8. Compliance, reporting, or escalation
-9. Effective date, owner, and revision history
+9. Approval and effective status, effective date, owner, and revision history
 10. Related procedures or references
 
 ## Section responsibilities

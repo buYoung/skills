@@ -12,6 +12,7 @@ Starting from each documented symptom, an operator should be able to select a sa
 - Recovery lacks verification or rollback.
 - A destructive command has an unresolved or broad target.
 - Escalation criteria or ownership is missing.
+- Waiting or retries have no supported bound or actionable stop condition, allowing an indefinite recovery loop.
 - Prevention work interrupts active recovery.
 - The artifact is actually a normal guide, incident record, or analysis report.
 

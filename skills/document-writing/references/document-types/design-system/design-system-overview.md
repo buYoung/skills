@@ -45,7 +45,7 @@ If the user explicitly asks for a chat-only draft, return the coordinated Markdo
 
 ## Load next
 
-- For every operation: read [design-direction-workflow.md](design-direction-workflow.md) and classify the maturity of each output set.
+- For every operation: read [design-direction-workflow.md](design-direction-workflow.md), classify each output set's maturity, and apply its ordered operation gate before writing or requesting a decision.
 - For create, rewrite, update, or normalize: then read [design-system-authoring.md](design-system-authoring.md) and the selected prebuilt.
 - For review or fact-check: then read [design-system-review.md](design-system-review.md) and the selected prebuilt.
 - When a product platform is explicitly in scope for `default`: also read [platform-adaptation.md](platform-adaptation.md).
@@ -59,8 +59,7 @@ If the user explicitly asks for a chat-only draft, return the coordinated Markdo
 - Give each concept one stable name and one canonical owning file. Cross-reference that owner instead of copying the decision.
 - Record only an approved direction, its rationale, and its representative validation; rejected hypotheses stay out of the canonical set unless the user requests a separate decision history.
 - Classify direction-bearing decisions as invariant, variable, conditional, prohibited, or verification decisions. Preserve common rules separately from platform- or store-specific differences.
-- Do not write a new or direction-changing set while direction approval or representative validation is still missing. Present direction hypotheses and the required user decision in the conversation instead.
-- Reuse an explicit approved direction from an authoritative existing source. Do not infer approval from visual similarity alone or reopen broad exploration for a narrow change whose affected decision flow is already clear.
+- Follow the [authoring decision order](design-direction-workflow.md#authoring-decision-order) for approval, representative validation, focused revisions, and partial completion. Do not infer approval from visual similarity alone.
 - For every in-scope storefront, create or update one storefront file only during create, update, rewrite, or normalize, after either current first-party research or the explicit capability-limited fallback. Review and fact-check report missing, stale, or conflicting storefront information without changing files.
 - Do not invent tokens, values, sizes, policies, brand decisions, platform behavior, or marketplace requirements.
 - Mark a necessary but unresolved decision explicitly. Do not create empty ceremonial sections or placeholder platform, store, or item files.

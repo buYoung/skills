@@ -21,6 +21,8 @@ Check that:
 
 Use repository evidence for current concepts, related features, behavior, conceptual models, configuration, policies, result states, and platform support.
 
+First apply the status and verification metadata rules in the validation reference. For a pre-implementation FDD, check consistency with the authoritative design inputs and distinguish planned behavior from implemented behavior; do not treat the absence of an implementation as a defect or imply a commit was verified. For a scoped review, report exactly which sections and sources were checked and what remains unchecked. Review remains read-only, including verification metadata.
+
 Use primary external sources only for relevant standards, protocols, regulations, formats, security requirements, or platform APIs.
 
 Do not waste verification effort on narrative problem framing that only reflects product intent.

@@ -10,6 +10,7 @@ A reader should be able to trace each major conclusion to findings and understan
 - The executive summary overstates the evidence.
 - Facts, interpretations, and recommendations are mixed.
 - Findings use inconsistent baselines or denominators.
+- A quantitative conclusion cannot be traced to its material aggregation, selection, missing-data, calculation, or source-date assumptions.
 - Causal claims exceed the method.
 - Limitations are generic or omit a material gap.
 - Supporting detail obscures the main narrative.
