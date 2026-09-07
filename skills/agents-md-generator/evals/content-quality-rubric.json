@@ -1,0 +1,108 @@
+{
+  "fixed": true,
+  "criteria": [
+    {
+      "id": "C1",
+      "requirement": "jsonQueryType 설정의 실제 세 엔진 이름(Jayway JsonPath, JMESPath, Jackson jq)과 선택값이 실제 실행 엔진으로 전파된다는 점을 설명한다. 표현식 검증 분기는 선택적 상세이며 언급할 경우에만 정확성을 본다.",
+      "evidence": [
+        {"path": "src/main/kotlin/com/livteam/jsoninja/model/JsonQueryType.kt", "lines": "3-14", "finding": "세 enum 값과 잘못된 문자열의 Jayway 기본값을 정의한다."},
+        {"path": "src/main/kotlin/com/livteam/jsoninja/services/JsonQueryService.kt", "lines": "29-42,51-64,67-123,131-149", "finding": "설정값을 읽어 세 엔진의 실행 및 검증 구현으로 각각 분기한다."},
+        {"path": "src/main/kotlin/com/livteam/jsoninja/ui/component/jsonQuery/JsonQueryPresenter.kt", "lines": "129-151", "finding": "유효성 검증과 실제 query 호출 결과가 UI 적용 흐름으로 이어진다."}
+      ],
+      "pass_guidance": "‘설정에서 Jayway JsonPath, JMESPath, Jackson jq 중 하나를 선택하며 그 값이 실제 쿼리 실행 분기로 전달된다’는 의미면 통과한다. 표현식 검증, private 함수명, jq 버전은 필수가 아니다.",
+      "failure_examples": ["Jayway JsonPath와 JMESPath 두 엔진만 지원한다.", "Jackson jq는 지원하지 않는다.", "설정 UI에 jq 항목이 있다는 사실만 말하고 실제 실행 분기를 설명하지 않는다."]
+    },
+    {
+      "id": "C2",
+      "requirement": "JSON 생성 전에 $ref와 $dynamicRef를 해결하며 내부 fragment, 로컬 파일, HTTP(S) 원격 문서 참조를 지원한다는 점을 설명한다. anchor, allOf, 상대 원격 참조는 선택적 상세다.",
+      "evidence": [
+        {"path": "src/main/kotlin/com/livteam/jsoninja/services/schema/JsonSchemaDataGenerationService.kt", "lines": "40-63,75-76", "finding": "parse 후 normalizer를 거쳐 검증·생성한다."},
+        {"path": "src/main/kotlin/com/livteam/jsoninja/services/schema/JsonSchemaNormalizer.kt", "lines": "36-60,63-105", "finding": "$ref 우선, 없으면 $dynamicRef를 선택하고 형제 키를 allOf로 결합한다."},
+        {"path": "src/main/kotlin/com/livteam/jsoninja/services/schema/JsonSchemaNormalizer.kt", "lines": "144-225,456-535", "finding": "내부/로컬/원격 참조, JSON Pointer, anchor를 해결하며 재귀 참조는 거부한다."}
+      ],
+      "pass_guidance": "‘스키마 기반 생성 전에 $ref/$dynamicRef를 정규화하고 문서 내부, 로컬 파일, 원격 스키마 참조를 해결한다’는 의미면 통과한다. anchor/allOf는 생략 가능하고, 언급 시 정확해야 한다.",
+      "failure_examples": ["외부 참조를 지원하지 않는다.", "JSON Schema의 모든 동적 참조 의미론을 완전 구현한다.", "재귀 참조를 지원한다."]
+    },
+    {
+      "id": "C3",
+      "requirement": "로컬·원격 스키마 문서 재사용은 한 normalize 호출 범위이며, SchemaStore 대체는 원격 base URI에서 잘못된 JSON Pointer가 발생하고 host가 schemastore.org일 때 후보 URI를 시도한 뒤 모두 실패하면 빈 object schema로 완화하는 제한된 동작임을 설명한다.",
+      "evidence": [
+        {"path": "src/main/kotlin/com/livteam/jsoninja/services/schema/JsonSchemaNormalizer.kt", "lines": "36-52,330-391", "finding": "호출마다 local Path map과 remote URI map을 새로 만들고 동일 호출 내 로드를 재사용한다."},
+        {"path": "src/main/kotlin/com/livteam/jsoninja/services/schema/JsonSchemaNormalizer.kt", "lines": "251-287", "finding": "원격 문맥의 invalid JSON pointer에서만 fallback을 시도하고 실패 후 빈 object를 반환한다."},
+        {"path": "src/main/kotlin/com/livteam/jsoninja/services/schema/JsonSchemaNormalizer.kt", "lines": "289-328", "finding": "schemastore.org host, .json suffix, 두 SchemaStore host 조합으로 후보를 만든다."}
+      ],
+      "pass_guidance": "‘로컬·원격 문서는 한 정규화 작업 안에서 재사용하고, 원격 SchemaStore 문서의 잘못된 JSON Pointer에만 제한된 대체 URI를 시도하며 모두 실패하면 빈 스키마로 완화한다’는 의미면 통과한다.",
+      "failure_examples": ["프로젝트 전체의 영속 캐시다.", "모든 원격 네트워크 실패에 mirror가 적용된다.", "fallback 실패는 항상 예외로 끝난다."]
+    },
+    {
+      "id": "C4",
+      "requirement": "비동기 작업을 project 또는 UI 구성요소 수명에 종속해 dispose 때 취소하고, 결과 적용 직전에 최신 상태를 확인해 오래된 결과를 차단한다고 설명한다. scope 구성 세부는 선택적이다.",
+      "evidence": [
+        {"path": "src/main/kotlin/com/livteam/jsoninja/services/JsoninjaCoroutineScopeService.kt", "lines": "10-24", "finding": "주입 scope와 parent Job을 공유하는 SupervisorJob 자식 scope를 생성한다."},
+        {"path": "src/main/kotlin/com/livteam/jsoninja/ui/component/jsonQuery/JsonQueryPresenter.kt", "lines": "30-45,76-82,97-159,191-224,242-246", "finding": "sequence·disposed·현재 입력을 확인하고 dispose에서 scope를 취소한다."},
+        {"path": "src/main/kotlin/com/livteam/jsoninja/ui/component/editor/JsonEditorTextPresenter.kt", "lines": "27-59,82-95", "finding": "view dispose에서 취소하고 modificationStamp가 그대로일 때만 정규화 결과를 적용한다."}
+      ],
+      "pass_guidance": "‘코루틴 작업을 소유 객체의 수명에 묶어 종료 시 취소하고, UI 반영 전 요청 순서나 현재 문서 상태를 다시 확인한다’는 의미면 통과한다. 부모 Job, SupervisorJob, EDT 등은 필수가 아니다.",
+      "failure_examples": ["전역 독립 scope를 사용한다.", "Job cancel 호출만으로 모든 오래된 결과가 자동 차단된다.", "백그라운드 결과를 상태 검사 없이 UI에 쓴다."]
+    },
+    {
+      "id": "C5",
+      "requirement": "변환 미리보기는 request sequence로 최신 결과만 적용하며, WASM 입력·결과·오류 메시지 버퍼를 모두 finally에서 해제한다고 설명한다. debounce와 검사 횟수는 선택적이다.",
+      "evidence": [
+        {"path": "src/main/kotlin/com/livteam/jsoninja/ui/dialog/convertType/ConvertPreviewExecutor.kt", "lines": "15-69", "finding": "sequence 증가, 이전 job 취소, 두 시점 최신성 검사, cancel/dispose 무효화를 구현한다."},
+        {"path": "src/main/kotlin/com/livteam/jsoninja/services/typeConversion/TypeDeclarationAnalyzerService.kt", "lines": "27-58", "finding": "입력과 결과 버퍼를 중첩 finally에서 해제한다."},
+        {"path": "src/main/kotlin/com/livteam/jsoninja/services/treesitter/WasmMemoryBridge.kt", "lines": "32-36,49-60", "finding": "dealloc을 호출하며 오류 메시지 버퍼도 finally로 해제한다."}
+      ],
+      "pass_guidance": "‘변환 미리보기는 요청 sequence로 오래된 결과 반영을 막고, WASM 입력·결과·오류 버퍼를 finally에서 해제한다’는 의미를 모두 포함하면 통과한다. 취소·debounce·검사 위치는 필수가 아니다.",
+      "failure_examples": ["취소 호출만으로 최신 미리보기가 보장된다.", "버퍼는 성공 시에만 해제된다.", "요청마다 WASM 런타임 전체를 파괴한다."]
+    },
+    {
+      "id": "C6",
+      "requirement": "전역 folding action wrapper의 차단은 JSONINJA_EDITOR_KEY가 붙은 플러그인 문서에만 적용되고 그 밖에는 원 handler로 위임되며, dispose 시 wrapper가 여전히 현재 handler인 경우에만 원 handler를 복구한다고 설명한다.",
+      "evidence": [
+        {"path": "src/main/kotlin/com/livteam/jsoninja/ui/component/editor/JsonDocumentFactory.kt", "lines": "39-42,73-83", "finding": "생성한 문서에 JSONINJA_EDITOR_KEY를 기록한다."},
+        {"path": "src/main/kotlin/com/livteam/jsoninja/ui/component/editor/JsoninjaFoldingActionGuardService.kt", "lines": "13-28,31-58", "finding": "키가 있는 editor만 guard하고 원 handler에 위임하며 identity 검사 후 복구한다."},
+        {"path": "src/main/kotlin/com/livteam/jsoninja/listeners/JsoninjaFoldingActionGuardStartupActivity.kt", "lines": "9-12", "finding": "project 시작 시 application service wrapper를 설치한다."}
+      ],
+      "pass_guidance": "‘전역 folding action을 감싸되 플러그인 문서 키가 있는 문서만 guard하고, 현재 handler가 자신의 wrapper일 때만 원 handler를 복구한다’는 의미면 통과한다.",
+      "failure_examples": ["모든 IDE editor의 folding을 비활성화한다.", "확장자로만 플러그인 editor를 판별한다.", "dispose에서 현재 handler를 무조건 원 handler로 덮어쓴다."]
+    },
+    {
+      "id": "C7",
+      "requirement": "설정 동기화 전환 시 기존 값을 새 저장소로 복사해 보존하고, 레거시 project 설정은 대상이 미이주·비custom일 때만 이주해 기존 custom 값을 덮어쓰지 않으며, 열린 비disposed project 모두에 알린다고 설명한다.",
+      "evidence": [
+        {"path": "src/main/kotlin/com/livteam/jsoninja/settings/JsoninjaSettingsState.kt", "lines": "148-200", "finding": "sync/local 활성 저장소 선택, 전환 전 snapshot 복사, 조건부 legacy migration을 수행한다."},
+        {"path": "src/main/kotlin/com/livteam/jsoninja/settings/JsoninjaSettingsState.kt", "lines": "205-277,305-360", "finding": "설정 필드 복사와 roaming/non-roaming application 저장소를 정의한다."},
+        {"path": "src/main/kotlin/com/livteam/jsoninja/settings/JsoninjaSettingsConfigurable.kt", "lines": "270-295", "finding": "apply 후 모든 열린 비disposed project에 message bus 알림을 보낸다."}
+      ],
+      "pass_guidance": "‘저장소 전환 때 현재 값을 복사하고 비어 있는 미이주 대상에만 기존 project 설정을 옮기며 변경을 열린 project 전체에 알린다’는 의미면 통과한다.",
+      "failure_examples": ["동기화 전환 시 설정이 초기화된다.", "legacy project 값이 항상 기존 application 값을 덮어쓴다.", "현재 project에만 알린다."]
+    },
+    {
+      "id": "C8",
+      "requirement": "온보딩 방문 여부는 application persistent state가 주 상태이고, 과거 project PropertiesComponent 방문 키가 true이면 application 상태로 승계하며 새 방문은 양쪽에 기록된다고 설명한다.",
+      "evidence": [
+        {"path": "src/main/kotlin/com/livteam/jsoninja/services/OnboardingStateService.kt", "lines": "11-33", "finding": "application-level persistent welcome-seen 상태를 정의한다."},
+        {"path": "src/main/kotlin/com/livteam/jsoninja/services/OnboardingService.kt", "lines": "30-43,104-124", "finding": "application 상태를 먼저 보고 legacy project 키를 승계하며 새 방문을 양쪽에 기록한다."},
+        {"path": "src/main/kotlin/com/livteam/jsoninja/listeners/JsoninjaOnboardingStartupActivity.kt", "lines": "11-16", "finding": "project startup의 EDT에서 표시 판단을 호출한다."}
+      ],
+      "pass_guidance": "‘기존 project 방문 기록을 application 전역 상태로 승계해 이후 project에서 환영창이 다시 뜨지 않게 한다’는 의미면 통과한다. 양쪽 기록 세부는 선택적이다.",
+      "failure_examples": ["기존 project 방문 기록은 폐기된다.", "application 상태를 project별 상태로 역마이그레이션한다.", "모든 project마다 환영 화면이 한 번씩 뜬다."]
+    }
+  ],
+  "stale_correction": {
+    "input_claim": "Jayway JsonPath와 JMESPath 두 엔진만 지원하고 Jackson jq는 지원하지 않는다.",
+    "required_correction": "Jackson jq를 포함한 세 엔진을 지원하며 jsonQueryType 선택이 JsonQueryService의 jq 실행 분기로 전파된다고 교정해야 한다. jq 표현식 검증은 선택적 상세이며 언급할 경우 정확해야 한다.",
+    "pass_guidance": "오래된 두 엔진 주장을 제거 또는 명시적으로 바로잡고 실행 경로까지 현재 사실로 쓴다.",
+    "failure_examples": ["오래된 주장을 그대로 보존한다.", "jq 지원 여부를 모호하게 회피한다.", "설정 UI의 jq 항목만 언급하고 실행 지원은 확인하지 않는다."],
+    "evidence": [
+      {"path": "src/main/kotlin/com/livteam/jsoninja/model/JsonQueryType.kt", "lines": "3-6", "finding": "JACKSON_JQ를 포함한 세 타입을 정의한다."},
+      {"path": "src/main/kotlin/com/livteam/jsoninja/services/JsonQueryService.kt", "lines": "51-60,102-123,131-149", "finding": "Jackson jq 실행과 표현식 검증 분기가 실제 구현되어 있다."}
+    ]
+  },
+  "source_limitations": [
+    "codemap-search가 제공되지 않아 스냅샷 내부 관련 Kotlin 파일만 rg와 sed/nl로 제한 탐색했다.",
+    "실행 테스트와 네트워크 요청을 하지 않아 외부 SchemaStore 가용성, redirect 결과, 실제 IntelliJ dispose 시점은 정적 구현으로만 판단했다.",
+    "$dynamicRef의 완전한 동적 스코프 준수는 확인되지 않으며, 현재 소스에서는 $ref와 같은 해결 경로 및 $dynamicAnchor 이름 수집만 확인된다."
+  ]
+}

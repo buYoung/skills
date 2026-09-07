@@ -20,6 +20,9 @@ Output is a JSON object with:
                             should be inserted only with fresh content
     - optional_standard   : standard headings that are evidence-gated and
                             should not be inserted without fresh content
+    - management_status   : managed, unmarked, or invalid; heading matches alone
+                            never authorize an update
+    - generated_doc_type  : document type in the valid management marker, or null
 
 Only the first occurrence of any canonical standard heading is the replacement
 target. Duplicate current or legacy headings for the same canonical standard are
@@ -68,15 +71,16 @@ OPTIONAL_STANDARD = {
 
 _FENCE_OPEN = re.compile(r"^ {0,3}(`{3,}|~{3,})")
 _FENCE_CLOSE = re.compile(r"^ {0,3}(`{3,}|~{3,})\s*$")
+_MANAGEMENT_CANDIDATE = re.compile(r"^\s*<!--\s*agents-md-generator\b")
+_MANAGEMENT_MARKER = re.compile(
+    r"<!-- agents-md-generator: v1; doc-type: (single_repo|monorepo_root) -->"
+)
 
 
-def parse_sections(text: str):
-    lines = text.splitlines()
-    sections = []
-    preamble_end = None
-    current = None
+def unfenced_lines(text: str):
+    """Yield original line indices and text outside fenced code blocks."""
     fence_marker = None
-    for i, line in enumerate(lines):
+    for i, line in enumerate(text.splitlines()):
         if fence_marker is not None:
             close = _FENCE_CLOSE.match(line)
             if (close and close.group(1)[0] == fence_marker[0]
@@ -87,6 +91,30 @@ def parse_sections(text: str):
         if fence_open:
             fence_marker = fence_open.group(1)
             continue
+        yield i, line
+
+
+def management_metadata(text: str, preamble_end: int):
+    """Recognize one supported, standalone marker in the preamble only."""
+    candidates = [(i, line) for i, line in unfenced_lines(text)
+                  if _MANAGEMENT_CANDIDATE.match(line)]
+    if not candidates:
+        return "unmarked", None
+    if len(candidates) != 1:
+        return "invalid", None
+    line_index, line = candidates[0]
+    marker = _MANAGEMENT_MARKER.fullmatch(line)
+    if marker is None or line_index >= preamble_end:
+        return "invalid", None
+    return "managed", marker.group(1)
+
+
+def parse_sections(text: str):
+    lines = text.splitlines()
+    sections = []
+    preamble_end = None
+    current = None
+    for i, line in unfenced_lines(text):
         if re.match(r"^##\s", line):
             if preamble_end is None:
                 preamble_end = i
@@ -111,7 +139,7 @@ def main():
     args = parser.parse_args()
 
     try:
-        with open(args.file, "r", encoding="utf-8") as f:
+        with open(args.file, "r", encoding="utf-8", newline="") as f:
             text = f.read()
     except OSError as e:
         sys.stderr.write(f"Cannot read {args.file}: {e}\n")
@@ -125,6 +153,7 @@ def main():
     standard_lookup = {title: title for title in standard}
     standard_lookup.update(legacy)
     sections, preamble_end = parse_sections(text)
+    management_status, generated_doc_type = management_metadata(text, preamble_end)
 
     seen = set()
     for s in sections:
@@ -143,6 +172,8 @@ def main():
     missing_optional = [t for t in standard if t not in seen and t in OPTIONAL_STANDARD]
     result = {
         "doc_type": args.doc_type,
+        "management_status": management_status,
+        "generated_doc_type": generated_doc_type,
         "preamble_end_line": preamble_end,
         "sections": sections,
         "missing_standard": missing_required + missing_optional,

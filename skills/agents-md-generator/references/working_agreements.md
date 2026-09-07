@@ -25,7 +25,7 @@ Defines the standard working agreements to be included in generated `AGENTS.md` 
 
 ## Monorepo Package Format
 
-For AGENTS.md files generated within a package of a monorepo, reference the root document instead of duplicating rules.
+For a package of a monorepo, first check whether the repository-root `AGENTS.md` exists. When it exists, reference it instead of duplicating rules. The example below uses root notation; in the actual output, replace that notation with the real path relative to the package (for example `../../AGENTS.md` for `packages/api/AGENTS.md`).
 
 ```markdown
 ## 5. Working Agreements
@@ -35,7 +35,9 @@ See root `/AGENTS.md` for common working agreements.
 Package-local verification: run `<discovered package command>` after changes in this package.
 ```
 
-Include the package-local verification line only when analysis finds a command that applies to that package specifically. Do not duplicate root working agreements in package documents.
+Include the package-local verification line only when analysis finds a command that applies to that package specifically. Do not duplicate root working agreements when the root document exists.
+
+When the root document is absent, omit the root reference and include the common base bullet set below directly in `## 5. Working Agreements`, applying the package's discovered response language and verification command. Do not include the Monorepo Root Addition and do not create a root file for a Single Package request. Recheck existence during later updates; once a root document exists, switch the managed section to inheritance through the ordinary replacement and dropped-wording report, preserving custom sections.
 
 ## Canonical Compressed Format for AGENTS.md
 
@@ -46,7 +48,7 @@ Use the correct heading number for the document type:
 - Single repo / package document: `## 5. Working Agreements`
 - Monorepo root document: `## 3. Working Agreements`
 
-Use the base bullet set for single repositories and monorepo root documents. Add the monorepo-only package-local verification bullet **only** when generating a monorepo root document. Do not include monorepo-specific wording in single-repository `AGENTS.md` files.
+Use the base bullet set for single repositories, monorepo root documents, and packages whose root document is absent. Add the monorepo-only package-local verification bullet **only** when generating a monorepo root document. Do not include monorepo-specific wording in single-repository `AGENTS.md` files.
 
 ### Base Bullet Set (Single Repo and Monorepo Root)
 

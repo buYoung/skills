@@ -2,6 +2,10 @@
 
 Defines the exact structure and content requirements for generated `AGENTS.md` files.
 
+## Management Marker
+
+The section-only examples below remain unchanged. Every newly generated document must additionally contain exactly one standalone `<!-- agents-md-generator: v1; doc-type: single_repo -->` line in its preamble before the first `##` heading. Use `monorepo_root` for monorepo roots; packages use `single_repo`. The marker is included in the preamble character budget and must not be placed inside a code block or custom section. Existing unmarked documents receive it only after approval of a concrete adoption preview; follow [update_strategy.md](update_strategy.md) for marker validation, preservation, and document-type transitions.
+
 ## Table of Contents
 
 - [Monorepo Root Document Structure](#monorepo-root-document-structure-agentsmd)
@@ -108,7 +112,7 @@ Do **not** force this section. If analysis finds no concrete, stable ownership b
 [Recently or repeatedly changed routes discovered from git history, then confirmed against current code or documented contracts.]
 ```
 
-Omit an empty subsection rather than writing a placeholder. `Stable Ownership Boundaries` explains the durable safety map and should still include the same kind of high-value boundaries the old single-list Ownership Map would have produced. `Active Change Routes` explains recent or repeated change deltas that are not obvious from the stable boundary alone. Keep both within the `Ownership Map` section budget; do not impose an additional bullet-count limit.
+Omit an empty subsection rather than writing a placeholder. `Stable Ownership Boundaries` explains the durable safety map and should still include the same kind of high-value boundaries the old single-list Ownership Map would have produced. `Active Change Routes` explains recent or repeated change deltas that are not obvious from the stable boundary alone. Allocate space for both within the overall document limit, redistributing section allocations when necessary; do not impose an additional bullet-count limit.
 
 Each bullet should answer "if I need to change this behavior, where do I start and what must I not break?" A useful bullet reads like a routing rule for future changes, not like an architecture inventory. Stable bullets and Active bullets have different contracts: Stable bullets describe durable ownership; Active bullets describe only the recent/change-specific delta.
 
@@ -138,7 +142,7 @@ Do not open a bullet with a long list of files; name the owner or entry point fi
 **Content Requirements**:
 
 - Put durable, always-relevant system boundaries under `### Stable Ownership Boundaries`. This subsection should preserve the useful output shape of the prior Ownership Map: request lifecycle, transaction ownership, public response contracts, report rendering, workers, package ownership, or other long-lived safety boundaries when current code supports them. Do not remove these stable boundaries just because `Active Change Routes` also exists.
-- Keep Stable bullets focused on durable ownership: long-lived owner, protected contract, and representative verification surface. Do not include details that matter only because of recent churn, version-specific behavior, compatibility migrations, renames/moves, or high-churn file clusters unless they have become a permanent public contract.
+- Keep Stable bullets focused on current ownership, protected contracts, and representative verification surfaces. Preserve currently executed compatibility, migration, and global-guard conditions in Stable or Core when they affect safe changes, even if they are internal rather than public contracts. Exclude history-only churn, obsolete migrations, and rename timelines; lack of a recent commit does not make a live contract obsolete.
 - Put history-informed, currently relevant change routes under `### Active Change Routes`. These should come from recent high-churn paths, repeated co-change clusters, renames/moves, or active compatibility/migration work, then be confirmed against current code or documented contracts. Treat this subsection as additional update-mode signal, not as a filter that narrows or replaces stable boundaries.
 - Active routes are child routes or cross-boundary routes, not standalone ownership summaries. If an Active route belongs under a Stable boundary, start with `Within **[Stable boundary name]**...` and keep only the recent/change-specific delta. Do not restate the parent boundary's broad owner, public contract, or general verification surface.
 - Do not duplicate the same route in both subsections. If a stable boundary is also active, keep the durable contract in `Stable Ownership Boundaries` and put only the recent/change-specific route in `Active Change Routes`. If no meaningful delta remains after removing inherited Stable details, omit the Active route.
@@ -212,7 +216,7 @@ Before writing an Active route, reject or rewrite it unless the delta is concret
 - Dropping stable boundaries just because they were not recently changed, or dropping active routes because they do not look like top-level architecture
 - Writing Active routes as standalone ownership summaries instead of parent-linked or cross-boundary deltas
 - Repeating the Stable parent boundary's broad owner, contract, and verification in an Active route
-- Keeping `v2`, migration, compatibility-shim, rename/move, or high-churn details in Stable bullets when they are not permanent public contracts
+- Keeping history-only churn, obsolete migrations, or rename/move timelines in Stable bullets; conversely, dropping a currently executed compatibility or safety condition merely because it is internal or lacks recent changes
 - Ending bullets with weak verification language such as "test accordingly", "verify related behavior", or "check downstream effects" instead of naming the concrete verification surface
 - Turning `AGENTS.md` into a changelog with time-relative focus summaries
 - Duplicating Section 3 by describing full recurring behavior flows instead of current responsibility boundaries
@@ -224,14 +228,18 @@ Document **cross-cutting patterns** that repeat across the codebase. Focus on pa
 
 **Pattern Discovery Approach**:
 
+Apply [content_quality.md](content_quality.md) throughout discovery and final compression. Keep current source evidence for facts that change a contributor's decisions; in Update mode, recheck important old facts as well as discovering new ones. Name necessary alternatives and describe their conditions and consumer effects rather than substituting generic summaries. Final verification compares meaning after compression, not just whether the body was freshly written.
+
 Surface-level scanning (e.g., "this codebase uses error handling") is not enough. The goal is to uncover **how the codebase actually works** — the specific mechanisms, flows, and constraints that a contributor must understand to write code that fits.
 
 - **Phase 1 — Stack & Surface Discovery**:
+  - Build the temporary coverage table from documented capabilities and current registrations/public surfaces per [content_quality.md](content_quality.md). In Update mode, account for every old managed Stable boundary, Active route, and core behavior as well. Confirm current owners in source before selecting or excluding; recent history can prioritize rows but cannot remove live contracts.
   - Identify **installed dependencies and technology stack** by reading detected package manifests before searching for code patterns — use this context to focus pattern discovery on relevant frameworks and libraries (see read_only_commands.md > Dependency Discovery)
   - Search for **recurring idioms** that appear in 3+ files (e.g., shared error handling wrappers, common logging calls, repeated guard clause shapes)
   - Look for **project-specific abstractions** the team has built on top of frameworks (e.g., custom base classes, shared decorators, wrapper utilities)
 
 - **Phase 2 — Deep Tracing** (this is where most missing patterns live):
+  - **Close the selected behavior's conditions**: Follow its direct behavior-defining helpers, not only the entry-point wrapper. Inspect applied and bypass/delegation paths, recovery eligibility and exhausted outcome, state/cache creation lifetime, allocation/error/disposal paths, identity-guarded restoration, and the destination/recipient scope of migrations or notifications where applicable. Record these relationships in the temporary fact record from [content_quality.md](content_quality.md). Stop when the selected contract is established; do not expand into unrelated repository branches.
   - **Trace patterns across layers**: When a surface pattern is found (e.g., "error handling"), follow it through the full flow — how does an error originate, propagate, transform at boundaries, and reach the user? A pattern like "wraps errors in AppError" becomes meaningful only when you also describe that the boundary layer flattens it, the UI layer maps it to a message, and recovery is attempted before surfacing.
   - **Follow the wiring**: Look at how components connect to each other. Direct calls, callback registration, event pairs, observer patterns, and delegation chains are all wiring mechanisms. When multiple components participate in a flow, document the connection pattern — not just the individual components.
   - **Identify state lifecycle flows**: Look for components that manage defined state transitions (e.g., initialization → ready → degraded → recovery). These often span multiple files and reveal operational behavior that surface scanning misses.
@@ -239,9 +247,11 @@ Surface-level scanning (e.g., "this codebase uses error handling") is not enough
   - **Spot centralized delegation**: When multiple callers share a common utility or lookup function instead of duplicating logic, that centralization is a pattern worth documenting — it tells contributors where to go instead of reinventing.
 
 - **Phase 3 — Validation**:
+  - Confirm coverage rows have explicit evidence-based dispositions and selected rows are `closed`: their applicable conditions and effects are established by concrete implementing files/symbols, not only pipeline labels. Draft these contracts before spending space on generic conventions.
   - Note **implicit rules** not captured in linter configs (e.g., "all async operations go through a central queue", "state mutations only via specific helpers")
   - Verify each discovered pattern appears in 3+ locations — but patterns that span multiple layers (e.g., a persistence flow touching store, service, and UI) count as cross-cutting even if the exact code shape differs at each layer
   - Prefer patterns observed in 3+ locations, but also document a single critical boundary when it defines safe agent work (e.g., the only public write path, the only generated-file boundary, or the only external side-effect entry point)
+  - Prioritize single boundaries with broad impact, such as global hooks, persisted-state replacement, external recovery, owned-resource cleanup, or changes delivered to multiple consumers. Do not let generic convention inventories displace their conditions.
 
 **Pattern Categories** (include only those actually observed):
 
@@ -284,9 +294,13 @@ Surface-level scanning (e.g., "this codebase uses error handling") is not enough
 - One-line summaries that name a pattern without explaining how it works (e.g., "Uses repository pattern" without describing the actual convention)
 - Staying at the surface: saying "has error handling" without explaining the propagation flow, or "uses events" without describing the event protocol and wiring mechanism
 
+The recurrence anti-pattern above applies to incidental one-off implementation details, not single critical safety boundaries. Such boundaries remain eligible when supported by current evidence.
+
 ### Section 4: Conventions
 
 **Convention Discovery Approach**:
+
+Prioritize rules that change safe implementation choices. Keep concrete interface shapes, exceptions, and lifecycle/compatibility conditions; reduce generic naming inventories before those details when compressing. Rebalance the initial section allocation within the total limit rather than deleting necessary examples or conditions. Follow the final information-loss check in [content_quality.md](content_quality.md).
 
 Conventions go beyond surface-level naming rules. They include **how the codebase structures its interfaces**, **how configuration files are organized**, and **what implicit contracts exist at boundaries**. A convention is any consistent rule that, if broken, would make the code look out of place.
 

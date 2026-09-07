@@ -37,10 +37,13 @@ Defines the strategy for generating AGENTS.md files in a monorepo environment.
 ## Working Agreements Inheritance
 
 - **Root**: Full working agreements (master copy)
-- **Package**: "See root `/AGENTS.md`" (reference first, no duplicated root rules)
+- **Package with an existing root document**: Reference the repository-root `AGENTS.md` using its actual path relative to the package; do not duplicate root rules
+- **Package without a root document**: Include the common working agreements directly, plus discovered package-local verification guidance. Do not emit a reference to a missing file or create a root document for a Single Package request
 - **Package-local verification**: If tests, type-check, or other verification guidance applies only to one package, place that guidance in that package's `AGENTS.md`, not the root document
 
 **Note**: Package-specific behaviors and conventions belong in **Section 3 (Core Behaviors & Patterns)** and **Section 4 (Conventions)**, not in Working Agreements. The only package-specific Working Agreements addition is package-local verification guidance discovered from package-local configs or scripts.
+
+Check root-file existence on every generation/update, including after handling the root in All mode. If a later update finds a root document where the previous package version used direct common rules, replace that managed section with the root reference and package-local verification, following the normal dropped-wording report. Preserve custom sections. The absence fallback uses the ordinary common rule set without the monorepo-root-only instruction about placing guidance in package documents.
 
 ## Section Boundary Rules
 

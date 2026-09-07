@@ -53,13 +53,13 @@ https://github.com/XAMPPRocky/tokei Please install it from here and try again.
 
 ## Section Budget Allocation
 
-Distribute the total character limit across sections to prevent front-loading. These are recommended proportions — adjust slightly based on project characteristics.
+Use the proportions below as initial allocations to prevent front-loading, not as independent section ceilings. Redistribute unused capacity toward decision-relevant content while keeping each section's responsibilities. Only the combined preamble and managed sections have a hard character limit. A section exceeding its starting allocation is not a validation failure; do not delete verified safety conditions merely to restore a ratio. Apply [content_quality.md](content_quality.md) for fact selection, compression order, and the final information-loss check.
 
 **Budget scope in update mode**: the character limit covers the preamble plus the standard (managed) sections only. Custom user sections are excluded from the limit and must never be trimmed to satisfy it.
 
 ### Single Repo / Package Document (4-5 Sections)
 
-`Ownership Map` is optional. Use its budget only when repository analysis finds concrete stable ownership boundaries or active change routes. If neither category is detected, omit the section and do not pad other sections just to consume the unused budget. Do not add a separate bullet-count limit inside this budget; let the character limit and evidence quality control length.
+`Ownership Map` is optional. Allocate space only when repository analysis finds concrete stable ownership boundaries or active change routes. If neither category is detected, omit the section; its unused allocation may support verified content elsewhere, but never pad another section simply to consume it. Do not add a separate bullet-count limit; let the total character limit and evidence quality control length.
 
 ```yaml
 - section: "1. Overview"

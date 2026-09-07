@@ -23,6 +23,8 @@ A repository is considered a monorepo if **any** of the following marker files o
 - **`settings.gradle.kts`** or **`settings.gradle`** declaring **2+ included projects** or any `includeBuild(`: Gradle multi-project / composite build. Comments are ignored; a single `include ':app'` (the standard single-app Android layout) is **not** a monorepo
 - **Root `pom.xml`** with `<modules>` section: Maven multi-module project
 
+For Gradle, count distinct literal project paths across complete `include(...)` declarations, including multiline argument lists and trailing commas, as well as Groovy's unparenthesized `include '…', '…'` form. Treat `app` and `:app` as the same path. Ignore comments and declaration examples inside quoted strings; repeated paths and commas alone do not add projects. `includeBuild(...)` and Groovy's unparenthesized equivalent remain provisional composite-build markers. This is static detection: interpolated strings and computed include arguments are not evaluated, and dynamic declarations may require explicit inspection. A true CLI result still leads to package discovery; only two or more confirmed packages select the hierarchical document workflow.
+
 ### Go
 
 - **`go.work`**: Go workspaces (Go 1.18+)

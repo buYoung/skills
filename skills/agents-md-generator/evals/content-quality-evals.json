@@ -1,0 +1,61 @@
+{
+  "skill_name": "agents-md-generator",
+  "model": "gpt-5.6-sol",
+  "reasoning_effort": "medium",
+  "comparison": "Same frozen source and Git history, isolated repositories, pre-change and revised skill snapshots; no expected facts in the generation prompt",
+  "evals": [
+    {
+      "id": 0,
+      "name": "update",
+      "prompt": "agents-md-generator",
+      "expected_output": "Refresh the current marked document using source-confirmed facts, recover important omissions, preserve custom sections, and respect the total character limit.",
+      "input_setup": "Use the target repository's current AGENTS.md unchanged in both runs.",
+      "assertions": [
+        "jsonQueryType 설정의 실제 세 엔진 이름(Jayway JsonPath, JMESPath, Jackson jq)과 선택값이 실제 실행 엔진으로 전파된다는 점을 설명한다. 표현식 검증 분기는 선택적 상세이며 언급할 경우에만 정확성을 본다.",
+        "JSON 생성 전에 $ref와 $dynamicRef를 해결하며 내부 fragment, 로컬 파일, HTTP(S) 원격 문서 참조를 지원한다는 점을 설명한다. anchor, allOf, 상대 원격 참조는 선택적 상세다.",
+        "로컬·원격 스키마 문서 재사용은 한 normalize 호출 범위이며, SchemaStore 대체는 원격 base URI에서 잘못된 JSON Pointer가 발생하고 host가 schemastore.org일 때 후보 URI를 시도한 뒤 모두 실패하면 빈 object schema로 완화하는 제한된 동작임을 설명한다.",
+        "비동기 작업을 project 또는 UI 구성요소 수명에 종속해 dispose 때 취소하고, 결과 적용 직전에 최신 상태를 확인해 오래된 결과를 차단한다고 설명한다. scope 구성 세부는 선택적이다.",
+        "변환 미리보기는 request sequence로 최신 결과만 적용하며, WASM 입력·결과·오류 메시지 버퍼를 모두 finally에서 해제한다고 설명한다. debounce와 검사 횟수는 선택적이다.",
+        "전역 folding action wrapper의 차단은 JSONINJA_EDITOR_KEY가 붙은 플러그인 문서에만 적용되고 그 밖에는 원 handler로 위임되며, dispose 시 wrapper가 여전히 현재 handler인 경우에만 원 handler를 복구한다고 설명한다.",
+        "설정 동기화 전환 시 기존 값을 새 저장소로 복사해 보존하고, 레거시 project 설정은 대상이 미이주·비custom일 때만 이주해 기존 custom 값을 덮어쓰지 않으며, 열린 비disposed project 모두에 알린다고 설명한다.",
+        "온보딩 방문 여부는 application persistent state가 주 상태이고, 과거 project PropertiesComponent 방문 키가 true이면 application 상태로 승계하며 새 방문은 양쪽에 기록된다고 설명한다."
+      ]
+    },
+    {
+      "id": 1,
+      "name": "generate",
+      "prompt": "agents-md-generator",
+      "expected_output": "Discover and explain decision-relevant facts from source without an existing AGENTS.md, with a valid marker and within the total character limit.",
+      "input_setup": "Remove only AGENTS.md from each isolated input repository; retain identical source and Git history.",
+      "assertions": [
+        "jsonQueryType 설정의 실제 세 엔진 이름(Jayway JsonPath, JMESPath, Jackson jq)과 선택값이 실제 실행 엔진으로 전파된다는 점을 설명한다. 표현식 검증 분기는 선택적 상세이며 언급할 경우에만 정확성을 본다.",
+        "JSON 생성 전에 $ref와 $dynamicRef를 해결하며 내부 fragment, 로컬 파일, HTTP(S) 원격 문서 참조를 지원한다는 점을 설명한다. anchor, allOf, 상대 원격 참조는 선택적 상세다.",
+        "로컬·원격 스키마 문서 재사용은 한 normalize 호출 범위이며, SchemaStore 대체는 원격 base URI에서 잘못된 JSON Pointer가 발생하고 host가 schemastore.org일 때 후보 URI를 시도한 뒤 모두 실패하면 빈 object schema로 완화하는 제한된 동작임을 설명한다.",
+        "비동기 작업을 project 또는 UI 구성요소 수명에 종속해 dispose 때 취소하고, 결과 적용 직전에 최신 상태를 확인해 오래된 결과를 차단한다고 설명한다. scope 구성 세부는 선택적이다.",
+        "변환 미리보기는 request sequence로 최신 결과만 적용하며, WASM 입력·결과·오류 메시지 버퍼를 모두 finally에서 해제한다고 설명한다. debounce와 검사 횟수는 선택적이다.",
+        "전역 folding action wrapper의 차단은 JSONINJA_EDITOR_KEY가 붙은 플러그인 문서에만 적용되고 그 밖에는 원 handler로 위임되며, dispose 시 wrapper가 여전히 현재 handler인 경우에만 원 handler를 복구한다고 설명한다.",
+        "설정 동기화 전환 시 기존 값을 새 저장소로 복사해 보존하고, 레거시 project 설정은 대상이 미이주·비custom일 때만 이주해 기존 custom 값을 덮어쓰지 않으며, 열린 비disposed project 모두에 알린다고 설명한다.",
+        "온보딩 방문 여부는 application persistent state가 주 상태이고, 과거 project PropertiesComponent 방문 키가 true이면 application 상태로 승계하며 새 방문은 양쪽에 기록된다고 설명한다."
+      ]
+    },
+    {
+      "id": 2,
+      "name": "stale",
+      "prompt": "agents-md-generator",
+      "expected_output": "Correct the false two-engine claim from current source without losing other useful facts or custom sections. An adoption preview is a valid output while first-time confirmation is pending.",
+      "input_setup": "Use the archived pre-adoption document and replace its two managed query descriptions with a claim that only Jayway JsonPath and JMESPath are supported and Jackson jq is not supported; do not change source or custom sections.",
+      "assertions": [
+        "jsonQueryType 설정의 실제 세 엔진 이름(Jayway JsonPath, JMESPath, Jackson jq)과 선택값이 실제 실행 엔진으로 전파된다는 점을 설명한다. 표현식 검증 분기는 선택적 상세이며 언급할 경우에만 정확성을 본다.",
+        "JSON 생성 전에 $ref와 $dynamicRef를 해결하며 내부 fragment, 로컬 파일, HTTP(S) 원격 문서 참조를 지원한다는 점을 설명한다. anchor, allOf, 상대 원격 참조는 선택적 상세다.",
+        "로컬·원격 스키마 문서 재사용은 한 normalize 호출 범위이며, SchemaStore 대체는 원격 base URI에서 잘못된 JSON Pointer가 발생하고 host가 schemastore.org일 때 후보 URI를 시도한 뒤 모두 실패하면 빈 object schema로 완화하는 제한된 동작임을 설명한다.",
+        "비동기 작업을 project 또는 UI 구성요소 수명에 종속해 dispose 때 취소하고, 결과 적용 직전에 최신 상태를 확인해 오래된 결과를 차단한다고 설명한다. scope 구성 세부는 선택적이다.",
+        "변환 미리보기는 request sequence로 최신 결과만 적용하며, WASM 입력·결과·오류 메시지 버퍼를 모두 finally에서 해제한다고 설명한다. debounce와 검사 횟수는 선택적이다.",
+        "전역 folding action wrapper의 차단은 JSONINJA_EDITOR_KEY가 붙은 플러그인 문서에만 적용되고 그 밖에는 원 handler로 위임되며, dispose 시 wrapper가 여전히 현재 handler인 경우에만 원 handler를 복구한다고 설명한다.",
+        "설정 동기화 전환 시 기존 값을 새 저장소로 복사해 보존하고, 레거시 project 설정은 대상이 미이주·비custom일 때만 이주해 기존 custom 값을 덮어쓰지 않으며, 열린 비disposed project 모두에 알린다고 설명한다.",
+        "온보딩 방문 여부는 application persistent state가 주 상태이고, 과거 project PropertiesComponent 방문 키가 true이면 application 상태로 승계하며 새 방문은 양쪽에 기록된다고 설명한다."
+      ]
+    }
+  ],
+  "rubric": "content-quality-rubric.json",
+  "source_head": "9eed77ed863f82843f9aadca0af479cf6efa0afd"
+}

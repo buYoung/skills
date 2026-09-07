@@ -1,0 +1,39 @@
+{
+  "date": "2026-09-07",
+  "model": "gpt-5.6-sol",
+  "reasoning_effort": "medium",
+  "prompt": "agents-md-generator",
+  "repository": "intellij-json-helper2",
+  "project": "JetBrains JSONinja",
+  "skill": "../../SKILL.md",
+  "mode": "update_with_first_time_adoption",
+  "status": "applied",
+  "loc": 34426,
+  "character_limit": 12000,
+  "management_status": "managed",
+  "generated_doc_type": "single_repo",
+  "preamble_characters": 69,
+  "managed_characters": 10489,
+  "section_characters": {
+    "## 1. Overview": 209,
+    "## 2. Ownership Map": 3842,
+    "## 3. Core Behaviors & Patterns": 2979,
+    "## 4. Conventions": 2395,
+    "## 5. Working Agreements": 995
+  },
+  "section_budgets": {
+    "## 1. Overview": 600,
+    "## 2. Ownership Map": 4200,
+    "## 3. Core Behaviors & Patterns": 3000,
+    "## 4. Conventions": 2400,
+    "## 5. Working Agreements": 1800
+  },
+  "custom_sections_preserved": [
+    "## 6. User Custom",
+    "## When Extending",
+    "## Threading Rules"
+  ],
+  "applied_matches_proposal": true,
+  "baseline_model_run": false,
+  "gradle_validation_run": false
+}

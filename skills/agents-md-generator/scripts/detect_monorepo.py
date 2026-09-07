@@ -44,22 +44,79 @@ def has_workspaces_field(path: str) -> bool:
     return bool(workspaces)
 
 
-_GRADLE_INCLUDE = re.compile(r"^\s*include[\s('\"]")
-_GRADLE_INCLUDE_BUILD = re.compile(r"^\s*includeBuild[\s('\"]")
+_GRADLE_TOKEN = re.compile(
+    r"(?P<COMMENT>//[^\n]*|/\*.*?\*/)"
+    r"|(?P<STRING>\"\"\".*?\"\"\"|'''.*?'''|\"(?:\\.|[^\"\\])*\"|'(?:\\.|[^'\\])*')"
+    r"|(?P<NEWLINE>\n)"
+    r"|(?P<IDENTIFIER>[A-Za-z_$][\w$]*)"
+    r"|(?P<SYMBOL>[^\s])",
+    re.DOTALL,
+)
+
+
+def gradle_include_projects(tokens: list, start: int) -> set:
+    """Read literal include arguments without evaluating Gradle expressions."""
+    while start < len(tokens) and tokens[start][0] == "NEWLINE":
+        start += 1
+    if start == len(tokens):
+        return set()
+    has_parentheses = tokens[start][1] == "("
+    if has_parentheses:
+        start += 1
+    projects = set()
+    is_expecting_project = True
+    for token_index in range(start, len(tokens)):
+        kind, value = tokens[token_index]
+        if kind == "NEWLINE":
+            if has_parentheses or is_expecting_project:
+                continue
+            return projects
+        if has_parentheses and value == ")":
+            return projects
+        if not has_parentheses and value in (";", "}"):
+            return projects
+        if value == "," and not is_expecting_project:
+            is_expecting_project = True
+            continue
+        if kind == "STRING" and is_expecting_project:
+            # Interpolation and non-literal expressions are outside this static
+            # detector. Triple-quoted strings are consumed as tokens so example
+            # declarations inside them cannot become real include calls.
+            if value.startswith(('"""', "'''")) or "$" in value or "\\" in value:
+                return set()
+            project = value[1:-1].lstrip(":")
+            if not project:
+                return set()
+            projects.add(project)
+            is_expecting_project = False
+            continue
+        return set()
+    return set() if has_parentheses else projects
 
 
 def gradle_has_includes(path: str) -> bool:
     # A single `include ':app'` is the standard single-app Android layout, not a
     # monorepo; require 2+ included projects (or any composite build).
-    text = re.sub(r"/\*.*?\*/", "", _read(path), flags=re.DOTALL)
-    project_count = 0
-    for raw_line in text.splitlines():
-        line = raw_line.split("//", 1)[0]
-        if _GRADLE_INCLUDE_BUILD.match(line):
-            return True
-        if _GRADLE_INCLUDE.match(line):
-            project_count += line.count(",") + 1
-    return project_count >= 2
+    tokens = [(match.lastgroup, match.group())
+              for match in _GRADLE_TOKEN.finditer(_read(path))
+              if match.lastgroup != "COMMENT"]
+    projects = set()
+    for i, (kind, value) in enumerate(tokens):
+        if kind != "IDENTIFIER" or value not in ("include", "includeBuild"):
+            continue
+        if i > 0 and tokens[i - 1][1] not in ("\n", ";", "{", "}"):
+            continue
+        if value == "includeBuild":
+            next_index = i + 1
+            while next_index < len(tokens) and tokens[next_index][0] == "NEWLINE":
+                next_index += 1
+            if next_index < len(tokens) and (
+                tokens[next_index][1] == "(" or tokens[next_index][0] == "STRING"
+            ):
+                return True
+        else:
+            projects.update(gradle_include_projects(tokens, i + 1))
+    return len(projects) >= 2
 
 
 def pom_has_modules(path: str) -> bool:
