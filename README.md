@@ -18,7 +18,6 @@ Some skills require external tools to be installed:
 | typst-creator | None |
 | code-security-audit | None |
 | system-prompt-creator | None |
-| veo-prompt-director | None |
 | release-it | None |
 | task-brief-creator | None |
 | task-brief-creator-caveman | None |
@@ -51,7 +50,6 @@ These skills are currently under evaluation and will be promoted to **Available 
 | [code-review](skills/code-review/) | Reviews Git changes for concrete defects and evidence-backed maintainability concerns. Defaults to all uncommitted changes, traces behavior in the selected version, checks counterevidence, and provides approval verdicts only on request. |
 | [react-guide](skills/react-guide/) | React 18/19 guidance for explanation, design, implementation, and diagnosis across CSR, SSR/streaming/hydration, structure, Hooks/Effects, state/data, async UI, accessibility, performance, migrations, compatibility, and React Compiler behavior. |
 | [vite-guide](skills/vite-guide/) | Vite 7/8 guidance for explanation, design, implementation, and diagnosis across client and SSR runtime integration, env/assets, separate client/server builds, manifests, Rollup/Rolldown, plugins, deployment recovery, performance, and Vite 6→7→8 migrations. |
-| [veo-prompt-director](skills/veo-prompt-director/) | Generates structured Google Veo 3.1 video prompts by collecting user input for subject, action, style, cinematography, and audio. Guides users through the Universal Prompt Formula to produce camera-ready prompts. |
 | [task-brief-creator-caveman](skills/task-brief-creator-caveman/) | Caveman-output variant of `task-brief-creator`. It preserves the same nine-section execution contract, facts, bullets, stages, field order, handoffs, replan boundaries, and checklist depth while shortening only saved-plan prose values. Chat, decision tables, reports, and `Open Questions` stay in normal prose, and Auto-Clarity restores normal prose whenever compression would obscure execution. |
 | [iterative-self-review](skills/iterative-self-review/) | Iterative answer refinement loop. The main agent drafts a response and a sub-agent performs blind verification (only `user input + current answer`, no hints or history), reports back to the main agent only, and the loop terminates on a combination of positive (clean pass, severity floor), convergence (oscillation, stable findings, no-op, diminishing returns), defensive (regression), user-clarification, and hard-cap triggers. Evidence-mandatory findings, no numeric confidence scores. |
 
