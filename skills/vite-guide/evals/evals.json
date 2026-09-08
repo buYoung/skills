@@ -71,6 +71,30 @@
         "evals/fixtures/plugin-react-v6-compiler/vite.config.mjs",
         "evals/fixtures/plugin-react-v6-compiler/src/Dashboard.jsx"
       ]
+    },
+    {
+      "id": 4,
+      "prompt": "Repair SSR-208 using TASK.md, DEPENDENCIES.md, and the supplied existing SSR adapter. Preserve Vite 8.0.0 and the host API. Do not install dependencies or create a new host. Save source/config changes and REPORT.md.",
+      "expected_output": "Development retains Vite transforms while production loads separate built artifacts and client SSR manifest with correct dependency resolution.",
+      "expectations": [
+        "Client and server builds are separate and the client emits the SSR manifest",
+        "Production imports built server output and consumes built client HTML and manifest without Vite",
+        "Development retains middleware mode, HTML transforms, and ssrLoadModule",
+        "Runtime-external and transform-required packages have targeted resolution policies",
+        "Custom Node export conditions are aligned in dev and production launch commands",
+        "Base path, versions, client interaction, and server-secret boundaries are preserved",
+        "The report distinguishes manifest semantics and synthetic checks from real build/deployment validation"
+      ],
+      "files": [
+        "evals/fixtures/ssr-production-artifacts/DEPENDENCIES.md",
+        "evals/fixtures/ssr-production-artifacts/TASK.md",
+        "evals/fixtures/ssr-production-artifacts/index.html",
+        "evals/fixtures/ssr-production-artifacts/package.json",
+        "evals/fixtures/ssr-production-artifacts/server.mjs",
+        "evals/fixtures/ssr-production-artifacts/src/entry-client.js",
+        "evals/fixtures/ssr-production-artifacts/src/entry-server.js",
+        "evals/fixtures/ssr-production-artifacts/vite.config.mjs"
+      ]
     }
   ]
 }

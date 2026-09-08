@@ -2,7 +2,7 @@
 
 ## Read When
 
-Read for rerender diagnosis, subscription breadth, `memo`/`useMemo`/`useCallback`, Compiler-related optimization, Profiler evidence, or a performance claim. Exclude API compatibility and async/chunk boundary ownership.
+Read for rerender diagnosis, subscription breadth, `memo`/`useMemo`/`useCallback`, Compiler-related optimization, Profiler evidence, or a performance claim. Use compatibility and async/build guidance where the hypothesis depends on those topics.
 
 ## Collect Inputs
 
@@ -12,7 +12,7 @@ Fix the user interaction, symptom, metric, environment/data, resolved React mino
 
 1. Capture baseline. 2. Fix owner/Effect/subscription causes first. 3. Choose the smallest reversible change. 4. Compare the same condition. 5. Keep or roll back.
 
-| Observation | Selection | Action | Handoff |
+| Observation | Selection | Action | Related guidance |
 |---|---|---|---|
 | State owner or broad subscription causes work | root-cause fix | Do not add memoization | [state/data](react-state-data.md) |
 | Effect lifecycle causes work | root-cause fix | Do not add memoization | [Hooks/Effects](react-hooks-effects.md) |
@@ -30,16 +30,16 @@ Fix the user interaction, symptom, metric, environment/data, resolved React mino
 
 Use React Profiler for render work, React 19.2+ Performance Tracks for priority/component/effect timing, browser Performance for main thread/layout, Network for requests, and existing production bundle output for chunks. Do not add performance-only memoization without baseline, infer React scheduling from a generic flame chart alone when React tracks are available, suppress Effect dependencies, bulk-remove memoization because Compiler exists, change comparison conditions, or add analyzer dependencies.
 
-## Stop or Roll Back
+## Uncertainty and Regressions
 
-Without representative measurement, do not claim improvement; return an unverified hypothesis only. Roll back neutral, regressed, or incorrect changes.
+Without representative before/after measurements, do not claim a performance improvement. Continue diagnosing and repairing evidenced correctness or subscription defects, marking the performance outcome unverified. Revert an optimization that is ineffective or regresses behavior.
 
 ## Verify
 
-Repeat the same interaction/metric/environment, then check correctness. Compiler or chunk handoffs must return diagnostics/output before keep/rollback. A missing comparison returns to input collection.
+Repeat the same interaction/metric/environment, then check correctness. Inspect Compiler diagnostics or chunk output when implicated. Without a new comparison, report a correctness fix or performance hypothesis with an unmeasured outcome.
 
-## Return and Handoff
+## Result and Related Guidance
 
-Return baseline, hypothesis, change/finding, comparison, correctness, and keep/rollback. Allowed internal leaves are [structure/public API](react-structure-public-api.md), [async UI](react-async-ui.md), [React 18 runtime](react-18-runtime-compatibility.md), and [React 19 Compiler](react-19-compiler.md). A chunk claim requires external build output for the same fixed interaction and metric before keep/rollback.
+Report the baseline, hypothesis, change or finding, measured comparison when available, and correctness checks. Use [structure/public API](react-structure-public-api.md), [async UI](react-async-ui.md), or the relevant Compiler compatibility reference directly. Bundle claims require build output for the same interaction and metric.
 
 Fact sources: [React Profiler](https://react.dev/reference/react/Profiler) and [React 19.2 Performance Tracks](https://react.dev/blog/2025/10/01/react-19-2#performance-tracks).

@@ -2,17 +2,17 @@
 
 ## Read When
 
-Read only for resolved React 18 root/unmount warnings, ref/Context syntax, or React 18 Compiler compatibility. Hydration/SSR returns a scope stop to `SKILL.md`. Migration inventory belongs elsewhere.
+Read for React 18 root/unmount warnings, ref/Context syntax, or Compiler compatibility. Use [SSR and hydration](react-ssr-hydration.md) for server roots and hydration; use migration guidance for an upgrade inventory.
 
 ## Collect Inputs
 
-Collect resolved `react/react-dom`, CSR entry/root calls, warnings/unmount owner, app/library/mixed consumers, supported range, public ref/Context contract, and types. For Compiler work, require performance or explicit compatibility caller evidence, then collect Compiler target/runtime, build-integration identity, diagnostics, and rollback point.
+Collect resolved `react/react-dom`, rendering mode and entry/root calls, warnings/unmount owner, app/library/mixed consumers, supported range, public ref/Context contract, and types. For Compiler work, identify whether the task is performance adoption or existing compatibility repair, then collect Compiler target/runtime, build-integration identity, diagnostics, and rollback point.
 
 ## Decision Sequence and Table
 
-1. Confirm major 18 and CSR. 2. Select root, ref/Context, or Compiler subpath. 3. Preserve consumers/owners. 4. Edit or report. 5. Verify and return.
+1. Establish major 18 and the rendering mode. 2. Select root, ref/Context, or Compiler subpath. 3. Preserve consumers/owners. 4. Edit or report. 5. Verify and return.
 
-| Observation | Selection | Action | Handoff |
+| Observation | Selection | Action | Related guidance |
 |---|---|---|---|
 | Modern CSR root | retain | No style-only change | none |
 | Legacy root, migration authorized | modern root migration | Change entry/unmount together | none |
@@ -20,23 +20,23 @@ Collect resolved `react/react-dom`, CSR entry/root calls, warnings/unmount owner
 | React 18-only app ref/Context | React 18 syntax | Use `forwardRef`, `useContext`, `.Provider` as required | none |
 | Library/mixed public consumers | preserve contract | Keep compatible surface | [structure/public API](react-structure-public-api.md) |
 | Compiler baseline/config supplied | compatibility check | Preserve React 18 target/runtime; fix evidenced mismatch | [render performance](react-render-performance.md) |
-| Existing Compiler config needs build-adapter work | external build handoff | Preserve target `'18'`, `react-compiler-runtime`, options, and diagnostics | external build owner |
+| Existing Compiler config needs build-adapter work | build integration | Preserve target `'18'`, `react-compiler-runtime`, options, and diagnostics | build-tool guidance |
 | Compiler baseline/config absent | blocked | Do not enable/remove memoization | [render performance](react-render-performance.md) |
 
 ## Actions and Prohibitions
 
-Change entry lifecycle or implementation/types atomically. Preserve Compiler target/runtime and pass build-adapter evidence to its build owner instead of deciding it here. Do not introduce React 19 syntax, hydration handling, partial root conversion, incidental Compiler enablement, or bulk memoization removal.
+Change entry lifecycle or implementation/types atomically. Preserve Compiler target/runtime and use build-tool guidance for adapter configuration. Do not introduce React 19-only syntax, partial root conversion, incidental Compiler enablement, or bulk memoization removal.
 
-## Stop or Roll Back
+## Uncertainty and Regressions
 
-Stop on mixed/unresolved versions, hydration scope, unknown consumers/root owner, public break without approval, unsupported Compiler/runtime, or build/runtime failure. Restore prior entry/config on failure.
+For mixed consumers, target the oldest supported runtime; do not treat a known mixed range as a reason to stop. Investigate unresolved root ownership, runtime mismatches, and build failures. Defer only version-sensitive or public breaking choices lacking evidence; fix or revert a change that introduced a regression.
 
 ## Verify
 
 Verify entry build/runtime, warnings, unmount, types, ref attach/cleanup, provider scope/update, consumers, and Compiler production diagnostics when applicable.
 
-## Return and Handoff
+## Result and Related Guidance
 
-Return version/syntax/compatibility evidence. Public compatibility goes to [structure/public API](react-structure-public-api.md). Compiler diagnostics return to [render performance](react-render-performance.md); adapter needs return as external build-owner requirements. Build-tool migration readiness is not decided here.
+Report version and compatibility findings. Use [structure/public API](react-structure-public-api.md) for consumers, [render performance](react-render-performance.md) for measured outcomes, [SSR and hydration](react-ssr-hydration.md) for server roots, and build-tool guidance for adapters.
 
 Fact sources: [React DOM client APIs](https://react.dev/reference/react-dom/client), [Compiler target](https://react.dev/reference/react-compiler/target), and [Compiler installation](https://react.dev/learn/react-compiler/installation).

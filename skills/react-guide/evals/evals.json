@@ -73,6 +73,29 @@
         "evals/fixtures/external-store-grid-performance/src/Grid.jsx",
         "evals/fixtures/external-store-grid-performance/vite.config.mjs"
       ]
+    },
+    {
+      "id": 4,
+      "prompt": "Repair SSR-104 using TASK.md and the supplied source. Preserve React 18 compatibility, request isolation, server output, and client interactions. Do not install dependencies. Save the repaired source and REPORT.md.",
+      "expected_output": "Request-local initial data hydrates without divergent IDs, timestamps, or store snapshots; live updates and note state survive.",
+      "expectations": [
+        "React 18.3.1 and the existing renderer/host contract are preserved",
+        "External-store snapshots are stable and immutable across updates",
+        "Initial server snapshots remain fixed while live snapshots advance",
+        "Separate store instances do not share request data or notifications",
+        "The client hydrates transferred request data with matching IDs and timestamp",
+        "Server payload transfer is safe and browser cache does not override hydration",
+        "Profile interactions and note identity are preserved without warning suppression",
+        "The report explains hydration causes, request isolation, and unrun runtime checks"
+      ],
+      "files": [
+        "evals/fixtures/ssr-profile-hydration/TASK.md",
+        "evals/fixtures/ssr-profile-hydration/package.json",
+        "evals/fixtures/ssr-profile-hydration/src/Profile.jsx",
+        "evals/fixtures/ssr-profile-hydration/src/entry-client.jsx",
+        "evals/fixtures/ssr-profile-hydration/src/entry-server.jsx",
+        "evals/fixtures/ssr-profile-hydration/src/profileStore.mjs"
+      ]
     }
   ]
 }

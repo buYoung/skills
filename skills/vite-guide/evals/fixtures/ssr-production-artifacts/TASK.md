@@ -1,0 +1,9 @@
+# SSR-208: development-only loader in the production host
+
+The host already mounts Vite middleware in development and serves `dist/client` at `/console/` in production. Repair the page-handler adapter and build configuration; do not construct a new HTTP host or migrate to Environment API. Preserve `createPageHandler({ isProduction, root })`, which returns an async `(url) => html` handler. `root` is an absolute project path. Keep `render(url, manifest)` and its request-specific preload lookup.
+
+Development works. Production currently requires Vite and source files, and the source HTML leaks `/src/` requests. The release must instead ship client and server builds in separate directories, use built client HTML, load the emitted `dist/server/entry-server.js`, and pass the client-generated SSR manifest to the renderer. A source HTML build must retain the `<!--app-html-->` and `<!--preload-links-->` injection points. Avoid adding `/console/` twice to emitted asset URLs.
+
+`@fixture/banner` is an external runtime dependency installed by the host. Its conditional exports have `custom`, `node`, and `default` branches; the product contract selects `custom` in both environments. `@fixture/theme` requires Vite CSS transformation and must stay in the SSR bundle. Keep these dependency choices targeted and preserve the existing runtime-secret boundary. Dependency metadata is supplied evidence; do not install packages or change versions. Node 22.12.0 is the resolved host/build runtime. Vite 8.0.0 is fixed. No prior migration/preflight report exists.
+
+Write REPORT.md explaining dev versus production execution, manifest location/consumer, conditional exports/externalization, and verification actually performed. Distinguish a synthetic production-import smoke check from a real Vite build, browser, or deployment test.

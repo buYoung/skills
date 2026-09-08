@@ -6,36 +6,36 @@ Read only for an explicitly authorized Vite 6→7 migration. Do not use for ordi
 
 ## Collect Inputs
 
-Collect resolved Vite 6 source, target authorization, the common validated target-runtime preflight evidence, Sass legacy API, removed `splitVendorChunkPlugin`, `build.target`, `transformIndexHtml`, plugin compatibility, entry/env/build/deploy impacts, and existing dev/build/preview/deployment evidence.
+Collect resolved Vite 6 source, target authorization, the target package Node engine and current runtime evidence, Sass legacy API, removed `splitVendorChunkPlugin`, `build.target`, `transformIndexHtml`, plugin compatibility, entry/env/build/deploy impacts, and existing dev/build/preview/deployment evidence.
 
 ## Decision Sequence and Table
 
-1. Build pass/fail/not-applicable inventory. 2. Apply Node support predicate. 3. Fix blockers one at a time. 4. Run existing verification. 5. Declare arrival or hand off only remaining owners.
+1. Build pass/fail/not-applicable inventory. 2. Apply Node support predicate. 3. Fix blockers one at a time. 4. Run existing verification. 5. Report arrival and unresolved findings.
 
-| Item | Selection | Action | Handoff |
+| Item | Selection | Action | Related guidance |
 |---|---|---|---|
-| Validated target-runtime preflight present | pass | Preserve exact evidence | none |
-| Target-runtime evidence absent/blocked | blocking | Stop before config edits | none |
+| Target runtime satisfies the actual package contract | pass | Preserve exact evidence | none |
+| Target-runtime evidence absent/unsupported | investigate | Resolve metadata; defer only unsupported execution or dependent choices | none |
 | Removed/deprecated config/API | fail/not-applicable | Migrate authorized blocker; reverify locally | none |
-| Plugin compatibility unknown/fails | blocking | Do not continue | none |
-| Entry/env remains after arrival | owner handoff | Preserve evidence | [client runtime](vite-client-runtime.md) |
-| Chunk/plugin remains after arrival | owner handoff | Preserve evidence | [build/plugins](vite-build-plugins.md) |
-| Deployment remains after arrival | owner handoff | Preserve evidence | [deployment](vite-deployment.md) |
+| Plugin compatibility unknown/fails | investigate | Inspect peer contracts, source, and supported replacements | none |
+| Entry/env remains after arrival | related work | Preserve evidence | [client runtime](vite-client-runtime.md) |
+| Chunk/plugin remains after arrival | related work | Preserve evidence | [build/plugins](vite-build-plugins.md) |
+| Deployment remains after arrival | related work | Preserve evidence | [deployment](vite-deployment.md) |
 
 ## Actions and Prohibitions
 
 Fix Node, removed APIs, target/Sass/hooks/plugins in order. Do not mix unrelated redesign, hide removed APIs, or propose Vite 8.
 
-## Stop or Roll Back
+## Uncertainty and Regressions
 
-Stop on unsupported Node, incompatible plugin, unconfirmed blocking item, or failed build/runtime. Roll back the last migration step before continuing.
+Investigate incompatible plugins, unconfirmed items, and failed builds. Defer unsupported runtime execution and unresolved consumer choices; do not declare arrival while required checks remain unconfirmed. Restore a prior working step if a proposed migration change regresses behavior.
 
 ## Verify
 
 Run existing dev/build and applicable preview/deployment checks. Declare Vite 7 arrival only when all blocking inventory items and required commands pass.
 
-## Return and Handoff
+## Result and Related Guidance
 
-Return itemized arrival evidence. After pass, route only unresolved owner work to [client runtime](vite-client-runtime.md), [build/plugins](vite-build-plugins.md), or [deployment](vite-deployment.md); otherwise `next_reference: none`.
+Report the itemized migration evidence, exact target runtime contract, and unverified checks. Use [client runtime](vite-client-runtime.md), [build/plugins](vite-build-plugins.md), [deployment](vite-deployment.md), or [SSR integration](vite-ssr.md) during the migration as needed. No preflight or prior-stage report is required.
 
 Fact source: [Vite 7 migration guide](https://v7.vite.dev/guide/migration).

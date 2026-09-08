@@ -2,38 +2,38 @@
 
 ## Read When
 
-Read only for explicit React 19 Compiler config/compatibility/diagnostics work with baseline/hypothesis evidence from the render-performance leaf or an explicit existing-Compiler compatibility task. Build-tool adapter work stays outside this leaf.
+Read for React 19 Compiler explanation, config, compatibility, and diagnostics. Performance adoption needs a baseline/hypothesis; existing compatibility repair can use current source and diagnostics. Use build-tool guidance for adapter configuration.
 
 ## Collect Inputs
 
-Collect resolved React 19, Compiler version, mode, target/runtime, build-integration identity, config, diagnostics, escape hatches, existing production build, exact caller, optional measurement handoff, and rollback point.
+Collect resolved React 19, Compiler version, mode, target/runtime, build-integration identity, config, diagnostics, escape hatches, existing production build, optional measurements, and rollback point.
 
 ## Decision Sequence and Table
 
-1. Require a performance or compatibility caller. 2. Compare React config/runtime compatibility. 3. Select retain/minimal fix/integration handoff/stop. 4. Verify production diagnostics. 5. Return to the exact caller.
+1. Distinguish performance adoption from compatibility repair. 2. Compare React config/runtime compatibility. 3. Select retain/minimal fix/build integration. 4. Verify production diagnostics. 5. Report the supported conclusions.
 
-| Observation | Selection | Action | Handoff |
+| Observation | Selection | Action | Related guidance |
 |---|---|---|---|
-| Existing compatible config | retain | No incidental changes | return_to_caller |
-| Evidenced compatibility mismatch | minimal fix | Change only mismatch | return_to_caller |
-| React config is valid but the build adapter is incompatible | external build handoff | Preserve mode/options/diagnostics without changing adapter here | external build owner |
-| Performance caller lacks baseline/task | blocked | Do not enable/remove memoization | return_to_caller |
-| Unsupported plugin/runtime or build fails | rollback/stop | Restore prior config | return_to_caller |
+| Existing compatible config | retain | No incidental changes | none |
+| Evidenced compatibility mismatch | minimal fix | Change only mismatch | none |
+| React config is valid but the build adapter is incompatible | build integration | Preserve mode/options/diagnostics without changing adapter here | build-tool guidance |
+| Performance adoption lacks baseline | blocked | Do not enable/remove memoization | none |
+| Unsupported plugin/runtime or build fails | rollback/stop | Restore prior config | none |
 
 ## Actions and Prohibitions
 
-Preserve purity, Compiler options, and existing escape hatches. An explicit compatibility task may validate an existing Compiler without a performance baseline, but may not enable it or claim an improvement. Do not incidentally enable Compiler, bulk-remove memoization, use directives to hide impurity, decide build-tool adapters, or decide performance here.
+Preserve purity, Compiler options, and existing escape hatches. An explicit compatibility task may validate an existing Compiler without a performance baseline, but may not enable it or claim an improvement. Do not incidentally enable Compiler, bulk-remove memoization, use directives to hide impurity, select adapters without build-tool guidance, or decide performance here.
 
-## Stop or Roll Back
+## Uncertainty and Regressions
 
-Stop on missing caller evidence, unresolved versions, incompatible runtime, or diagnostics/build failure. Performance adoption also stops without a baseline. Restore prior React config before return.
+Investigate unresolved versions and existing runtime/build failures without adopting unverified APIs. Defer performance adoption without a representative baseline, while continuing compatibility repair. Revert newly introduced incompatible configuration.
 
 ## Verify
 
-Run existing production build and diagnostics, exercise behavior, and return results; the caller owns same-metric keep/rollback.
+Run existing production build and diagnostics, exercise behavior, and return results; use the same metric for a performance keep/rollback decision.
 
-## Return and Handoff
+## Result and Related Guidance
 
-Return compatibility/config/diagnostic evidence to [render performance](react-render-performance.md) or the exact caller. Return adapter mismatches as external build-owner requirements.
+Report compatibility, configuration, and diagnostics. Use [render performance](react-render-performance.md) for measured outcomes and build-tool guidance for adapter mismatches. No caller identity or prior handoff record is required.
 
 Fact sources: [React Compiler introduction](https://react.dev/learn/react-compiler/introduction) and [Compiler installation](https://react.dev/learn/react-compiler/installation).
