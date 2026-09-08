@@ -1,139 +1,65 @@
 # Quality Criteria
 
-Quality standards and readiness checklists for system prompts. Passing the checklist below means a
-prompt is **ready for evaluation**, not certified production-ready — see the note at the end.
+Review the generated prompt and its application/evaluation materials against the user's request.
+A document check establishes consistency of the draft, not observed model behavior.
 
 ## Readiness Checklist
 
-```yaml
-- check: Task Clarity
-  criteria: Is the task to be performed by the model described without ambiguity?
-- check: Output Definition
-  criteria: Are the form, structure, and length of the output specified?
-- check: Scope Limitation
-  criteria: Is the range within which the model should respond clearly bounded?
-- check: Fallback Handling
-  criteria: Is the response defined for inputs that cannot be processed?
-- check: Reproducibility
-  criteria: Are decision rules, tie-breaks, and format constraints explicit enough that no
-    output-shaping choice (format, length, label) is left for the model to improvise per run?
-- check: Variable Separation
-  criteria: Are dynamic inputs separated into variables without hardcoding?
-- check: Self-Containment
-  criteria: Can the task be performed using only the prompt without external explanation?
-- check: Disambiguation (labeling/extraction)
-  criteria: For classification/routing/extraction prompts, are out-of-scope inputs guarded to the
-    fallback value AND ambiguous or multi-signal inputs resolved by an explicit dominant-signal
-    tie-break (stated in the prompt, not left to the model to infer)?
-- check: Untrusted Input Isolation
-  criteria: When a variable carries end-user or third-party text, is it wrapped in explicit
-    delimiters with an instruction that its content is data to process, never instructions to
-    follow? (See the Guardrails block in prompt_structure.md.)
-```
+| Check | Review question |
+|---|---|
+| Requirement fidelity | Does each material instruction trace to supplied requirements, explicit design delegation, or a disclosed non-consequential default? |
+| Clarification | Have missing labels, exact API contracts, business policies, conflicts, and consequential exceptions been resolved without re-asking supplied facts? |
+| Task and output | Are the operation and acceptance conditions clear, including required content and permitted variation? |
+| Closed contracts | Do labels, keys, types, units, and exceptions match across prompt, examples, usage note, and expected answers? |
+| Input meaning | Are live user requests distinguished from documents, retrieved text, and other data? |
+| Application | Are required variables, input placement, resources, and necessary settings specified without pretending placeholders are supplied facts? |
+| Target scope | Is the default model-neutral, with named-target adaptations checked against official sources and limitations identified? |
+| Architecture | Is one prompt used by default and any explicitly requested stage/branch/loop preserved? |
+| Stage boundaries | Are producer outputs valid consumer inputs, with defined error propagation, routing, and bounded loop termination where relevant? |
+| Evaluation | Do concrete cases, semantic criteria, failure conditions, and the coverage map trace to the user's important requirements? |
+| Execution honesty | Are unrun cases marked `not_run`, actual outputs preserved, and simulations restricted to explicitly approved scope? |
+| Comparison | Are shared inputs/criteria fixed, previous versions retained, and improvements or regressions supported by observed evidence? |
 
-## Quality Degradation Patterns
+## Classification, Routing, and Extraction
 
-```yaml
-- pattern: Ambiguous Task
-  problem: "Write a good article" → Model interprets arbitrarily
-  fix: Specify concrete verbs + length + target
-- pattern: Undefined Output
-  problem: Output format changes every time
-  fix: Specify structure/format/length
-- pattern: Excessive Constraints
-  problem: "Listing only 'Do not...' → Unclear what the model can do"
-  fix: Prioritize positive instructions; use constraints only for safety
-- pattern: Unbounded Scope
-  problem: Model generates freely from all training data → Hallucination
-  fix: "Only within the scope of the provided input"
-- pattern: Missing Examples
-  problem: Conveying complex output patterns through explanation only
-  fix: Add 2–5 input-output examples (see prompt_structure.md — start zero-shot first)
-- pattern: Erroneous Examples
-  problem: Typos/logic errors in examples → Model learns error patterns
-  fix: Directly verify examples before including them
-```
+Check both structure and meaning. A syntactically valid `{"category":"Billing"}` is wrong when
+the supplied definitions require `Account/Login`. Extraction checks need the correct value,
+source support, and any required normalization, not just presence of the expected keys.
 
-## Disambiguation Rules (classification / extraction / labeling prompts)
+Apply only the user's supplied or delegated disambiguation rules:
 
-When a generated prompt assigns a label, category, or fixed-schema field, ambiguous or adversarial
-inputs cause errors unless the prompt states the tie-break **explicitly** — a strong model will not
-reliably infer it. For these prompts, encode the following rules in the prompt itself:
+- Preserve the exact label set and schema. A fallback does not justify adding another value.
+- If domain scope matters, state it and apply the specified out-of-scope behavior.
+- If overlapping labels or mixed sentiment change the result, use the supplied priority rule
+  or ask for it. Do not impose a universal dominant-signal rule.
+- Empty, conflicting, and missing data follow the agreed policy. Missing evidence is not proof
+  of a negative value or permission to invent a fact.
+- Keep source-text commands from changing the classification/extraction task. Keep legitimate
+  runtime requests usable when the application is an assistant rather than a classifier.
 
-- **Scope guard (required — distinct from the generic fallback)**: a bare "if it doesn't fit any
-  category → Other" catch-all is NOT enough, because it misses input that *keyword-matches a category
-  but is out of scope*. Add an explicit line mapping out-of-domain input to the fallback **even when
-  it contains a category trigger word**, and keep it even in a "tight" prompt — it is one sentence.
-  Template to adapt: *"If the message is not about &lt;this product/service&gt;, output &lt;fallback&gt;
-  even if it mentions &lt;trigger words like refund, charge, account, login&gt;."* e.g. a "refund"
-  request for an unrelated or physical purchase → `Other`, not `Billing`.
-- **Classify by the reported subject, not surface keywords**: with multiple cues, decide on the
-  actual symptom/subject. e.g. "the upload finished but playback is a black screen" is a *playback*
-  issue despite the word "upload".
-- **Dominant-signal tie-break for mixed input**: when signals conflict, state which wins. For
-  sentiment, an actionable defect/complaint governs over incidental praise (praise + damage →
-  negative). For a "main attribute", choose what the author is actually evaluating; a number or term
-  that is only context (e.g. an "$18" mention inside a taste review) is **not** the attribute.
-- **Reserve `neutral` / `none`** for genuinely flat input — do not let it absorb ambiguity.
+## Architecture Review
 
-Encode these as explicit rules in the prompt, then confirm they hold on adversarial inputs with an
-eval — see [evaluation.md](evaluation.md).
+Multiple fields from one analysis normally fit one prompt. Explicitly requested independent
+stages, branches, or loops do not need to prove single-prompt failure before being honored.
+Use [multi_prompt_architecture.md](multi_prompt_architecture.md) to check contracts and stopping
+behavior. A finite iteration cap ensures termination; it does not ensure quality convergence.
 
-## Single vs. Multi-Prompt Decision Criteria
+## Common Defects and Corrections
 
-A multi-prompt architecture is needed **only when a single system prompt cannot solve the
-task**. Failure signals: an intermediate artifact is consumed or retried independently by an
-external system, the steps require instructions that conflict within one prompt, the context
-budget is exceeded, or a measured eval shows a single prompt underperforming. Each added prompt
-costs latency, money, and error propagation — the burden of proof is on splitting.
+| Defect | Correction |
+|---|---|
+| Invented schema described as an existing API | Request the exact contract; propose a new one only when design is delegated |
+| Every missing heading/tone choice blocks creation | State a reasonable presentation default and proceed |
+| Every user message declared inert data | Separate live requests from quoted or retrieved material |
+| Generic `Other`/refusal inserted into every prompt | Follow the actual output and exception policy |
+| Schema text described as enforced correctness | Separate prompt instructions, API constraints, and semantic accuracy |
+| Plausible examples listed without expected decisions | Add concrete answers/rubrics, failure conditions, and requirement links |
+| Checklist passed, therefore production-ready | Report what was reviewed; do not imply execution or operational certification |
+| One improved criterion hides another regression | Compare each shared criterion with evidence; report mixed outcomes explicitly |
 
-**Over-splitting guard**: N output fields from one analysis of one input (e.g. sentiment +
-attribute + note from a single review) is **one prompt with an output schema** — "multiple
-aspects" alone never justifies a split.
+## Before Delivery
 
-Pattern signals (apply only after the gate above says a single prompt is insufficient):
-
-- **Task can be completed with a single role**: Single
-- **Input → Output is a single transformation (even with multiple output fields)**: Single
-- **Intermediate transformation steps exist (A→B→C)**: Multi: Sequential
-- **Independent perspectives whose outputs are consumed separately**: Multi: Parallel
-- **Processing differs based on the input type**: Multi: Conditional
-- **Iterative draft → review → revision cycle is needed**: Multi: Iterative
-- **General principles must be extracted before the main task**: Multi: Step-back
-- **Input must be split into chunks, processed independently, then merged**: Multi: Fan-out/Fan-in
-
-This list is the summary; the canonical walkthrough is the Architecture Design Process in
-[multi_prompt_architecture.md](multi_prompt_architecture.md).
-
-## Principles for Writing Instructions
-
-- **Positive First**: "Do X" > "Don't do Y"
-- **Start with a Verb**: Analyze, Classify, Extract, Generate, Summarize, etc.
-- **Specific Length**: "3 items", "2 paragraphs", "Within 100 characters"
-- **Processing Order**: "First perform A, then perform B based on the result"
-- **Scope Specification**: "Only within the given text", "Based on the data below"
-
-## Methods for Ensuring Output Quality
-
-```yaml
-- method: Enforce Structured Format (JSON, YAML)
-  effect: Improves consistency of machine-readable output
-  when: During programming integration
-- method: Use API-level schema enforcement (Structured Outputs / strict function calling)
-  effect: Guarantees valid structure, enums, and required keys more reliably than asking for
-    JSON in the prompt
-  when: Production integrations that must parse the output programmatically
-- method: Provide Schema
-  effect: Strictly enforces output structure
-  when: When outputting complex structures
-- method: Include Examples (Few-shot)
-  effect: Maximizes consistency through pattern learning
-  when: When outputting unstructured patterns
-- method: Specify Length
-  effect: Prevents unnecessarily long responses
-  when: Always recommended
-```
-
-> A generated prompt is only "production-ready" once it has been measured against a test set,
-> not when the checklist above passes. See [evaluation.md](evaluation.md) for the success
-> criteria, dataset, grading, baseline, and regression loop.
+Resolve contradictions between prompt rules, examples, and evaluation answers. If a criterion
+cannot yet be judged, identify the missing policy or evidence rather than passing it. Confirm
+that the usage note describes the actual configuration delivered. If simulation is not approved,
+deliver the prompt and evaluation materials with all execution records unrun.
