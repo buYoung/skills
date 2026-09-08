@@ -1,5 +1,45 @@
 # Kysely DELETE Reference
 
+## When to use
+
+Use for DELETE conversion or modification, joined deletion, and affected-row versus returned-row diagnosis.
+
+## Example prerequisites
+
+Examples are independent patterns, not one shared schema or a standalone program. Assume `db` is a configured `Kysely<Database>` with the referenced tables/columns; import `sql` from `kysely` where used. Adapt application inputs and types to the actual schema. SQL blocks show semantic SQL, often with inline values for readability, not captured `.compile()` output. Check the [version reference](kysely-0.29.md) and the target database before using dialect-specific syntax. See [schema and value types](insert.md#schema-and-value-types) for the shared type contract.
+
+## Contents
+
+- [Predicates and result contract](#predicates-and-result-contract)
+- [Dialect boundaries](#dialect-boundaries)
+- [Basic DELETE](#basic-delete)
+- [Delete with Result](#delete-with-result)
+- [DELETE with RETURNING (PostgreSQL)](#delete-with-returning-postgresql)
+- [WHERE Conditions](#where-conditions)
+- [DELETE with USING (PostgreSQL)](#delete-with-using-postgresql)
+- [DELETE with JOIN (MySQL)](#delete-with-join-mysql)
+- [DELETE with LIMIT (MySQL)](#delete-with-limit-mysql)
+- [DELETE with ORDER BY + LIMIT (MySQL)](#delete-with-order-by--limit-mysql)
+- [WITH CTE + DELETE](#with-cte--delete)
+- [Conditional Delete ($if)](#conditional-delete-if)
+- [Clear WHERE Clause](#clear-where-clause)
+- [Clear LIMIT Clause](#clear-limit-clause)
+- [Dialect Differences](#dialect-differences)
+
+## Predicates and result contract
+
+Use the [shared schema types](insert.md#schema-and-value-types) to understand filter and returned column values; `Insertable`/`Updateable` are write-object types, not DELETE payloads. A literal right-hand string is data; use `whereRef` for column comparisons. Read [operators](operators.md) for parentheses, NULL, and subquery predicates. NOT IN with a NULL-containing input is not generally interchangeable with NOT EXISTS.
+
+Without RETURNING/OUTPUT, `.execute()` returns `DeleteResult[]`; `.executeTakeFirst()` returns metadata with `numDeletedRows` (bigint). With supported RETURNING, results are selected row objects and zero matches can yield an empty array. `executeTakeFirstOrThrow()` without RETURNING does not assert a nonzero deletion count. Conditional RETURNING requires the consumer to handle metadata and row paths. See [DeleteQueryBuilder](https://kysely-org.github.io/kysely-apidoc/classes/DeleteQueryBuilder.html).
+
+Trace the deletion predicate through helper construction to execution. `clearWhere()` removes previous restrictions and `clearLimit()` removes a bound; their examples demonstrate rebuilding behavior, not equivalent refactors. Preserve the requested target rows, transaction instance, options, and return shape.
+
+## Dialect boundaries
+
+PostgreSQL USING joins determine qualifying target rows; RETURNING from a USING table does not mean that table was deleted. See [PostgreSQL DELETE](https://www.postgresql.org/docs/18/sql-delete.html). RETURNING support differs by engine; see [INSERT result guidance](insert.md#input-and-result-contract).
+
+MySQL DELETE ORDER BY/LIMIT applies to single-table forms, not the multi-table USING/JOIN form. The LEFT JOIN example's WHERE predicate on `person` removes unmatched rows; moving it to ON would change the deletion set. See [MySQL DELETE](https://dev.mysql.com/doc/refman/8.0/en/delete.html).
+
 ## Basic DELETE
 ```sql
 DELETE FROM person WHERE id = 1
@@ -173,7 +213,7 @@ db.deleteFrom('person')
 
 ### EXISTS Subquery
 ```sql
-DELETE FROM person WHERE EXISTS (SELECT 1 FROM pet WHERE pet.owner_id = person.id)
+DELETE FROM person WHERE EXISTS (SELECT 1 AS one FROM pet WHERE pet.owner_id = person.id)
 ```
 ```ts
 db.deleteFrom('person')
@@ -181,7 +221,7 @@ db.deleteFrom('person')
     eb.exists(
       eb.selectFrom('pet')
         .whereRef('pet.owner_id', '=', 'person.id')
-        .select(sql.lit(1))
+        .select(sql.lit(1).as('one'))
     )
   )
   .execute()

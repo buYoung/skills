@@ -1,5 +1,76 @@
 # Kysely SELECT Reference
 
+## When to use
+
+Use for SQL-to-SELECT conversion, new reads, query refactoring, or errors involving selection, reference scope, and result inference.
+
+## Example prerequisites
+
+Examples are independent patterns, not one shared schema or a standalone program. Assume `db` is a configured `Kysely<Database>` with the referenced tables/columns; import `sql` from `kysely` where used. Adapt application inputs and types to the actual schema. SQL blocks show semantic SQL, often with inline values for readability, not captured `.compile()` output. Check the [version reference](kysely-0.29.md) and the target database before using dialect-specific syntax. See [schema and value types](insert.md#schema-and-value-types) for the shared type contract.
+
+## Contents
+
+- [Selection semantics and scope](#selection-semantics-and-scope)
+- [Conditional builders and result types](#conditional-builders-and-result-types)
+- [Basic SELECT](#basic-select)
+- [Select Single Column](#select-single-column)
+- [Select with Table Prefix](#select-with-table-prefix)
+- [Select All Columns](#select-all-columns)
+- [Select All from Specific Table](#select-all-from-specific-table)
+- [Aliases](#aliases)
+- [DISTINCT](#distinct)
+- [DISTINCT ON (PostgreSQL only)](#distinct-on-postgresql-only)
+- [WHERE Conditions](#where-conditions)
+- [JOIN](#join)
+- [GROUP BY](#group-by)
+- [HAVING](#having)
+- [ORDER BY](#order-by)
+- [LIMIT / OFFSET](#limit--offset)
+- [Aggregate Functions](#aggregate-functions)
+- [Window Functions](#window-functions)
+- [CASE WHEN](#case-when)
+- [WITH (CTE)](#with-cte)
+- [UNION / INTERSECT / EXCEPT](#union--intersect--except)
+- [Subquery in SELECT](#subquery-in-select)
+- [FOR UPDATE / FOR SHARE (Locking)](#for-update--for-share-locking)
+- [Raw SQL](#raw-sql)
+- [Dynamic Column Reference](#dynamic-column-reference)
+- [Conditional Query Building ($if)](#conditional-query-building-if)
+- [WITH RECURSIVE (Recursive CTE)](#with-recursive-recursive-cte)
+- [CTE Materialization (PostgreSQL)](#cte-materialization-postgresql)
+- [INTERSECT ALL / EXCEPT ALL](#intersect-all--except-all)
+- [Data Type Casting (CAST)](#data-type-casting-cast)
+- [JSON Data Processing](#json-data-processing)
+- [Full Text Search](#full-text-search)
+- [BETWEEN SYMMETRIC (PostgreSQL)](#between-symmetric-postgresql)
+- [Advanced Grouping (Raw SQL Required)](#advanced-grouping-raw-sql-required)
+- [Window Frame Clause (Raw SQL Required)](#window-frame-clause-raw-sql-required)
+- [DBMS-Specific Features (Raw SQL Required)](#dbms-specific-features-raw-sql-required)
+- [Dialect Differences](#dialect-differences)
+
+## Selection semantics and scope
+
+Use an alias consistently after introducing it. Derived tables and CTEs expose their selected columns, not every column of their source tables. A correlated subquery may use the outer query's visible references; a derived table in FROM/JOIN that references an outer row needs a supported lateral form. Prefer the callback-local expression builder to keep these scopes explicit. See [expressions](https://kysely.dev/docs/recipes/expressions).
+
+An outer join makes the unmatched side nullable, even when the table declares a column non-null. Filtering that side in WHERE can discard unmatched rows; putting the predicate in ON has a different meaning. A one-to-many join multiplies rows. Avoid adding DISTINCT to hide that multiplication. For new queries, select explicit aliases when joined columns have duplicate names; for conversions, explain any collision in the original output contract.
+
+GROUP BY changes row cardinality; HAVING filters groups, whereas WHERE filters input rows. COUNT(column) excludes NULL; COUNT(*) counts rows. Other aggregates can return NULL for empty input, and numeric output depends on the driver. DISTINCT ON needs appropriate ORDER BY to choose a predictable representative. LIMIT/OFFSET without a complete order may select unstable pages; discuss a tie-breaker for new queries without silently changing source SQL. UNION removes duplicates; UNION ALL retains them. See [PostgreSQL SELECT semantics](https://www.postgresql.org/docs/18/sql-select.html).
+
+## Conditional builders and result types
+
+Builders are immutable: retain the returned builder when adding a conditional filter. An ignored `query.where(...)` does not update `query`. For a filter-only branch, reassignment preserves the builder's output shape:
+
+```ts
+let query = db.selectFrom('person').select(['id', 'first_name'])
+if (minimumAge !== undefined) {
+  query = query.where('age', '>=', minimumAge)
+}
+```
+
+Here `minimumAge` is an application input of type `number | undefined`. An explicit undefined check preserves a valid zero value.
+
+Adding selections or joins can change the inferred type: assigning a richer builder back to an earlier variable can lose that information. `$if` makes newly selected fields optional; optional presence is distinct from SQL NULL. The existing `getPeople` example therefore has an optional `age` field, whose value can also be nullable if the schema says so. Use separate returned branches when a precise union of result shapes is needed. See [conditional selects](https://kysely.dev/docs/recipes/conditional-selects).
+
 ## Basic SELECT
 ```sql
 SELECT id, name FROM person
@@ -148,11 +219,14 @@ WHERE name ILIKE '%john%'
 ```
 
 ### BETWEEN
+
+Use the dedicated expression method; see [operators](operators.md#choosing-methods-and-binding-values).
+
 ```sql
 WHERE age BETWEEN 18 AND 65
 ```
 ```ts
-.where('age', 'between', [18, 65])
+.where((eb) => eb.between('age', 18, 65))
 ```
 
 ### Column to Column Comparison (whereRef)
@@ -183,21 +257,26 @@ WHERE (status = 'active' AND type = 'a') OR (status = 'pending' AND type = 'b')
 ```
 
 ### EXISTS Subquery
+
+Alias a raw selection to satisfy [SelectExpression](https://kysely-org.github.io/kysely-apidoc/types/SelectExpression.html). The alias inside EXISTS does not change its truth value.
+
 ```sql
-WHERE EXISTS (SELECT 1 FROM pet WHERE pet.owner_id = person.id)
+WHERE EXISTS (SELECT 1 AS one FROM pet WHERE pet.owner_id = person.id)
 ```
 ```ts
 .where((eb) =>
   eb.exists(
     eb.selectFrom('pet')
       .whereRef('pet.owner_id', '=', 'person.id')
-      .select(sql.lit(1))
+      .select(sql.lit(1).as('one'))
   )
 )
 ```
 
 
 ## JOIN
+
+Choose only join forms supported by the target engine: for example, MySQL has no native FULL OUTER JOIN (see [MySQL JOIN syntax](https://dev.mysql.com/doc/refman/8.0/en/join.html)). LATERAL derived tables require MySQL 8.0.14+ and have correlation restrictions; see [MySQL LATERAL](https://dev.mysql.com/doc/refman/8.0/en/lateral-derived-tables.html).
 
 ### INNER JOIN
 ```sql
@@ -742,6 +821,8 @@ db.selectFrom('person')
 
 ## JSON Data Processing
 
+The `->`/`->>` chains below are PostgreSQL-oriented. For MySQL JSON paths, use the `->$`/`->>$` builder operators; see [JSON operators](operators.md#json-operators). The `$` is Kysely path-builder syntax, not a literal database operator.
+
 ### JSON Extraction (->)
 ```sql
 -- PostgreSQL: address->'city'
@@ -794,7 +875,9 @@ db.selectFrom('person')
   .execute()
 ```
 
-### JSON Aggregation - Raw SQL
+### JSON Aggregation
+
+Use `eb.fn.jsonAgg` for a PostgreSQL whole-table row reference. Generic function string arguments normally mean columns, not whole rows. See [FunctionModule](https://kysely-org.github.io/kysely-apidoc/interfaces/FunctionModule.html#jsonagg). MySQL output type still depends on the driver/plugins.
 ```sql
 -- PostgreSQL: json_agg(pet)
 -- MySQL: JSON_ARRAYAGG(pet.name)
@@ -805,7 +888,7 @@ db.selectFrom('person')
   .innerJoin('pet', 'pet.owner_id', 'person.id')
   .select((eb) => [
     'person.id',
-    eb.fn.agg<string>('json_agg', ['pet']).as('pets')
+    eb.fn.jsonAgg('pet').as('pets')
   ])
   .groupBy('person.id')
   .execute()
@@ -915,6 +998,8 @@ db.selectFrom('sales')
 
 ## Window Frame Clause (Raw SQL Required)
 
+Read [window frame semantics](window_function.md#window-semantics-and-example-assumptions) before choosing ROWS or RANGE. These explicit frames are not interchangeable with the default OVER frame. The interval example below uses PostgreSQL syntax.
+
 ### ROWS BETWEEN
 > **Note**: Kysely에서 프레임 절 직접 지원하지 않음 - Raw SQL 사용
 ```sql
@@ -984,7 +1069,7 @@ sql`SELECT * FROM large_table TABLESAMPLE BERNOULLI(10)`
 - Uses backticks for identifiers: \`table\`.\`column\`
 - `LIMIT offset, count` syntax supported
 - Supports `REGEXP` operator
-- JSON: `->`, `->>` maps to `JSON_EXTRACT`, `JSON_UNQUOTE`
+- JSON: use `->$` / `->>$` with the Kysely path builder; MySQL SQL uses a JSON path string.
 - Full-Text: `MATCH (...) AGAINST (...)`
 
 ### PostgreSQL

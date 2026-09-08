@@ -1,5 +1,54 @@
 # Kysely UPDATE Reference
 
+## When to use
+
+Use for UPDATE conversion, assignment changes, update refactoring, and input/result type diagnosis.
+
+## Example prerequisites
+
+Examples are independent patterns, not one shared schema or a standalone program. Assume `db` is a configured `Kysely<Database>` with the referenced tables/columns; import `sql` from `kysely` where used. Adapt application inputs and types to the actual schema. SQL blocks show semantic SQL, often with inline values for readability, not captured `.compile()` output. Check the [version reference](kysely-0.29.md) and the target database before using dialect-specific syntax. See [schema and value types](insert.md#schema-and-value-types) for the shared type contract.
+
+## Contents
+
+- [Assignments and result contract](#assignments-and-result-contract)
+- [Dialect and cardinality boundaries](#dialect-and-cardinality-boundaries)
+- [Basic UPDATE](#basic-update)
+- [Update Single Row](#update-single-row)
+- [Update with Expression](#update-with-expression)
+- [Update with Subquery](#update-with-subquery)
+- [Update with Column Reference](#update-with-column-reference)
+- [Update with Multiple Expressions](#update-with-multiple-expressions)
+- [Update with set(column, value) Syntax](#update-with-setcolumn-value-syntax)
+- [UPDATE with RETURNING (PostgreSQL)](#update-with-returning-postgresql)
+- [WHERE Conditions](#where-conditions)
+- [UPDATE with FROM (PostgreSQL)](#update-with-from-postgresql)
+- [UPDATE with JOIN (PostgreSQL)](#update-with-join-postgresql)
+- [UPDATE Multiple Tables (MySQL)](#update-multiple-tables-mysql)
+- [UPDATE with LIMIT (MySQL)](#update-with-limit-mysql)
+- [UPDATE with ORDER BY + LIMIT (MySQL)](#update-with-order-by--limit-mysql)
+- [WITH CTE + UPDATE](#with-cte--update)
+- [Raw SQL in SET](#raw-sql-in-set)
+- [Update with JSON Path (PostgreSQL)](#update-with-json-path-postgresql)
+- [Conditional Update ($if)](#conditional-update-if)
+- [Clear WHERE Clause](#clear-where-clause)
+- [Dialect Differences](#dialect-differences)
+
+## Assignments and result contract
+
+Derive `PersonUpdate` from `Updateable<Database['person']>` and check the update slot of `ColumnType`; read types are not necessarily writable types. See [schema and value types](insert.md#schema-and-value-types) for `Generated`, `Insertable`, and driver representation.
+
+In `.set({ middle_name: 'first_name' })`, the right side is a string value. Use `eb.ref('first_name')` for the existing column, or `eb('age', '+', 1)` for arithmetic. A scalar subquery must return at most one row and compatible values; no matching row can produce NULL. LIMIT 1 alone does not specify which row is chosen.
+
+Without RETURNING/OUTPUT, `.execute()` returns `UpdateResult[]`, and `.executeTakeFirst()` returns metadata with `numUpdatedRows` (bigint), not an updated entity. With RETURNING, selected fields define the rows and zero matches can yield no row. `executeTakeFirstOrThrow()` without RETURNING does not prove a row was updated: inspect the count. Conditional RETURNING changes the consumer contract. See [UpdateQueryBuilder](https://kysely-org.github.io/kysely-apidoc/classes/UpdateQueryBuilder.html).
+
+Keep the target filter, transaction instance, execution options, and caller expectations attached to the changed query. Replacing the DB-side clock with an application timestamp or changing a column reference to a bound string changes semantics.
+
+## Dialect and cardinality boundaries
+
+MySQL ORDER BY/LIMIT forms here are single-table updates; they cannot be attached to multi-table updates. Matched rows and actually changed rows can differ with driver flags, so do not interpret every count as changed data. See [MySQL UPDATE](https://dev.mysql.com/doc/refman/8.0/en/update.html).
+
+For PostgreSQL UPDATE FROM, ensure the joined relation selects at most one source row per target, or the chosen update value can be indeterminate. RETURNING and PostgreSQL's JSONB subscripting examples need matching server/type support. The `||` concatenation example is PostgreSQL SQL, not a portable MySQL expression. See [PostgreSQL UPDATE](https://www.postgresql.org/docs/18/sql-update.html). Read [operators](operators.md) for shared predicates and [INSERT result guidance](insert.md#input-and-result-contract) for RETURNING dialect boundaries.
+
 ## Basic UPDATE
 ```sql
 UPDATE person SET first_name = 'Jennifer', last_name = 'Aniston' WHERE id = 1

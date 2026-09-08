@@ -1,5 +1,34 @@
 # Kysely Operators Reference
 
+## When to use
+
+Use when translating predicates or expressions, fixing operator errors, or deciding whether raw SQL is necessary.
+
+## Example prerequisites
+
+Examples are independent patterns, not one shared schema or a standalone program. Assume `db` is a configured `Kysely<Database>` with the referenced tables/columns; import `sql` from `kysely` where used. Adapt application inputs and types to the actual schema. SQL blocks show semantic SQL, often with inline values for readability, not captured `.compile()` output. Check the [version reference](kysely-0.29.md) and the target database before using dialect-specific syntax. See [schema and value types](insert.md#schema-and-value-types) for the shared type contract.
+
+## Contents
+
+- [Choosing methods and binding values](#choosing-methods-and-binding-values)
+- [Comparison Operators](#comparison-operators)
+- [Arithmetic Operators](#arithmetic-operators)
+- [JSON Operators](#json-operators)
+- [Unary Operators](#unary-operators)
+- [Logical Operators](#logical-operators)
+- [Usage Examples](#usage-examples)
+- [Dialect Differences](#dialect-differences)
+- [Array/Subquery Operators](#arraysubquery-operators)
+- [Raw SQL and composable alternatives](#raw-sql-and-composable-alternatives)
+
+## Choosing methods and binding values
+
+The operator tables describe syntax mapping, not universal database support. `where(lhs, op, rhs)` and `eb(lhs, op, rhs)` accept binary operators; BETWEEN takes three operands and uses `eb.between(expr, start, end)` or `eb.betweenSymmetric(...)`. A two-element array in a binary comparison does not create the BETWEEN bounds. See [ExpressionBuilder](https://kysely-org.github.io/kysely-apidoc/interfaces/ExpressionBuilder.html) and [ComparisonOperator](https://kysely-org.github.io/kysely-apidoc/types/ComparisonOperator.html).
+
+Use `whereRef`/`onRef` or `eb.ref` for column-to-column comparisons. A normal right-hand string is a value. In `sql` templates, interpolate data as parameters; `sql.val`/`eb.val` are value expressions. `sql.lit` embeds a literal and should be reserved for deliberate trusted constants. Raw text and dynamic identifiers need validation; prefer known schema references. A standalone raw predicate passed to WHERE needs a boolean SQL type, such as `sql<boolean>`. See [Sql](https://kysely-org.github.io/kysely-apidoc/interfaces/Sql.html).
+
+Maintain boolean grouping and SQL NULL semantics. Use IS NULL/IS NOT NULL for null tests. NOT IN can become unknown when its list/subquery contains NULL. Decide the intended behavior for empty IN lists before emitting database-specific SQL. Reuse these patterns in [SELECT](select.md), [UPDATE](update.md), and [DELETE](delete.md).
+
 ## Comparison Operators
 | SQL | Kysely |
 |-----|--------|
@@ -17,8 +46,8 @@
 | `LIKE` | `'like'` |
 | `NOT LIKE` | `'not like'` |
 | `MATCH` | `'match'` |
-| `BETWEEN` | `'between'` |
-| `BETWEEN SYMMETRIC` | `'between symmetric'` |
+| `BETWEEN` | `eb.between(expr, start, end)` |
+| `BETWEEN SYMMETRIC` | `eb.betweenSymmetric(expr, start, end)` |
 | `IS DISTINCT FROM` | `'is distinct from'` |
 | `IS NOT DISTINCT FROM` | `'is not distinct from'` |
 
@@ -43,13 +72,14 @@
 | `<->` (distance) | `'<->'` |
 
 ### MySQL Specific
+
+`!<` and `!>` are not MySQL comparison operators; use `>=` and `<=` for those intents. `!!` is not a portable unary boolean test. Kysely accepting an operator token does not establish its meaning for a particular database. See [MySQL comparisons](https://dev.mysql.com/doc/refman/8.0/en/comparison-operators.html).
+
 | SQL | Kysely | 비고 |
 |-----|--------|------|
 | `REGEXP` | `'regexp'` | |
 | `RLIKE` | `'regexp'` | `REGEXP`의 동의어 |
 | `<=>` (null-safe equal) | `'<=>'` | |
-| `!<` | `'!<'` | |
-| `!>` | `'!>'` | |
 
 ## Arithmetic Operators
 | SQL | Kysely | 비고 |
@@ -99,7 +129,7 @@ eb.ref('column', '->$').key('field').at('last')
 | `NOT EXISTS` | `'not exists'` | |
 | `NOT` | `'not'` | `eb.not()` |
 | `-` (negative) | `'-'` | `eb.neg()` |
-| `!!` | `'!!'` | PostgreSQL boolean 테스트 |
+
 
 ## Logical Operators
 
@@ -181,7 +211,7 @@ WHERE "id" IN (1, 2, 3) AND "status" NOT IN ('deleted', 'archived')
 
 ### BETWEEN
 ```ts
-.where('age', 'between', [18, 65])
+.where((eb) => eb.between('age', 18, 65))
 ```
 ```sql
 WHERE "age" BETWEEN 18 AND 65
@@ -194,6 +224,11 @@ WHERE "age" BETWEEN 18 AND 65
 ```
 ```sql
 WHERE "updated_at" > "created_at" AND "pet"."owner_id" = "person"."id"
+```
+
+### Negated BETWEEN without raw SQL
+```ts
+.where((eb) => eb.not(eb.between('age', 18, 65)))
 ```
 
 ### Arithmetic in SET
@@ -258,8 +293,9 @@ SELECT * FROM "person"
 WHERE 'dog' = ANY(SELECT "species" FROM "pet" WHERE "owner_id" = "person"."id")
 ```
 
-## Raw SQL Required
-다음 연산자들은 Kysely에서 직접 지원하지 않으며 `sql` 템플릿 태그를 사용해야 합니다:
+## Raw SQL and composable alternatives
+
+Use raw SQL when the selected API cannot express the required syntax. Negated predicates can often be composed with `eb.not(...)`; raw SQL is not mandatory for every item below.
 
 ### MySQL
 | SQL | 설명 |
@@ -283,8 +319,8 @@ WHERE 'dog' = ANY(SELECT "species" FROM "pet" WHERE "owner_id" = "person"."id")
 ### Common
 | SQL | 설명 |
 |-----|------|
-| `NOT BETWEEN` | BETWEEN 부정 |
-| `NOT BETWEEN SYMMETRIC` | BETWEEN SYMMETRIC 부정 (PostgreSQL) |
+| `NOT BETWEEN` | `eb.not(eb.between(...))` or raw SQL |
+| `NOT BETWEEN SYMMETRIC` | `eb.not(eb.betweenSymmetric(...))` (PostgreSQL) |
 | `ALL` | 배열/서브쿼리 전체 비교 |
 
 ### Raw SQL Example
@@ -292,7 +328,7 @@ WHERE 'dog' = ANY(SELECT "species" FROM "pet" WHERE "owner_id" = "person"."id")
 import { sql } from 'kysely'
 
 // NOT BETWEEN
-.where(sql`${sql.ref('age')} NOT BETWEEN ${18} AND ${65}`)
+.where(sql<boolean>`${sql.ref('age')} NOT BETWEEN ${18} AND ${65}`)
 ```
 ```sql
 WHERE "age" NOT BETWEEN 18 AND 65
@@ -308,7 +344,7 @@ SELECT `amount` DIV 3 AS `quotient`
 
 ```ts
 // BINARY (MySQL) - 대소문자 구분 비교
-.where(sql`BINARY ${sql.ref('name')} = ${'John'}`)
+.where(sql<boolean>`BINARY ${sql.ref('name')} = ${'John'}`)
 ```
 ```sql
 WHERE BINARY `name` = 'John'
@@ -316,7 +352,7 @@ WHERE BINARY `name` = 'John'
 
 ```ts
 // SIMILAR TO (PostgreSQL)
-.where(sql`${sql.ref('name')} SIMILAR TO ${'%(John|Jane)%'}`)
+.where(sql<boolean>`${sql.ref('name')} SIMILAR TO ${'%(John|Jane)%'}`)
 ```
 ```sql
 WHERE "name" SIMILAR TO '%(John|Jane)%'
@@ -324,7 +360,7 @@ WHERE "name" SIMILAR TO '%(John|Jane)%'
 
 ```ts
 // OVERLAPS (PostgreSQL)
-.where(sql`(${sql.ref('start_date')}, ${sql.ref('end_date')}) OVERLAPS (${startDate}, ${endDate})`)
+.where(sql<boolean>`(${sql.ref('start_date')}, ${sql.ref('end_date')}) OVERLAPS (${startDate}, ${endDate})`)
 ```
 ```sql
 WHERE ("start_date", "end_date") OVERLAPS ('2024-01-01', '2024-12-31')

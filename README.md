@@ -31,7 +31,7 @@ Only skills that have been personally tested and approved by the user are listed
 | Skill | Description |
 |-------|-------------|
 | [agents-md-generator](skills/agents-md-generator/) | Automatically sets up project structure and generates standardized `AGENTS.md` files. Supports both single-repo and monorepo structures. |
-| [kysely-converter](./skills/kysely-converter/) | Converts database queries and schemas using Kysely |
+| [kysely-converter](./skills/kysely-converter/) | Converts SQL and writes, modifies, or refactors Kysely queries, with type-error diagnosis and version-aware references |
 | [jetbrains-plugin-development](skills/jetbrains-plugin-development/) | IntelliJ Platform plugin development for JetBrains IDEs. Covers `plugin.xml`, services, actions, PSI/VFS/Document, EDT/BGT threading, Kotlin coroutines, custom languages (Grammar-Kit/JFlex), code insight, Kotlin UI DSL v2, IntelliJ Platform Gradle Plugin 2.x, Plugin Verifier, signing, and Marketplace publishing. |
 | [jetbrains-vmoptions](skills/jetbrains-vmoptions/) | Diagnoses JetBrains IDE performance against the actual bundled or custom JBR 17/21/25 runtime, proposes minimal evidence-based VM option changes, verifies effective flags after restart, and provides rollback and controlled before/after measurement steps. |
 | [system-prompt-creator](skills/system-prompt-creator/) | Analyzes user requirements to generate production-ready system prompts. It determines whether a single or multi-prompt architecture is needed and requests missing information if requirements are insufficient. |
