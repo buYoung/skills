@@ -1,87 +1,103 @@
 ---
 name: jetbrains-vmoptions
 description: >
-  Provides JetBrains IDE VM options knowledge for version-specific GC selection and memory/performance tuning
-  (JDK 17/21, IDE 222+). Use this skill whenever the user mentions JetBrains IDE performance, vmoptions,
-  .vmoptions files, IntelliJ/WebStorm/PyCharm/GoLand/Rider/CLion/PhpStorm/RubyMine/DataGrip tuning,
-  IDE freezes or lag, heap size configuration, GC tuning for IDEs, or wants to optimize their JetBrains
-  IDE startup or runtime performance — even if they don't explicitly mention "vmoptions".
+  Diagnose and tune JetBrains IDE VM options against the IDE's actual boot runtime, including bundled or custom
+  JetBrains Runtime (JBR) 17, 21, and 25. Use whenever a user asks about JetBrains IDE performance, freezes,
+  startup or indexing speed, memory pressure, garbage collection, heap sizing, `.vmoptions`, or IntelliJ IDEA,
+  WebStorm, PyCharm, GoLand, Rider, CLion, PhpStorm, RubyMine, or DataGrip JVM tuning. Distinguish the IDE process
+  from project JDK, Gradle, build, test, and remote-backend processes; propose evidence-based minimal changes,
+  confirm effective flags after restart, and provide rollback and before/after measurement steps.
 ---
 
 # JetBrains IDE VM Options
 
-Generate `.vmoptions` configurations for JetBrains IDEs. Output as Markdown code blocks (one option per line, `#` comments). Do not generate files directly.
+Analyze the running IDE first, then propose the smallest defensible `.vmoptions` delta. Do not create or edit the user's files. Treat a flag being accepted by a JVM as compatibility evidence, not as proof of a performance improvement.
 
 ## Workflow
 
-### 1. Identify IDE version (blocking)
+### 1. Establish the runtime and baseline
 
-Read [prerequisite-check.md](references/prerequisite-check.md) for validation logic. IDE version determines the JDK (17 vs 21), which controls which GC collectors and flags are available. Never skip this step — wrong version means wrong recommendations.
+Read [prerequisite-check.md](references/prerequisite-check.md). Identify the IDE product/build, actual boot runtime vendor/version/build/path, bundled-versus-custom status, OS, architecture, current effective command line and flags, current custom options, and the process showing the problem.
 
-### 2. Understand the user's goal
+The IDE build number is context only. It does not prove which runtime is active. The project SDK/JDK is not the IDE boot runtime.
 
-Match the user's problem to a tuning strategy:
+If the exact runtime is unavailable, give collection instructions and limit the answer to diagnostics or runtime-independent changes. Do not infer an unconfirmed JBR major from an IDE version.
 
-| User says | Primary goal | Start with |
-|-----------|-------------|------------|
-| "freezes", "hangs", "lag", "UI stutter" | Low GC pause times | [gc-options.md](references/gc-options.md) → ZGC/Shenandoah |
-| "slow indexing", "build is slow" | Throughput | [gc-options.md](references/gc-options.md) → G1GC/Parallel |
-| "out of memory", "OOM", "large project" | Memory capacity | [memory-options.md](references/memory-options.md) → heap sizing |
-| "startup is slow" | Fast startup | [common-options.md](references/common-options.md) → tiered compilation |
-| "general tuning", "optimize" | Balanced | All references as needed |
+### 2. Confirm the process boundary
 
-### 3. Compose options from references
+Determine whether the symptom belongs to the local IDE process, a remote IDE backend, Gradle daemon, build process, test JVM, language server, terminal process, or another child process. IDE `.vmoptions` affect only the IDE process to which the file is applied.
 
-Read only the relevant reference files. Each reference includes flag descriptions, defaults, usage notes, and example configurations.
+Redirect out-of-scope process tuning to that process's own configuration. Never claim that an IDE heap or GC change fixes a Gradle or test JVM problem.
 
-| File | Content | Read when |
-|------|---------|-----------|
-| [prerequisite-check.md](references/prerequisite-check.md) | IDE version validation, JDK mapping | Always (step 1) |
-| [gc-options.md](references/gc-options.md) | GC selection and tuning flags | GC-related goals |
-| [memory-options.md](references/memory-options.md) | Heap, code cache, metaspace, large pages | Memory-related goals |
-| [common-options.md](references/common-options.md) | Compiler, strings, diagnostics, threads | Performance/startup goals |
+### 3. Diagnose before selecting an option
 
-### 4. Self-review before presenting
+Classify the observed evidence rather than mapping a symptom directly to GC:
 
-- Verify every flag is compatible with the user's JDK version
-- Remove flags that conflict with each other (e.g., two different GC activations)
-- Remove flags the user didn't ask about and doesn't need — lean configs are better
-- Include a brief comment explaining each section's purpose
+| Evidence | First investigation | Relevant reference |
+|---|---|---|
+| IDE freeze or UI stall | Thread dump or IDE CPU profile; correlate with GC/safepoint data | [common-options.md](references/common-options.md) |
+| High CPU or slow editing | Repeatable IDE CPU profile | [performance-validation.md](references/performance-validation.md) |
+| OOM, low-memory warning, or heap saturation | Heap trend, post-GC occupancy, allocation rate | [memory-options.md](references/memory-options.md) |
+| Long or frequent GC pauses | GC log or JFR recorded on the IDE process | [gc-options.md](references/gc-options.md) |
+| Slow startup or indexing | Separate startup/indexing profile under controlled cache conditions | [performance-validation.md](references/performance-validation.md) |
 
-### 5. Present with context
+If evidence is missing, explain how to collect it. A freeze alone is not evidence that the collector is the cause.
 
-Show the final `.vmoptions` block with:
-- A header comment noting the IDE version and JDK
-- Grouped sections (Memory, GC, Performance, Diagnostics)
-- A short explanation of each non-obvious choice
+### 4. Ground every version-sensitive claim
+
+For each proposed option, record the exact runtime family and build it applies to and distinguish:
+
+- **source declaration**: a value or availability declared by a specific JBR/OpenJDK source revision;
+- **runtime-selected value**: the ergonomic or initialized value reported by the user's running JVM;
+- **IDE bundle value**: an option supplied by the product's shipped or custom `.vmoptions` file.
+
+Prefer the running IDE's `jcmd VM.command_line` and `VM.flags -all` output for effective values. Link source claims to the matching JBR version, revision, and file. Do not present a source initializer as the final value when runtime ergonomics can change it.
+
+### 5. Propose a minimal delta
+
+Read only the references relevant to the diagnosed cause:
+
+| File | Use for |
+|---|---|
+| [gc-options.md](references/gc-options.md) | Collector compatibility, selection conflicts, measured GC latency |
+| [memory-options.md](references/memory-options.md) | Heap, code cache, metaspace, references, native-memory trade-offs |
+| [common-options.md](references/common-options.md) | Compiler, strings, threads, diagnostics, process boundaries |
+| [performance-validation.md](references/performance-validation.md) | Application checks and controlled A/B comparison |
+
+Default to an add/change/remove list against the confirmed current settings. Preserve unrelated IDE-supplied options and user properties. Remove duplicates by semantic key (for example, multiple `-Xmx` forms or collector selectors), and explain which effective value wins or conflicts.
+
+Recommend one change purpose at a time. Do not use fixed large heaps, `-Xms = -Xmx`, lower compilation tiers, or forced compiler/GC thread counts as generic optimizations. State the observed condition that justifies them and their costs.
+
+### 6. Include application, verification, and rollback
+
+Tell the user to use the product's **Help | Edit Custom VM Options** action or the exact override source already confirmed. Do not advise editing the installation's default file.
+
+After restart, verify the same IDE process with `jcmd <pid> VM.command_line` and `jcmd <pid> VM.flags -all`. Confirm the requested values, selected collector, and any ignored, obsolete, inactive, or overridden flags. JVM startup success alone is insufficient.
+
+Give a rollback that restores the captured baseline or removes only the proposed delta. For performance claims, follow [performance-validation.md](references/performance-validation.md).
+
+## Output contract
+
+Unless the user explicitly requests a full file, return:
+
+1. **Confirmed environment** — IDE, actual boot runtime/build/path, bundled or custom status, OS/architecture, target process, and unknowns.
+2. **Evidence and diagnosis** — observations, likely cause, alternatives, and the provenance of version-sensitive facts.
+3. **Proposed delta** — options to add, change, or remove, with reason, applicability, and trade-off. Say “no VM option change yet” when evidence does not support one.
+4. **Apply and verify** — exact settings location, restart requirement, and effective-value checks.
+5. **Rollback** — how to restore the captured baseline.
+6. **Before/after comparison** — target metric and controlled A/B procedure, or a link to the relevant steps.
+
+When a full configuration is requested, require the current effective/original options first, preserve required IDE options, annotate only the intended changes, and still provide the delta separately.
+
+## Compatibility and evidence boundaries
+
+- Cover JBR 17, 21, and 25 only after confirming the actual runtime major and build.
+- Treat unconfirmed or other runtime versions as unknown; do not approximate them with the nearest supported version.
+- Verify platform- and build-dependent flags against the exact runtime binary before recommending them.
+- Distinguish option recognition, option activation, and measured improvement.
+- Report when a collector or diagnostic facility is absent from a particular JBR build.
+- State when only JBR 25.0.4 source/default inspection is available and other builds or performance outcomes remain unverified.
 
 ## Scope
 
-- **Supported**: IDE versions 222+ (JDK 17) and 243+ (JDK 21)
-- **GC collectors**: Generational ZGC, ZGC, G1GC, Shenandoah, Parallel, Serial
-- **Tuning areas**: Memory, code cache, metaspace, GC, compiler, strings, diagnostics
-- **Not in scope**: OS-level tuning, plugin configuration, IDE settings (non-JVM), or IDE versions below 222
-
-## Output Example
-
-```
-# JetBrains IDE VM Options
-# IntelliJ IDEA 2024.3 (version 243, JDK 21)
-
-# Memory
--Xms2g
--Xmx4g
-
-# Garbage Collector: Generational ZGC
--XX:+UseZGC
--XX:+ZGenerational
-
-# Performance
--XX:ReservedCodeCacheSize=512m
--XX:+UseStringDeduplication
--XX:SoftRefLRUPolicyMSPerMB=50
-
-# Diagnostics
--XX:+HeapDumpOnOutOfMemoryError
--XX:CICompilerCount=2
-```
+This skill provides analysis, proposed text, verification commands, and measurement procedures for the JetBrains IDE process. It does not change IDE settings, run benchmarks, tune unrelated JVM processes, or guarantee performance gains.

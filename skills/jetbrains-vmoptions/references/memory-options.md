@@ -1,339 +1,115 @@
-# Memory Options Reference
+# Memory Options
 
-Memory-related VM options for JetBrains IDEs.
+Tune memory from observed pressure in the IDE process. Total system RAM or project size alone does not determine a safe heap value.
 
-## Table of Contents
+## Read the effective state first
 
-1. [Heap Memory](#heap-memory)
-2. [Code Cache](#code-cache)
-3. [Metaspace](#metaspace)
-4. [Reference Processing](#reference-processing)
-5. [Memory Pre-touch](#memory-pre-touch)
-6. [Large Pages](#large-pages)
-7. [NUMA Support](#numa-support)
-8. [Container Environment](#container-environment)
-
----
-
-## Heap Memory
-
-Behavior: Controls Java heap size boundaries; larger heaps reduce GC frequency but increase memory footprint.
-When it helps: Large projects, heavy indexing, or frequent analysis workloads.
-
-### Core Flags
-
-| Flag | Description | Typical |
-|------|-------------|-------------|
-| `-Xms<size>` | Initial heap size | 2g |
-| `-Xmx<size>` | Maximum heap size | 4g-8g |
-| `-XX:MinHeapSize=<size>` | Minimum heap size | 0 (ergonomic) |
-| `-XX:InitialHeapSize=<size>` | Initial heap size (alternative) | - |
-| `-XX:MaxHeapSize=<size>` | Maximum heap size (alternative) | - |
-| `-XX:SoftMaxHeapSize=<size>` | Soft limit for max heap | - |
-
-Usage Notes:
-- `-Xms<size>`: Higher values reduce ramp-up GC but increase startup memory footprint.
-- `-Xmx<size>`: Upper bound for heap growth; set based on available RAM and project size.
-- `-XX:MinHeapSize=<size>`: Controls minimum committed heap in ergonomic mode.
-- `-XX:InitialHeapSize=<size>` / `-XX:MaxHeapSize=<size>`: Alternative forms of `-Xms`/`-Xmx`.
-- `-XX:SoftMaxHeapSize=<size>`: Limits growth under normal pressure while allowing bursts.
-
-### Heap Size Ranges by RAM
-
-| RAM | Typical -Xmx | Use Case |
-|-----|------------------|----------|
-| 8GB | 2g-4g | Light development |
-| 16GB | 4g-6g | Standard development |
-| 32GB+ | 6g-8g | Large projects, monorepos |
-
-### Size Notation
-
-| Suffix | Meaning | Example |
-|--------|---------|---------|
-| `k` / `K` | Kilobytes | `512k` |
-| `m` / `M` | Megabytes | `512m` |
-| `g` / `G` | Gigabytes | `4g` |
-
----
-
-## Code Cache
-
-JIT compiled code storage.
-
-Behavior: Stores compiled methods; larger cache reduces deoptimization and recompilation.
-When it helps: Large codebases, heavy refactoring, and long IDE sessions.
-
-### Flags
-
-| Flag | Default | Description |
-|------|---------|-------------|
-| `-XX:ReservedCodeCacheSize=<size>` | base = platform default (C1: 32M, C2: 48M); if TieredCompilation and flag default -> min(2G, base * 5); if JVMCI native lib disabled -> max(64M, value) | Maximum code cache size |
-| `-XX:InitialCodeCacheSize=<size>` | 2496K | Initial code cache size |
-| `-XX:CodeCacheExpansionSize=<size>` | 64K | Expansion increment |
-
-Usage Notes:
-- `-XX:ReservedCodeCacheSize=<size>`: Increase when seeing code cache full or frequent deoptimizations.
-- `-XX:InitialCodeCacheSize=<size>`: Helps reduce early expansions during startup bursts.
-- `-XX:CodeCacheExpansionSize=<size>`: Larger increments reduce expansion frequency at the cost of memory jumps.
-
-### Typical Values
-
-| Project Size | ReservedCodeCacheSize |
-|--------------|----------------------|
-| Small | 256m |
-| Medium | 512m |
-| Large | 1g |
-
-### Example Configuration
+Collect the active command line and initialized flags:
 
 ```
--XX:ReservedCodeCacheSize=512m
--XX:+UseCodeCacheFlushing
+jcmd <pid> VM.command_line
+jcmd <pid> VM.flags -all
+jcmd <pid> GC.heap_info
+jcmd <pid> Compiler.codecache
+jcmd <pid> VM.metaspace basic
 ```
 
----
+When native memory is part of the question, `VM.native_memory` is useful only if Native Memory Tracking was enabled when the JVM started. Enabling it changes the measurement setup and must be identical in A and B.
 
-## Metaspace
+Classify each reported value as a source declaration, runtime-selected value, or IDE bundle/custom value. Values such as heap size, code cache, and thread stacks can be adjusted by runtime ergonomics or product launch options; do not quote a source initializer as the final process value.
 
-Class metadata storage (replaced PermGen in JDK 8+).
+When explaining a declaration, link the file from the exact source revision that matches the user's runtime. The [JBR 25.0.4 `globals.hpp` at inspected revision `4af5e119...`](https://github.com/JetBrains/JetBrainsRuntime/blob/4af5e1194b7f34a396bd56f25eef17624eb60400/src/hotspot/share/runtime/globals.hpp) is an evidence example only; do not reuse its declarations for a different JBR build.
 
-Behavior: Holds class metadata; limits guard against runaway class loading.
-When it helps: Projects with many modules/plugins or heavy code generation.
+## Heap sizing
 
-### Flags
+Relevant options include `-Xmx`, `-Xms`, and their long-form equivalents. Keep one semantic definition for each boundary.
 
-| Flag | Default | Description |
-|------|---------|-------------|
-| `-XX:MetaspaceSize=<size>` | LP64: 21M; 32-bit: 16M | Initial metaspace size |
-| `-XX:MaxMetaspaceSize=<size>` | unlimited | Maximum metaspace size |
-| `-XX:CompressedClassSpaceSize=<size>` | 1G | Compressed class space |
+### Increase `-Xmx` only with evidence
 
-Usage Notes:
-- `-XX:MetaspaceSize=<size>`: Higher values reduce early metadata GCs.
-- `-XX:MaxMetaspaceSize=<size>`: Cap when runaway class loading is suspected.
-- `-XX:CompressedClassSpaceSize=<size>`: Adjust when class space pressure is high.
+Evidence may include:
 
-### Example Values
+- an IDE low-memory warning or Java heap OOM;
+- repeatedly high post-GC occupancy with little free headroom;
+- frequent collection caused by capacity pressure;
+- a workload that demonstrably needs more live heap.
 
-```
--XX:MetaspaceSize=512m
--XX:MaxMetaspaceSize=1g
-```
+Before increasing it, confirm that the IDE process is the constrained process and the operating system has memory headroom. A larger heap can reduce collection frequency, but it increases committed/resident memory potential, can increase memory pressure or swapping, and may lengthen some collection work. It does not fix a memory leak or excessive allocation rate.
 
----
+Choose the candidate from the measured live set and available system memory, then compare it. Do not use fixed `4g`, `8g`, or RAM-percentage tables as universal recommendations.
 
-## Reference Processing
+### Treat `-Xms` separately
 
-Soft/Weak reference handling.
+Preserve the IDE's existing `-Xms` unless startup allocation behavior provides a reason to change it. Setting `-Xms` equal to a large `-Xmx` can reserve or commit more memory early and worsen startup or system pressure. It is not a general performance optimization.
 
-Behavior: Controls how aggressively soft references are cleared under memory pressure.
-When it helps: Balancing memory footprint vs cache hit rate.
+### Avoid duplicate heap forms
 
-### Flags
-
-| Flag | Default | Description |
-|------|---------|-------------|
-| `-XX:SoftRefLRUPolicyMSPerMB=<ms>` | 1000 | Soft reference retention (ms per MB of free heap) |
-| `-XX:+ParallelRefProcEnabled` | false | Parallel reference processing |
-
-Usage Notes:
-- `-XX:SoftRefLRUPolicyMSPerMB=<ms>`: Lower values free caches sooner under memory pressure.
-- `-XX:+ParallelRefProcEnabled`: Helps when reference processing time dominates pauses.
-
-### Example Configuration
-
-Lower values = more aggressive soft reference clearing = reduced memory usage.
+Normalize duplicates such as:
 
 ```
-# Aggressive (less memory, more GC)
--XX:SoftRefLRUPolicyMSPerMB=50
-
-# Conservative (more memory, less GC)
--XX:SoftRefLRUPolicyMSPerMB=250
+-Xmx<size-a>
+-XX:MaxHeapSize=<size-b-in-bytes>
 ```
 
----
+Do not emit both. Use `VM.command_line` and `VM.flags -all` to explain which value became effective, then keep the conventional project/product form already in use.
 
-## Memory Pre-touch
+## Code cache
 
-Commit pages at startup for more predictable performance.
+`-XX:ReservedCodeCacheSize=<size>` is relevant when `Compiler.codecache` or IDE diagnostics show the code cache approaching exhaustion, code cache flushing, or compilation being disabled. A larger cache consumes additional address space/native memory and does not improve performance when the cache has adequate headroom.
 
-Behavior: Touches memory pages at startup to reduce runtime page faults.
-When it helps: Large heaps where consistent latency is more important than startup time.
+Do not recommend `256m`, `512m`, or `1g` solely from project size. Preserve the IDE-bundled value unless observed occupancy supports a change. Verify the final size and usage after restart.
 
-### Flags
+## Metaspace and compressed class space
 
-| Flag | Default | Description |
-|------|---------|-------------|
-| `-XX:+AlwaysPreTouch` | false | Pre-touch all committed pages |
-| `-XX:+AlwaysPreTouchStacks` | false | Pre-touch thread stacks |
+Inspect `VM.metaspace basic` and OOM/error evidence before changing:
 
-Usage Notes:
-- `-XX:+AlwaysPreTouch`: Reduces runtime page faults on large heaps.
-- `-XX:+AlwaysPreTouchStacks`: Stabilizes thread stack latency for many threads.
+- `-XX:MetaspaceSize` is a collection threshold input, not a simple amount of preallocated class memory.
+- `-XX:MaxMetaspaceSize` imposes a cap. Adding an arbitrary cap can create `OutOfMemoryError: Metaspace` without reducing the underlying class-loader or plugin growth.
+- `-XX:CompressedClassSpaceSize` is relevant only to measured compressed-class-space pressure and supported configurations.
 
-### Behavior / Trade-offs
+Do not add fixed metaspace limits as a generic large-project configuration. Investigate class-loader/plugin growth when usage keeps increasing.
 
-| Setting | Startup Time | Runtime Performance |
-|---------|--------------|---------------------|
-| Off (default) | Faster | Variable latency |
-| On | Slower | More predictable |
+## Soft references and reference processing
 
-### Behavior / When it helps
+`-XX:SoftRefLRUPolicyMSPerMB=<ms>` changes how long soft references tend to survive relative to free heap. Lower values can release cache contents earlier but increase recomputation, allocation, disk access, and GC churn. Do not prescribe an aggressive value without evidence that soft-reference retention is causing pressure.
 
-- Large heap sizes (8GB+)
-- Latency-sensitive workflows
-- Systems with sufficient RAM
+`-XX:+ParallelRefProcEnabled` is useful only when reference-processing phases materially contribute to measured pauses and the exact collector/runtime supports the behavior. Verify whether it is already enabled ergonomically.
 
-```
--XX:+AlwaysPreTouch
-```
+## Pre-touch, large pages, and NUMA
 
----
+These are platform and workload options, not routine IDE tuning:
 
-## Large Pages
+| Option area | Consider only when | Cost or risk |
+|---|---|---|
+| `-XX:+AlwaysPreTouch` | Runtime page faults are measured and predictable warm-state latency matters | Slower startup and earlier physical-memory commitment, especially with large `-Xms` |
+| Large pages | The OS is explicitly configured, the exact JBR supports them, and measurement shows a benefit | Startup/allocation failure modes, locked/reserved memory, operational setup |
+| NUMA controls | A multi-socket system shows locality problems | Can worsen placement; behavior is collector and platform dependent |
 
-Using large pages reduces TLB misses.
+Do not recommend large pages on macOS. On Linux and Windows, confirm OS setup and actual activation, not just option acceptance.
 
-Behavior: Uses large pages to reduce TLB misses and improve memory throughput.
-When it helps: Very large heaps on OSes with huge page support enabled.
+## Memory diagnostics
 
-### Flags
-
-| Flag | Default | Description |
-|------|---------|-------------|
-| `-XX:+UseLargePages` | false | Enable large page memory |
-| `-XX:LargePageSizeInBytes=<size>` | 0 | Large page size (0 = OS default) |
-| `-XX:+UseLargePagesIndividualAllocation` | false | Allocate large pages individually |
-
-Usage Notes:
-- `-XX:+UseLargePages`: Helps when OS huge pages are configured and heaps are large.
-- `-XX:LargePageSizeInBytes=<size>`: Overrides OS default huge page size.
-- `-XX:+UseLargePagesIndividualAllocation`: Useful when full reservation fails.
-
-### Platform Requirements
-
-| OS | Requirement |
-|----|-------------|
-| Linux | `vm.nr_hugepages` kernel parameter |
-| Windows | "Lock pages in memory" privilege |
-| macOS | Not supported |
-
-### Example Configuration
+For heap OOM analysis, a bounded recommendation can include:
 
 ```
--XX:+UseLargePages
--XX:LargePageSizeInBytes=2m
+-XX:+HeapDumpOnOutOfMemoryError
+-XX:HeapDumpPath=<existing-writable-directory>
 ```
 
----
+Warn that heap dumps may contain source code, credentials, paths, and user data, and can require substantial disk space. A heap dump is diagnostic evidence, not a performance optimization.
 
-## NUMA Support
+JetBrains provides an IDE action for changing maximum heap and warns when post-GC free heap is very low. Prefer the product action when only `-Xmx` needs adjustment, and still confirm the effective value after restart:
 
-Non-Uniform Memory Access optimization.
+- [JetBrains: Increase the memory heap of the IDE](https://www.jetbrains.com/help/idea/increasing-memory-heap.html)
+- [JetBrains: Advanced configuration and custom VM options](https://www.jetbrains.com/help/idea/tuning-the-ide.html)
 
-Behavior: Improves allocation locality on multi-socket systems.
-When it helps: Multi-socket machines with large heaps and memory-intensive workloads.
+## Recommendation format
 
-### Flags
+For every memory change, state:
 
-| Flag | Default | Description |
-|------|---------|-------------|
-| `-XX:+UseNUMA` | false | Enable NUMA-aware allocation |
-| `-XX:+UseNUMAInterleaving` | false | Interleave memory across NUMA nodes |
-| `-XX:NUMAInterleaveGranularity=<size>` | 2m | Interleaving granularity (Windows) |
-
-Usage Notes:
-- `-XX:+UseNUMA`: Helps on multi-socket systems with large heaps.
-- `-XX:+UseNUMAInterleaving`: Balances memory across NUMA nodes to avoid hotspots.
-- `-XX:NUMAInterleaveGranularity=<size>`: Controls interleaving chunk size.
-
-### Behavior / When it helps
-
-- Multi-socket server systems
-- Large heap sizes (16GB+)
-- Memory-intensive workloads
-
-### Example Configuration
-
-```
--XX:+UseNUMA
--XX:+UseNUMAInterleaving
-```
-
----
-
-## Container Environment
-
-Memory options for container/cloud environments.
-
-Behavior: Binds heap sizing to detected container limits and CPU count.
-When it helps: Running IDEs inside containers or constrained VMs.
-
-### Flags
-
-| Flag | Default | Description |
-|------|---------|-------------|
-| `-XX:MaxRAMPercentage=<percent>` | 25.0 | Max heap as percentage of available RAM |
-| `-XX:MinRAMPercentage=<percent>` | 50.0 | Min heap percentage for small memory systems |
-| `-XX:InitialRAMPercentage=<percent>` | 1.5625 | Initial heap as percentage of RAM |
-| `-XX:ActiveProcessorCount=<n>` | -1 | Override detected CPU count (-1 = auto) |
-
-Usage Notes:
-- `-XX:MaxRAMPercentage=<percent>`: Caps heap size inside containers with limited memory.
-- `-XX:MinRAMPercentage=<percent>`: Avoids tiny heaps on small containers.
-- `-XX:InitialRAMPercentage=<percent>`: Speeds warmup by setting a larger initial heap.
-- `-XX:ActiveProcessorCount=<n>`: Stabilizes thread heuristics in constrained CPU environments.
-
-### Container Configuration Example
-
-```
--XX:MaxRAMPercentage=75.0
--XX:InitialRAMPercentage=50.0
--XX:+UseContainerSupport
-```
-
-### Deprecated Flags (Use Percentage Instead)
-
-| Deprecated | Replacement |
-|------------|-------------|
-| `-XX:MaxRAMFraction` | `-XX:MaxRAMPercentage` |
-| `-XX:MinRAMFraction` | `-XX:MinRAMPercentage` |
-| `-XX:InitialRAMFraction` | `-XX:InitialRAMPercentage` |
-
-Usage Notes:
-- Fraction-based flags map to percentage-based flags for modern JVMs.
-
----
-
-## Complete Memory Configuration Examples
-
-### Standard (4GB Heap)
-
-```
--Xms2g
--Xmx4g
--XX:ReservedCodeCacheSize=512m
--XX:SoftRefLRUPolicyMSPerMB=50
-```
-
-### Large Project (8GB Heap)
-
-```
--Xms4g
--Xmx8g
--XX:ReservedCodeCacheSize=1g
--XX:MetaspaceSize=512m
--XX:MaxMetaspaceSize=1g
--XX:SoftRefLRUPolicyMSPerMB=50
--XX:+AlwaysPreTouch
-```
-
-### Memory-Constrained (2GB Heap)
-
-```
--Xms1g
--Xmx2g
--XX:ReservedCodeCacheSize=256m
--XX:SoftRefLRUPolicyMSPerMB=25
-```
+1. the measured condition;
+2. the existing effective value and its origin;
+3. the candidate value or removal;
+4. expected benefit and memory/startup/GC cost;
+5. the post-restart command that confirms propagation;
+6. the rollback line;
+7. the metric used in the A/B procedure from [performance-validation.md](performance-validation.md).

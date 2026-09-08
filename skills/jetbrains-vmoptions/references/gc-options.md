@@ -1,349 +1,112 @@
-# GC Options Reference
+# Garbage Collector Options
 
-Detailed garbage collector flags for JetBrains IDE VM options.
+Use this reference only after identifying the exact IDE boot runtime and observing GC-related evidence. UI lag or a freeze by itself does not justify changing collectors.
 
-## Table of Contents
+## Evidence boundary
 
-1. [IDE Version Compatibility](#ide-version-compatibility)
-2. [GC Selection by IDE Version](#gc-selection-by-ide-version)
-3. [Generational ZGC (JDK 21+)](#generational-zgc-jdk-21)
-4. [ZGC Non-Generational (JDK 17/21)](#zgc-non-generational-jdk-1721)
-5. [G1GC Flags](#g1gc-flags)
-6. [Shenandoah Flags](#shenandoah-flags)
-7. [Parallel GC Flags](#parallel-gc-flags)
+Keep three layers separate:
 
----
+1. **Source declaration:** what a specific JBR/OpenJDK revision declares.
+2. **Runtime-selected value:** what ergonomics and initialization selected for this process, shown by `VM.flags -all`.
+3. **IDE bundle value:** what the IDE's default or custom options explicitly selected.
 
-## IDE Version Compatibility
+The available direct check of local JBR 25.0.4 reported G1 as its default collector. At inspected source revision `4af5e1194b7f34a396bd56f25eef17624eb60400`, `GCConfig::select_gc_ergonomically()` selects G1 on a server-class machine when no collector is already selected, and Serial on a non-server-class machine when available. The same source rejects multiple collectors. This checked result and source are not proof of the effective collector in another build or in an IDE whose bundled options override it.
 
-Support range and default GC behavior by IDE version.
+- [JBR 25.0.4 inspected `gcConfig.cpp` revision](https://github.com/JetBrains/JetBrainsRuntime/blob/4af5e1194b7f34a396bd56f25eef17624eb60400/src/hotspot/share/gc/shared/gcConfig.cpp)
+- [JetBrains Runtime release/build matrix](https://github.com/JetBrains/JetBrainsRuntime)
 
-| Version Range | JDK | Support Status |
-|---------------|-----|----------------|
-| 243+ | 21 | Supported |
-| 222-242 | 17 | Supported |
-| < 222 | - | Not supported |
+For JBR 17 and 21, link the exact release tag or commit matching the user's runtime before claiming a source default. When that mapping cannot be confirmed, report only the effective value from the user's process.
 
----
+## Collector selection compatibility
 
-## GC Selection by IDE Version
+The following table describes upstream generation-mode transitions. The collector still must be present in the exact JBR build and confirmed with the runtime binary.
 
-GC selection and behavior summary (why/when) by version range.
+| Runtime | ZGC selection | Generational-mode note |
+|---|---|---|
+| JBR 17 | `-XX:+UseZGC` | Non-generational ZGC; do not add `ZGenerational` |
+| JBR 21 | `-XX:+UseZGC` plus `-XX:+ZGenerational` when deliberately testing generational ZGC | Generational ZGC was introduced in JDK 21; it was not yet the upstream default mode |
+| JBR 25 | `-XX:+UseZGC` | Only generational ZGC remains; `ZGenerational` was made obsolete in JDK 24 and should not be recommended |
 
-| Version Range | Default GC | Flags | Behavior / When it helps |
-|---------------|------------|-------|---------------------------|
-| 243+ | Generational ZGC | `-XX:+UseZGC -XX:+ZGenerational` | Low-pause, large heaps, latency-sensitive IDE workloads |
-| 222-242 | G1GC | `-XX:+UseG1GC` | Balanced throughput/latency for mixed workloads |
+Relevant upstream design records:
 
-### For Version 243+ (JDK 21)
+- [JEP 439: Generational ZGC (JDK 21)](https://openjdk.org/jeps/439)
+- [JEP 474: ZGC generational mode by default (JDK 23)](https://openjdk.org/jeps/474)
+- [JEP 490: Remove the non-generational mode (JDK 24)](https://openjdk.org/jeps/490)
 
-| GC | Flags | Behavior / When it helps |
-|----|-------|---------------------------|
-| Generational ZGC | `-XX:+UseZGC -XX:+ZGenerational` | Low latency with young/old separation; effective with large heaps |
-| ZGC (Legacy) | `-XX:+UseZGC` | Low latency with simpler tuning surface |
-| G1GC | `-XX:+UseG1GC` | Balanced throughput/latency for mixed workloads |
-| Shenandoah | `-XX:+UseShenandoahGC` | Very low pause times with concurrent compaction |
-| Parallel GC | `-XX:+UseParallelGC` | Throughput-oriented, stop-the-world pauses |
-| Serial GC | `-XX:+UseSerialGC` | Single-threaded, small heaps or constrained cores |
-
-### For Version 222-242 (JDK 17)
-
-| GC | Flags | Behavior / When it helps |
-|----|-------|---------------------------|
-| G1GC | `-XX:+UseG1GC` | Balanced throughput/latency for mixed workloads |
-| ZGC | `-XX:+UseZGC` | Low latency (non-generational) |
-| Shenandoah | `-XX:+UseShenandoahGC` | Very low pause times with concurrent compaction |
-| Parallel GC | `-XX:+UseParallelGC` | Throughput-oriented, stop-the-world pauses |
-| Serial GC | `-XX:+UseSerialGC` | Single-threaded, small heaps or constrained cores |
-
----
-
-## Generational ZGC (JDK 21+)
-
-Available in version 243+. Generational mode is available on JDK 21.
-
-Behavior: Concurrent low-pause GC with young/old separation; reduces pause impact as heaps grow.
-When it helps: Large heaps, latency-sensitive IDE workloads, frequent allocation spikes.
-
-### Activation
+G1, Parallel, Serial, Shenandoah, or ZGC may be build-dependent. Confirm availability rather than assuming every JBR flavor includes every collector:
 
 ```
+<runtime-home>/bin/java -XX:+PrintFlagsFinal -version
+<runtime-home>/bin/java -XX:+UseG1GC -version
+<runtime-home>/bin/java -XX:+UseParallelGC -version
+<runtime-home>/bin/java -XX:+UseSerialGC -version
+<runtime-home>/bin/java -XX:+UseShenandoahGC -version
+<runtime-home>/bin/java -XX:+UseZGC -version
+```
+
+Run only the candidate relevant to the diagnosis. A successful `-version` preflight means the option is accepted, not that the IDE uses it or benefits from it.
+
+## Selection rules
+
+- Keep exactly one collector selection. Treat `UseG1GC`, `UseParallelGC`, `UseSerialGC`, `UseShenandoahGC`, and `UseZGC` as mutually exclusive.
+- Inspect the active default/custom options before adding a collector. Removing one line can expose another selector or the runtime's ergonomic choice.
+- Do not label Generational ZGC as the default collector merely because the runtime supports it.
+- Prefer the existing collector unless GC/JFR evidence shows that collector pauses or throughput are a material part of the measured problem.
+- A low-pause collector can consume more concurrent CPU or memory bandwidth and can worsen throughput or UI contention. Test it against a defined metric.
+- Parallel GC is usually inappropriate for an interactive IDE when long stop-the-world pauses are the complaint, even if it improves batch throughput.
+- Serial GC is generally relevant only to constrained/small environments or diagnostics, not as a broad performance recommendation.
+- Shenandoah availability and behavior must be verified on the exact JBR build.
+
+## Tuning individual GC flags
+
+Avoid copying a catalog of internal flags into `.vmoptions`. Many defaults are ergonomic, initialized after parsing, or collector-specific. Recommend an individual flag only when all of the following are true:
+
+1. The exact JBR build exposes and accepts it.
+2. The selected collector makes it active.
+3. A GC log or JFR event identifies the behavior the flag controls.
+4. The expected benefit and cost are stated.
+5. The A/B comparison changes only that tuning purpose.
+
+Examples of required caveats:
+
+| Option type | When it may be relevant | Required cost/limitation |
+|---|---|---|
+| `-XX:MaxGCPauseMillis=<ms>` with G1 | Measured pauses miss a latency target | It is a target, not a guarantee; tighter targets may increase GC CPU or reduce throughput |
+| G1 reserve/IHOP controls | Logs show evacuation pressure or marking starts too late | Manual values can defeat adaptive behavior and become stale as the workload changes |
+| GC thread counts | Profiles show collector threads contending with UI work | Lower counts can lengthen collection; higher counts can increase CPU contention |
+| Periodic/proactive collection controls | Evidence shows idle cleanup or delayed cycles are the issue | More cycles can raise CPU use and allocation interference |
+
+Do not present source initializer values as universal defaults. Confirm final values with:
+
+```
+jcmd <pid> VM.flags -all
+```
+
+## String deduplication
+
+`-XX:+UseStringDeduplication` is not a general-purpose GC switch. Recommend it only after duplicate strings are shown to be a meaningful heap cost and the exact collector/runtime combination supports and activates it. Measure CPU overhead and retained-heap change. Remove duplicate occurrences and verify the effective flag after restart.
+
+## GC evidence collection
+
+Use the same logging or JFR configuration for baseline A and candidate B. A typical bounded rotating log is:
+
+```
+-Xlog:gc*,safepoint:file=<writable-path>/ide-gc.log:time,uptime,level,tags:filecount=5,filesize=20m
+```
+
+Confirm the path is writable and contains no sensitive location details before suggesting it. GC logs add overhead and disk use; retain them only for the measurement period when appropriate.
+
+Compare pause duration and count, allocation/collection rate, post-GC occupancy, concurrent-cycle behavior, CPU usage, and user-visible task time. Correlation between a stall and a GC/safepoint event matters more than a collector name.
+
+## Output example: delta, not a generic configuration
+
+```
+Remove:
+-XX:+UseG1GC
+
+Add for JBR 21 candidate B only:
 -XX:+UseZGC
 -XX:+ZGenerational
 ```
 
-### Tuning Flags
-
-| Flag | Default | Description |
-|------|---------|-------------|
-| `-XX:ZYoungCompactionLimit` | 25.0 | Maximum allowed garbage in young pages (%) |
-| `-XX:ZCollectionIntervalMinor` | -1 | Force Minor GC interval (seconds), -1 = disabled |
-| `-XX:ZCollectionIntervalMajor` | -1 | Force Major GC interval (seconds), -1 = disabled |
-| `-XX:ZAllocationSpikeTolerance` | 2.0 | Allocation spike tolerance factor |
-| `-XX:ZFragmentationLimit` | 5.0 | Maximum allowed heap fragmentation (%) |
-| `-XX:ZMarkStackSpaceLimit` | 8G | Maximum bytes for mark stacks |
-| `-XX:ZUncommitDelay` | 300 | Uncommit unused memory delay (seconds) |
-| `-XX:ZTenuringThreshold` | -1 | Tenuring threshold, -1 = dynamic |
-
-Usage Notes:
-- `-XX:ZYoungCompactionLimit`: Lower values compact young pages more aggressively to reduce fragmentation.
-- `-XX:ZCollectionIntervalMinor` / `-XX:ZCollectionIntervalMajor`: Forces periodic cycles when heuristics lag behind allocation spikes.
-- `-XX:ZAllocationSpikeTolerance`: Increase to tolerate short allocation bursts without immediate GC.
-- `-XX:ZFragmentationLimit`: Tighten to trigger compaction earlier when fragmentation grows.
-- `-XX:ZMarkStackSpaceLimit`: Raise if mark stacks overflow on large heaps.
-- `-XX:ZUncommitDelay`: Shorten to release memory sooner; lengthen to avoid frequent commit/uncommit.
-- `-XX:ZTenuringThreshold`: Pin to a fixed value when dynamic aging is unstable.
-
-### Diagnostic Flags
-
-| Flag | Default | Description |
-|------|---------|-------------|
-| `-XX:ZYoungGCThreads` | 0 | Young generation GC threads (0 = auto) |
-| `-XX:ZOldGCThreads` | 0 | Old generation GC threads (0 = auto) |
-| `-XX:+ZProactive` | true | Enable proactive GC cycles |
-| `-XX:+ZUncommit` | true | Uncommit unused memory |
-| `-XX:+ZCollectionIntervalOnly` | false | Use only timers for GC heuristics |
-| `-XX:ZStatisticsInterval` | 10 | Statistics print interval (seconds) |
-
-Usage Notes:
-- `-XX:ZYoungGCThreads` / `-XX:ZOldGCThreads`: Tune when GC threads contend with UI threads.
-- `-XX:+ZProactive`: Keeps heap headroom by running cycles before pressure spikes.
-- `-XX:+ZUncommit`: Frees unused memory to reduce footprint.
-- `-XX:+ZCollectionIntervalOnly`: Useful for deterministic periodic GC behavior.
-- `-XX:ZStatisticsInterval`: Lower values provide finer telemetry at higher overhead.
-
-### Example Configuration
-
-```
--XX:+UseZGC
--XX:+ZGenerational
--XX:ZAllocationSpikeTolerance=2.0
--XX:ZCollectionIntervalMajor=300
--XX:+ZProactive
-```
-
----
-
-## ZGC Non-Generational (JDK 17/21)
-
-Legacy ZGC mode (non-generational). On JDK 17, this is the only ZGC mode available. On JDK 21, Generational ZGC (above) is preferred.
-
-Behavior: Concurrent low-pause GC without young/old separation.
-When it helps: JDK 17 users who want low-pause GC, or JDK 21 users who prefer simpler tuning.
-
-### Activation
-
-```
--XX:+UseZGC
-```
-
-### Tuning Flags
-
-Shares most flags with Generational ZGC above. Key differences:
-
-| Flag | Default | Description |
-|------|---------|-------------|
-| `-XX:ZCollectionInterval` | 0 | Force GC interval in seconds (replaces Minor/Major split) |
-| `-XX:ZFragmentationLimit` | 25.0 | Maximum heap fragmentation (%) — higher default than Generational (5.0) |
-
-Other flags (`ZAllocationSpikeTolerance`, `ZMarkStackSpaceLimit`, `ZProactive`, `ZUncommit`, `ZUncommitDelay`) behave identically to Generational ZGC.
-
----
-
-## G1GC Flags
-
-Default GC for versions 222-242. Also available in 243+.
-
-Behavior: Region-based GC balancing throughput and pause times using concurrent marking.
-When it helps: Mixed workloads with moderate latency sensitivity and predictable throughput needs.
-
-### Activation
-
-```
--XX:+UseG1GC
-```
-
-### Core Flags
-
-| Flag | Default | Description |
-|------|---------|-------------|
-| `-XX:MaxGCPauseMillis` | max_uintx-1 | Target max GC pause time (ms) |
-| `-XX:G1HeapRegionSize` | 0 | Region size (0 = auto, 1MB-32MB) |
-| `-XX:G1ReservePercent` | 10 | Reserve heap percentage |
-| `-XX:G1NewSizePercent` | 5 | Min young gen size (%) |
-| `-XX:G1MaxNewSizePercent` | 60 | Max young gen size (%) |
-| `-XX:G1MixedGCCountTarget` | 8 | Target mixed GC count after marking |
-| `-XX:G1HeapWastePercent` | 5 | Allowed uncollected space (%) |
-| `-XX:InitiatingHeapOccupancyPercent` | 45 | IHOP for concurrent marking |
-| `-XX:G1MixedGCLiveThresholdPercent` | 85 | Max live bytes for mixed GC region (%) |
-| `-XX:G1ConcMarkStepDurationMillis` | 10.0 | Concurrent marking step duration (ms) |
-| `-XX:G1EagerReclaimRemSetThreshold` | 0 | RSet threshold for humongous eager reclaim |
-
-Usage Notes:
-- `-XX:MaxGCPauseMillis`: Tighten to reduce pause targets; can increase CPU overhead.
-- `-XX:G1HeapRegionSize`: Increase for very large heaps to reduce region count.
-- `-XX:G1ReservePercent`: Raise to keep more free space for evacuation.
-- `-XX:G1NewSizePercent` / `-XX:G1MaxNewSizePercent`: Tune young gen size for allocation rate vs pause time.
-- `-XX:G1MixedGCCountTarget`: Adjust when old gen reclamation is too slow or too aggressive.
-- `-XX:G1HeapWastePercent`: Lower to reclaim more aggressively from mixed collections.
-- `-XX:InitiatingHeapOccupancyPercent`: Lower to start marking earlier.
-- `-XX:G1MixedGCLiveThresholdPercent`: Lower to include more regions in mixed GCs.
-- `-XX:G1ConcMarkStepDurationMillis`: Reduce to smooth marking work across time.
-- `-XX:G1EagerReclaimRemSetThreshold`: Increase to reclaim humongous regions sooner.
-
-### Concurrency Flags
-
-| Flag | Default | Description |
-|------|---------|-------------|
-| `-XX:G1ConcRefinementThreads` | 0 | Refinement threads (0 = auto) |
-| `-XX:ConcGCThreads` | 0 | Concurrent GC threads (0 = auto) |
-| `-XX:ParallelGCThreads` | 0 | Parallel GC threads (0 = auto) |
-| `-XX:+G1UseAdaptiveIHOP` | true | Adaptive IHOP |
-
-Usage Notes:
-- `-XX:G1ConcRefinementThreads`: Tune when refinement work lags or competes with UI threads.
-- `-XX:ConcGCThreads` / `-XX:ParallelGCThreads`: Adjust when GC CPU usage is too high or too low.
-- `-XX:+G1UseAdaptiveIHOP`: Keeps marking start adaptive to allocation behavior.
-
-### Periodic GC
-
-| Flag | Default | Description |
-|------|---------|-------------|
-| `-XX:G1PeriodicGCInterval` | 0 | Periodic GC interval (ms), 0 = disabled |
-| `-XX:+G1PeriodicGCInvokesConcurrent` | true | Use concurrent GC for periodic |
-| `-XX:G1PeriodicGCSystemLoadThreshold` | 0.0 | System load threshold |
-
-Usage Notes:
-- `-XX:G1PeriodicGCInterval`: Use to trigger periodic cleanup during long idle phases.
-- `-XX:+G1PeriodicGCInvokesConcurrent`: Reduces pause impact of periodic cycles.
-- `-XX:G1PeriodicGCSystemLoadThreshold`: Skips periodic GC under high system load.
-
-### Example Configuration
-
-```
--XX:+UseG1GC
--XX:MaxGCPauseMillis=200
--XX:+UseStringDeduplication
--XX:G1ReservePercent=15
--XX:InitiatingHeapOccupancyPercent=35
-```
-
----
-
-## Shenandoah Flags
-
-Ultra-low pause time GC.
-
-Behavior: Concurrent compaction with very low pauses; may trade throughput for latency.
-When it helps: Latency-sensitive workflows where pause time dominates.
-
-### Activation
-
-```
--XX:+UseShenandoahGC
-```
-
-### Core Flags
-
-| Flag | Default | Description |
-|------|---------|-------------|
-| `-XX:ShenandoahGCMode` | satb | GC mode (satb, iu, passive) |
-| `-XX:ShenandoahGCHeuristics` | adaptive | Heuristics mode |
-| `-XX:ShenandoahMinFreeThreshold` | 10 | Min free threshold (%) |
-| `-XX:ShenandoahAllocationThreshold` | 0 | Allocation threshold (%) |
-| `-XX:ShenandoahGuaranteedGCInterval` | 300000 | Guaranteed GC interval (ms) |
-| `-XX:ShenandoahEvacReserve` | 5 | Evacuation reserve space (%) |
-| `-XX:+ShenandoahPacing` | true | Pace allocations to give GC time |
-| `-XX:ShenandoahPacingMaxDelay` | 10 | Max pacing delay (ms) |
-| `-XX:+ShenandoahUncommit` | true | Uncommit unused memory |
-| `-XX:ShenandoahUncommitDelay` | 300000 | Uncommit delay (ms) |
-
-Usage Notes:
-- `-XX:ShenandoahGCMode`: Choose `satb` for general use; `iu` for specific update-heavy workloads; `passive` for debugging.
-- `-XX:ShenandoahGCHeuristics`: `adaptive` is typical; `aggressive` favors latency over throughput.
-- `-XX:ShenandoahMinFreeThreshold`: Raise to keep more free space for evacuation.
-- `-XX:ShenandoahAllocationThreshold`: Lower to trigger GC earlier under allocation spikes.
-- `-XX:ShenandoahGuaranteedGCInterval`: Use to enforce periodic cycles during idle periods.
-- `-XX:ShenandoahEvacReserve`: Increase if evacuation failures occur.
-- `-XX:+ShenandoahPacing`: Smooths allocation to avoid running GC out of time.
-- `-XX:ShenandoahPacingMaxDelay`: Cap pacing delay to limit application slowdowns.
-- `-XX:+ShenandoahUncommit` / `-XX:ShenandoahUncommitDelay`: Controls memory return behavior.
-
-### GC Modes
-
-| Mode | Description |
-|------|-------------|
-| `satb` | Snapshot-at-the-beginning (default, 3-pass mark-evac-update) |
-| `iu` | Incremental-update (3-pass mark-evac-update) |
-| `passive` | Stop-the-world only (degenerated or full GC) |
-
-Usage Notes:
-- `satb`: General-purpose mode with balanced pause behavior.
-- `iu`: Useful when concurrent update barriers are preferred.
-- `passive`: Mainly for diagnostics or constrained environments.
-
-### Heuristics Modes
-
-| Mode | Description |
-|------|-------------|
-| `adaptive` | Adapts to application behavior (default) |
-| `static` | Fixed triggering thresholds |
-| `compact` | Aggressive space compaction |
-| `aggressive` | Continuous concurrent GC |
-
-Usage Notes:
-- `adaptive`: Adjusts to workload changes without manual tuning.
-- `static`: Keeps stable thresholds for predictable behavior.
-- `compact`: Useful when fragmentation is a dominant issue.
-- `aggressive`: Prioritizes pause time over throughput.
-
-### Example Configuration
-
-```
--XX:+UseShenandoahGC
--XX:ShenandoahGCMode=satb
--XX:ShenandoahGCHeuristics=adaptive
--XX:ShenandoahGuaranteedGCInterval=300000
--XX:+ShenandoahPacing
-```
-
----
-
-## Parallel GC Flags
-
-Maximum throughput GC.
-
-Behavior: Stop-the-world parallel collector optimized for throughput.
-When it helps: Batch-like workloads where throughput matters more than pause times.
-
-### Activation
-
-```
--XX:+UseParallelGC
-```
-
-### Core Flags
-
-| Flag | Default | Description |
-|------|---------|-------------|
-| `-XX:ParallelGCThreads` | 0 | Parallel GC threads (0 = auto) |
-| `-XX:+UseAdaptiveSizePolicy` | true | Adaptive sizing |
-| `-XX:GCTimeRatio` | 99 | App time to GC time ratio |
-| `-XX:MaxGCPauseMillis` | max | Target max pause time |
-| `-XX:YoungGenerationSizeIncrement` | 20 | Young gen size increment (%) |
-
-Usage Notes:
-- `-XX:ParallelGCThreads`: Tune when GC threads saturate CPU or underutilize cores.
-- `-XX:+UseAdaptiveSizePolicy`: Keeps heap sizing automatic for throughput focus.
-- `-XX:GCTimeRatio`: Lower values allocate more CPU to GC to keep heap smaller.
-- `-XX:MaxGCPauseMillis`: Use when pauses exceed acceptable targets.
-- `-XX:YoungGenerationSizeIncrement`: Adjust when young gen growth is too slow or too aggressive.
-
-### Example Configuration
-
-```
--XX:+UseParallelGC
--XX:ParallelGCThreads=4
--XX:+UseAdaptiveSizePolicy
--XX:GCTimeRatio=19
-```
+Accompany such a delta with the observed GC evidence, exact JBR build, compatibility preflight, effective-flag check, expected trade-off, rollback to the original selector, and the comparison procedure in [performance-validation.md](performance-validation.md).

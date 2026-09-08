@@ -1,303 +1,103 @@
-# Common Options Reference
+# Common Options and Diagnostics
 
-Performance-focused VM options commonly used in JetBrains IDEs.
+Use this reference to avoid unsupported generic tuning and to collect evidence from the correct process.
 
-## Table of Contents
+## Compiler options
 
-1. [Compiler Options](#compiler-options)
-2. [String Optimization](#string-optimization)
-3. [Diagnostics](#diagnostics)
-4. [Tiered Compilation](#tiered-compilation)
-5. [Thread Options](#thread-options)
-6. [Example Configurations](#example-configurations)
-7. [Example Output (Markdown)](#example-output-markdown)
+The JVM normally derives compiler thread counts and tiered-compilation behavior from the runtime, CPU active processors, and code cache. Inspect the actual values and compiler/code-cache evidence before overriding them.
 
----
+| Option | Consider only when | Trade-off |
+|---|---|---|
+| `-XX:CICompilerCount=<n>` | Compiler queues or profiling show JIT threads causing material CPU contention | Too few threads delay optimization and warmup; too many can compete with IDE work |
+| `-XX:TieredStopAtLevel=<n>` | A controlled startup-only experiment has an explicit peak-throughput trade-off | Stopping below level 4 can improve early startup but permanently removes higher-tier optimization for that run |
+| `-XX:CompileThreshold=<n>` | Compilation logs/profiles identify a threshold problem | Lowering it front-loads CPU and code-cache use; raising it delays optimized execution |
 
-## Compiler Options
+Do not present fixed `CICompilerCount` values by CPU size or `TieredStopAtLevel=1` as general IDE optimizations. Preserve the IDE/runtime defaults unless measurements justify the trade-off. Confirm that the flag is active on the exact JBR build, not merely recognized.
 
-JIT compiler-related options.
-
-Behavior: Controls compilation concurrency and thresholds.
-When it helps: Balancing startup responsiveness vs peak throughput.
-
-### Core Flags
-
-| Flag | Default | Description |
-|------|---------|-------------|
-| `-XX:CICompilerCount=<n>` | LP64 ergo (default when CICompilerCountPerCPU=true): max(log2(n) * log2(max(log2(n), 1)) * 3 / 2, 2), capped by code cache buffers; 32-bit default: 3 | Number of compiler threads |
-| `-XX:CompileThreshold=<n>` | 10000 | Invocations before compilation |
-| `-XX:+BackgroundCompilation` | true | Compile in background |
-| `-XX:+UseCompilerSafepoints` | true | Use safepoints in compiled code |
-
-Notes: `n` is `os::active_processor_count()` and `log2` is integer log2.
-
-Usage Notes:
-- `-XX:CICompilerCount`: Helps when compilation queues grow or CPU contention affects UI responsiveness.
-- `-XX:CompileThreshold`: Lower values front-load compilation for faster warmup; higher values favor interpreted execution.
-- `-XX:+BackgroundCompilation`: Reduces foreground stalls by compiling off the main path.
-- `-XX:+UseCompilerSafepoints`: Improves safepoint responsiveness during long-running compiled code.
-
-### Example Configuration
+Useful observations include:
 
 ```
--XX:CICompilerCount=2
+jcmd <pid> VM.flags -all
+jcmd <pid> Compiler.queue
+jcmd <pid> Compiler.codecache
 ```
 
-Typical scaling by CPU cores:
-- 4 cores: `CICompilerCount=2`
-- 8+ cores: `CICompilerCount=3-4`
+Available diagnostic commands vary by runtime build; use `jcmd <pid> help` before depending on one.
 
----
+When a compiler option explanation depends on a source declaration, link the exact matching runtime revision. The [JBR 25.0.4 `compiler_globals.hpp` at inspected revision `4af5e119...`](https://github.com/JetBrains/JetBrainsRuntime/blob/4af5e1194b7f34a396bd56f25eef17624eb60400/src/hotspot/share/compiler/compiler_globals.hpp) is an evidence example, not a default-value source for other JBR builds. Prefer the target process's initialized values for the recommendation.
 
-## String Optimization
+## String options
 
-String processing optimizations.
+Do not add options that already match the runtime default or IDE bundle. Duplicate declarations add noise and can hide the true source of a value.
 
-Behavior: Reduces duplicate String storage and optimizes concatenation.
-When it helps: Large projects with heavy String churn or memory pressure.
+- `-XX:+UseStringDeduplication` can trade GC/CPU work for lower retained duplicate-string memory. Confirm support and activity for the selected collector and show duplicate-string or heap evidence before recommending it.
+- `-XX:+CompactStrings` and string-concatenation optimizations are runtime defaults in many builds. Verify with `VM.flags -all`; do not restate them as tuning without a measured reason.
 
-### Flags
+Enabling a flag successfully is not proof that it is active for the selected collector or beneficial for the IDE workload.
 
-| Flag | Default | Description |
-|------|---------|-------------|
-| `-XX:+UseStringDeduplication` | false | Deduplicate String objects (G1GC, ZGC) |
-| `-XX:+OptimizeStringConcat` | true | Optimize string concatenation |
-| `-XX:+CompactStrings` | true | Use compact strings (Latin-1) |
+## Thread and stack options
 
-Usage Notes:
-- `-XX:+UseStringDeduplication`: Helps when many duplicate Strings inflate heap usage (G1GC/ZGC only).
-- `-XX:+OptimizeStringConcat`: Reduces temporary allocations in heavy concatenation paths.
-- `-XX:+CompactStrings`: Saves memory when most Strings are Latin-1.
+Leave GC, compiler, and worker thread counts ergonomic unless a profile shows CPU oversubscription or an explicit platform limit is being misdetected. Forced counts can become wrong after hardware, container, remote-host, or runtime changes.
 
-### Example Configuration
+Change `-Xss` only for a demonstrated stack overflow or measured native-memory constraint. A smaller stack raises `StackOverflowError` risk; a larger stack increases per-thread address-space/native-memory use. Platform and architecture affect defaults, so read the initialized value.
 
-```
--XX:+UseStringDeduplication
--XX:+OptimizeStringConcat
--XX:+CompactStrings
-```
+## Diagnostics matched to symptoms
 
-**Note**: `UseStringDeduplication` requires G1GC or ZGC.
+| Symptom | Preferred evidence | Notes |
+|---|---|---|
+| IDE unresponsive | Thread dumps | Capture multiple dumps while hung when the UI cannot start a profiler |
+| High CPU or slow editing | **Help | Diagnostic Tools | Start CPU Usage Profiling** | Reproduce the same operation several times |
+| Suspected heap leak | IDE memory snapshot/heap dump | Snapshot contents can be sensitive |
+| Suspected GC pauses | Unified GC/safepoint logging or JFR | Use the same collection settings in A and B |
+| Slow startup | Product's slow-startup profiling action if present | Product/version availability must be checked |
+| Slow indexing | Product's indexing profiler if present | Cache invalidation changes the test state and can remove Local History/indices |
 
----
+JetBrains documents current profiling entry points and notes that profiler availability differs by product/edition/version:
 
-## Diagnostics
+- [JetBrains: Reporting performance problems](https://intellij-support.jetbrains.com/hc/en-us/articles/207241235-Reporting-performance-problems)
+- [JetBrains: Performance testing plugin](https://intellij-support.jetbrains.com/hc/en-us/articles/207241225-Performance-testing-plugin)
 
-Diagnostics and debugging options.
+### GC and safepoint logging
 
-Behavior: Emits logs and dumps to help analyze crashes and GC behavior.
-When it helps: Investigating OOMs, GC pauses, or JVM crashes.
-
-### Heap Dump
-
-| Flag | Default | Description |
-|------|---------|-------------|
-| `-XX:+HeapDumpOnOutOfMemoryError` | false | Dump heap on OOM |
-| `-XX:HeapDumpPath=<path>` | working dir | Heap dump location |
-
-Usage Notes:
-- `-XX:+HeapDumpOnOutOfMemoryError`: Captures heap state for post-mortem analysis.
-- `-XX:HeapDumpPath=<path>`: Use a writable location with sufficient disk space.
-
-### GC Logging (JDK 9+ Unified Logging)
-
-| Flag | Description |
-|------|-------------|
-| `-Xlog:gc` | Basic GC logging |
-| `-Xlog:gc*` | Detailed GC logging |
-| `-Xlog:gc*:file=gc.log` | Log to file |
-| `-Xlog:gc*:file=gc.log:time,uptime` | With timestamps |
-| `-Xlog:gc*:file=gc.log:time,uptime:filecount=5,filesize=10m` | Rotating logs |
-
-Usage Notes:
-- `-Xlog:gc`: Basic GC health signal during tuning.
-- `-Xlog:gc*`: Adds detailed event fields for deeper analysis.
-- `-Xlog:gc*:file=gc.log`: Redirects logs to a file for later review.
-- `-Xlog:gc*:file=gc.log:time,uptime`: Adds time context for correlating with UI pauses.
-- `-Xlog:gc*:file=gc.log:time,uptime:filecount=5,filesize=10m`: Limits disk usage with rotation.
-
-### GC Logging Patterns
-
-| Pattern | Description |
-|---------|-------------|
-| `-Xlog:gc` | GC events only |
-| `-Xlog:gc+heap=debug` | GC + heap details |
-| `-Xlog:gc+phases=debug` | GC phase timings |
-| `-Xlog:gc*=debug:file=gc.log` | All GC debug info to file |
-| `-Xlog:gc+age=trace` | Object age distribution |
-
-Usage Notes:
-- `-Xlog:gc`: Lightweight overview when looking for long pauses.
-- `-Xlog:gc+heap=debug`: Helps diagnose heap sizing and promotion behavior.
-- `-Xlog:gc+phases=debug`: Breaks down phase timings to spot bottlenecks.
-- `-Xlog:gc*=debug:file=gc.log`: Captures full detail for offline analysis.
-- `-Xlog:gc+age=trace`: Useful when tuning tenuring behavior.
-
-### System.gc() Behavior
-
-| Flag | Default | Description |
-|------|---------|-------------|
-| `-XX:+ExplicitGCInvokesConcurrent` | false | System.gc() triggers concurrent GC |
-| `-XX:+DisableExplicitGC` | false | Ignore System.gc() calls |
-
-Usage Notes:
-- `-XX:+ExplicitGCInvokesConcurrent`: Reduces stop-the-world impact of explicit GCs.
-- `-XX:+DisableExplicitGC`: Helps when libraries trigger costly explicit GCs.
-
-### Error Handling
-
-| Flag | Default | Description |
-|------|---------|-------------|
-| `-XX:ErrorFile=<path>` | `hs_err_pid%p.log` in current working directory (unless ErrorFileToStdout/ErrorFileToStderr) | Error log location |
-| `-XX:+ShowMessageBoxOnError` | false | Show dialog on crash |
-
-Usage Notes:
-- `-XX:ErrorFile=<path>`: Redirects crash logs to a known location for collection.
-- `-XX:+ShowMessageBoxOnError`: Useful for interactive debugging on desktop setups.
-
-### Example Configuration
+A temporary diagnostic candidate can use unified logging with rotation:
 
 ```
--XX:+HeapDumpOnOutOfMemoryError
--XX:HeapDumpPath=${user.home}/jetbrains_heap_dump.hprof
+-Xlog:gc*,safepoint:file=<existing-writable-directory>/ide-gc.log:time,uptime,level,tags:filecount=5,filesize=20m
 ```
 
----
+Validate the exact logging syntax with the target runtime before applying it. State disk usage, choose an existing writable location, use the same line in both comparison conditions, and remove it after data collection if ongoing logs are unnecessary.
 
-## Tiered Compilation
+### Java Flight Recorder
 
-Tiered compilation settings.
-
-Behavior: Trades startup speed for peak performance via tiered JIT levels.
-When it helps: Choosing faster startup vs sustained throughput.
-
-### Flags
-
-| Flag | Default | Description |
-|------|---------|-------------|
-| `-XX:+TieredCompilation` | true | Enable tiered compilation |
-| `-XX:TieredStopAtLevel=<n>` | 4 | Max compilation level (1-4) |
-
-Usage Notes:
-- `-XX:+TieredCompilation`: Balances startup and peak performance with multi-level JIT.
-- `-XX:TieredStopAtLevel=<n>`: Lower levels favor faster startup; level 4 maximizes optimization.
-
-### Compilation Levels
-
-| Level | Description |
-|-------|-------------|
-| 0 | Interpreter |
-| 1 | C1 without profiling |
-| 2 | C1 with limited profiling |
-| 3 | C1 with full profiling |
-| 4 | C2 (full optimization) |
-
-### Example: Fast Startup (less optimization)
+When `jcmd <pid> help` lists JFR commands, start and stop a bounded recording using identical settings for A and B. The exact syntax and available profiles depend on the runtime; obtain command help from the target process:
 
 ```
--XX:TieredStopAtLevel=1
+jcmd <pid> help JFR.start
+jcmd <pid> help JFR.stop
 ```
 
-### Example: Full Optimization (default behavior)
+The JDK documentation distinguishes lower-overhead `default.jfc` from more detailed, higher-overhead `profile.jfc`. Do not compare runs collected with different settings.
 
-```
--XX:+TieredCompilation
--XX:TieredStopAtLevel=4
-```
+- [Oracle JDK 25 `jcmd` command reference](https://docs.oracle.com/en/java/javase/25/docs/specs/man/jcmd.html)
 
----
+## Process boundaries
 
-## Thread Options
+Before proposing any option, name the target PID and configuration owner:
 
-Thread-related options.
+- IDE custom VM options: local IDE process only;
+- remote development: backend and frontend are distinct;
+- Gradle: Gradle daemon/JVM settings;
+- Maven: importer/runner settings;
+- run/debug and tests: their run configuration/JDK;
+- Kotlin daemon or language service: its own launcher/settings.
 
-Behavior: Controls thread stack size and GC thread counts.
-When it helps: Deep recursion, constrained memory, or GC thread tuning.
+If the evidence comes from a non-IDE process, do not place the remedy in IDE `.vmoptions`.
 
-### Stack Size
+## Apply and recover
 
-| Flag | Default | Description |
-|------|---------|-------------|
-| `-Xss<size>` | Platform constant in `globals_<os>_<arch>.hpp` (KB); 0 means OS default (e.g., linux_x86_64=1024, bsd_x86_64=1024, linux_aarch64=2040, windows_*=0) | Thread stack size |
-| `-XX:ThreadStackSize=<size>` | Platform constant in `globals_<os>_<arch>.hpp` (KB); 0 means OS default (e.g., linux_x86_64=1024, bsd_x86_64=1024, linux_aarch64=2040, windows_*=0) | Thread stack size (KB) |
+Use **Help | Edit Custom VM Options** or the already-confirmed Toolbox/environment override. JetBrains advises against editing the installation's default file because updates replace it and editing a macOS application bundle can invalidate its signature.
 
-Usage Notes:
-- `-Xss<size>` / `-XX:ThreadStackSize=<size>`: Increase for deep recursion; reduce for many threads under memory pressure.
+Before editing, preserve the exact baseline text. After restart, confirm the active command line and flags. If startup fails, restore the baseline custom file or remove only the new lines from the confirmed override source.
 
-### Typical Values
-
-| Use Case | Stack Size |
-|----------|------------|
-| Default | 1m |
-| Deep recursion | 2m |
-| Memory-constrained | 512k |
-
-### Thread Pool
-
-| Flag | Default | Description |
-|------|---------|-------------|
-| `-XX:ParallelGCThreads=<n>` | auto | Parallel GC thread count |
-| `-XX:ConcGCThreads=<n>` | auto | Concurrent GC thread count |
-
-Usage Notes:
-- `-XX:ParallelGCThreads=<n>`: Tune when GC phases over- or under-utilize CPU.
-- `-XX:ConcGCThreads=<n>`: Adjust when concurrent phases impact UI responsiveness.
-
----
-
-## Example Configurations
-
-### Example: Standard IDE Setup
-
-```
-# Compiler
--XX:CICompilerCount=2
-
-# String Optimization
--XX:+UseStringDeduplication
--XX:+OptimizeStringConcat
--XX:+CompactStrings
-
-# Diagnostics
--XX:+HeapDumpOnOutOfMemoryError
-
-# Tiered Compilation
--XX:+TieredCompilation
-```
-
-### Example: Performance-Focused
-
-```
-# Compiler
--XX:CICompilerCount=4
-
-# String Optimization
--XX:+UseStringDeduplication
--XX:+OptimizeStringConcat
--XX:+CompactStrings
-
-# Aggressive Compilation
--XX:+TieredCompilation
--XX:CompileThreshold=5000
-
-# Pre-touch for predictable performance
--XX:+AlwaysPreTouch
-
-# Diagnostics
--XX:+HeapDumpOnOutOfMemoryError
-```
-
-### Example: Minimal/Fast Startup
-
-```
-# Reduced compiler threads
--XX:CICompilerCount=1
-
-# Stop at C1 level
--XX:TieredStopAtLevel=1
-
-# Smaller stack
--Xss512k
-```
-
+- [JetBrains: Advanced configuration](https://www.jetbrains.com/help/idea/tuning-the-ide.html)
+- [JetBrains: IDE directories and Special Files and Folders](https://www.jetbrains.com/help/idea/directories-used-by-the-ide-to-store-settings-caches-plugins-and-logs.html)
