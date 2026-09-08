@@ -1,5 +1,9 @@
 # Generated-Output Comparison
 
+This is the historical generated-output comparison from before the migration from
+`@clack/prompts` to `@inquirer/prompts`. These scores have not been remeasured for the Inquirer
+skill or its updated evaluation prompts.
+
 Checked on 2026-09-08 using the three added prompts, with one fresh generation per prompt
 and skill version in each iteration. The baseline was a copy of the original skill taken
 before editing. Each run produced project scripts, config, and usage instructions. A
@@ -33,6 +37,8 @@ These scores describe these generated samples and are not a statistical reliabil
 estimate. The final generated artifacts underwent 15 JavaScript, 19 JSON, and one Python
 syntax checks plus the grader's stated mock-contract/source checks. They were not all run
 as complete real release workflows. Timing/token comparisons were omitted because complete
-measurements were unavailable. See [README.md](README.md) and
-[interactive-results.json](interactive-results.json) for the separate **27/27** execution
-result on the packaged examples. No real remote push or deployment was performed.
+measurements were unavailable. The Clack packaged examples separately passed **27/27**
+execution scenarios at that time. See [README.md](README.md) and
+[interactive-results.json](interactive-results.json) for the current packaged-example execution
+results; those checks do not update the historical generated-output scores above.
+No real remote push or deployment was performed.

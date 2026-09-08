@@ -5,8 +5,10 @@ in a monorepo, and inherited mode/version settings. Compare fresh generation wit
 original skill snapshot and the improved skill using the same prompt. Grade complete
 scripts and configurations, not the presence of the requested words. Keep generated-output
 grades separate from execution results for the packaged examples.
-See [comparison-results.md](comparison-results.md) for the recorded generated-output
-comparison and its remaining verification-guidance gap.
+See [comparison-results.md](comparison-results.md) for the historical generated-output
+comparison and its remaining verification-guidance gap. That comparison predates the Inquirer
+migration; the evaluation prompts now request Inquirer, but their generated-output scores
+have not been rerun. The execution results below cover the current packaged examples.
 
 ## Executable Example Checks
 
@@ -40,6 +42,9 @@ The assertions verify:
 - Patch, minor, beta, and custom exact choices reach the real version file and changelog.
 - Every commit/tag/push confirmation precedes exactly one awaited matching action;
   no/cancel leaves the observed staged files, commit, or local tag and stops later actions.
+- Enter alone declines each Git confirmation. Invalid custom versions can be corrected and
+  submitted, while Ctrl+C during custom input stops before writes. Cancellation is reported
+  with its stage instead of exposing an Inquirer exception.
 - Recommended major increments, inherited CI/version/snapshot flags, `CI=true`, and
   `GITHUB_ACTIONS=true` do not replace the patch selection or skip confirmations.
 - A plugin returning a different resolved version stops before writes.
@@ -47,16 +52,21 @@ The assertions verify:
 
 ## Recorded Result
 
-On 2026-09-08, **27/27 scenarios passed** using Node 24.14.0, npm 11.9.0, pnpm 10.11.0,
-Git 2.55.0, release-it 21.0.1, clack 1.8.0, semver 7.8.5, and conventional-changelog 12.0.0.
+On 2026-09-08, **32/32 scenarios passed** using Node 24.14.0, npm 11.9.0, pnpm 10.11.0,
+Git 2.55.0, release-it 21.0.1, `@inquirer/prompts` 8.5.2, semver 7.8.5, and conventional-changelog 12.0.0.
 See [interactive-results.json](interactive-results.json) for per-scenario outcomes,
 recorded push arguments, and example hashes.
 
-JavaScript and Python syntax, evaluation JSON, JSON reference examples, and package-local
-Markdown links were also checked. The skill-creator Python frontmatter validator could
-not import PyYAML; the YAML frontmatter and its name/description constraints were checked
-with the available Node `yaml` 2.9.0 parser instead. Do not report the unavailable Python
-validator as passing.
+Supporting checks passed for both JavaScript modules, the Python runner, both evaluation
+JSON files, 89 JSON reference blocks, and 64 package-local Markdown links. YAML frontmatter
+and name/description constraints were checked with Node `yaml` 2.9.0 via CommonJS resolution;
+the parser was not available through a bare ESM import. The skill-creator Python frontmatter
+validator was not run.
+
+A separate check against the copied Inquirer example verified real `AbortSignal` cancellation
+becomes a stage-specific `ReleaseStopped`, an unexpected error is rethrown unchanged, and a
+false answer remains false for the adapter to decline. These supporting checks are separate
+from the 32 PTY scenarios.
 
 These results do not establish real remote behavior, remote push recovery, deployment,
 publishing/OTP extensions, arbitrary project hooks/plugins, Windows execution, or another

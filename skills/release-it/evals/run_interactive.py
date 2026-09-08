@@ -29,6 +29,7 @@ MARKERS = {
     "app": "Select one service app:",
     "version": "Select version (current:",
     "custom": "Next version (current:",
+    "validation": "Enter a valid semver greater than",
     "commit": "Commit (",
     "tag": "Tag (",
     "push": "Push?",
@@ -208,7 +209,8 @@ def run_terminal(root, directory, env, events, responses, mode=None, arguments=(
                     stage, answer = responses[sent]
                     index = plain.find(MARKERS[stage], cursor)
                     if index >= 0:
-                        record(events, {"kind": "question", "stage": stage})
+                        record(events, {"kind": "validation" if stage == "validation" else "question",
+                                        "stage": "custom" if stage == "validation" else stage})
                         os.write(master, answer)
                         cursor = index + len(MARKERS[stage])
                         sent += 1
@@ -249,11 +251,16 @@ def run_case(case, output, dependencies):
             responses.append(("app", b"\x1b[B\r" if case.get("app") == "web" else b"\r"))
         responses.append(("version", case.get("version_keys", b"\r")))
         if case.get("custom"):
-            responses.append(("custom", next_version.encode() + b"\r"))
+            if case.get("invalid_custom"):
+                responses.append(("custom", b"not-semver\r"))
+                responses.append(("validation", b"\x15" + next_version.encode() + b"\r"))
+            else:
+                responses.append(("custom", next_version.encode() + b"\r"))
         responses.extend((stage, b"y\r") for stage in ("commit", "tag", "push"))
         if stop:
             index = next(i for i, response in enumerate(responses) if response[0] == stop)
-            responses = responses[:index] + [(stop, b"n\r" if case.get("decline") else b"\x03")]
+            answer = b"\r" if case.get("default_decline") else b"n\r" if case.get("decline") else b"\x03"
+            responses = responses[:index] + [(stop, answer)]
         if case.get("guard_mismatch"):
             responses = [("version", b"\r")]
     code, transcript = run_terminal(root, directory, env, event_file, responses,
@@ -266,7 +273,7 @@ def run_case(case, output, dependencies):
               if event["kind"] != "fetch-stub"]
     expected = []
     for stage in stages:
-        expected.append(("question", stage))
+        expected.append(("validation", "custom") if stage == "validation" else ("question", stage))
         if stage in {"commit", "tag", "push"} and stage != stop:
             expected.extend([("action", stage), ("action-complete", stage)])
     assert actual == expected, f"Question/action ordering differs: {actual} != {expected}"
@@ -301,13 +308,18 @@ def run_case(case, output, dependencies):
         assert not events, "Release work started without a terminal"
     if case.get("guard_mismatch"):
         assert "Resolved version differs from the displayed selection" in transcript
+    if stop:
+        prompt_stage = "service app" if stop == "app" else "version" if stop == "custom" else stop
+        message = f"Declined {stop}." if case.get("decline") else f"Cancelled at {prompt_stage}."
+        assert message in transcript, f"Missing stop message: {message}"
+        assert "ExitPromptError" not in transcript and "AbortPromptError" not in transcript
     if stages:
         first_questions = [key for key in ("app", "version", "commit", "tag", "push")
                            if MARKERS[key] in transcript]
         assert min(first_questions, key=lambda key: transcript.index(MARKERS[key])) == stages[0]
         if not case.get("mono"):
             assert MARKERS["app"] not in transcript
-    return {"name": case["name"], "passed": True, "questions": stages,
+    return {"name": case["name"], "passed": True, "questions": [stage for stage in stages if stage != "validation"],
             "push_calls": pushes, "version": expected_version, "exit_code": code}
 
 
@@ -318,7 +330,7 @@ def main():
     parser.add_argument("--case", help="Run only a named case")
     args = parser.parse_args()
     dependencies = args.dependencies.resolve()
-    for package in ("release-it", "@clack/prompts", "semver", "@release-it/conventional-changelog"):
+    for package in ("release-it", "@inquirer/prompts", "semver", "@release-it/conventional-changelog"):
         if not (dependencies / package / "package.json").exists():
             parser.error(f"Missing preinstalled dependency: {package}")
     cases = [
@@ -327,6 +339,9 @@ def main():
         {"name": "single-minor", "version_keys": b"\x1b[B\r", "version": "1.3.0"},
         {"name": "single-beta", "version_keys": b"\x1b[B" * 3 + b"\r", "version": "1.3.0-beta.0"},
         {"name": "single-custom", "version_keys": b"\x1b[B" * 7 + b"\r", "custom": True, "version": "2.3.4"},
+        {"name": "single-custom-retry", "version_keys": b"\x1b[B" * 7 + b"\r", "custom": True,
+         "invalid_custom": True, "version": "2.3.4"},
+        {"name": "single-cancel-custom", "version_keys": b"\x1b[B" * 7 + b"\r", "custom": True, "stop": "custom"},
         {"name": "monorepo-api", "mono": True},
         {"name": "monorepo-web", "mono": True, "app": "web"},
         {"name": "monorepo-one-app", "mono": True, "one_app": True},
@@ -340,6 +355,8 @@ def main():
     ]
     cases += [{"name": f"{action}-{stage}", "stop": stage, "decline": action == "decline"}
               for action in ("decline", "cancel") for stage in ("commit", "tag", "push")]
+    cases += [{"name": f"default-decline-{stage}", "stop": stage, "decline": True, "default_decline": True}
+              for stage in ("commit", "tag", "push")]
     cases += [{"name": f"non-tty-{mode}", "mode": mode} for mode in ("stdin", "stdout", "both")]
     cases += [{"name": f"reject-{flag}", "arguments": [f"--{flag}"]}
               for flag in ("ci", "only-version", "yes")]
@@ -351,7 +368,7 @@ def main():
     output.mkdir(parents=True, exist_ok=True)
     write_json(output / "environment.json", {
         "dependencies": {package: json.loads((dependencies / package / "package.json").read_text())["version"]
-                         for package in ("release-it", "@clack/prompts", "semver", "@release-it/conventional-changelog")},
+                         for package in ("release-it", "@inquirer/prompts", "semver", "@release-it/conventional-changelog")},
         "tools": {tool: subprocess.check_output([shutil.which(tool), "--version"], text=True).strip()
                   for tool in ("node", "npm", "pnpm", "git")},
         "example_sha256": {file.name: hashlib.sha256(file.read_bytes()).hexdigest()

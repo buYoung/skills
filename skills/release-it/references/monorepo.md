@@ -25,7 +25,7 @@ Generate a root `.release-targets.json` using the verified apps, for example:
 
 The entry script reads actual projects with [`pnpm list --recursive --depth -1 --json`](https://pnpm.io/cli/list),
 package workspace declarations, and this setup-verified manifest, then offers the list
-with clack `select`. A `pnpm-workspace.yaml` containing only build settings does not by
+with Inquirer `select`. A `pnpm-workspace.yaml` containing only build settings does not by
 itself make a single project a monorepo. Other workspace systems can use the manifest
 generated from their verified project graph during setup.
 Never use `multiselect`, select all by default, or recursively execute workspace release

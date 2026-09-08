@@ -4,7 +4,7 @@ description: >-
   release-it configuration, setup, and plugin development. Triggers on .release-it.* config files,
   release-it CLI usage, version bumping, changelog generation, npm publishing, GitHub/GitLab releases,
   git tagging, hooks lifecycle, pre-release workflows, CI/CD pipelines, monorepo strategies,
-  @clack/prompts interactive service-app releases, and custom plugin development.
+  @inquirer/prompts interactive service-app releases, and custom plugin development.
 ---
 
 # release-it Release Automation
@@ -16,9 +16,9 @@ plugin system for extending behavior.
 
 ## Default Interactive Contract
 
-Generate `pnpm release` using the project entry script and `@clack/prompts` adapter in
+Generate `pnpm release` using the project entry script and `@inquirer/prompts` adapter in
 [interactive-workflow.md](references/interactive-workflow.md). All release questions use
-clack; release-it performs the version update and Git operations.
+Inquirer; release-it performs the version update and Git operations.
 
 - **Single project:** `pnpm release → choose version → confirm commit / commit → confirm tag / tag → confirm push / push`.
 - **Monorepo:** `pnpm release → choose one service app → choose version → confirm commit / commit → confirm tag / tag → confirm push / push`.
@@ -34,8 +34,9 @@ Pass the selected exact version and target configuration to release-it's API.
 
 Ask each Git confirmation at its release-it execution point and await that action before
 asking the next. A negative answer or cancellation stops that action and the entire remaining
-flow. Report the actual remaining files, index, commit, tag, and push status; do not promise
-automatic rollback. Check for an interactive terminal before any release work. Do not use
+flow. Use Inquirer's native `y/n` confirmation with `default: false`, so Enter declines;
+Ctrl+C cancels the active question. Report the actual remaining files, index, commit, tag,
+and push status; do not promise automatic rollback. Check for an interactive terminal before any release work. Do not use
 `--ci`, `--only-version`, canned answers, or a direct push hook in this default path.
 
 CI automation, npm publishing, and hosted releases remain supported as explicitly requested
@@ -59,7 +60,7 @@ Read the reference file that matches your task:
 | Reference | When to Read |
 |-----------|-------------|
 | [initial-setup.md](references/initial-setup.md) | First-time setup. Analyze project → propose config → ask user for decisions → generate tailored config |
-| [interactive-workflow.md](references/interactive-workflow.md) | Default clack flow, executable entry/adapter examples, explicit version selection, cancellation and compatibility |
+| [interactive-workflow.md](references/interactive-workflow.md) | Default Inquirer flow, executable entry/adapter examples, explicit version selection, cancellation and compatibility |
 | [monorepo.md](references/monorepo.md) | Select one service app and bind its cwd, version, changelog, and tags |
 | [configuration.md](references/configuration.md) | Setting up or modifying `.release-it.*` config in any format, config extends/merging, CLI overrides |
 | [hooks-and-lifecycle.md](references/hooks-and-lifecycle.md) | Adding pre/post release commands, understanding execution order, template variables |

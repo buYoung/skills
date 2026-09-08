@@ -11,7 +11,7 @@ The Git plugin executes these steps in order:
 5. `git tag --annotate --message="[git.tagAnnotation]" [git.tagName]`
 6. `git push [git.pushArgs] [git.pushRepo]`
 
-For the default project command, use the clack adapter in [interactive-workflow.md](interactive-workflow.md). It asks at each built-in Git step and stops the entire remaining flow on no/cancel. The stock prompt only skips a declined step. Files may already be bumped and staged before the commit question.
+For the default project command, use the Inquirer adapter in [interactive-workflow.md](interactive-workflow.md). It asks at each built-in Git step and stops the entire remaining flow on no/cancel. The stock prompt only skips a declined step. Files may already be bumped and staged before the commit question.
 
 Minimum required Git version: v2.0.0.
 
@@ -134,7 +134,7 @@ app's tag. Do not use `--tags` to solve single-tag transfer: it sends every loca
 
 ### Transfer only the selected tag through the built-in push
 
-Keep `git.push: true` so the clack confirmation remains at the actual push point. When
+Keep `git.push: true` so the Inquirer confirmation remains at the actual push point. When
 single-tag transfer is required, compute the exact tag and upstream ref before calling
 release-it, then pass explicit push arguments. For an already verified `origin/main`
 upstream and an app tag template of `api-v${version}`, the entry script can use:

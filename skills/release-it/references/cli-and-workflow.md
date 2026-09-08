@@ -4,7 +4,7 @@
 
 Use `pnpm release` with [interactive-workflow.md](interactive-workflow.md): version first
 for a single project; one service app then version for a monorepo; then commit, tag, and
-push confirmations interleaved with their release-it actions. All questions use clack.
+push confirmations interleaved with their release-it actions. All questions use Inquirer.
 The entry command accepts no arguments and requires TTY input/output before release work.
 
 The raw release-it CLI below remains useful for explicitly requested CI, publishing,

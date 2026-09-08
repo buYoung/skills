@@ -1,6 +1,6 @@
 # Initial Setup Guide
 
-Analyze the project and resolve decisions needed for its release configuration, then generate the entry script, clack adapter, and target config from [interactive-workflow.md](interactive-workflow.md). Setup questions are separate from runtime questions: the first runtime question is version selection for a single project, or selection of one service app for a monorepo. Do not add a runtime start confirmation.
+Analyze the project and resolve decisions needed for its release configuration, then generate the entry script, Inquirer adapter, and target config from [interactive-workflow.md](interactive-workflow.md). Setup questions are separate from runtime questions: the first runtime question is version selection for a single project, or selection of one service app for a monorepo. Do not add a runtime start confirmation.
 
 ## Flow: Analyze → Propose → Confirm
 
@@ -155,7 +155,7 @@ Copy `scripts/release.mjs` and `scripts/release-prompts.mjs` from [interactive-w
 
 5. **Dependencies** — remind user to install:
    ```bash
-   pnpm add -D -E release-it@21.0.1 @clack/prompts@1.8.0 semver@7.8.5
+   pnpm add -D -E release-it@21.0.1 @inquirer/prompts@8.5.2 semver@7.8.5
    # If changelog plugin selected:
    pnpm add -D -E @release-it/conventional-changelog@12.0.0 conventional-changelog-conventionalcommits@10.4.0
    ```
@@ -220,7 +220,7 @@ Use bulk or synchronized package release strategies only when explicitly request
 
 ### Private/Internal Package or Application
 
-Use the complete base config and clack entry scripts in
+Use the complete base config and Inquirer entry scripts in
 [interactive-workflow.md](interactive-workflow.md). For service apps in a workspace,
 apply the target-specific overrides in [monorepo.md](monorepo.md).
 

@@ -201,7 +201,7 @@ When disabled, release-it adds `--set-upstream origin <branch>` to the push comm
 For `pnpm release`, inspect the entry script in [interactive-workflow.md](interactive-workflow.md).
 Check both TTYs first, reject CLI arguments, and pass `ci: false`, `only-version: false`,
 `release-version: false`, and `changelog: false` as API overrides. Recommended increments
-and inherited version flags must not replace the clack version selection. Do not solve
+and inherited version flags must not replace the Inquirer version selection. Do not solve
 missing interactive prompts with `--ci`, `--only-version`, pipes, or automatic answers.
 
 #### Intentional CI automation
@@ -274,7 +274,7 @@ Ensure the CI has push access:
 - **Cancellation destroys the local commit/tag:** inspect release-it's exit rollback handlers.
   The example prechecks the whole repository and disables that built-in rollback mechanism.
 - **Push runs without its question:** remove direct push hooks from the default path, keep
-  `git.push: true`, and inject the clack adapter through the second API argument.
+  `git.push: true`, and inject the Inquirer adapter through the second API argument.
 - **Prompt interface changed:** inspect the installed version's `register`/`show` calls and
   run the PTY evaluation before claiming compatibility with a new version.
 

@@ -2,15 +2,15 @@ import { existsSync, readFileSync, realpathSync } from 'node:fs';
 import { execFileSync } from 'node:child_process';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { select, text, log } from '@clack/prompts';
+import { select, input } from '@inquirer/prompts';
 import semver from 'semver';
 import release, { Config } from 'release-it';
-import { ClackPrompt, ReleaseStopped, requireAnswer } from './release-prompts.mjs';
+import { InquirerPrompt, ReleaseStopped, requireAnswer } from './release-prompts.mjs';
 
 // Copy both example modules into the project's scripts/ directory.
 const root = realpathSync(fileURLToPath(new URL('../', import.meta.url)));
 const guardPath = fileURLToPath(new URL('./release-prompts.mjs', import.meta.url));
-const prompt = new ClackPrompt();
+const prompt = new InquirerPrompt();
 // Apply before Config.init(): snapshot expansion also rewrites Git/npm options.
 const interactiveOptions = {
   ci: false,
@@ -49,9 +49,9 @@ async function chooseTarget() {
   ) || new Set(serviceApps.map(app => app.path)).size !== serviceApps.length) {
     throw new Error('Expected a nonempty list of distinct service-app paths.');
   }
-  return requireAnswer(await select({
+  return requireAnswer(select({
     message: 'Select one service app:',
-    options: serviceApps.map(app => ({ value: app, label: app.name, hint: app.path }))
+    choices: serviceApps.map(app => ({ value: app, name: app.name, description: app.path }))
   }), 'service app');
 }
 
@@ -61,19 +61,19 @@ async function chooseVersion(currentVersion) {
     ['prerelease', semver.prerelease(currentVersion)?.[0] || 'rc'],
     ['major'], ['premajor', 'alpha']
   ];
-  const options = increments.map(([increment, identifier]) => {
+  const choices = increments.map(([increment, identifier]) => {
     const version = semver.inc(currentVersion, increment, String(identifier || ''));
-    return { value: version, label: `${increment}: ${currentVersion} → ${version}` };
+    return { value: version, name: `${increment}: ${currentVersion} → ${version}` };
   }).filter(option => option.value && semver.gt(option.value, currentVersion));
-  const selected = requireAnswer(await select({
+  const selected = await requireAnswer(select({
     message: `Select version (current: ${currentVersion}):`,
-    options: [...options, { value: 'custom', label: 'Enter an exact version' }]
+    choices: [...choices, { value: 'custom', name: 'Enter an exact version' }]
   }), 'version');
   if (selected !== 'custom') return selected;
-  const entered = requireAnswer(await text({
+  const entered = await requireAnswer(input({
     message: `Next version (current: ${currentVersion}):`,
     validate: value => !semver.valid(value) || !semver.gt(value, currentVersion)
-      ? `Enter a valid semver greater than ${currentVersion}.` : undefined
+      ? `Enter a valid semver greater than ${currentVersion}.` : true
   }), 'version');
   return semver.valid(entered);
 }
@@ -81,22 +81,22 @@ async function chooseVersion(currentVersion) {
 function reportState() {
   if (!headBefore) return;
   try {
-    log.info(`HEAD before: ${headBefore}\nHEAD now: ${git('rev-parse', 'HEAD')}`);
-    log.info(`Remaining index/worktree changes:\n${git('status', '--short') || '(clean)'}`);
+    console.info(`HEAD before: ${headBefore}\nHEAD now: ${git('rev-parse', 'HEAD')}`);
+    console.info(`Remaining index/worktree changes:\n${git('status', '--short') || '(clean)'}`);
     if (targetDirectory) {
-      log.info(`Version on disk: ${readJSON(path.join(targetDirectory, 'package.json')).version}`);
+      console.info(`Version on disk: ${readJSON(path.join(targetDirectory, 'package.json')).version}`);
     }
     if (prompt.tagName) {
       let tagRef;
       try { tagRef = git('show-ref', '--verify', `refs/tags/${prompt.tagName}`); }
       catch { tagRef = '(not present locally)'; }
-      log.info(`Local tag ${prompt.tagName}: ${tagRef}`);
+      console.info(`Local tag ${prompt.tagName}: ${tagRef}`);
     }
     const pushState = prompt.completed.includes('push') ? 'push command completed' :
       prompt.attempted.includes('push') ? 'push attempted; remote state requires inspection' : 'push not attempted';
-    log.info(pushState);
+    console.info(pushState);
   } catch (error) {
-    log.warn(`Could not fully inspect remaining state: ${error.message}`);
+    console.warn(`Could not fully inspect remaining state: ${error.message}`);
   }
 }
 
@@ -147,10 +147,10 @@ try {
       ...options.plugins
     }
   }, { prompt });
-  log.success(`Released ${target.name} ${selectedVersion}.`);
+  console.info(`Released ${target.name} ${selectedVersion}.`);
 } catch (error) {
-  if (error instanceof ReleaseStopped) log.warn(error.message);
-  else log.error(error.message);
+  if (error instanceof ReleaseStopped) console.warn(error.message);
+  else console.error(error.message);
   process.exitCode = 1;
 } finally {
   process.chdir(root);

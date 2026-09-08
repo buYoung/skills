@@ -15,7 +15,7 @@ Key rules for new configs:
 | Project Type | Key Options |
 |-------------|-------------|
 | npm package (public) | `github.release: true`, `npm.publish: true`, changelog plugin |
-| Private/internal service app | Clack entry script; `npm.publish: false`, hosted releases disabled, changelog plugin |
+| Private/internal service app | Inquirer entry script; `npm.publish: false`, hosted releases disabled, changelog plugin |
 | Application (no publish) | [Interactive contract](interactive-workflow.md); keep Git actions enabled |
 | Non-Node project | `npm: false`, `@release-it/bumper` for version file |
 | Monorepo service apps (default) | [One selected app](monorepo.md), app cwd/version/changelog/tag namespace |

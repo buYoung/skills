@@ -7,7 +7,7 @@ Use these question/action sequences for the default service-app release:
 - Single project: `pnpm release → version → commit? / commit → tag? / tag → push? / push`.
 - Monorepo: `pnpm release → one service app → version → commit? / commit → tag? / tag → push? / push`.
 
-All questions use `@clack/prompts`. A single project starts directly with the version
+All questions use `@inquirer/prompts`. A single project starts directly with the version
 question; neither a target picker nor a start confirmation belongs before it. Read-only
 preflight checks may fail before the first question. In a monorepo, always show the service
 app picker, including when there is only one eligible app. Configure the eligible apps
@@ -17,6 +17,8 @@ The version menu shows the current version and each concrete next version. A sug
 can be a label or initial selection, but still requires a submitted answer. Pass an exact
 semver selected by the user to release-it. Do not first ask all three Git confirmations:
 each confirmation belongs at its action's execution point.
+Use Inquirer's native `y/n` confirmation with `default: false`: Enter declines the action
+and stops the remaining flow. Ctrl+C cancels an active selection, input, or confirmation.
 
 ## Copyable Project Example
 
@@ -24,7 +26,7 @@ Copy these complete files into the applying project's `scripts/` directory:
 
 - [release.mjs](../examples/interactive-release/release.mjs): terminal and repository checks,
   structure detection, target selection, version menu, release-it API call, state reporting.
-- [release-prompts.mjs](../examples/interactive-release/release-prompts.mjs): clack adapter,
+- [release-prompts.mjs](../examples/interactive-release/release-prompts.mjs): Inquirer adapter,
   stop exception, and a plugin that checks the chosen version before any bump.
 
 These are project-generation examples, not commands to release the skill repository.
@@ -36,13 +38,15 @@ Install the tested dependency set with the project's package manager (add `-w` f
 workspace-root tooling):
 
 ```bash
-pnpm add -D -E release-it@21.0.1 @clack/prompts@1.8.0 semver@7.8.5
+pnpm add -D -E release-it@21.0.1 @inquirer/prompts@8.5.2 semver@7.8.5
 # When using the changelog configuration below:
 pnpm add -D -E @release-it/conventional-changelog@12.0.0 conventional-changelog-conventionalcommits@10.4.0
 ```
 
-`semver` computes and validates menu values. Clack owns the questions; release-it and its
-changelog plugin own the writes. Add the entry command to the root `package.json`:
+`semver` computes and validates menu values. Inquirer owns the questions; release-it and its
+changelog plugin own the writes. Declare `@inquirer/prompts` as a direct development dependency
+even though release-it also depends on it. State messages use `console.info` on stdout and
+`console.warn`/`console.error` on stderr. Add the entry command to the root `package.json`:
 
 ```json
 {
@@ -140,20 +144,29 @@ Source-confirmed integration for **release-it 21.0.1**:
 |---|---|
 | `release(options, { prompt })` | Second argument supplies the prompt instance; a top-level `createPrompt` option is not sufficient |
 | `register(definitions, namespace = 'default')` | Merge a plugin's named definitions into its namespace |
-| `show({ enabled = true, prompt, namespace = 'default', task, context })` | Resolve the registered definition, ask via clack, then await `task(answer)` |
+| `show({ enabled = true, prompt, namespace = 'default', task, context })` | Resolve the registered definition, ask via Inquirer, then await `task(answer)` |
 | Git definitions | `commit`, `tag`, `push`, each with `type: 'confirm'` and `message(context)` |
 | Disabled step | Return false without asking or executing; setup rejects disabled Git actions for the default flow |
 | No/cancel | Throw `ReleaseStopped`; never return a false answer to release-it and continue |
 
 There is no `run()` method in this interface. The adapter supports the three Git confirmations
 and fails on an unexpected enabled prompt. npm publishing/OTP and hosted release prompts
-require an explicitly extended adapter, with clack input/select/confirm handlers and their
+require an explicitly extended adapter, with Inquirer input/select/confirm handlers and their
 own evaluation; use the existing publishing/CI references for those workflows.
 
-`@clack/prompts` confirmation returns a boolean or cancellation symbol. Check `isCancel`
-before truthiness. Use the registered message with its execution-time context so the commit
-message and selected tag stay visible. The adapter calls the supplied task exactly once on
-yes and awaits it before the next question; it never shells out to Git itself.
+`@inquirer/prompts` confirmation resolves to a boolean; Ctrl+C rejects with `ExitPromptError`,
+and an aborted signal rejects with `AbortPromptError`. Pass the prompt Promise to the async
+`requireAnswer` helper without awaiting it first, so it can convert those two errors into a
+stage-specific `ReleaseStopped`. Other errors propagate unchanged. The helper wraps only the
+question, not the task callback, so execution errors are not classified as user cancellation.
+Use the registered message with its execution-time context so the commit message and selected
+tag stay visible. The adapter calls the supplied task exactly once on yes and awaits it before
+the next question; it never shells out to Git itself.
+
+For selections, use `choices` with `value`, `name`, and optional `description`; preserve the
+selected app object and exact version as the returned values. Use `input` for a custom version,
+with validation returning `true` on success or an error string on failure. Returning `undefined`
+does not accept a valid answer in Inquirer.
 
 This injection is visible in source and is not a promised stable prompt customization API.
 Before changing versions, inspect the installed dependency and re-run the PTY checks:
@@ -164,12 +177,12 @@ Before changing versions, inspect the installed dependency and re-run the PTY ch
 - [Git actions and rollback](https://github.com/release-it/release-it/blob/21.0.1/lib/plugin/git/Git.js)
 - [Config and CI precedence](https://github.com/release-it/release-it/blob/21.0.1/lib/config.js)
 
-The executable example is checked on Node **24.14.0**, release-it **21.0.1**, clack **1.8.0**,
+The executable example is checked on Node **24.14.0**, release-it **21.0.1**, Inquirer **8.5.2**,
 semver **7.8.5**, and conventional-changelog **12.0.0**. Inspect installed `engines` when
 applying it: release-it 21.0.1 and conventional-changelog 12.0.0 require Node
-`^22.21.0 || >=24.0.0`, while clack
-1.8.0 requires `>=20.12.0`. Compatibility with another release-it version is unverified
-until its interface and behavior are checked; do not change a project's runtime silently.
+`^22.21.0 || >=24.0.0`, while `@inquirer/prompts`
+8.5.2 requires `>=23.5.0 || ^22.13.0 || ^20.17.0`. Compatibility with another release-it version
+is unverified until its interface and behavior are checked; do not change a project's runtime silently.
 
 ## Stopping and Remaining State
 
@@ -203,8 +216,9 @@ or remote systems, and do not automatically delete local work after a deliberate
 Use [evals.json](../evals/evals.json) for generated-output comparisons and the isolated
 PTY runner in [run_interactive.py](../evals/run_interactive.py) for executable behavior.
 Test first-question order, selected app/version propagation, confirmation/action interleaving,
-every no/cancel boundary, recommended increments, inherited CI/mode options, and non-TTY
-input/output. The runner requires an already installed dependency directory and writes only
-temporary repositories. It replaces every `git push` with an argument-recording executable;
+every no/cancel boundary, Enter's default decline, invalid custom-version retry, recommended
+increments, inherited CI/mode options, and non-TTY input/output. The runner requires an already
+installed dependency directory and writes only temporary repositories. It replaces every
+`git push` with an argument-recording executable;
 it never calls a remote push or deployment. Inspect both the event log and final Git/file
 state; a source-text assertion or dry run alone does not demonstrate these behaviors.

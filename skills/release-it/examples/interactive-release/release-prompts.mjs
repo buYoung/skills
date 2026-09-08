@@ -1,4 +1,4 @@
-import { confirm, isCancel } from '@clack/prompts';
+import { confirm } from '@inquirer/prompts';
 import { Plugin } from 'release-it';
 
 export class ReleaseStopped extends Error {
@@ -8,13 +8,19 @@ export class ReleaseStopped extends Error {
   }
 }
 
-export function requireAnswer(answer, stage) {
-  if (isCancel(answer)) throw new ReleaseStopped(`Cancelled at ${stage}.`);
-  return answer;
+export async function requireAnswer(pendingAnswer, stage) {
+  try {
+    return await pendingAnswer;
+  } catch (error) {
+    if (error instanceof Error && ['ExitPromptError', 'AbortPromptError'].includes(error.name)) {
+      throw new ReleaseStopped(`Cancelled at ${stage}.`);
+    }
+    throw error;
+  }
 }
 
 // release-it 21.0.1 calls register() and show(); there is no run() interface.
-export class ClackPrompt {
+export class InquirerPrompt {
   prompts = new Map();
   completed = [];
   attempted = [];
@@ -33,9 +39,9 @@ export class ClackPrompt {
     }
     if (typeof task !== 'function') throw new Error(`Missing task: ${namespace}.${prompt}`);
     this.tagName = context.tagName;
-    const answer = requireAnswer(await confirm({
+    const answer = await requireAnswer(confirm({
       message: definition.message(context),
-      initialValue: false
+      default: false
     }), prompt);
     // Returning false would skip only this task, allowing subsequent Git steps.
     if (answer !== true) throw new ReleaseStopped(`Declined ${prompt}.`);
