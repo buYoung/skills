@@ -1,8 +1,37 @@
 # Output Format
 
-Structure and formatting for code review reports.
+## Current report contract
 
-## Review Report Structure
+Write in the user's language, translating prose and severity labels while preserving paths, identifiers, logs, and requested verdict tokens. Keep the report proportional to findings, without filling empty categories or adding formal praise.
+
+Use this order:
+
+1. **Review target**: selected revision(s) or index/worktree scope, comparison meaning/base, and path restrictions. Mention meaningful coverage exclusions.
+2. **Defects**, ordered by actual importance. If none are confirmed, say so explicitly. Each entry contains a concise title and severity, a precise location in the reviewed version (prefer the smallest relevant changed range), trigger, code-supported execution path, expected versus actual behavior, impact, and remediation direction. Do not attach current-worktree line numbers to historical evidence; identify the revision and path. For deletions, cite the base location explicitly.
+3. **Maintainability observations**, only when supported. Cite present complexity/duplication/coupling, current maintenance cost, and a concrete improvement benefit. These are non-blocking observations, separate from defect severity.
+4. **Verification and limitations**: exact checks actually run and results, static-only analysis, unreviewed areas, external consumers not inspected, and unresolved questions with the missing evidence needed. Never claim an unrun check passed.
+
+Severity describes demonstrated impact and trigger conditions: **Critical** for severe security/data/availability consequences, **Major** for material incorrect behavior, **Minor** for bounded low-impact defects. Style-only preferences are omitted unless requested. Lack of tests and number of consumers do not promote severity. Evidence gaps belong in verification questions, not speculative confirmed findings or numeric confidence scores.
+
+Example defect in prose: **[Major] Forward request options to transport** at `client.py:28` in revision C. When a caller supplies a timeout and cancellation token, the wrapper drops both before `transport.send`, which waits without those controls. Forward the supported options while preserving caller values. Static tracing establishes the dropped arguments; no runtime test was run.
+
+Example maintainability observation: `checkout.py:18` and `renewal.py:31` independently encode the same current discount policy. Both paths must be updated for each policy revision. A shared policy function would centralize that rule while preserving each path's orchestration.
+
+## Verdict only on request
+
+Do not emit an approval or change-request verdict by default. If explicitly requested, append one token with a concise reason:
+
+| Verdict | Evidence-based decision |
+|---|---|
+| `REQUEST_CHANGES` | A confirmed defect needs correction, regardless of count. |
+| `COMMENT` | No established correction already determines the decision, but unresolved facts prevent a sound approval. Name what must be verified. |
+| `APPROVE` | Review is sufficiently complete for the stated scope and no blocking defect is established. |
+
+Confirmed defects needing correction take precedence over unresolved questions. Maintainability observations alone do not block changes. Do not derive the verdict from counts, weighted scores, consumer totals, or missing tests alone. A claimed no-defect result does not establish completeness.
+
+## Archived output examples (not the current contract)
+
+The literal blocks below are retained solely to preserve existing fenced content. They describe the former schema, including confidence tiers, empty severity sections, Highlights, and an unconditional verdict. Do not use that schema for new reports; apply the current contract above. The old grouping example also mixes maintainability with defect severity; new reports keep them separate.
 
 ```
 ## Review Summary
@@ -38,8 +67,6 @@ Structure and formatting for code review reports.
 <APPROVE | REQUEST_CHANGES | COMMENT>
 ```
 
-## Finding Entry Format
-
 ```
 #### [<severity>] <title>
 - **File**: `<file_path>:<line_number>`
@@ -50,7 +77,6 @@ Structure and formatting for code review reports.
 - **Suggestion**: <at least one remediation direction>
 ```
 
-### Example Entry
 ```
 #### [Major] Incompatible output contract for downstream consumer
 - **File**: `service/account/response_mapper.ext:118`
@@ -61,37 +87,6 @@ Structure and formatting for code review reports.
 - **Suggestion**: Add compatibility mapping or versioned response contract before removing old field
 ```
 
-## Verdict Criteria
-
-Verdict selection combines count-based baseline rules and risk-weighted adjustments.
-
-### Baseline Rules
-
-| Verdict | Condition |
-|---------|-----------|
-| **REQUEST_CHANGES** | Any Critical finding exists |
-| **REQUEST_CHANGES** | 3+ Major findings exist |
-| **COMMENT** | Major findings exist (1–2) |
-| **COMMENT** | 5+ Minor findings exist |
-| **APPROVE** | Only Minor/Nit findings or none |
-
-### Risk-Aware Verdict Adjustments
-
-Use the weighted risk score internally to validate the baseline verdict. Do not output the score.
-
-| Condition | Adjustment |
-|-----------|------------|
-| Any verified Critical finding | REQUEST_CHANGES |
-| High weighted risk with medium+ confidence evidence | REQUEST_CHANGES |
-| Moderate weighted risk | COMMENT (unless baseline already requests changes) |
-| Low weighted risk and no Major+ findings | APPROVE candidate |
-
-## Grouping Options
-
-### By Severity (Default)
-Findings are grouped under severity headers.
-
-### By File
 ```
 ## path/to/file.ext
 - [Major] Contract incompatibility (L118)

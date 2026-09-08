@@ -1,0 +1,282 @@
+{
+  "metadata": {
+    "skill_name": "code-review",
+    "executor_model": "gpt-5.6-sol",
+    "reasoning_effort": "high",
+    "timestamp": "2026-09-08T00:47:13.413074+00:00",
+    "evals_run": [
+      1,
+      2,
+      3
+    ],
+    "runs_per_configuration": 1,
+    "grading": "Main-agent qualitative grading against fixtures and executor-authored investigation records; not an independent blind grader.",
+    "old_package_sha256": "2dda72c0145c3964e09dbe7d4829e63144289cfc52a5d568847be0d3f5704dab",
+    "revised_package_sha256": "be2829c01c313d51f5656d4eaa0ea905cadcc973ac580a0f0d43277f7b65aa92"
+  },
+  "runs": [
+    {
+      "eval_id": 1,
+      "eval_name": "mixed",
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "passed": 4,
+        "failed": 1,
+        "total": 5,
+        "pass_rate": 0.8
+      },
+      "expectations": [
+        {
+          "text": "Detects the shipping discount defect with a correct example and one root-cause finding",
+          "passed": true,
+          "evidence": "One shipping-discount defect with correct checkout 1350 vs 1400 and renewal 1080 vs 1100 examples."
+        },
+        {
+          "text": "Does not assert unrelated defects",
+          "passed": true,
+          "evidence": "No unrelated behavioral defects reported."
+        },
+        {
+          "text": "Reviews staged pricing, final unstaged pricing/checkout, and untracked renewal",
+          "passed": true,
+          "evidence": "Target and transcript include index pricing, final worktree pricing/checkout, and untracked renewal."
+        },
+        {
+          "text": "Any maintainability observation identifies present cost and benefit, or is omitted",
+          "passed": false,
+          "evidence": "The observation treats equal 10% literals as a shared policy. The fixture contract establishes calculation order, but does not establish that checkout and renewal rates must evolve together. A centralization benefit is described, but common policy ownership is inferred."
+        },
+        {
+          "text": "Does not emit an unsolicited approval verdict",
+          "passed": true,
+          "evidence": "No verdict token emitted."
+        }
+      ]
+    },
+    {
+      "eval_id": 1,
+      "eval_name": "mixed",
+      "configuration": "old_skill",
+      "run_number": 1,
+      "result": {
+        "passed": 3,
+        "failed": 2,
+        "total": 5,
+        "pass_rate": 0.6
+      },
+      "expectations": [
+        {
+          "text": "Detects the shipping discount defect with a correct example and one root-cause finding",
+          "passed": true,
+          "evidence": "One shipping-discount defect with 1350 vs 1400 example."
+        },
+        {
+          "text": "Does not assert unrelated defects",
+          "passed": true,
+          "evidence": "No unrelated behavioral defects reported."
+        },
+        {
+          "text": "Reviews staged pricing, final unstaged pricing/checkout, and untracked renewal",
+          "passed": false,
+          "evidence": "Explicitly limits review to staged pricing and excludes unstaged checkout/pricing and untracked renewal."
+        },
+        {
+          "text": "Any maintainability observation identifies present cost and benefit, or is omitted",
+          "passed": true,
+          "evidence": "No maintainability observation emitted in this case."
+        },
+        {
+          "text": "Does not emit an unsolicited approval verdict",
+          "passed": false,
+          "evidence": "Emits COMMENT without user request."
+        }
+      ]
+    },
+    {
+      "eval_id": 2,
+      "eval_name": "historical",
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "passed": 5,
+        "failed": 0,
+        "total": 5,
+        "pass_rate": 1.0
+      },
+      "expectations": [
+        {
+          "text": "Detects both timeout and cancellation loss along load/request/dispatch/send",
+          "passed": true,
+          "evidence": "Traces load → request → dispatch → send; identifies lost timeout_ms=5000 and signal, with before/after diagnostic output."
+        },
+        {
+          "text": "Does not assert unrelated defects",
+          "passed": true,
+          "evidence": "Only the option-forwarding regression is reported."
+        },
+        {
+          "text": "Uses review-target context rather than repaired HEAD",
+          "passed": true,
+          "evidence": "Uses review-target and parent snapshots; does not use repaired HEAD to judge target behavior."
+        },
+        {
+          "text": "Any maintainability observation identifies present cost and benefit, or is omitted",
+          "passed": true,
+          "evidence": "No maintainability observation emitted in this case."
+        },
+        {
+          "text": "Does not emit an unsolicited approval verdict",
+          "passed": true,
+          "evidence": "No verdict token emitted."
+        }
+      ]
+    },
+    {
+      "eval_id": 2,
+      "eval_name": "historical",
+      "configuration": "old_skill",
+      "run_number": 1,
+      "result": {
+        "passed": 4,
+        "failed": 1,
+        "total": 5,
+        "pass_rate": 0.8
+      },
+      "expectations": [
+        {
+          "text": "Detects both timeout and cancellation loss along load/request/dispatch/send",
+          "passed": true,
+          "evidence": "Traces service.load, request, dispatch, and Transport.send; identifies both lost controls."
+        },
+        {
+          "text": "Does not assert unrelated defects",
+          "passed": true,
+          "evidence": "Only the option-forwarding regression is reported."
+        },
+        {
+          "text": "Uses review-target context rather than repaired HEAD",
+          "passed": true,
+          "evidence": "Initially searches worktree but explicitly reconfirms all conclusions with target Git blobs and revision grep."
+        },
+        {
+          "text": "Any maintainability observation identifies present cost and benefit, or is omitted",
+          "passed": true,
+          "evidence": "No maintainability observation emitted in this case."
+        },
+        {
+          "text": "Does not emit an unsolicited approval verdict",
+          "passed": false,
+          "evidence": "Emits COMMENT without user request."
+        }
+      ]
+    },
+    {
+      "eval_id": 3,
+      "eval_name": "compatibility",
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "passed": 5,
+        "failed": 0,
+        "total": 5,
+        "pass_rate": 1.0
+      },
+      "expectations": [
+        {
+          "text": "Explicitly reports no confirmed behavioral defects",
+          "passed": true,
+          "evidence": "Explicitly states no confirmed defects and explains preserved public response."
+        },
+        {
+          "text": "Does not label compatibility adapter or absent tests as a defect",
+          "passed": true,
+          "evidence": "Recognizes compatibility mapping; does not turn absence of tests into a defect."
+        },
+        {
+          "text": "Reviews index account adapter, consumer context, checkout and renewal",
+          "passed": true,
+          "evidence": "Reads index account/consumer/README/checkout/renewal; verifies worktree has no unstaged delta before execution."
+        },
+        {
+          "text": "Separately explains duplicate policy and benefit of centralizing it",
+          "passed": true,
+          "evidence": "Separate maintainability section cites duplicate policy, coordinated update cost, and single-function benefit grounded in README."
+        },
+        {
+          "text": "Does not emit an unsolicited approval verdict",
+          "passed": true,
+          "evidence": "No verdict token emitted."
+        }
+      ]
+    },
+    {
+      "eval_id": 3,
+      "eval_name": "compatibility",
+      "configuration": "old_skill",
+      "run_number": 1,
+      "result": {
+        "passed": 4,
+        "failed": 1,
+        "total": 5,
+        "pass_rate": 0.8
+      },
+      "expectations": [
+        {
+          "text": "Explicitly reports no confirmed behavioral defects",
+          "passed": true,
+          "evidence": "Decision rationale explicitly says no broken public contract or incorrect boundary behavior; only maintenance duplication remains."
+        },
+        {
+          "text": "Does not label compatibility adapter or absent tests as a defect",
+          "passed": true,
+          "evidence": "Recognizes adapter and treats absent tests as a limitation."
+        },
+        {
+          "text": "Reviews index account adapter, consumer context, checkout and renewal",
+          "passed": true,
+          "evidence": "Inspects all three staged files and consumer/README; worktree matches index in this fixture, although this does not prove index fidelity under divergence."
+        },
+        {
+          "text": "Separately explains duplicate policy and benefit of centralizing it",
+          "passed": true,
+          "evidence": "Minor finding explicitly identifies a maintainability risk, cites the README single policy and both implementations, and explains centralization. Kept under old severity grouping, but not presented as a behavioral failure."
+        },
+        {
+          "text": "Does not emit an unsolicited approval verdict",
+          "passed": false,
+          "evidence": "Emits APPROVE without user request."
+        }
+      ]
+    }
+  ],
+  "run_summary": {
+    "with_skill": {
+      "pass_rate": {
+        "mean": 0.9333333333333333,
+        "stddev": 0.11547005383792512,
+        "min": 0.8,
+        "max": 1.0
+      }
+    },
+    "old_skill": {
+      "pass_rate": {
+        "mean": 0.7333333333333334,
+        "stddev": 0.11547005383792519,
+        "min": 0.6,
+        "max": 0.8
+      }
+    },
+    "delta": {
+      "pass_rate": "+0.20"
+    }
+  },
+  "notes": [
+    "with_skill is the revised skill; old_skill is the previous skill, not an execution without instructions.",
+    "Only three synthetic cases, one run per version. These results are not general performance guarantees; between-case variation is not repeated-run model variance.",
+    "Defect detection and behavioral false-positive results did not distinguish the two versions here. The observed improvements concern default scope and unsolicited verdicts.",
+    "One revised mixed-case maintainability observation inferred shared policy from equal literal values; graded conservatively as insufficient evidence. The explicit shared-policy case was grounded in both versions.",
+    "Timing and token telemetry were not supplied by completion notifications; omitted rather than reported as zero.",
+    "Investigation records are executor-authored summaries, not complete raw tool transcripts. Output claims were checked against fixture contents; execution-history claims retain that evidence limitation."
+  ]
+}

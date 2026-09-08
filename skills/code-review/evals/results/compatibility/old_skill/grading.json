@@ -1,0 +1,35 @@
+{
+  "expectations": [
+    {
+      "text": "Explicitly reports no confirmed behavioral defects",
+      "passed": true,
+      "evidence": "Decision rationale explicitly says no broken public contract or incorrect boundary behavior; only maintenance duplication remains."
+    },
+    {
+      "text": "Does not label compatibility adapter or absent tests as a defect",
+      "passed": true,
+      "evidence": "Recognizes adapter and treats absent tests as a limitation."
+    },
+    {
+      "text": "Reviews index account adapter, consumer context, checkout and renewal",
+      "passed": true,
+      "evidence": "Inspects all three staged files and consumer/README; worktree matches index in this fixture, although this does not prove index fidelity under divergence."
+    },
+    {
+      "text": "Separately explains duplicate policy and benefit of centralizing it",
+      "passed": true,
+      "evidence": "Minor finding explicitly identifies a maintainability risk, cites the README single policy and both implementations, and explains centralization. Kept under old severity grouping, but not presented as a behavioral failure."
+    },
+    {
+      "text": "Does not emit an unsolicited approval verdict",
+      "passed": false,
+      "evidence": "Emits APPROVE without user request."
+    }
+  ],
+  "summary": {
+    "passed": 4,
+    "failed": 1,
+    "total": 5,
+    "pass_rate": 0.8
+  }
+}

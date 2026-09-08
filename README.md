@@ -48,7 +48,7 @@ These skills are currently under evaluation and will be promoted to **Available 
 | Skill | Description |
 |-------|-------------|
 | [biz-opportunity-scout](skills/biz-opportunity-scout/) | Identify and validate profitable business opportunities by analyzing TAM/SAM/SOM, unit economics, competitive landscape, and PMF indicators with HTML report generation |
-| [code-review](skills/code-review/) | Performs production-ready code reviews on git changes. Supports commit/range/file-scoped analysis, impact assessment, breaking-change detection, confidence-aware finding classification, and risk-weighted verdict generation. |
+| [code-review](skills/code-review/) | Reviews Git changes for concrete defects and evidence-backed maintainability concerns. Defaults to all uncommitted changes, traces behavior in the selected version, checks counterevidence, and provides approval verdicts only on request. |
 | [react-guide](skills/react-guide/) | Build-tool-independent React 18/19 CSR execution router for structure, Hooks/Effects, state/data, performance, async UI, accessibility, migrations, version compatibility, and React Compiler behavior. |
 | [vite-guide](skills/vite-guide/) | UI-framework-independent Vite 7/8 client execution router for runtime, env/assets, Rollup/Rolldown builds, plugins, deployment recovery, performance, and Vite 6→7→8 migrations. |
 | [veo-prompt-director](skills/veo-prompt-director/) | Generates structured Google Veo 3.1 video prompts by collecting user input for subject, action, style, cinematography, and audio. Guides users through the Universal Prompt Formula to produce camera-ready prompts. |

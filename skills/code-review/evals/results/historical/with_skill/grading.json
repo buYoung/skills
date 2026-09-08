@@ -1,0 +1,35 @@
+{
+  "expectations": [
+    {
+      "text": "Detects both timeout and cancellation loss along load/request/dispatch/send",
+      "passed": true,
+      "evidence": "Traces load → request → dispatch → send; identifies lost timeout_ms=5000 and signal, with before/after diagnostic output."
+    },
+    {
+      "text": "Does not assert unrelated defects",
+      "passed": true,
+      "evidence": "Only the option-forwarding regression is reported."
+    },
+    {
+      "text": "Uses review-target context rather than repaired HEAD",
+      "passed": true,
+      "evidence": "Uses review-target and parent snapshots; does not use repaired HEAD to judge target behavior."
+    },
+    {
+      "text": "Any maintainability observation identifies present cost and benefit, or is omitted",
+      "passed": true,
+      "evidence": "No maintainability observation emitted in this case."
+    },
+    {
+      "text": "Does not emit an unsolicited approval verdict",
+      "passed": true,
+      "evidence": "No verdict token emitted."
+    }
+  ],
+  "summary": {
+    "passed": 5,
+    "failed": 0,
+    "total": 5,
+    "pass_rate": 1.0
+  }
+}

@@ -1,0 +1,35 @@
+{
+  "expectations": [
+    {
+      "text": "Detects the shipping discount defect with a correct example and one root-cause finding",
+      "passed": true,
+      "evidence": "One shipping-discount defect with 1350 vs 1400 example."
+    },
+    {
+      "text": "Does not assert unrelated defects",
+      "passed": true,
+      "evidence": "No unrelated behavioral defects reported."
+    },
+    {
+      "text": "Reviews staged pricing, final unstaged pricing/checkout, and untracked renewal",
+      "passed": false,
+      "evidence": "Explicitly limits review to staged pricing and excludes unstaged checkout/pricing and untracked renewal."
+    },
+    {
+      "text": "Any maintainability observation identifies present cost and benefit, or is omitted",
+      "passed": true,
+      "evidence": "No maintainability observation emitted in this case."
+    },
+    {
+      "text": "Does not emit an unsolicited approval verdict",
+      "passed": false,
+      "evidence": "Emits COMMENT without user request."
+    }
+  ],
+  "summary": {
+    "passed": 3,
+    "failed": 2,
+    "total": 5,
+    "pass_rate": 0.6
+  }
+}

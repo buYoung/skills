@@ -1,0 +1,26 @@
+{
+  "skill_name": "code-review",
+  "evals": [
+    {
+      "id": 1,
+      "name": "mixed",
+      "prompt": "이 저장소를 코드 리뷰해 주세요.",
+      "expected_output": "Review all staged, unstaged, and untracked changes. Identify shipping being discounted once as one defect across checkout and renewal; no unsolicited verdict.",
+      "expectations": ["Detects the shipping discount defect with a correct example and one root-cause finding", "Does not assert unrelated defects", "Reviews staged pricing, final unstaged pricing/checkout, and untracked renewal", "Any maintainability observation identifies present cost and benefit, or is omitted", "Does not emit an unsolicited approval verdict"]
+    },
+    {
+      "id": 2,
+      "name": "historical",
+      "prompt": "review-target 커밋을 코드 리뷰해 주세요.",
+      "expected_output": "Find dispatch dropping timeout_ms=5000 and the original signal before transport.send in review-target despite HEAD being fixed. No unsolicited verdict.",
+      "expectations": ["Detects both timeout and cancellation loss along load/request/dispatch/send", "Does not assert unrelated defects", "Uses review-target context rather than repaired HEAD", "Any maintainability observation identifies present cost and benefit, or is omitted", "Does not emit an unsolicited approval verdict"]
+    },
+    {
+      "id": 3,
+      "name": "compatibility",
+      "prompt": "스테이징 변경을 코드 리뷰해 주세요. 유지보수성 의견도 포함해 주세요.",
+      "expected_output": "No confirmed defect. Adapter preserves accountStatus. Duplicated discount policy is a grounded non-blocking maintainability observation; lack of tests is a limit, not a defect. No unsolicited verdict.",
+      "expectations": ["Explicitly reports no confirmed behavioral defects", "Does not label compatibility adapter or absent tests as a defect", "Reviews index account adapter, consumer context, checkout and renewal", "Separately explains duplicate policy and benefit of centralizing it", "Does not emit an unsolicited approval verdict"]
+    }
+  ]
+}

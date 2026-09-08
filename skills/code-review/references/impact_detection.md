@@ -1,149 +1,49 @@
 # Impact Detection
 
-Techniques for identifying side effects, consumer impact, and contract compatibility of code changes.
+## Trace a concrete behavior
 
-## Change Surface Identification
+Start with the requirement and changed entrypoint in the selected version. Identify the calling inputs and follow each relevant value through wrappers, defaults, option merges, adapters, and final I/O or state changes. Track returns, rejection/error translation, cleanup, and cancellation back to the caller as well.
 
-Changed entities are analyzed by role:
+For an options change, inspect property names, units, defaulting operators, merge order, spread order, and overwritten values. Verify timeout and cancellation reach the operation that waits or performs I/O, rather than stopping at a wrapper argument. Check declared runtimes and dependency versions before relying on an API's semantics.
 
-- **Behavioral units**: Functions, methods, handlers, jobs, workflows
-- **Data contracts**: Request/response payloads, persisted schemas, serialized structures
-- **Operational contracts**: Runtime entrypoints, scheduled tasks, event names, configuration keys
+Use repository navigation for symbol definitions, callers, re-exports, route/event registrations, generated wiring, and configuration readers. Searches are candidate evidence, not a consumer census: aliases, callbacks, dynamic dispatch, and external consumers may require other evidence. Use Git revision/index searches for non-worktree targets. Scope searches to relevant directories and file types; the archived broad-search blocks below are not a reason to search the entire repository by default.
 
-## Symbol Exposure Analysis
+## Evaluate contracts in context
 
-Exposure is classified by externally consumable surface:
+Inspect public exports, request/response shapes, persistence schemas, accepted values, errors, ordering, and operational settings. A removed member or stricter input is a compatibility signal, not an automatic defect. Follow compatibility adapters, fallbacks, version negotiation, migration order, and actual consumers before deciding whether a supported path breaks. Optional additions can still affect exhaustive matching, strict schemas, or serialization.
 
-| Exposure Type | Description | Typical Evidence |
-|---------------|-------------|------------------|
-| **Externally Consumable Interface** | Contracts consumed across module/service boundaries | Public exports, API descriptors, protocol definitions |
-| **Module/Package Public Surface** | Symbols intended for downstream consumers | Re-export files, package entrypoint files, public manifest mappings |
-| **Runtime Entrypoint Contract** | Startup, routing, eventing, or job invocation interfaces | Route maps, event registration, scheduler/worker bindings |
+Check both direct callers and transitive/shared-state consumers. Describe the failing supported behavior and its impact; neither raw match counts nor normalized consumer counts set severity. If external consumers cannot be inspected, name the unresolved contract and evidence needed rather than assuming either safety or breakage.
 
-## Dependency Tracing
+## Test evidence
 
-### Exact Symbol Lookup
+Read the assertions and what reaches them: inputs, mocks, boundaries, asynchronous completion, and observed outputs. Distinguish a test checking an intermediate argument from one verifying behavior at the final consumer. Existing tests are not proof merely because their names mention the feature. Missing tests are a verification gap, not a standalone behavioral defect or severity multiplier. Recommend focused validation only where useful; do not create tests as part of a review request.
+
+## Counterevidence and maintainability
+
+For each candidate defect, verify the trigger is reachable, inspect existing defenses, and compare the selected base. Discard intentionally supported behavior and pre-existing issues; consolidate one root cause across layers into one finding.
+
+Maintainability observations need present evidence: repeated policy that must be updated together, branching that obscures a current invariant, or coupling that forces unrelated callers to change. Cite the locations, describe the current cost, and suggest a bounded improvement with a concrete benefit. Do not relabel maintainability as a defect without an actual incorrect execution path.
+
+## Limits
+
+Separate code-supported conclusions from execution results and open questions. State unresolved dynamic wiring, unavailable dependencies, unreviewed files, and inaccessible external consumers precisely. Do not invent confidence percentages or use uncertainty to escalate severity.
+
+## Archived literal examples
+
+These preserved blocks are historical examples, not steps to execute. Use the current workflow above. Single-commit `show` examples require the root/merge handling above; inclusive range commands require a valid parent. Merge-base commands apply only to an explicitly requested common-ancestor comparison, never as fallback. Worktree `rg` examples must not supply historical or index context.
+
 ```bash
 rg -F "<symbol_name>(" .
 ```
-- **Purpose**: Finds direct executable call sites for changed callable symbols
 
-### Broader Reference Lookup
 ```bash
 rg "<symbol_name>" .
 ```
-- **Purpose**: Finds textual references when exact call patterns are insufficient
 
-### Boundary/Entrypoint Lookup
 ```bash
 rg "<entrypoint_or_contract_name>" .
 ```
-- **Purpose**: Identifies where a changed contract is wired into runtime behavior
 
-### Exposure Lookup
 ```bash
 rg "<public_surface_indicator>.*<symbol_name>|<symbol_name>.*<public_surface_indicator>" .
 ```
-- **Purpose**: Confirms whether changed entities are reachable from external consumers
-
-## Consumer Counting
-
-Consumer impact is computed in two steps:
-
-1. **Raw Match Count**
-- Count all matches from broad search to establish initial reference volume
-
-2. **Normalized Consumer Count**
-- Include: production runtime references and executable call sites
-- Exclude: definition lines, comments/doc-only references, test-only references, generated files, vendor/third_party code
-- Deduplicate multiple references from the same logical consumer location
-
-> Normalized Consumer Count is the authoritative signal for impact and breaking-change severity.
-
-## Evidence Confidence Model
-
-| Confidence | Score Range | Characteristics |
-|------------|-------------|-----------------|
-| **High** | `>= 0.8` | Multiple direct executable references with call-path confirmation |
-| **Medium** | `0.5 - 0.79` | References exist but aliasing/re-export/indirection leaves partial uncertainty |
-| **Low** | `< 0.5` | Evidence depends on strings, reflection, dynamic dispatch, or incomplete traceability |
-
-### Verification Status Mapping
-
-| Verification Status | Criteria |
-|---------------------|----------|
-| **Verified** | High-confidence evidence with executable reference path |
-| **Partially Verified** | Medium-confidence evidence with unresolved indirection |
-| **Unverifiable** | Low-confidence evidence where static tracing cannot prove runtime linkage |
-
-Unverifiable findings are included explicitly in the review report under analysis limitations.
-
-## Impact Categories
-
-### Direct Impact
-- **Callers/Invokers**: Executable consumers that directly invoke changed behavior
-- **Contract Consumers**: Components that parse, validate, or depend on changed contracts
-- **Runtime Integrations**: Route/event/job bindings mapped to changed interfaces
-
-### Indirect Impact
-- **Transitive Consumers**: Callers downstream from direct consumers
-- **Shared State Dependents**: Components reading or writing affected shared state
-- **Operational Coupling**: Alerting, retry, caching, and fallback layers coupled to changed behavior
-
-## Behavioral Test Coverage Check
-
-Coverage analysis evaluates changed behavior units, not only file presence.
-
-1. Map changed behavior units from the patch
-2. Identify tests asserting those behaviors (success path, failure path, boundary conditions)
-3. Classify coverage:
-- **Covered**: Relevant assertions exist for changed behavior
-- **Partially Covered**: Assertions exist but miss critical branch/edge path
-- **Not Covered**: No relevant assertions found
-
-### Risk Escalation for Missing Coverage
-
-| Coverage Status | Escalation Guidance |
-|-----------------|---------------------|
-| **Covered** | No automatic escalation |
-| **Partially Covered** | Consider one-level risk increase when change is high impact |
-| **Not Covered** | Increase risk level for behavior/regression findings |
-
-## Breaking Change Detection (Generic)
-
-Breaking-change checks are contract-oriented and language-agnostic.
-
-| Contract Change Type | Breaking? | Detection Signal |
-|----------------------|-----------|------------------|
-| **Required input increased** | Yes | New mandatory field/argument/parameter requirement |
-| **Accepted value domain narrowed** | Yes | Removed valid values, stricter validation without compatibility path |
-| **Output contract changed incompatibly** | Yes | Removed/renamed output fields or changed semantic guarantees |
-| **Endpoint/operation signature changed** | Yes | Path/method/operation name or invocation shape changed |
-| **Externally consumed member removed/renamed** | Yes | Consumer-visible symbol removed or renamed without compatibility layer |
-| **Additive backward-compatible extension** | No (usually) | Optional additions preserving existing consumer behavior |
-
-### Decision Signal
-
-- If a breaking contract change has normalized consumers > 0, classify at least as **Critical candidate**
-- Final severity considers impact magnitude, confidence, and critical-domain context
-
-## Risk Indicators
-
-| Indicator | Base Risk | Description |
-|-----------|-----------|-------------|
-| **No Behavioral Coverage** | High | Changed behavior lacks relevant tests |
-| **High Normalized Consumers** | High | Change affects many runtime consumers |
-| **Exposed Public Surface** | High | Change is reachable by external consumers |
-| **Shared State Mutation** | High | Global or shared state semantics are modified |
-| **Data Shape Change** | High | Persisted or exchanged contract changed |
-| **Config Contract Change** | Medium | Runtime config keys/semantics changed |
-
-## Analysis Limitations
-
-Static/textual analysis has known limits:
-
-- Dynamic invocation, reflection, and runtime plugin loading
-- Indirection through aliases, generated wiring, or external orchestration
-- Cross-repository consumers not present in current workspace
-
-These are recorded as confidence reductions and/or `Unverifiable` findings.

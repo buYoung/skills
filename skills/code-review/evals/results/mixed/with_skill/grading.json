@@ -1,0 +1,35 @@
+{
+  "expectations": [
+    {
+      "text": "Detects the shipping discount defect with a correct example and one root-cause finding",
+      "passed": true,
+      "evidence": "One shipping-discount defect with correct checkout 1350 vs 1400 and renewal 1080 vs 1100 examples."
+    },
+    {
+      "text": "Does not assert unrelated defects",
+      "passed": true,
+      "evidence": "No unrelated behavioral defects reported."
+    },
+    {
+      "text": "Reviews staged pricing, final unstaged pricing/checkout, and untracked renewal",
+      "passed": true,
+      "evidence": "Target and transcript include index pricing, final worktree pricing/checkout, and untracked renewal."
+    },
+    {
+      "text": "Any maintainability observation identifies present cost and benefit, or is omitted",
+      "passed": false,
+      "evidence": "The observation treats equal 10% literals as a shared policy. The fixture contract establishes calculation order, but does not establish that checkout and renewal rates must evolve together. A centralization benefit is described, but common policy ownership is inferred."
+    },
+    {
+      "text": "Does not emit an unsolicited approval verdict",
+      "passed": true,
+      "evidence": "No verdict token emitted."
+    }
+  ],
+  "summary": {
+    "passed": 4,
+    "failed": 1,
+    "total": 5,
+    "pass_rate": 0.8
+  }
+}
