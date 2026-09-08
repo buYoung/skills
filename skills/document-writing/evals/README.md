@@ -25,11 +25,11 @@ Storefront requirements are time-sensitive. Deterministic checks require observa
 
 ## Trigger and selection checks
 
-`trigger-evals.json` requires the actual skill-selection mechanism; parsing the file does not establish trigger quality. The production workflow does not execute a new selection benchmark. It reuses the preserved selection result only when the current frontmatter description SHA-256, selection dataset SHA-256, and prior evidence SHA-256 all match exactly.
+`trigger-evals.json` requires the actual skill-selection mechanism; parsing the file does not establish trigger quality. The production workflow does not execute a selection benchmark. No previous results are bundled. To reuse a separately verified selection run, put its result at the configured `selection.evidence` path and pin all three SHA-256 values in `production-suite.json`: evidence file, frontmatter description, and selection dataset. Reuse requires exact matches. Without configured evidence, selection remains `not-run` and cannot establish production readiness.
 
 ## Current-only schema-v3 workflow
 
-The production suite defines eval 1 through 32 once with the current skill. It contains no baseline, repetition, blind comparison, or worker self-report. Run the deterministic preflight once before any model dispatch. If it fails, do not call Luna or rerun the preflight in that attempt.
+The production suite defines eval 1 through 36 once with the current skill. It contains no baseline, repetition, blind comparison, or worker self-report. Run the deterministic preflight once before any model dispatch. If it fails, do not call Luna or rerun the preflight in that attempt.
 
 Create a full scope by omitting `--eval-ids`, or a targeted scope by listing the selected evals:
 
@@ -90,7 +90,7 @@ python3 skills/document-writing/scripts/run_production_evals.py --stage evidence
 
 The aggregate separately reports planned tasks, present responses, valid execution receipts, deterministic passes and failures, completed independent grades, and semantic passes. With no grades, macro pass rate is `null`, not zero. Harness task IDs are explicitly not raw host model context IDs.
 
-Targeted evidence always keeps `production_ready: false`, even when every selected eval passes. A later full release requires all 32 receipts, all 32 independent grades, all hard gates, macro pass rate at least 0.90, reused selection thresholds, a valid eval 24 document and PNG, and a generated static review.
+Targeted evidence always keeps `production_ready: false`, even when every selected eval passes. A later full release requires all 36 receipts, all 36 independent grades, all hard gates, macro pass rate at least 0.90, reused selection thresholds, a valid eval 24 document and PNG, and a generated static review.
 
 Ordinary verification for a targeted iteration is:
 
@@ -99,8 +99,20 @@ python3 skills/document-writing/scripts/validate_package.py skills/document-writ
 pnpm test
 ```
 
-Do not use `--require-production-ready` for targeted evidence. Schema-v2 iterations remain immutable diagnostic audit material and can never satisfy release validation.
+Do not use `--require-production-ready` for targeted evidence. Generated evidence is local output and is not committed. `pnpm test` checks package structure and regression cases without requiring a past model run; if local execution evidence exists, it is validated. `--require-production-ready` still requires complete passing execution and selection evidence.
 
 ## CI limitation
 
 CI validates package structure, hashes, links, syntax, and deterministic negative controls. It does not dispatch model contexts, perform live research, create images, or grade outputs. Passing CI proves the evidence contract, not fresh model quality or storefront-policy currency.
+
+## Reusable design-rule cases
+
+Cases 33–36 use only supplied material: supported implementation links with a retired example, task-sensitive composition, expressive approved asset originals and templates, and approved recurring-feedback routing. Their existing manifest contracts check allowed paths, preserved inputs, and required owners; private expectations independently judge rationale, conditions, alternatives, and honest verification. No new renderer or before/after comparison workflow is involved.
+
+## Source-compatible usage and recurrence evidence
+
+Eval 33 now checks the ordinary ActionButton function's direct-call contract. The deterministic check requires a supported literal call in a fenced example; independent grading additionally checks the returned data shape and rejects unsupported JSX presented as usable code. This does not execute arbitrary generated code or establish rendering. A JSX-only example is a negative control, not proof of supported usage.
+
+Eval 35 checks application of fixed original geometry/fills and template layers versus permitted content variation. Eval 36 distinguishes comparable recorded results, a remaining recurrence, and an approved follow-up check from claims of complete or general improvement.
+
+Only evaluation definitions, fixtures, and execution/validation tools are versioned. Run evaluations when fresh behavioral or visual evidence is needed. Workspaces, rendered outputs, screenshots, grades, and generated evidence are disposable local artifacts.

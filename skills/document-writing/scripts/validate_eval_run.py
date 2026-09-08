@@ -458,6 +458,22 @@ def observable_output_text(run_root: Path, changed: list[str], response: str) ->
     return "\n\n".join(sections)
 
 
+def validate_action_button_example(workspace: Path, report: Report) -> None:
+    """Check eval 33's concrete call syntax; semantic example review stays private."""
+    owner = workspace / "docs/design-system/components/action-button.md"
+    content = owner.read_text(encoding="utf-8") if owner.is_file() else ""
+    blocks = re.findall(r"(?ms)^```[^\n]*\n(.*?)^```", content)
+    calls = [call for block in blocks for call in re.findall(r"\bActionButton\s*\(\s*\{([^{}]*)\}\s*\)", block)]
+    has_supported_call = False
+    for call in calls:
+        pairs = re.findall(r"(?:[\"']?)(label|tone)(?:[\"']?)\s*:\s*([\"'])(.*?)\2", call)
+        values = {key: value for key, _quote, value in pairs}
+        remainder = re.sub(r"(?:[\"']?)(?:label|tone)(?:[\"']?)\s*:\s*([\"']).*?\1", "", call)
+        if len(pairs) == 2 and set(values) == {"label", "tone"} and values["label"] and values["tone"] in {"primary", "quiet"} and not remainder.replace(",", "").strip():
+            has_supported_call = True
+    report.check(has_supported_call, "ActionButton owner contains a source-compatible literal direct-call example")
+
+
 def validate(suite_path: Path, run_root: Path, case_override: str | None) -> int:
     suite = require_object(load_json(suite_path), "production suite")
     if suite.get("schema_version") != 3:
@@ -527,6 +543,8 @@ def validate(suite_path: Path, run_root: Path, case_override: str | None) -> int
         report.check(not changes, "write-disabled workspace is unchanged")
 
     response_rules = require_object(case.get("response", {}), "response rules")
+    if eval_id == 33:
+        validate_action_button_example(actual_workspace, report)
     question_count = count_user_questions(response)
     min_questions = response_rules.get("min_questions")
     if min_questions is not None:

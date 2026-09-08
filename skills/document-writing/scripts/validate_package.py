@@ -26,7 +26,7 @@ FRONTMATTER_RE = re.compile(r"\A---\n(?P<body>.*?)\n---(?:\n|\Z)", re.DOTALL)
 LINK_RE = re.compile(r"\[[^\]]*\]\((?P<target>[^)]+)\)")
 FENCE_RE = re.compile(r"```.*?```", re.DOTALL)
 SEMVER_RE = re.compile(r"^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-[0-9A-Za-z.-]+)?(?:\+[0-9A-Za-z.-]+)?$")
-PRODUCTION_BEHAVIOR_IDS = tuple(range(1, 33))
+PRODUCTION_BEHAVIOR_IDS = tuple(range(1, 37))
 SELECTION_CASE_COUNT = 60
 EXECUTION_MODEL = "gpt-5.6-luna"
 EXECUTION_REASONING_EFFORT = "medium"
@@ -47,7 +47,6 @@ REQUIRED_PACKAGE_FILES = (
     "evals/trigger-evals.json",
     "evals/design-system-selection-evals.json",
     "evals/production-suite.json",
-    "evals/production-evidence.json",
     "evals/README.md",
     "evals/validators/validate_existing_update.mjs",
     "evals/validators/validate_preservation.mjs",
@@ -62,6 +61,7 @@ REQUIRED_PACKAGE_FILES = (
     "references/document-types/design-system/design-direction-workflow.md",
     "references/document-types/design-system/design-system-authoring.md",
     "references/document-types/design-system/design-system-review.md",
+    "references/document-types/design-system/design-rule-contract.md",
     "references/document-types/design-system/prebuilts/default.md",
     "references/document-types/design-system/prebuilts/app-store-page.md",
 )
@@ -154,7 +154,7 @@ def validate_eval_manifest(skill_root: Path, report: Report) -> None:
     evals = payload["evals"]
     ids = [item.get("id") for item in evals if isinstance(item, dict)]
     if ids != list(PRODUCTION_BEHAVIOR_IDS):
-        report.fail("evals.json must contain eval 1 through 32 in order")
+        report.fail("evals.json must contain eval 1 through 36 in order")
     for index, item in enumerate(evals):
         if not isinstance(item, dict):
             report.fail(f"evals[{index}] must be an object")
@@ -172,7 +172,7 @@ def validate_eval_manifest(skill_root: Path, report: Report) -> None:
                 if not (skill_root / relative).is_file():
                     report.fail(f"eval {item.get('id')} fixture is missing: {relative}")
     if not report.failures:
-        report.ok("32 behavior evals have prompts, expectations, and fixtures")
+        report.ok("36 behavior evals have prompts, expectations, and fixtures")
 
 
 def validate_trigger_manifest(skill_root: Path, report: Report) -> None:
@@ -218,12 +218,12 @@ def validate_production_suite(skill_root: Path, report: Report) -> None:
         report.fail("production suite behavior must be an object")
         return
     if behavior.get("eval_ids") != list(PRODUCTION_BEHAVIOR_IDS) or behavior.get("repetitions") != 1:
-        report.fail("behavior must cover eval 1 through 32 once")
+        report.fail("behavior must cover eval 1 through 36 once")
     if behavior.get("configurations") != [{"name": "with_skill", "source": "working-tree", "capability_overrides": {}}]:
         report.fail("behavior must contain only the current working-tree configuration")
     contracts = behavior.get("case_contracts")
     if not isinstance(contracts, dict) or set(contracts) != {str(value) for value in PRODUCTION_BEHAVIOR_IDS}:
-        report.fail("case_contracts must cover eval 1 through 32 exactly")
+        report.fail("case_contracts must cover eval 1 through 36 exactly")
         contracts = {}
     no_write_ids = {1, 2, 4, 5, 6, 7, 8, 9, 10, 12, 20, 21, 25, 26, 29, 32}
     for eval_id in no_write_ids:
@@ -249,11 +249,13 @@ def validate_production_suite(skill_root: Path, report: Report) -> None:
     selection = payload.get("selection")
     if not isinstance(selection, dict) or selection.get("mode") != "reuse-only" or selection.get("dataset") != "evals/design-system-selection-evals.json":
         report.fail("selection must be reuse-only")
-    elif any(not is_sha256(selection.get(field)) for field in ("evidence_sha256", "description_sha256", "dataset_sha256")):
-        report.fail("selection reuse hashes must be SHA-256 digests")
+    else:
+        hashes = [selection.get(field) for field in ("evidence_sha256", "description_sha256", "dataset_sha256")]
+        if not (all(value is None for value in hashes) or all(is_sha256(value) for value in hashes)):
+            report.fail("selection reuse hashes must be all unset or all SHA-256 digests")
     runtime = payload.get("runtime")
-    if not isinstance(runtime, dict) or runtime.get("model") != EXECUTION_MODEL or runtime.get("reasoning_effort") != EXECUTION_REASONING_EFFORT or runtime.get("execution_contexts") != 32 or runtime.get("grading_contexts") != 32:
-        report.fail("runtime must declare the full 32+32 Luna-medium production budget")
+    if not isinstance(runtime, dict) or runtime.get("model") != EXECUTION_MODEL or runtime.get("reasoning_effort") != EXECUTION_REASONING_EFFORT or runtime.get("execution_contexts") != 36 or runtime.get("grading_contexts") != 36:
+        report.fail("runtime must declare the full 36+36 Luna-medium production budget")
     evidence = payload.get("evidence")
     gates = evidence.get("gates") if isinstance(evidence, dict) else None
     if not isinstance(evidence, dict) or evidence.get("schema_version") != 3 or not isinstance(gates, dict):
@@ -437,6 +439,10 @@ def validate_selection_reuse(skill_root: Path, selection: Any, report: Report) -
         return
     current_dataset_hash = hashlib.sha256((skill_root / contract["dataset"]).read_bytes()).hexdigest()
     metrics = selection.get("metrics") if isinstance(selection.get("metrics"), dict) else {}
+    if isinstance(selection, dict) and selection.get("status") == "not-run":
+        if any(contract.get(field) is not None for field in ("evidence_sha256", "description_sha256", "dataset_sha256")) or selection.get("passed") is not False or selection.get("new_selection_executed") is not False or selection.get("source_sha256") is not None or metrics:
+            report.fail("unrun selection must have no pinned evidence, metrics, or passing claim")
+        return
     if selection.get("status") != "reused" or selection.get("passed") is not True or selection.get("new_selection_executed") is not False or selection.get("description_sha256") != description_hash(skill_root) or selection.get("description_sha256") != contract["description_sha256"] or selection.get("dataset_sha256") != current_dataset_hash or selection.get("dataset_sha256") != contract["dataset_sha256"] or selection.get("source_sha256") != contract["evidence_sha256"]:
         report.fail("selection evidence does not satisfy exact-hash reuse")
     if metrics.get("precision", 0) < 0.95 or metrics.get("recall", 0) < 0.95 or metrics.get("specificity", 0) < 0.95 or metrics.get("high_risk_false_positives") != 0:
@@ -558,6 +564,12 @@ def validate_behavior_evidence(skill_root: Path, payload: dict[str, Any], artifa
 
 
 def validate_production_evidence(skill_root: Path, report: Report, require_production_ready: bool = False) -> None:
+    if not (skill_root / "evals/production-evidence.json").exists():
+        if require_production_ready:
+            report.fail("production-ready validation requires generated execution evidence")
+        else:
+            report.ok("no stored execution evidence; model verification has not been established")
+        return
     payload = read_json(skill_root / "evals/production-evidence.json")
     if not isinstance(payload, dict):
         report.fail("production evidence must be an object")
@@ -600,9 +612,11 @@ def validate_production_evidence(skill_root: Path, report: Report, require_produ
         if verification_status != expected or production_ready:
             report.fail("targeted evidence must report targeted pass/fail and remain non-production")
     if production_ready:
+        if payload.get("selection", {}).get("passed") is not True:
+            report.fail("production-ready evidence requires verified selection results")
         if scope.get("kind") != "production" or scope.get("eval_ids") != list(PRODUCTION_BEHAVIOR_IDS):
-            report.fail("production-ready evidence must cover eval 1 through 32")
-        if summary.get("valid_execution_receipts") != 32 or summary.get("deterministic_passed") != 32 or summary.get("completed_independent_gradings") != 32 or summary.get("semantic_passed") != 32 or not isinstance(summary.get("macro_pass_rate"), (int, float)) or summary["macro_pass_rate"] < 0.90:
+            report.fail("production-ready evidence must cover eval 1 through 36")
+        if summary.get("valid_execution_receipts") != 36 or summary.get("deterministic_passed") != 36 or summary.get("completed_independent_gradings") != 36 or summary.get("semantic_passed") != 36 or not isinstance(summary.get("macro_pass_rate"), (int, float)) or summary["macro_pass_rate"] < 0.90:
             report.fail("production-ready behavior gates are incomplete")
         hard_gates = summary.get("hard_gates")
         if not isinstance(hard_gates, dict) or set(hard_gates) != HARD_GATE_NAMES or any(value != "pass" for value in hard_gates.values()):

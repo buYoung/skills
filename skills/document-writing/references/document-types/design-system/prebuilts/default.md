@@ -26,6 +26,8 @@ The displayed root is replaced by the resolved output root and serves as a respo
 
 ## File responsibilities
 
+Apply [design-rule-contract.md](../design-rule-contract.md) within these owners; it adds no mandatory files or component sections.
+
 ### `index.md`
 
 Define the system's purpose, scope, readers, approved design direction in one or two sentences, direction authority, relevant axes, validation status, document map, authoritative sources, and precedence for resolving conflicts. Identify the canonical owner of each major decision area. Do not include rejected direction hypotheses.
@@ -38,9 +40,13 @@ Own the upper-level visual principles and invariant decisions for color, typogra
 
 Own approved token values and meanings, token hierarchy, naming, semantic mappings, aliases, themes or modes, and deprecation rules. Distinguish source tokens, semantic aliases, and component bindings when those layers are supported by the evidence. Do not use tokens to invent or stand in for an unapproved direction, and do not invent token names or values.
 
+Link verified token source locations and supported mappings to component consumers; mark implementation conflicts or gaps without inventing a distribution mechanism.
+
 ### `patterns.md`
 
 Own reusable interaction and composition patterns that span components, including their intent, participating elements, states, behavior, responsive adaptation, relevant accessibility consequences, and how invariant direction principles permit contextual variation.
+
+Connect each material pattern to the user's task, first-needed information or action, placement rationale, and context-dependent alternatives. Explain the connection between quick scanning and detailed evidence when both are needed, preserving conditions, units, and uncertainty.
 
 ### `content.md`
 
@@ -53,6 +59,8 @@ Own cross-system accessibility requirements, including perception, keyboard and 
 ### `governance.md`
 
 Own contribution, review, direction approval, representative validation, direction-change triggers, decision authority, status, release, adoption, compatibility, and deprecation processes. Record the approved direction and validation result without preserving rejected hypotheses unless the user requests a separate history. Do not assign owners or lifecycle states that were not supplied.
+
+Record approved correction rationale and affected verification results here, linking to the rule owners. Distinguish document judgments from implementation defects, automatic-check gaps, and execution-tool issues; a one-off preference is not a canonical rule. Connect comparable follow-up results, recurrence, and the next evidence needed using the common rule contract; retain failures and limit effect claims to observed work.
 
 ### `components/index.md`
 
@@ -79,6 +87,8 @@ Use this order so component contracts remain comparable:
 Omit a non-applicable section instead of filling it ceremonially. Mark a necessary unresolved decision where readers need to see the gap.
 
 State how the component preserves invariant direction principles, which variants or states are variable, which adaptations are conditional, what use is prohibited, and which observable cases verify the result. Do not force every component to use identical shape, density, or expression when its function requires a documented variation.
+
+In the applicable sections above, connect canonical implementation names and locations, publicly supported variants and usage examples, and token bindings. Separate public usage from internals and identify stale examples that conflict with approved guidance. State which expression is fixed by the reusable implementation and which supported variations are permitted. Check examples against the actual invocation form and returned value, not just names and options. Describe prohibited use by symptom, user impact, failing condition, and supported alternative.
 
 ### `platforms/<platform-name>.md`
 

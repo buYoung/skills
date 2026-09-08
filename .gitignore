@@ -93,3 +93,7 @@ __pycache__/
 
 # document-writing evaluation workspace
 /skills/document-writing-workspace/
+
+# Generated document-writing evaluation results
+/skills/document-writing/evals/evidence/
+/skills/document-writing/evals/production-evidence.json

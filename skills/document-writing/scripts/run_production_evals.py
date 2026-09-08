@@ -390,6 +390,8 @@ def worker_dispatch_message(task: dict[str, Any]) -> str:
         "subagents. Read skill_path/SKILL.md completely and only the relevant references it routes to. A capability "
         "skill may be used only when execution_policy.required_capabilities explicitly names that capability. "
         "workspace_read_policy applies to reads; allowed_workspace_paths and allowed_workspace_write_paths restrict writes only. "
+        "For task shell commands, explicitly set exec_command.workdir to workspace; the host's default directory is not the task workspace. "
+        "Resolve every document write to an absolute path under workspace and use the exact absolute response_path for the response. "
         "Meet any response_contract exactly. Write only response_path and workspace files permitted by execution_policy. Do not create an audit report, receipt, "
         "telemetry, tool-event log, or changed-path list.\n\nAUTHORITATIVE_TASK_JSON\n```json\n"
         f"{task_json}\n```"
@@ -1111,7 +1113,9 @@ def selection_reuse_result(root: Path, suite: dict[str, Any]) -> dict[str, Any]:
     evidence_hash = sha256_file(evidence_path) if evidence_path.is_file() else None
     evidence = load_json(evidence_path) if evidence_path.is_file() else {}
     metrics = evidence.get("metrics") if isinstance(evidence.get("metrics"), dict) else {}
-    hashes_match = description_hash == contract.get("description_sha256") and dataset_hash == contract.get("dataset_sha256") and evidence_hash == contract.get("evidence_sha256")
+    if evidence_hash is None and all(contract.get(field) is None for field in ("evidence_sha256", "description_sha256", "dataset_sha256")):
+        return {"status": "not-run", "passed": False, "source_path": contract["evidence"], "source_sha256": None, "description_sha256": description_hash, "dataset_sha256": dataset_hash, "metrics": {}, "new_selection_executed": False}
+    hashes_match = bool(evidence_hash and contract.get("evidence_sha256")) and description_hash == contract.get("description_sha256") and dataset_hash == contract.get("dataset_sha256") and evidence_hash == contract.get("evidence_sha256")
     gates = suite["evidence"]["gates"]
     metrics_pass = metrics.get("precision", 0) >= gates["selection_precision_min"] and metrics.get("recall", 0) >= gates["selection_recall_min"] and metrics.get("specificity", 0) >= gates["selection_specificity_min"] and metrics.get("high_risk_false_positives") <= gates["high_risk_false_positives_max"]
     return {"status": "reused" if hashes_match and metrics_pass else "mismatch", "passed": hashes_match and metrics_pass, "source_path": contract["evidence"], "source_sha256": evidence_hash, "description_sha256": description_hash, "expected_description_sha256": contract.get("description_sha256"), "dataset_sha256": dataset_hash, "expected_dataset_sha256": contract.get("dataset_sha256"), "metrics": metrics, "new_selection_executed": False}
@@ -1181,7 +1185,7 @@ def review_stage(root: Path, suite: dict[str, Any], dry_run: bool) -> dict[str, 
     benchmark = root / "benchmark.json"
     if not benchmark.is_file():
         raise ProductionEvalError("aggregate must produce benchmark.json before review")
-    command = [sys.executable, str(review_generator_path()), str(root), "--skill-name", suite["skill_name"], "--benchmark", str(benchmark), "--static", str(root / "review.html")]
+    command = [sys.executable, str(review_generator_path()), str(root / "behavior"), "--skill-name", suite["skill_name"], "--benchmark", str(benchmark), "--static", str(root / "review.html")]
     if dry_run:
         return {"stage": "review", "command": command}
     completed = subprocess.run(command, cwd=REPOSITORY_ROOT, text=True, capture_output=True, check=False)
@@ -1234,6 +1238,7 @@ def evidence_stage(root: Path, suite: dict[str, Any], dry_run: bool) -> dict[str
     iteration = int(root.name.removeprefix("iteration-"))
     has_revalidation = any((expected_run_dir(root, eval_id) / "revalidation-history.json").is_file() for eval_id in scope_ids)
     evidence_directory = SKILL_ROOT / suite["evidence"]["directory"]
+    evidence_directory.mkdir(parents=True, exist_ok=True)
     base_name = f"iteration-{iteration}-v3" + ("-targeted" if scope_kind == "targeted" else "") + ("-resumed" if has_revalidation else "")
     published_name = base_name
     revision = 1
@@ -1253,9 +1258,11 @@ def evidence_stage(root: Path, suite: dict[str, Any], dry_run: bool) -> dict[str
     artifacts = [artifact("behavior-results", Path("benchmark.json"))]
     selection_source = SKILL_ROOT / suite["selection"]["evidence"]
     (staging / "selection").mkdir()
-    shutil.copy2(selection_source, staging / "selection" / "source.json")
     write_json(staging / "selection" / "reuse.json", selection)
-    artifacts.extend((artifact("selection-results", Path("selection/source.json")), artifact("selection-reuse", Path("selection/reuse.json"))))
+    artifacts.append(artifact("selection-reuse", Path("selection/reuse.json")))
+    if selection_source.is_file():
+        shutil.copy2(selection_source, staging / "selection" / "source.json")
+        artifacts.append(artifact("selection-results", Path("selection/source.json")))
     if review_present:
         shutil.copy2(review_source, staging / "review.html")
         artifacts.append(artifact("review", Path("review.html")))
@@ -1307,7 +1314,7 @@ def evidence_stage(root: Path, suite: dict[str, Any], dry_run: bool) -> dict[str
         "review": {"status": "generated" if review_present else "missing", "artifact_path": published_path(Path("review.html")) if review_present else None, "sha256": sha256_file(staging / "review.html") if review_present else None},
         "image_canary": image_evidence,
         "revalidations": revalidation_records,
-        "limitations": ["Task context IDs are harness-assigned identifiers, not raw host model context IDs.", "Raw model telemetry and tool events were unavailable and were not inferred.", "Selection evidence was reused by exact hashes; no new selection run was executed.", "Harness-only deterministic revalidation does not rerun or alter model output.", "Targeted verification is not production-ready evidence and contains no baseline, repetition, or blind comparison."],
+        "limitations": ["Task context IDs are harness-assigned identifiers, not raw host model context IDs.", "Raw model telemetry and tool events were unavailable and were not inferred.", "No new selection run was executed; selection is verified only when pinned evidence matches exactly.", "Harness-only deterministic revalidation does not rerun or alter model output.", "Targeted verification is not production-ready evidence and contains no baseline, repetition, or blind comparison."],
     }
     write_json(staging / "summary.json", payload)
     descriptor, candidate_name = tempfile.mkstemp(prefix="document-writing-schema-v3-evidence-", suffix=".json")

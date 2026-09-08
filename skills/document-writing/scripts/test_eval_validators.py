@@ -8,8 +8,10 @@ import os
 import shutil
 import struct
 import subprocess
+import sys
 import tempfile
 import unittest
+from unittest.mock import patch
 import zlib
 from pathlib import Path
 
@@ -22,22 +24,27 @@ from run_production_evals import (
     count_user_questions,
     direct_grading_prepare_stage,
     execution_policy_for_case,
+    evidence_stage,
     expected_run_dir,
     grader_dispatch_message,
     public_direct_task,
+    review_stage,
     select_primary_fdd,
+    selection_reuse_result,
     tree_manifest,
     validate_harness_execution_receipt,
     validate_independent_grading,
     worker_dispatch_message,
 )
 from validate_design_system_output import validate as validate_design_output
-from validate_eval_run import iso_dates
+from validate_eval_run import Report as EvalReport, iso_dates, validate_action_button_example
 from validate_package import (
     Report as PackageReport,
     inspect_png,
     validate_markdown_links,
     validate_production_suite,
+    validate_production_evidence,
+    validate_selection_reuse,
     validate_python_eval_scripts,
 )
 
@@ -83,6 +90,77 @@ class ValidatorTests(unittest.TestCase):
 
     def tearDown(self) -> None:
         self.temp.cleanup()
+
+    def test_absent_evidence_is_optional_but_not_production_ready(self) -> None:
+        report = PackageReport()
+        validate_production_evidence(self.root, report)
+        self.assertEqual(report.failures, [])
+        strict = PackageReport()
+        validate_production_evidence(self.root, strict, require_production_ready=True)
+        self.assertTrue(strict.failures)
+        write_json(self.root / "evals/production-evidence.json", {})
+        invalid = PackageReport()
+        validate_production_evidence(self.root, invalid)
+        self.assertTrue(invalid.failures)
+
+    def test_unconfigured_selection_never_claims_a_pass(self) -> None:
+        for field in ("evidence_sha256", "description_sha256", "dataset_sha256"):
+            self.suite["selection"][field] = None
+        skill = self.root / "skill"
+        snapshot = self.root / "iteration-1/snapshots/with-skill/document-writing"
+        for target in (skill, snapshot):
+            write(target, "SKILL.md", (ROOT / "SKILL.md").read_text())
+            write(target, "evals/design-system-selection-evals.json", (ROOT / "evals/design-system-selection-evals.json").read_text())
+        write_json(skill / "evals/production-suite.json", self.suite)
+        with patch("run_production_evals.SKILL_ROOT", skill):
+            result = selection_reuse_result(self.root / "iteration-1", self.suite)
+        self.assertEqual(result["status"], "not-run")
+        self.assertFalse(result["passed"])
+        self.assertEqual(result["metrics"], {})
+        report = PackageReport()
+        validate_selection_reuse(skill, result, report)
+        self.assertEqual(report.failures, [])
+        result["passed"] = True
+        invalid = PackageReport()
+        validate_selection_reuse(skill, result, invalid)
+        self.assertTrue(invalid.failures)
+
+    def test_diagnostic_evidence_without_cached_selection(self) -> None:
+        for field in ("evidence_sha256", "description_sha256", "dataset_sha256"):
+            self.suite["selection"][field] = None
+        skill = self.root / "skill"
+        shutil.copytree(ROOT, skill, ignore=shutil.ignore_patterns("evidence", "production-evidence.json", "__pycache__"))
+        write_json(skill / "evals/production-suite.json", self.suite)
+        iteration = self.root / "iteration-1"
+        snapshot = iteration / "snapshots/with-skill/document-writing"
+        write(snapshot, "SKILL.md", (skill / "SKILL.md").read_text())
+        write(snapshot, "evals/design-system-selection-evals.json", (skill / "evals/design-system-selection-evals.json").read_text())
+        write_json(iteration / "iteration.json", {"schema_version": 3, "evaluation_scope": {"kind": "targeted", "eval_ids": [1]}})
+        with patch("run_production_evals.SKILL_ROOT", skill):
+            aggregate_stage(iteration, self.suite, False)
+            result = evidence_stage(iteration, self.suite, False)
+        self.assertEqual(result["verification_status"], "targeted-failed")
+        payload = json.loads((skill / "evals/production-evidence.json").read_text())
+        self.assertFalse(payload["production_ready"])
+        self.assertEqual(payload["selection"]["status"], "not-run")
+        self.assertEqual(payload["runtime"]["completed_independent_gradings"], 0)
+
+    def test_action_button_example_uses_real_call_contract(self) -> None:
+        owner = "docs/design-system/components/action-button.md"
+        for example in (
+            '<ActionButton label="Compare" tone="primary" />',
+            'ActionButton({label: "Compare", tone: "danger"})',
+            'ActionButton({label: "Compare", tone: "primary", size: "xl"})',
+        ):
+            with self.subTest(example=example):
+                write(self.root, owner, f"# ActionButton\n\n```tsx\n{example}\n```\n")
+                report = EvalReport()
+                validate_action_button_example(self.root, report)
+                self.assertTrue(report.failures)
+        write(self.root, owner, '# ActionButton\n\n```ts\nconst action = ActionButton({ tone: "primary", label: "Compare" });\n```\n')
+        report = EvalReport()
+        validate_action_button_example(self.root, report)
+        self.assertEqual(report.failures, [])
 
     def test_existing_update_positive_and_negative_controls(self) -> None:
         fixture = self.root / "existing-fixture"
@@ -196,11 +274,37 @@ class ValidatorTests(unittest.TestCase):
         task = public_direct_task("job-public", "문서를 작성해줘.", run, run / "workspace", run / "direct-response.md", "task-public", run / "skill-snapshot", {"workspace_write_policy": "disabled", "allowed_workspace_paths": []})
         message = worker_dispatch_message(task)
         self.assertIn(json.dumps(task, ensure_ascii=False, indent=2), message)
+        self.assertIn("exec_command.workdir to workspace", message)
+        self.assertIn("absolute path under workspace", message)
         self.assertNotIn("report_path", message)
         self.assertNotIn("report_contract", message)
         self.assertNotIn("expectations", message)
         self.assertNotIn("direct-agent-report", message)
         self.assertNotIn("read direct-task", message.lower())
+
+    def test_review_excludes_archived_and_snapshot_outputs(self) -> None:
+        iteration = self.root / "review-scope"
+        write_json(iteration / "benchmark.json", {})
+        write_json(iteration / "behavior/job-real/eval_metadata.json", {"eval_id": 32})
+        (iteration / "behavior/job-real/outputs").mkdir()
+        (iteration / "snapshots/skill/evals/evidence/author/outputs").mkdir(parents=True)
+        generator = self.root / "fake_review_generator.py"
+        generator.write_text(
+            "import json,sys\nfrom pathlib import Path\n"
+            "ids=[]\n"
+            "for output in Path(sys.argv[1]).rglob('outputs'):\n"
+            "    metadata=output.parent/'eval_metadata.json'\n"
+            "    ids.append(json.loads(metadata.read_text()).get('eval_id') if metadata.exists() else None)\n"
+            "assert sorted(ids)==[32], ids\n"
+            "Path(sys.argv[sys.argv.index('--static')+1]).write_text('<html>32</html>')\n",
+            encoding="utf-8",
+        )
+        broad = subprocess.run([sys.executable, str(generator), str(iteration), "--static", str(iteration / "wrong.html")], capture_output=True, check=False)
+        self.assertNotEqual(broad.returncode, 0)
+        with patch("run_production_evals.review_generator_path", return_value=generator):
+            result = review_stage(iteration, self.suite, False)
+        self.assertEqual(result["status"], "completed")
+        self.assertEqual((iteration / "review.html").read_text(), "<html>32</html>")
 
     def test_worker_response_is_canonicalized_from_one_nested_transport_path(self) -> None:
         run = self.root / "nested-response"
@@ -430,7 +534,7 @@ class ValidatorTests(unittest.TestCase):
 
     def test_production_suite_and_package_sources_are_structurally_valid(self) -> None:
         self.assertEqual(self.suite["schema_version"], 3)
-        self.assertEqual(self.suite["behavior"]["eval_ids"], list(range(1, 33)))
+        self.assertEqual(self.suite["behavior"]["eval_ids"], list(range(1, 37)))
         report = PackageReport()
         validate_production_suite(ROOT, report)
         validate_python_eval_scripts(ROOT, report)

@@ -156,6 +156,8 @@ When validation fails, locate the failure before changing rules:
 3. Component or asset rule: a local application contradicts the shared direction.
 4. Platform or storefront adaptation: a genuine contextual constraint was omitted or over-generalized.
 
+Before revising a design rule, distinguish a wrong or incomplete document decision from an implementation or asset that violates a correct rule. Use [design-rule-contract.md](design-rule-contract.md#record-failures-and-approved-improvements) to route recurring feedback, describe the failure and alternative, and record approved corrections in the existing governance or delivery owner. Tool or automatic-check remedies remain separate work unless requested. Follow comparable results after an approved correction; do not promote an isolated model failure or an unconfirmed recurrence hypothesis to a shared rule.
+
 Revise at the owning level and repeat the affected representative checks. Do not patch one result while leaving the failed shared rule unchanged.
 
 ## Ready-to-document gate

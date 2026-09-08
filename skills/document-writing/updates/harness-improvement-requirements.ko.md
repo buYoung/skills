@@ -108,7 +108,7 @@
 
 **적용 계약:** 쓰기가 금지된 검토·질문 실행에서는 작업공간에 파일이 없는 결과도 유효할 수 있다. 파일 없음과 작업공간 누락은 구별해야 한다.
 
-**관찰 근거:** 현재 파일시스템에서 보존된 `eval-10`과 `eval-27`의 `workspace` 디렉터리는 없지만, 각각의 [eval-10 이후 목록](../evals/evidence/iteration-12-v3-targeted/runs/eval-10/workspace-after.json)과 [eval-27 이후 목록](../evals/evidence/iteration-12-v3-targeted/runs/eval-27/workspace-after.json)은 `exists: true`, `entries: []`, `files: {}`를 기록한다. 원래 파일이 있는 산출물이 유실됐다는 증거는 아니며, 정확한 디렉터리 소실 경로는 미확인이다.
+**관찰 근거:** 기준일에 확인한 `eval-10`과 `eval-27`의 보존 자료에서는 `workspace` 디렉터리가 없었지만, 두 실행의 이후 목록은 `exists: true`, `entries: []`, `files: {}`를 기록했다. 원래 파일이 있는 산출물이 유실됐다는 증거는 아니며, 정확한 디렉터리 소실 경로는 미확인이다. 실행 결과는 이제 저장소에 보관하지 않으므로 현재 동작은 평가를 다시 실행해 확인한다.
 
 **현재 보장과 한계:** 실행기 `evidence_stage`(1264–1285행)는 존재하는 작업공간을 복사하고 경로를 기록한다. 패키지 검사기(502–509행)는 해당 디렉터리가 없으면 실패하며, 있으면 파일 해시와 이후 목록을 비교하고 심볼릭 링크를 거부한다. 이 복사 구간에는 빈 디렉터리의 배포·복원을 위한 별도 표현이 없다.
 
@@ -118,7 +118,7 @@
 
 ## R9 결과 동일성과 재사용
 
-**현재 보장:** [평가 설명](../evals/README.md)의 선택 결과 재사용은 설명문·데이터셋·기존 증거의 SHA-256 일치를 요구한다. [현재 보존 결과](../evals/production-evidence.json)는 `diagnostic-failed`, `targeted-failed`, `production_ready: false`, `trust_boundary: local-unattested`를 명시한다. 이번 세션의 수동 측정을 이 정식 보존 결과로 대체하지 않는다.
+**현재 보장:** [평가 설명](../evals/README.md)의 선택 결과 재사용은 설명문·데이터셋·기존 증거의 SHA-256 일치를 요구한다. 기준일에 확인한 실행 결과는 `diagnostic-failed`, `targeted-failed`, `production_ready: false`, `trust_boundary: local-unattested`를 명시했다. 실행 결과 파일은 현재 평가를 실행할 때 로컬에 생성하며, 과거 수동 측정을 새 실행 결과로 대체하지 않는다.
 
 **코드 확인:** `contract_digest`는 `SKILL.md`, 일부 스크립트, 디자인 시스템 유형 참조, 공유 참조 3개와 평가 입력을 포함한다. 그러나 FDD와 일반 8종의 유형 참조 및 `validate_fdd.py`는 포함하지 않는다. 정식 범위에 FDD 평가가 있으므로 이 누락은 실제 실행 의존자료의 변경을 현재성 해시가 모두 감지하지 못하는 경계다.
 
@@ -138,7 +138,7 @@
 | [validate_package.py](../scripts/validate_package.py) | 보존 근거와 역할별 설정 계약, 새 체크아웃 검증 |
 | [README.md](../evals/README.md) | 실제 호출 방법, 증거 경계, 비교 가능 조건의 사용자 설명 |
 | [test_eval_validators.py](../scripts/test_eval_validators.py) | 기존 가정의 영향 확인 대상; 이번 요청은 테스트 변경을 승인하지 않음 |
-| [production-evidence.json](../evals/production-evidence.json) | 기존 진단 자료 보존과 새 증거 형식의 명시적 구분 |
+| `evals/production-evidence.json` | 실행 시 로컬에 생성되는 진단 자료와 새 증거 형식의 명시적 구분 |
 
 이 표는 영향 관계이며 작업 순서나 파일별 구현 지시가 아니다. 이번 문서는 핵심 `SKILL.md`의 상시 참조 경로에 연결하지 않는다.
 

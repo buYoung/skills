@@ -479,6 +479,78 @@
         "Before approval, hypotheses stay at the level of relative tendencies and user-visible outcomes; no unsupported palette, named color family, grid, motif, texture, token, component, or asset rule is presented as a design decision.",
         "No file or directory is created and the response does not claim that the design system is complete."
       ]
+    },
+    {
+      "id": 33,
+      "eval_name": "supported-implementation-links",
+      "prompt": "제공된 input 자료로 Harbor의 제품 UI 디자인 시스템 문서를 docs/design-system에 작성해줘. 승인된 규약과 대표 확인 기록을 사용하고 재사용할 컴포넌트·토큰의 위치와 지원 사용 예시까지 연결해줘. 오래된 예시와 현재 규약이 다르면 표시해줘. 제공 자료는 보존하고 구현은 수정하지 마.",
+      "expected_output": "Source-grounded UI owners connecting the supported ActionButton contract and token consumer, with the legacy conflict identified.",
+      "files": [
+        "evals/fixtures/supported-implementation/approved-contract.md",
+        "evals/fixtures/supported-implementation/action-button.ts",
+        "evals/fixtures/supported-implementation/tokens.json",
+        "evals/fixtures/supported-implementation/legacy-example.md"
+      ],
+      "expectations": [
+        "The default product UI set reuses the supplied direction approval and R7 representative record without a new approval gate.",
+        "The component owner records ActionButton, primary and quiet tones, required label, and links to the supplied action-button.ts with a supported direct function-call usage example; internalPadding is not promoted to a public option. The source returns a data object, so JSX/React usage must not be presented as supported. The invocation form and label/background/padding return shape are explained without inventing a renderer.",
+        "The tokens owner preserves action.background = #2457C5 and traces its source tokens.json to the primary ActionButton consumer without inventing token aliases.",
+        "The retired Button variant=danger size=xl example is explicitly identified as conflicting historical evidence and is not copied as supported usage; no unsupported API or source path is invented.",
+        "Material rules connect application conditions, rationale and observable checks; document checks and supplied R7 evidence are not reported as fresh runtime or visual verification."
+      ]
+    },
+    {
+      "id": 34,
+      "eval_name": "task-sensitive-composition",
+      "prompt": "Harbor의 제품 UI 디자인 시스템을 docs/design-system에 문서화해줘. 제품위원회가 승인한 방향은 “중요한 조건과 결과를 먼저 읽고 안심하고 조작한다”야. 승인된 확인 기록 H4에서 조달 견적 비교와 수량 조작 두 대표 결과가 통과했어. 비교 과업은 후보별 총비용·통화·자격 조건의 대응을 먼저 찾고 상세 산출 근거로 이동해야 해. 수량 조작 과업은 현재 입력·적용 전 예상 총비용·명시적인 적용 행동·적용 후 결과의 관계가 드러나야 해. 예상치는 확정값이 아니고 통화와 자격 조건을 요약에서 빼면 안 돼. 같은 브랜드 원칙 아래 과업별 정보 우선순위와 배치 이유, 변형 조건과 확인 방법을 남겨줘. 특정 플랫폼이나 구현은 없으며 실제 화면·컴포넌트 코드를 만들 필요는 없어.",
+      "expected_output": "One platform-neutral UI document set with task-specific comparison and manipulation patterns grounded in the supplied authority.",
+      "files": [],
+      "expectations": [
+        "The default set uses the supplied approved direction and H4 record without asking for new approval or inventing platform scope.",
+        "patterns.md explains comparison correspondence across candidates and the priority of cost, currency and eligibility, with a route to detailed calculation evidence.",
+        "patterns.md explains the manipulation relationship among current input, estimated pre-apply cost, explicit apply action and resulting state, rather than imposing the comparison layout on it.",
+        "Both patterns explain placement rationale, contextual variation and observable checks under shared principles rather than prescribing universal screen templates.",
+        "Summaries retain currency, eligibility and the distinction between estimates and confirmed results; the response does not claim UI implementation or new visual validation."
+      ]
+    },
+    {
+      "id": 35,
+      "eval_name": "brand-specific-permissions",
+      "prompt": "input의 승인 기록과 원본·템플릿을 사용해서 Pollen의 스토어 공통 시각 자산 디자인 시스템을 docs/design-system-visual-assets에 정리해줘. 특정 스토어는 아직 범위에 없으니 공통 계약만 필요해. 원본과 템플릿의 이름·위치·사용 조건, 메시지 우선순위와 변형, 허용·금지의 이유와 확인 방법을 연결해줘. 제공 파일은 보존하고 새 이미지나 화면은 제작하지 마.",
+      "expected_output": "An expressive storefront-neutral asset contract grounded in the supplied approved originals and representative record.",
+      "files": [
+        "evals/fixtures/expressive-approved-assets/brand-approval.md",
+        "evals/fixtures/expressive-approved-assets/pollen-mark.svg",
+        "evals/fixtures/expressive-approved-assets/collage-template.svg"
+      ],
+      "expectations": [
+        "The app-store-page output retains Pollen’s approved vivid playful collage direction and V4 record; it does not import Vercel monochrome or universal decoration bans.",
+        "asset-system.md links the actual Pollen Mark original pollen-mark.svg and Pollen Collage template collage-template.svg by canonical name and location, with their supported usage conditions. It distinguishes fixed source fills/geometry and template decoration from task-dependent product content and captions, and directs consumers to apply the originals rather than redraw them. The asset owner records the collage source viewBox 0 0 400 300 and observed rectangle x=80, y=60, width=240, height=180 as source geometry, not export requirements. It distinguishes observed boundaries from any role that the approval does not establish, and does not invent variant export sizes or exclusion semantics.",
+        "Composition guidance distinguishes discovery recognition from detailed benefit explanation while preserving faithful product imagery and readable embedded captions.",
+        "The recoloring restriction and caption-area constraint explain their conditions, recognizable failure symptoms, user impact and supported alternative without inventing palette tokens or export requirements.",
+        "No store-specific requirements or platform assumptions are invented; the reported verification distinguishes supplied V4 evidence and document checks from actual asset production or rendering."
+      ]
+    },
+    {
+      "id": 36,
+      "eval_name": "approved-feedback-rule-routing",
+      "prompt": "기존 docs/design-system의 승인 피드백 F12를 반영해줘. 승인된 반복 피드백만 담당 규칙에 적용하고, 증상·사용자 영향·적용 조건·대안과 수정 근거·확인 결과를 남겨줘. 단발성 선호, 구현 결함, 실행 도구 문제는 어디서 해결할지 구분해줘. patterns.md와 governance.md만 수정하고 나머지 파일은 보존해. 구현 수정이나 자동 검사 추가는 요청하지 않아.",
+      "expected_output": "A focused two-owner revision of an approved comparison rule with honest verification and remedy routing.",
+      "files": [
+        "evals/fixtures/approved-feedback-routing/index.md",
+        "evals/fixtures/approved-feedback-routing/foundations.md",
+        "evals/fixtures/approved-feedback-routing/patterns.md",
+        "evals/fixtures/approved-feedback-routing/governance.md",
+        "evals/fixtures/approved-feedback-routing/approved-feedback.md",
+        "evals/fixtures/approved-feedback-routing/renderer.ts"
+      ],
+      "expectations": [
+        "Only the existing patterns.md and governance.md are updated; existing approval and direction are reused without broad exploration.",
+        "The pattern connects hidden eligibility, mistaken unconditional quotes, conditional-quote scope and the concise adjacent cost/currency/eligibility alternative linked to details; it does not invent conditions for unconditional quotes.",
+        "governance.md records approval F12, its rationale and F12-V verification of conditional and unconditional examples, distinguishing supplied document-to-example results from unperformed live checks. It also records the comparable F12-B/F12-A ledger: 4 then 1 failures across the same 10 conditional quotes with the same inputs and viewport; Q7 remains unresolved. It records the approved reference inspection and Q7 plus unaffected unconditional follow-up, without claiming elimination or general improvement across customers.",
+        "The one-off violet-heading preference is not promoted to a canonical rule.",
+        "I9 is routed to implementation because dropping currency violates a correct rule; a possible automatic renderer check and the stale execution-tool cache are distinguished from document changes without implementing fixes or automation."
+      ]
     }
   ]
 }

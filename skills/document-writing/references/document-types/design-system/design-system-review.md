@@ -14,6 +14,8 @@ Review or fact-check the document set against its selected prebuilt, [design-dir
 
 ## Contract checks
 
+Read [design-rule-contract.md](design-rule-contract.md) for the common rule-quality contract. Check whether readers can understand why a material rule applies, locate supported implementation or approved assets, recognize exceptions and failure symptoms, and determine how to verify it. Report missing connections or authority conflicts without inventing replacements. Check that reusable mechanics are applied through their supported contract, usage examples match actual declarations and consumers, and recurring corrections have comparable follow-up evidence rather than unsupported improvement claims.
+
 - `index.md` identifies scope, audience, document map, authoritative sources, and precedence.
 - One approved design direction can be explained in one or two sentences, and its authority is distinguishable from inference or an unapproved preference.
 - Foundations, tokens, components or assets, and contextual adaptations support the same upper-level direction without forcing identical form across different contexts.

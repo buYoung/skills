@@ -24,6 +24,8 @@ The displayed root is replaced by the resolved output root and serves as a respo
 
 ## File responsibilities
 
+Apply [design-rule-contract.md](../design-rule-contract.md) within these owners; it adds no mandatory output files.
+
 ### `index.md`
 
 Define the target product, audiences, supported storefronts, approved design direction in one or two sentences, direction authority, message priorities, validation status, asset map, authoritative brand sources, and precedence for resolving conflicts. Identify the canonical owner of each major decision area. Do not include rejected direction hypotheses.
@@ -36,6 +38,10 @@ Own upper-level visual principles and invariant decisions for color, typography,
 
 Own cross-storefront concepts and mappings such as product identity, captured product views, motion previews, promotional artwork, and shared source material. Explain how different asset types preserve the approved upper-level direction while adapting form, density, hierarchy, and brand emphasis to their function. Storefront files own each operator's official asset names, required status, specifications, placements, and storefront-specific relationships. Do not move those facts into the common contract or force every asset into one surface form.
 
+Link approved asset originals, templates, canonical names and locations, supported variants, usage examples, and token connections where supplied. Distinguish approved sources from observed exports or stale examples; do not invent asset paths. Identify the expression fixed by each source or template and its permitted adaptations, and document its supported application method instead of asking consumers to recreate it from prose.
+
+When a template governs placement, this owner must provide a source-to-application map before composition guidance relies on it: inspected source coordinate space and region bounds, supported scaling or transforms, and the source authority for each region's role. Separate an observed outline from a confirmed product slot or exclusion area. If the role is not established, record that uncertainty alongside the observed geometry. This is substantive asset-owner content even when export sizes or storefront rules are unresolved; source coordinates must not be promoted to export requirements. Other owners link here and state only their local placement consequence.
+
 ### `screenshots-and-previews.md`
 
 Own screen selection, sequence, narrative flow, fidelity to actual UI or gameplay, caption rules, and the relationship between static screenshots, previews, and trailers.
@@ -43,6 +49,8 @@ Own screen selection, sequence, narrative flow, fidelity to actual UI or gamepla
 ### `composition-and-copy.md`
 
 Own visual hierarchy, safe areas, and copy embedded in or directly paired with visual assets. It does not own general storefront listing titles, descriptions, tags, or search metadata.
+
+Connect message priority and placement to the viewer’s task, what they need to understand first, and why the composition serves that need. Describe supported contextual variants and routes to detail without dropping conditions, units, or uncertainty.
 
 ### `localization.md`
 
@@ -57,6 +65,8 @@ Own contrast, legibility, text dependence, captions, motion alternatives, meanin
 Own source files, export formats, filenames, locale and store variants, representative validation records, direction approval and change review, release association, archival, and deprecation. Record only the approved direction and validation outcome, not rejected hypotheses. Do not invent tooling, owners, statuses, or formats.
 
 When the user also requests an actual image or video, this file records the approved delivery contract while the production workflow creates the binary asset. The document set links to the resulting asset when available, but its completion report lists the document set and production asset as separate deliverables.
+
+Record approved correction rationale and actual verification outcomes here, linking to the affected rule or asset owner. Separate reusable document decisions from asset defects, automatic-check gaps, execution-tool issues, and unapproved preferences. Describe confirmed failures and their supported alternatives in the responsible rule owner. Connect comparable follow-up results, recurrence, and unresolved causes without inventing improvement rates or a review cadence.
 
 ### `stores/<store-name>.md`
 
