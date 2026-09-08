@@ -241,7 +241,7 @@ npm install -D release-it-calver-plugin
 
 ## @release-it-plugins/workspaces
 
-Release multiple packages in a monorepo workspace.
+Release multiple packages in a monorepo workspace when bulk publishing is explicitly requested. For the default one-service-app command, use [monorepo.md](monorepo.md); do not add workspace-wide release plugins.
 
 ### Install
 

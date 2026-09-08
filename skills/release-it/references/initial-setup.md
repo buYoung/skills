@@ -1,6 +1,6 @@
 # Initial Setup Guide
 
-When a user asks to set up release-it for their project, do NOT generate config files immediately. Follow this 3-step flow to produce a config that actually fits their project.
+Analyze the project and resolve decisions needed for its release configuration, then generate the entry script, clack adapter, and target config from [interactive-workflow.md](interactive-workflow.md). Setup questions are separate from runtime questions: the first runtime question is version selection for a single project, or selection of one service app for a monorepo. Do not add a runtime start confirmation.
 
 ## Flow: Analyze → Propose → Confirm
 
@@ -37,23 +37,20 @@ From the analysis, you can immediately determine these config values:
 |--------|-----------|--------|
 | `private: true` in package.json | No npm publish | `npm.publish: false` |
 | No `package.json` at all | Non-Node project | `npm: false`, use `@release-it/bumper` plugin |
-| Remote is `github.com` | GitHub platform | `github.release: true` |
-| Remote is `gitlab.com` or self-hosted GitLab | GitLab platform | `gitlab.release: true` |
-| `workspaces` field exists | Monorepo | Suggest workspace release strategy |
+| Remote is `github.com` | GitHub platform is available | Enable `github.release` only if requested |
+| Remote is `gitlab.com` or self-hosted GitLab | GitLab platform is available | Enable `gitlab.release` only if requested |
+| `workspaces` field exists | Monorepo | Identify service apps; generate a one-app target manifest |
 | Scoped name (`@scope/pkg`) + not private | Scoped public package | Remind: `publishConfig.access: "public"` needed |
 | `scripts.test` exists | Has test suite | Suggest `hooks.before:init: "npm test"` |
 | `scripts.lint` exists | Has linter | Suggest `hooks.before:init` includes lint |
 | `scripts.build` exists | Has build step | Suggest `hooks.after:bump: "npm run build"` |
 | `CHANGELOG.md` exists with Keep-a-Changelog format | Uses KAC convention | Suggest `@release-it/keep-a-changelog` |
 | `CHANGELOG.md` exists or doesn't exist | General case | Suggest `@release-it/conventional-changelog` |
-| `.github/workflows/` exists | Uses GitHub Actions | Offer to create release workflow |
+| `.github/workflows/` exists | Uses GitHub Actions | Preserve existing CI; create release automation only if requested |
 
 ### If an existing release-it config is found
 
-Stop the initial setup flow. Instead:
-1. Read the existing config
-2. Ask: "I found an existing release-it config. Would you like me to review and improve it, or start fresh?"
-3. If improving, switch to the configuration modification workflow
+Read the existing config and preserve relevant target settings while adding the requested interactive entry point. Check mode flags, version providers, hooks, and plugin actions against the interactive contract. Resolve conflicting requested publishing or bulk-workspace behavior during setup; do not silently enable those operations or add a runtime confirmation gate.
 
 ---
 
@@ -62,7 +59,7 @@ Stop the initial setup flow. Instead:
 Present the analysis results to the user. Group by confidence:
 
 **Determined from project** (explain reasoning):
-- "Your project is on GitHub, so I'll enable GitHub Releases (`github.release: true`)"
+- "Your project uses GitHub; the base flow ends with Git push. Hosted release creation is optional."
 - "package.json has `private: true`, so I'll skip npm publishing"
 - "You have `scripts.test` and `scripts.lint`, so I'll add pre-release checks"
 
@@ -72,7 +69,7 @@ Present the analysis results to the user. Group by confidence:
 Use a format like:
 ```
 Based on your project analysis:
-- Platform: GitHub → github.release: true
+- Platform: GitHub → Git remote identified; hosted release only if requested
 - npm publish: No (private: true)
 - Pre-release hooks: npm run lint + npm test (found in scripts)
 - Build hook: npm run build (found in scripts)
@@ -93,7 +90,7 @@ These decisions cannot be inferred — ask the user. Provide a recommended defau
 | Question | Options | Recommended Default | Why Ask |
 |----------|---------|---------------------|---------|
 | Config format | JSON / TS / YAML / TOML / package.json | JSON (with `$schema`) | JSON is most common, $schema gives IDE autocomplete |
-| Changelog strategy | conventional-changelog / keep-a-changelog / git-cliff / none | conventional-changelog | Auto-determines bump type from commit messages |
+| Changelog strategy | conventional-changelog / keep-a-changelog / git-cliff / none | conventional-changelog | Generates history; its recommended bump never replaces the runtime version choice |
 | Release branch restriction | `main` only / `main` + `release/*` / none | `main` only | Prevents accidental releases from feature branches |
 
 ### Conditional Questions (ask only if relevant)
@@ -102,8 +99,8 @@ These decisions cannot be inferred — ask the user. Provide a recommended defau
 |-----------|----------|---------------------|
 | npm publish enabled | Dist-tag strategy for pre-releases? | Auto (derived from pre-release id) |
 | Any project | Need pre-release workflow (alpha/beta/rc)? | No (can be added later via CLI flags) |
-| GitHub Actions available | Generate CI release workflow? | Yes |
-| Monorepo detected | Release strategy: all packages same version, or independent? | Same version with `@release-it/bumper` |
+| CI automation requested | Which trigger and explicit version input should it use? | Separate CI command |
+| Monorepo service boundary unclear | Which directories are deployable service apps? | One verified service app per release |
 | Has build script | Attach build artifacts to release? | No (user usually knows if they want this) |
 
 ### What NOT to Ask
@@ -111,9 +108,10 @@ These decisions cannot be inferred — ask the user. Provide a recommended defau
 These have clear best practices — just apply them:
 - `$schema` URL → always include in JSON format
 - `git.commitMessage` → use `"chore: release v${version}"` (Conventional Commits)
-- `git.requireCleanWorkingDir` → `true` (safe default)
+- Require a clean repository/index; the interactive wrapper performs that check itself
+  and overrides `git.requireCleanWorkingDir` to prevent exit rollback after a deliberate stop
 - `git.requireUpstream` → `true` (safe default)
-- `git.pushArgs` → `["--follow-tags"]` (default, keep it)
+- Keep built-in `git.commit`, `git.tag`, and `git.push` enabled; inspect tag transfer scope in [git-integration.md](git-integration.md)
 - `GITHUB_TOKEN` / `GITLAB_TOKEN` → standard env var name
 
 ---
@@ -133,11 +131,12 @@ Based on analysis + user answers, generate these files:
    ```json
    {
      "scripts": {
-       "release": "release-it",
-       "release:dry": "release-it --dry-run"
+       "release": "node scripts/release.mjs"
      }
    }
    ```
+
+Copy `scripts/release.mjs` and `scripts/release-prompts.mjs` from [interactive-workflow.md](interactive-workflow.md). For a monorepo, also generate `.release-targets.json` and one config per service app using [monorepo.md](monorepo.md).
 
 ### Conditionally generate
 
@@ -156,38 +155,22 @@ Based on analysis + user answers, generate these files:
 
 5. **Dependencies** — remind user to install:
    ```bash
-   npm install -D release-it
+   pnpm add -D -E release-it@21.0.1 @clack/prompts@1.8.0 semver@7.8.5
    # If changelog plugin selected:
-   npm install -D @release-it/conventional-changelog
+   pnpm add -D -E @release-it/conventional-changelog@12.0.0 conventional-changelog-conventionalcommits@10.4.0
    ```
 
 ---
 
 ## Decision Trees
 
-### npm Publishing
+### Publishing and Platform
 
-```
-package.json exists?
-├─ No → npm: false, suggest @release-it/bumper for version file
-└─ Yes
-   └─ private: true?
-      ├─ Yes → npm.publish: false
-      └─ No → npm.publish: true
-            └─ Scoped (@scope/name)?
-               ├─ Yes → Remind: publishConfig.access: "public" in package.json
-               └─ No → Default config OK
-```
-
-### Release Platform
-
-```
-Git remote host?
-├─ github.com → github.release: true, suggest GitHub Actions workflow
-├─ gitlab.com → gitlab.release: true, suggest .gitlab-ci.yml
-├─ Self-hosted → Ask which platform, configure host/origin
-└─ Unknown → Ask user which release platform to use
-```
+The default service-app flow ends after Git push with `npm.publish: false`,
+`github.release: false`, and `gitlab.release: false`. Remote host and package visibility
+are context, not instructions to publish. Preserve publishing and CI capabilities when
+explicitly requested and use their dedicated references and commands. For non-Node
+version sources, adapt the interactive version reader and pre-bump guard together.
 
 ### Changelog Strategy
 
@@ -201,13 +184,11 @@ CHANGELOG.md exists?
 
 ### Monorepo
 
-```
-Monorepo detected (workspaces/lerna/nx)?
-├─ Yes
-│  ├─ All packages same version? → Root-based release with @release-it/bumper
-│  └─ Independent versions? → Per-package release-it config, git: false per workspace
-└─ No → Standard single-package config
-```
+Detect workspace metadata, identify deployable service apps, and configure each app's
+version source, changelog path/history, and tag namespace. Generate a single-select menu
+from that verified list. Shared libraries and root tooling are not automatically release
+targets. Without monorepo metadata, omit the app picker and ask for the version first.
+Use bulk or synchronized package release strategies only when explicitly requested.
 
 ---
 
@@ -239,29 +220,11 @@ Monorepo detected (workspaces/lerna/nx)?
 
 ### Private/Internal Package or Application
 
-```json
-{
-  "$schema": "https://unpkg.com/release-it@20/schema/release-it.json",
-  "git": {
-    "commitMessage": "chore: release v${version}",
-    "requireBranch": "main"
-  },
-  "npm": {
-    "publish": false
-  },
-  "github": {
-    "release": true
-  },
-  "plugins": {
-    "@release-it/conventional-changelog": {
-      "preset": "conventionalcommits",
-      "infile": "CHANGELOG.md"
-    }
-  }
-}
-```
+Use the complete base config and clack entry scripts in
+[interactive-workflow.md](interactive-workflow.md). For service apps in a workspace,
+apply the target-specific overrides in [monorepo.md](monorepo.md).
 
-### Non-Node Project (no package.json)
+### Non-Node Version Provider (adapt the interactive reader and guard)
 
 ```json
 {
@@ -272,7 +235,7 @@ Monorepo detected (workspaces/lerna/nx)?
     "requireBranch": "main"
   },
   "github": {
-    "release": true
+    "release": false
   },
   "plugins": {
     "@release-it/bumper": {

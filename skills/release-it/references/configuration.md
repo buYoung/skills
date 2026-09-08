@@ -15,12 +15,17 @@ Key rules for new configs:
 | Project Type | Key Options |
 |-------------|-------------|
 | npm package (public) | `github.release: true`, `npm.publish: true`, changelog plugin |
-| Private/internal | `github.release: true`, `npm.publish: false`, changelog plugin |
-| Application (no publish) | `github.release: true`, `npm: false` or `npm.publish: false` |
+| Private/internal service app | Clack entry script; `npm.publish: false`, hosted releases disabled, changelog plugin |
+| Application (no publish) | [Interactive contract](interactive-workflow.md); keep Git actions enabled |
 | Non-Node project | `npm: false`, `@release-it/bumper` for version file |
-| Monorepo (same version) | Root: `git.requireCleanWorkingDir: false`, workspace: `git: false` |
+| Monorepo service apps (default) | [One selected app](monorepo.md), app cwd/version/changelog/tag namespace |
+| Synchronized npm packages (explicit alternative) | See [npm-publishing.md](npm-publishing.md); not the service-app flow |
 
 ---
+
+The interactive wrapper overrides mode/version controls and replaces the built-in clean
+check with a whole-repository preflight to preserve deliberate-stop state. Read its
+[compatibility and cancellation notes](interactive-workflow.md) before reusing those overrides.
 
 ## Config File Formats
 

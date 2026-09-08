@@ -196,9 +196,18 @@ When disabled, release-it adds `--set-upstream origin <branch>` to the push comm
 
 ### CI-Specific Issues
 
-#### No interactive prompts in CI
+#### No interactive prompts in the default command
 
-release-it auto-detects CI environments. If not detected, use `--ci` explicitly:
+For `pnpm release`, inspect the entry script in [interactive-workflow.md](interactive-workflow.md).
+Check both TTYs first, reject CLI arguments, and pass `ci: false`, `only-version: false`,
+`release-version: false`, and `changelog: false` as API overrides. Recommended increments
+and inherited version flags must not replace the clack version selection. Do not solve
+missing interactive prompts with `--ci`, `--only-version`, pipes, or automatic answers.
+
+#### Intentional CI automation
+
+For an explicitly separate non-interactive workflow, release-it auto-detects CI. If it
+is not detected, use `--ci` explicitly:
 
 ```bash
 npx release-it --ci
@@ -253,6 +262,25 @@ Ensure the CI has push access:
 3. For private registries: ensure `.npmrc` has the correct auth token
 
 ---
+
+## Interactive Stop Problems
+
+- **Single-project first question is not version:** remove the unconditional app picker or
+  start confirmation; structure detection is read-only and does not ask a runtime question.
+- **Wrong app/version/changelog:** change cwd before config loading; inspect the selected
+  app manifest, version guard, tag prefix/match, and both changelog history scopes.
+- **Declining commit still tags/pushes:** a false stock prompt result skips only the task.
+  Throw the adapter's stop exception before calling the callback.
+- **Cancellation destroys the local commit/tag:** inspect release-it's exit rollback handlers.
+  The example prechecks the whole repository and disables that built-in rollback mechanism.
+- **Push runs without its question:** remove direct push hooks from the default path, keep
+  `git.push: true`, and inject the clack adapter through the second API argument.
+- **Prompt interface changed:** inspect the installed version's `register`/`show` calls and
+  run the PTY evaluation before claiming compatibility with a new version.
+
+After a stop, inspect the index/worktree, version file, HEAD, and exact local tag. A failed
+push can trigger release-it's own remote tag cleanup and leave remote state uncertain;
+report that uncertainty. See [interactive-workflow.md](interactive-workflow.md).
 
 ## Debugging
 

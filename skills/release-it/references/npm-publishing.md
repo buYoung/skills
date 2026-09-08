@@ -209,6 +209,11 @@ jobs:
 
 ## Monorepo Strategies
 
+For the default one-service-app command, use [monorepo.md](monorepo.md) and
+[interactive-workflow.md](interactive-workflow.md). The multi-package publishing examples
+below are explicit alternatives; do not copy their workspace iteration or `git: false`
+into the service-app flow. npm publishing is not enabled there by default.
+
 ### Single package in monorepo
 
 release-it handles one package at a time. Use `git.commitsPath` to scope commits:

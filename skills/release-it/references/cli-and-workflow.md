@@ -1,5 +1,18 @@
 # CLI and Workflow
 
+## Default Project Command
+
+Use `pnpm release` with [interactive-workflow.md](interactive-workflow.md): version first
+for a single project; one service app then version for a monorepo; then commit, tag, and
+push confirmations interleaved with their release-it actions. All questions use clack.
+The entry command accepts no arguments and requires TTY input/output before release work.
+
+The raw release-it CLI below remains useful for explicitly requested CI, publishing,
+pre-release, and diagnostic workflows. It is not the generated default interactive command.
+`--ci` and `--only-version` bypass required confirmations; an explicit CLI increment or a
+recommendation can skip version selection in the stock flow. A false stock confirmation
+can skip only one step rather than stopping the whole release.
+
 ## Basic Usage
 
 ```bash
@@ -138,14 +151,14 @@ release-it --changelog          # Print changelog, exit
 
 | Aspect | Interactive (default) | CI (`--ci`) |
 |--------|-----------------------|-------------|
-| Version selection | Prompts user | Uses provided increment |
+| Version selection | May prompt; supplied/recommended increments can skip it | Uses provided/recommended increment |
 | Step confirmation | Asks before each step | Executes automatically |
 | Progress | Prompts with details | Spinners |
 | Detection | Local terminal | Auto-detected via `ci-info` |
 
 CI environments auto-detected: GitHub Actions, GitLab CI, Jenkins, Travis, CircleCI, etc.
 
-### Only-version mode (hybrid)
+### Only-version mode (explicit alternative; excluded from the default flow)
 
 ```bash
 release-it --only-version    # Prompt for version only, automate the rest
@@ -203,6 +216,10 @@ jobs:
 `fetch-depth: 0` is needed if using conventional-changelog or any plugin that reads git history.
 
 ## Programmatic API
+
+For the default project command, use `release(options, { prompt })` with the source-checked
+`register`/`show` adapter in [interactive-workflow.md](interactive-workflow.md). The minimal
+API sample below does not implement that contract or force a version question.
 
 ```js
 import release from 'release-it';

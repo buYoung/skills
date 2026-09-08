@@ -47,6 +47,114 @@
         { "id": "sample-config", "text": "A sample .release-it.json config showing plugin registration exists" },
         { "id": "esm-module-syntax", "text": "Plugin uses ESM syntax (import/export)" }
       ]
+    },
+    {
+      "id": 3,
+      "prompt": "단일 서비스 앱의 release-it 대화형 릴리스를 설정해줘. pnpm release를 사용하고 모든 질문은 @clack/prompts로 보여줘. package.json 버전은 1.2.3이고 npm 배포와 GitHub Release는 필요 없어. 버전 선택 후 commit, tag, push를 각각 확인하고 바로 실행하게 해줘. 아니요 또는 취소이면 그 작업과 나머지를 멈추고 남은 상태를 안내해줘. 실행 가능한 스크립트와 설정을 만들어줘.",
+      "expected_output": "Copyable project entry script and clack prompt adapter with version as the first question, exact version propagated to release-it, ordered Git task callbacks, and whole-flow stop/state reporting.",
+      "files": [],
+      "assertions": [
+        {
+          "id": "single-first-version",
+          "text": "The first runtime question is version selection, without an app picker or start confirmation."
+        },
+        {
+          "id": "current-next-visible",
+          "text": "The version menu displays current 1.2.3 and concrete next versions and waits for a submitted choice."
+        },
+        {
+          "id": "real-api-adapter",
+          "text": "All release questions use clack; release-it receives the selected version and a compatible register/show prompt adapter through its second API argument."
+        },
+        {
+          "id": "interleaved-actions",
+          "text": "Commit confirmation is followed by its awaited task before tag confirmation/task and then push confirmation/task."
+        },
+        {
+          "id": "all-stops",
+          "text": "No and cancel at each Git confirmation stop that task and all later steps; cancellation symbols cannot execute a task."
+        },
+        {
+          "id": "accurate-stop-state",
+          "text": "Reports remaining file/index/HEAD/tag/push state and accounts for release-it exit rollback rather than promising nonexistent state."
+        },
+        {
+          "id": "no-direct-push",
+          "text": "Built-in git.push remains enabled; no hook or wrapper executes a replacement push, publication, or deployment."
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "pnpm 모노레포에 release-it 대화형 릴리스를 설정해줘. 서비스 앱은 apps/api (1.2.3)와 apps/web (4.5.6), 공유 라이브러리는 packages/ui (0.8.0)이야. pnpm release로 서비스 앱 하나를 선택하고 버전을 고른 후 commit, tag, push를 각각 확인해 실행하려고 해. 질문은 전부 @clack/prompts로 만들어줘. 선택한 앱의 package.json과 CHANGELOG.md, api-v 또는 web-v 태그를 사용하고 npm 배포는 하지 않아. 실행 가능한 스크립트와 설정을 만들어줘.",
+      "expected_output": "Single-select service manifest and root command that change cwd to the selected app, bind that app version/changelog/tag configuration, then reuse the interactive Git flow.",
+      "files": [],
+      "assertions": [
+        {
+          "id": "mono-first-app",
+          "text": "The first runtime question selects exactly one service app; API and Web are offered but packages/ui and root tooling are excluded."
+        },
+        {
+          "id": "selected-cwd",
+          "text": "Changing the app config path is accompanied by the correct app cwd for version reads and release-it execution."
+        },
+        {
+          "id": "selected-version",
+          "text": "Choosing Web reads 4.5.6 and propagates its selected exact version to the actual version update, not root or API."
+        },
+        {
+          "id": "selected-changelog",
+          "text": "The selected app CHANGELOG.md is written and both recommendation and changelog history scopes exclude the other app."
+        },
+        {
+          "id": "selected-tags",
+          "text": "Tag name/match and changelog tag prefix agree for each app; does not claim follow-tags transfers only the selected tag."
+        },
+        {
+          "id": "no-bulk-release",
+          "text": "Does not recursively release workspaces, disable selected-app Git, publish npm packages, or use direct push hooks."
+        },
+        {
+          "id": "clean-index",
+          "text": "Accounts for the repository-wide index consumed by commit and verifies no sibling app version or changelog writes."
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "prompt": "서비스 앱의 pnpm release 대화형 진입 스크립트를 만들어줘. 모든 질문은 @clack/prompts를 쓰고 실제 작업은 release-it이 수행해야 해. 기존 설정은 ci:true, only-version:true, increment:minor, preRelease:beta이고 conventional-changelog는 major를 추천하는 상태야. 현재 버전 1.2.3에서 내가 선택한 patch 1.2.4가 적용되어야 하고, CI=true 또는 GITHUB_ACTIONS=true가 있어도 실제 터미널에서는 버전과 commit/tag/push 질문을 생략하면 안 돼. 터미널 없는 입력은 작업 전에 종료해줘. 각 단계 거절과 취소 동작을 검증할 수 있는 예제도 포함해줘.",
+      "expected_output": "Explicit version selection and safe mode precedence despite inherited options/recommendations/CI, early non-TTY stop, source-version compatibility notes, and isolated verification instructions with push recording only.",
+      "files": [],
+      "assertions": [
+        {
+          "id": "mode-overrides",
+          "text": "Explicitly overrides CI, only-version, release-version, changelog, snapshot and other version-affecting settings in the API call rather than relying only on environment edits."
+        },
+        {
+          "id": "recommendation-cannot-skip",
+          "text": "Clack asks for the version before release-it; selected exact 1.2.4 beats the configured minor/beta and recommended major."
+        },
+        {
+          "id": "guard-before-write",
+          "text": "Checks that resolved current/next version matches the displayed choice before version/changelog writes when plugins can override resolution."
+        },
+        {
+          "id": "no-terminal-stop",
+          "text": "Checks both stdin and stdout TTYs and exits before config hooks or writes; does not pipe answers or fall back to CI."
+        },
+        {
+          "id": "no-cli-bypass",
+          "text": "The default command rejects CLI flags or automatic-answer mechanisms that could bypass the required choices."
+        },
+        {
+          "id": "source-version",
+          "text": "Records a checked release-it version and the register/show injection contract, with version-specific compatibility checks."
+        },
+        {
+          "id": "isolated-verification",
+          "text": "Verification covers no/cancel at commit/tag/push, CI env and redirected I/O in isolated terminals, with every push intercepted and no remote deployment."
+        }
+      ]
     }
   ]
 }

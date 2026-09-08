@@ -11,7 +11,7 @@ The Git plugin executes these steps in order:
 5. `git tag --annotate --message="[git.tagAnnotation]" [git.tagName]`
 6. `git push [git.pushArgs] [git.pushRepo]`
 
-In interactive mode, release-it asks for confirmation before commit, tag, and push.
+For the default project command, use the clack adapter in [interactive-workflow.md](interactive-workflow.md). It asks at each built-in Git step and stops the entire remaining flow on no/cancel. The stock prompt only skips a declined step. Files may already be bumped and staged before the commit question.
 
 Minimum required Git version: v2.0.0.
 
@@ -125,33 +125,53 @@ For richer changelogs, use a plugin like `@release-it/conventional-changelog`, `
 
 ## Push Configuration
 
-### Default push args and tag-push semantics
+### Default push args and tag transfer
 
-`["--follow-tags"]` is the default for `pushArgs`. This is intentional: `--follow-tags` pushes **only annotated tags that are reachable from the commits being pushed**. Lightweight tags, tags on unrelated branches, and abandoned local-only tags stay local. release-it always creates the new release tag as annotated, so the tag the user just selected is always included — and unrelated tags are never silently piggy-backed onto the push.
+`["--follow-tags"]` is the default for `pushArgs`. Git transfers missing annotated tags
+reachable from the pushed commits; this may include tags other than the current release.
+It excludes lightweight tags but does not guarantee isolation of the selected service
+app's tag. Do not use `--tags` to solve single-tag transfer: it sends every local tag.
 
-If you override `pushArgs`, you must re-add `--follow-tags` (or use the strict pattern below). Do **not** add `--tags` — that would push *every* local tag, including experimental or abandoned ones, which defeats the safety the default provides.
+### Transfer only the selected tag through the built-in push
 
-### Push only the user-selected tag (strict guarantee, recommended)
+Keep `git.push: true` so the clack confirmation remains at the actual push point. When
+single-tag transfer is required, compute the exact tag and upstream ref before calling
+release-it, then pass explicit push arguments. For an already verified `origin/main`
+upstream and an app tag template of `api-v${version}`, the entry script can use:
 
-`--follow-tags` is a good default, but it still pushes any *other* annotated tag that happens to be reachable from the pushed commits (e.g. older release tags that were never pushed, pre-release tags from a parallel branch). When the requirement is "only the tag the user just chose to release goes to the remote — nothing else, ever", disable the built-in push and push the new tag explicitly through a hook:
-
-```json
-{
-  "git": {
-    "push": false
-  },
-  "hooks": {
-    "after:release": "git push ${repo.remote} HEAD && git push ${repo.remote} refs/tags/${tagName}"
-  }
-}
+```js
+const tagName = `api-v${selectedVersion}`;
+const gitOptions = {
+  ...options.git,
+  push: true,
+  pushRepo: '',
+  requireUpstream: true,
+  pushArgs: [
+    '--atomic',
+    '--no-follow-tags',
+    'origin',
+    'HEAD:refs/heads/main',
+    `refs/tags/${tagName}:refs/tags/${tagName}`
+  ]
+};
 ```
 
-`${tagName}` resolves to the exact tag release-it just created for this release. The push targets that one ref by name, so no other tag can ride along regardless of what exists locally. Pushing `HEAD` first ensures the tag's commit is reachable on the remote before the tag itself is published.
+Pass these options as `git` in the same interactive API call, retaining the wrapper's
+clean-check/rollback handling. Adapt and verify the remote, upstream branch, and tag
+policy for the actual target; the computed tag must equal release-it's selected tag.
+Do not insert literal `${tagName}` templates into a JSON `pushArgs` array: 21.0.1 does not
+format array arguments. The built-in method appends its upstream arguments after
+`pushArgs`; with an existing upstream and `pushRepo: ''` it appends none. Inspect this
+ordering again on a version upgrade.
 
-Use this pattern when:
-- Local repos accumulate experimental or CI snapshot tags that must not leak to the remote
-- Compliance/audit requires demonstrating that a release published exactly one tag
-- You want defense-in-depth against someone later adding `--tags` to `pushArgs`
+`--atomic` requires server support; do not silently retry with weaker semantics or a
+broader refspec if it fails. [Git push documentation](https://git-scm.com/docs/git-push)
+explains atomic updates and tag transfer. A branch push still publishes the branch's
+commits; selecting one app does not isolate unrelated commits already on that branch.
+
+Disabling `git.push` and moving direct Git commands into `after:release` is excluded from
+the interactive recommended path: it bypasses the push confirmation and can run after a
+skipped stage. Use the built-in task callback, not a replacement shell push.
 
 ### Multiple push args
 
@@ -181,16 +201,9 @@ Or use a Git URL: `"pushRepo": "https://github.com/user/repo.git"`
 }
 ```
 
-You can still push manually in a hook (see the strict pattern above for the recommended single-tag form):
-
-```json
-{
-  "git": { "push": false },
-  "hooks": {
-    "after:release": "git push origin HEAD"
-  }
-}
-```
+Skipping push is an explicit alternative outside the default interactive contract.
+Do not replace it with an automatic push hook. The base command requires commit, tag,
+and push to remain enabled; a user can decline at the relevant confirmation instead.
 
 ## Prerequisite Checks
 
