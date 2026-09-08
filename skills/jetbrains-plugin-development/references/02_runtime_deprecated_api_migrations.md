@@ -34,11 +34,15 @@ explicit. See `02_runtime_services.md`.
 | `Application.getCoroutineScope()` | `@Service`-injected `CoroutineScope` (constructor parameter) |
 | `Project.getCoroutineScope()` | Project `@Service`-injected `CoroutineScope` |
 | `kotlinx.coroutines.GlobalScope` | Same — never `GlobalScope` from a plugin |
-| `kotlinx.coroutines.runBlocking { }` (raw) | `runBlockingCancellable { }` from `com.intellij.openapi.progress` (BGT only — never EDT) |
+| `kotlinx.coroutines.runBlocking { }` (raw) | Keep the call chain suspending; only when a cancellable blocking bridge is unavoidable, use `runBlockingCancellable { }` under an existing Job/indicator on BGT |
 
 The `Application` / `Project` scope getters are `@ApiStatus.Internal` / `@Obsolete`. They
 survive plugin unload and leak the classloader. See `02_runtime_services.md` and
 `04_threading_coroutines_2024.md` for the supported coroutine-scope pattern.
+
+For action-owned work, use `AnActionEvent.coroutineScope` on 2026.1+,
+`currentThreadCoroutineScope()` on 2024.2–2025.3, or a service-injected scope on 2024.1.
+The event property is public in `idea/2026.2.2`; its installer is internal and forbidden.
 
 ### Action API drift
 
@@ -48,6 +52,21 @@ survive plugin unload and leak the classloader. See `02_runtime_services.md` and
 | `update()` doing PSI walking / index queries | Move work into a service called from `actionPerformed`; keep `update` cheap — see `02_runtime_actions.md` |
 | `ExtensionNotApplicableException.INSTANCE` | `ExtensionNotApplicableException.create()` — see `01_core_extensions.md` |
 | Storing per-invocation state on `AnAction` fields | Forbidden — actions are IDE-lifetime singletons; put state in a service — see `02_runtime_actions.md` |
+| Calling deprecated `AnActionEvent.getRequiredData()` | Read with `getData(...)` and re-check null in `actionPerformed`; do not rely on a prior `update()` call |
+
+### Threading migration drift
+
+| Existing behavior | Behavior-preserving migration |
+|---|---|
+| EDT `WriteAction.run { ... }` or an older EDT-switching `writeAction` | `edtWriteAction { ... }` on 2025.1+ |
+| Pure Swing work on `Dispatchers.Main` | `Dispatchers.UI` on 2025.3+; both are EDT paths without Write Intent in current versions |
+| Model work on `Dispatchers.Main` | `Dispatchers.EDT` when EDT is required, or `Dispatchers.Default` plus explicit `readAction`/`writeAction` |
+| Deprecated `readAndWriteAction` | `readAndEdtWriteAction` to preserve its EDT write phase; choose the background variant only after a BGT-safety audit |
+
+At tag `idea/2026.2.2` (commit
+`1c7e601c0423e544917046c23763b15d0282e2a3`), public `writeAction` delegates to public
+`backgroundWriteAction`. This differs from its 2024.1-era EDT behavior. See the source and
+status links in `04_threading_coroutines_2024.md` before applying a mechanical replacement.
 
 ### Plugin DevKit inspections that catch most of the above
 

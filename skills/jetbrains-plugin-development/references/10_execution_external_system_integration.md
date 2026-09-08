@@ -16,7 +16,12 @@ build or dependency tool.
 | `DataNode<T>` | Tree node carrying typed data (`ProjectData`, `ModuleData`, `LibraryData`, custom) |
 | `Key<T>` | Discriminator for `DataNode` payloads |
 | `ProjectDataService<E, I>` | Applies a `DataNode<E>` to the IDE project (creates modules, libs, etc.) |
-| `ExternalSystemProjectAware` / `Tracker` | "this build file changed; re-import" |
+| `ExternalSystemProjectAware` / `ExternalSystemProjectTracker` | Describe tracked files / register the descriptor and schedule re-import |
+
+Implement `ExternalSystemProjectAware` for the integration's tracked settings. Obtain
+[`ExternalSystemProjectTracker`](https://github.com/JetBrains/intellij-community/blob/1c7e601c0423e544917046c23763b15d0282e2a3/platform/external-system-api/src/com/intellij/openapi/externalSystem/autoimport/ExternalSystemProjectTracker.kt)
+from the project and call it; the tracker is `@ApiStatus.NonExtendable` in `idea/2026.2.2`, so
+plugins must not implement or subclass it.
 
 ### Skeleton
 

@@ -1,5 +1,15 @@
 # Extensions and Extension Points
 
+## API boundary for 2026.2.2
+
+The examples in this reference use extension contracts intended for external plugins. Verify
+platform EPs against their declared interface or bean class as well as the descriptor metadata;
+an XML-visible EP is not automatically public. In the fixed `idea/2026.2.2` source,
+[`ProjectExtensionPointName`](https://github.com/JetBrains/intellij-community/blob/1c7e601c0423e544917046c23763b15d0282e2a3/platform/extensions/src/com/intellij/openapi/extensions/ProjectExtensionPointName.kt)
+explicitly says not to introduce project- or module-scoped EPs, and
+[`AbstractExtensionPointBean`](https://github.com/JetBrains/intellij-community/blob/1c7e601c0423e544917046c23763b15d0282e2a3/platform/service-container/src/com/intellij/openapi/extensions/AbstractExtensionPointBean.java)
+is deprecated. Do not use either for a new plugin contract.
+
 ## Contents
 
 - Extensions and Extension Points
@@ -96,12 +106,8 @@ val first = ep.findFirstSafe { it.matches(criteria) }
 val typed = ep.findExtension(MySpecificImpl::class.java)
 ```
 
-Project-scoped EPs use `ProjectExtensionPointName<T>`:
-
-```kotlin
-val pep = ProjectExtensionPointName<MyProjectExtension>("com.example.myProjectPoint")
-val all = pep.getExtensions(project)
-```
+Define new EPs at application scope. If an extension needs a `Project` or `Module`, pass it to
+the extension method instead of creating a project- or module-scoped EP.
 
 Avoid `ep.extensions` / `ep.extensionList` plus a manual `try/catch`. The `*Safe` variants
 do the right thing.
@@ -122,11 +128,11 @@ do the right thing.
 Set `dynamic="true"` unless you have a specific reason not to. A non-dynamic EP forces every
 plugin that uses it to require a restart, which transitively forces yours to as well.
 
-For Bean EPs, write the bean as a `final` class with public fields annotated `@Attribute`,
-`@Tag`, and `@RequiredElement` where mandatory:
+For Bean EPs, write a plain `final` bean with public fields annotated `@Attribute`, `@Tag`,
+and `@RequiredElement` where mandatory:
 
 ```java
-public final class MyBeanClass extends AbstractExtensionPointBean {
+public final class MyBeanClass {
   @Attribute("name") @RequiredElement public String name;
   @Attribute("className")              public String className;
   @Tag("description")                  public String description;

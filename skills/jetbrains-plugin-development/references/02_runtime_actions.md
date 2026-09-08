@@ -50,15 +50,16 @@ to disabling for actions that are simply not applicable in the current context.
 
 ### `getActionUpdateThread()` (2022.3+)
 
-Tells the platform whether to dispatch `update` on `BGT` (default for new code) or `EDT`.
+Tells the platform whether to dispatch `update` on `BGT` (preferred for new code) or `EDT`.
 
 | Value | Use when | Available |
 |---|---|---|
 | `BGT` | Most new actions | PSI, VFS, project model (read action implicit) |
 | `EDT` | You must read live Swing component state (focus, tree selection, custom UI) | Swing UI state |
 
-Implement it. Without it the platform issues a warning and assumes EDT, which is rarely what
-you want for a new action. `actionPerformed` is always invoked on the EDT regardless.
+Implement it whenever `update` is overridden. Plugin DevKit reports a missing override.
+Although 2026.2.2 returns BGT for an action whose `update` remains the default, an overridden
+`update` still falls back to EDT. `actionPerformed` is invoked on EDT.
 
 ### Field-on-AnAction is forbidden
 
@@ -159,24 +160,47 @@ val files   = e.getData(CommonDataKeys.VIRTUAL_FILE_ARRAY)
 val nav     = e.getData(CommonDataKeys.NAVIGATABLE)
 ```
 
-`getData(...)` returns null if absent; `getRequiredData(...)` throws. If `update()` already
-checked the precondition and disabled the action when missing, `getRequiredData` is fine.
+`getData(...)` returns null if absent. Re-check the precondition in `actionPerformed` because
+the platform does not guarantee that `update()` ran with the same context immediately before
+the action. `getRequiredData(...)` is deprecated for removal in 2026.2.2, so do not use it in
+new code.
 
 ### Long work in `actionPerformed`
 
-`actionPerformed` runs on the EDT. Anything more than ~50ms must move off the EDT:
+`actionPerformed` runs on the EDT. Move blocking or expensive work off the EDT:
 
 ```kotlin
 override fun actionPerformed(e: AnActionEvent) {
   val project = e.project ?: return
-  // Coroutine path (2024.1+):
-  MyService.getInstance(project).runHeavyOperation()       // service uses cs.launch internally
-  // Or classic:
-  Task.Backgroundable(project, "Doing the thing", true).queue()
+  e.coroutineScope.launch { // 2026.1+
+    val result = readAction { collectResult(project) }
+    withContext(Dispatchers.UI) { showResult(result) } // 2025.3+, pure Swing UI
+  }
 }
 ```
 
+`AnActionEvent.coroutineScope` is public from 2026.1 and lets Action System control the
+launched work. Retrieve it only during `actionPerformed`; do not cache it. For
+2024.2–2025.3 use the documented `currentThreadCoroutineScope()`. For 2024.1, call a service
+method that launches from its injected scope. `Task.Backgroundable` remains the classic
+public alternative.
+
 See `04_threading_model.md` for the full progress/cancellation story.
+
+### Fixed-source evidence
+
+The action threading and coroutine contracts were checked against tag `idea/2026.2.2`,
+commit `1c7e601c0423e544917046c23763b15d0282e2a3`:
+
+- [`AnAction.java`](https://github.com/JetBrains/intellij-community/blob/1c7e601c0423e544917046c23763b15d0282e2a3/platform/editor-ui-api/src/com/intellij/openapi/actionSystem/AnAction.java)
+- [`AnActionEvent.java`](https://github.com/JetBrains/intellij-community/blob/1c7e601c0423e544917046c23763b15d0282e2a3/platform/editor-ui-api/src/com/intellij/openapi/actionSystem/AnActionEvent.java)
+- [`ActionUpdateThread.java`](https://github.com/JetBrains/intellij-community/blob/1c7e601c0423e544917046c23763b15d0282e2a3/platform/editor-ui-api/src/com/intellij/openapi/actionSystem/ActionUpdateThread.java)
+
+The 2026.1 introduction of `AnActionEvent.coroutineScope` is recorded in the official
+[2026 API changes](https://plugins.jetbrains.com/docs/intellij/api-notable-list-2026.html).
+
+The recommended methods are public (`getActionUpdateThread` is override-only); the examples
+do not call Action System implementation classes or internal scope installers.
 
 ## Lifecycle of these three components
 

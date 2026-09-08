@@ -33,11 +33,14 @@ to react.
 ### `RunOnceUtil`
 
 ```kotlin
-RunOnceUtil.runOnceForApp("my-key") { /* runs at most once on this user's IDE */ }
-RunOnceUtil.runOnceForProject(project, "my-key") { /* once per project */ }
+RunOnceUtil.runOnceForApp("my-key", Runnable { /* runs at most once on this user's IDE */ })
+RunOnceUtil.runOnceForProject(project, "my-key", Runnable { /* once per project */ })
 ```
 
 Useful for one-time migrations or onboarding messages.
+The suspending top-level `runOnceForProject` overload is `@ApiStatus.Internal` in
+`idea/2026.2.2`; use the public `RunOnceUtil` methods shown above. The source is fixed at
+[`RunOnceUtil.kt`](https://github.com/JetBrains/intellij-community/blob/1c7e601c0423e544917046c23763b15d0282e2a3/platform/ide-core/src/com/intellij/ide/util/RunOnceUtil.kt).
 
 ### `ApplicationInfo` / `SystemInfo` / `PathManager`
 

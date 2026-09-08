@@ -12,9 +12,9 @@ following must hold simultaneously:
 1. **Every EP your plugin uses must be dynamic.** The platform's standard EPs almost all
    are. Custom EPs you define must declare `dynamic="true"`. Non-dynamic EPs taint the
    dependency graph: they force every plugin that uses them to require a restart.
-2. **No `static` state on plugin classes.** Includes Kotlin `object` singletons, static
-   maps keyed by plugin types, and static initializer blocks. State belongs in services so
-   it disposes with the plugin.
+2. **No plugin state retained beyond unload.** Avoid static caches and singleton-held
+   resources escaping the plugin lifecycle. Constants and resource-bundle singletons are
+   not inherently forbidden; stateful resources belong in lifecycle-owned services.
 3. **No constructor work in EP implementations.** They are stateless — see
    `01_core_extensions.md`.
 4. **Every `Disposable` is parented to a plugin-owned `Disposable`** (a service, a dialog,
@@ -51,11 +51,15 @@ its presence/absence at runtime.
 
 - `runIde`, install your plugin, exercise it, then disable it via `Settings | Plugins`.
   The IDE should not warn about restart. Re-enable; behavior should resume.
-- The `verifyPlugin` Gradle task (the IntelliJ Platform Gradle Plugin 2.x verifier; older
-  guides refer to it as `runPluginVerifier`) flags some classes of dynamic-incompatibility
-  — e.g. usage of `@ApiStatus.Internal` APIs, plugins overriding non-dynamic services.
-- For a stricter test, write a test that loads, exercises, and unloads the plugin with
-  `LeakHunter.checkProjectLeak()` afterwards.
+- Recompile changed code/resources and update the sandbox before expecting `autoReload`
+  to notice an artifact change. `autoReload` does not compile source or prove safe unloading.
+- Run Plugin DevKit's dynamic plugin descriptor inspection and `verifyPlugin` for static
+  checks; neither establishes that runtime objects release the plugin classloader.
+- For unload failures, inspect `idea.log` and the heap snapshot using the SDK's
+  [dynamic plugin troubleshooting](https://plugins.jetbrains.com/docs/intellij/dynamic-plugins.html#troubleshooting).
+  Do not call platform-internal leak hunters or plugin loaders from plugin code.
+- Report actual install/update/disable/re-enable/uninstall observations separately from
+  static compatibility checks. Unrun checks remain unverified.
 
 ## Classloader rules
 
@@ -64,17 +68,16 @@ Each plugin runs under its own classloader. Important consequences:
 - **Two classloaders mean two `Class<?>` objects.** A class loaded by another plugin's
   loader is *not* equal to the same FQN loaded by yours. Classes shared across plugins must
   come from the platform classloader.
-- **Reflection across plugin boundaries is fragile.** If you call `Class.forName(name)`,
-  you load through *your* classloader — fine for your own classes, broken for another
-  plugin's.
+- **No reflective access to internal plugin/platform APIs.** Declare dependencies and call
+  their supported public interfaces; do not bypass access with reflection or internal casts.
 - **`Thread.currentThread().contextClassLoader`** is normally the right loader to use for
   shared utility classes. The platform sets it appropriately for many entry points.
 - **Don't keep static references to other plugins' classes** beyond the lifetime of those
   plugins.
 
-If you need to call into another plugin from yours, declare an `<depends>` (so the platform
-loads your plugin under a *combined* classpath that includes the dependency) and use the
-exposed APIs.
+If you need to call into another plugin from yours, declare a `<depends>` so dependency
+classes can be resolved through its classloader, and use its supported external APIs.
+Language-level visibility and dependency resolution do not establish public API status.
 
 For interaction *with* a plugin without a hard `<depends>`, use `<depends optional
 config-file=...>` and put the integration code inside the optional block — the optional

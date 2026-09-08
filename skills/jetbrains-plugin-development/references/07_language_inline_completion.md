@@ -1,5 +1,16 @@
 # Inline Completion
 
+## API boundary and version
+
+This guidance is checked against IntelliJ Community `idea/2026.2.2` at commit
+`1c7e601c0423e544917046c23763b15d0282e2a3`. The
+[`InlineCompletionProvider` declaration](https://github.com/JetBrains/intellij-community/blob/1c7e601c0423e544917046c23763b15d0282e2a3/platform/platform-impl/codeinsight-inline/src/com/intellij/codeInsight/inline/completion/InlineCompletionProvider.kt)
+and [`com.intellij.inline.completion.provider` EP metadata](https://github.com/JetBrains/intellij-community/blob/1c7e601c0423e544917046c23763b15d0282e2a3/platform/platform-resources/src/META-INF/EditorExtensionPoints.xml)
+are external-plugin API in that version.
+[`InlineCompletionEvent.ManualCall`](https://github.com/JetBrains/intellij-community/blob/1c7e601c0423e544917046c23763b15d0282e2a3/platform/platform-impl/codeinsight-inline/src/com/intellij/codeInsight/inline/completion/InlineCompletionEvent.kt)
+is public but `@ApiStatus.Experimental`; use it only with an explicit minimum IDE version and
+expect source and binary changes. Internal neighboring EPs and members remain forbidden.
+
 ## Contents
 
   - What this feature is
@@ -28,8 +39,8 @@ The provider's `id` property should match the extension `id`. Prefer the fully-q
 provider class name so two plugins do not collide on a short id.
 
 The public extension point list declares this EP with `InlineCompletionProvider` as its
-implementation class. Do not use nearby internal inline-completion EPs unless the user
-explicitly accepts branch-locked internal API risk.
+implementation class. Do not use nearby internal inline-completion EPs, their implementation
+classes, or reflection-based workarounds.
 
 ### Provider shape
 
@@ -53,8 +64,8 @@ Important event handling rules from the platform implementation:
   check it but not construct it.
 - `DirectCall` is used by the IDE's inline completion action. Its constructor is deprecated
   for external creation and scheduled to become internal.
-- `ManualCall` is the public-style path for manually targeting a specific provider. The
-  provider still has to return `true` from `isEnabled`.
+- `ManualCall` is the public, experimental path for manually targeting a specific provider in
+  2026.2.2. The provider still has to return `true` from `isEnabled`.
 - Newer requests cancel and hide older inline completion proposals.
 - Requests are canceled if inline completion is already in rendering mode.
 - `restartOn(event)` lets a provider restart an existing session when a later event should
@@ -79,9 +90,10 @@ If text is inserted and the provider needs cleanup or custom insertion behavior,
 ### Direct calls
 
 The IDE action calls `InlineCompletionEvent.DirectCall` through `CallInlineCompletionAction`.
-Plugins should not create `DirectCall` directly. For plugin-owned manual invocation, use
-`InlineCompletionEvent.ManualCall` and the provider id so only the intended provider is
-queried.
+Plugins should not create `DirectCall` directly. For plugin-owned manual invocation on
+2026.2.2, use the experimental `InlineCompletionEvent.ManualCall` and the provider id so only
+the intended provider is queried. Prefer typing-triggered completion when the plugin does not
+need a manual action.
 
 When a direct call returns no result, the platform's no-suggestions handler waits for inline
 completion and Next Edit sources before showing the "No suggestions" hint. See

@@ -8,19 +8,27 @@ Before publishing or shipping an internal release:
 - [ ] `<idea-version>` `since-build` matches the lowest branch you've tested.
 - [ ] `<change-notes>` describes the release.
 - [ ] `pluginIcon.svg` (and ideally `pluginIcon_dark.svg`) exists in `META-INF/`.
-- [ ] `verifyPlugin` passes against the recommended set of IDEs.
+- [ ] `verifyPlugin` report reviewed against the actual minimum and target IDE builds;
+      configured failure levels do not hide prohibited API usage.
 - [ ] Dynamic install/uninstall works in the sandbox without warnings.
 - [ ] Plugin DevKit inspections clean: no "Listener implements Disposable", no
       "Non-default constructors for service and extension class", no "Cancellation check in
       loops", no "Plugin XML errors".
 - [ ] Sandbox `idea.log` is clean of new exceptions during normal use.
 - [ ] All user-facing text comes from a resource bundle with `@Nls`-typed APIs.
-- [ ] No `@ApiStatus.Internal` calls; `@ApiStatus.Experimental` calls intentional and
-      tracked.
-- [ ] Search the codebase for `Dispatchers.Main`, `GlobalScope`, raw `new Thread(`,
-      `Executors.new`, `Application.getCoroutineScope`, `Project.getCoroutineScope` — none
-      should be in production code.
+- [ ] Calls, base types, implementations, packages, and EP metadata checked: no private,
+      `@ApiStatus.Internal`, `@IntellijInternalApi`, unsupported implementation APIs,
+      internal EPs, or reflective/accessibility/cast bypasses.
+- [ ] `Experimental` APIs confirmed external-public first; versions and instability
+      tracked, with stable public alternatives preferred.
+- [ ] Dispatcher choice matches the target version and required locks/modality. No
+      unowned `GlobalScope`, raw thread migration shortcuts, or internal
+      `Application.getCoroutineScope` / `Project.getCoroutineScope` access.
 - [ ] Plugin signed (if shipping to Marketplace).
+
+Record each check as passed, failed, or not run with its evidence. Static Plugin Verifier
+results do not establish actual feature behavior or dynamic unload success. Partial
+examples in this skill are not standalone build/run verification targets.
 
 ## Common mistakes
 

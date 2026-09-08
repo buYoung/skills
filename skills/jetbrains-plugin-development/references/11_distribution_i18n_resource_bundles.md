@@ -36,9 +36,10 @@ val msg: @Nls String = MyPluginBundle.message("error.connection.failed", host, p
 
 ```kotlin
 @NonNls private const val BUNDLE = "messages.MyPluginBundle"
-object MyPluginBundle : DynamicBundle(BUNDLE) {
+object MyPluginBundle {
+  private val bundle = DynamicBundle(MyPluginBundle::class.java, BUNDLE)
   fun message(@PropertyKey(resourceBundle = BUNDLE) key: String, vararg params: Any): String =
-    getMessage(key, *params)
+    bundle.getMessage(key, *params)
 }
 ```
 
@@ -65,5 +66,19 @@ needs. Avoid manual string concatenation; that defeats translation.
 
 ### Language-pack contributions
 
-Plugins can ship as IDE language packs by extending `com.intellij.languageBundle` EP. This
-is the path to translating platform strings rather than just your own.
+Do not register `com.intellij.languageBundle`: it is an internal EP, not an external
+plugin customization surface. Localize your own plugin through its resource bundles.
+Replacing platform-wide strings has no supported substitute established here; explain
+that limitation instead of using internal registration or bundle-cache manipulation.
+
+The external-public rule applies to individual `DynamicBundle` members as well: its
+internal cache and language-pack helpers are unavailable to plugin code. On the pinned
+2026.2.2 baseline, the inherited single-string constructor is `Obsolete`; the example
+delegates to the public class-and-path constructor and public `getMessage` inherited from
+`AbstractBundle`. For an existing older target, check those declarations before migrating
+an inheritance-based bundle; do not copy its internal resource-resolution implementation.
+
+Sources: [DynamicBundle at the pinned commit](https://github.com/JetBrains/intellij-community/blob/1c7e601c0423e544917046c23763b15d0282e2a3/platform/core-api/src/com/intellij/DynamicBundle.java),
+[AbstractBundle](https://github.com/JetBrains/intellij-community/blob/1c7e601c0423e544917046c23763b15d0282e2a3/platform/util/src/com/intellij/AbstractBundle.kt),
+[Core.analyzer.xml](https://github.com/JetBrains/intellij-community/blob/1c7e601c0423e544917046c23763b15d0282e2a3/platform/core-api/resources/META-INF/Core.analyzer.xml),
+and [EP status list](https://plugins.jetbrains.com/docs/intellij/intellij-platform-extension-point-list.html).

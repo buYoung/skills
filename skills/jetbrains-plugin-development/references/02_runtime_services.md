@@ -126,8 +126,11 @@ The injected scope is the only correct scope to use inside a service:
   the caller, so referencing `this` from inside the launched coroutine creates ordering
   hazards. Prefer launching from explicit external triggers.
 
-For an action-scope coroutine that should die when the action returns, use
-`currentThreadCoroutineScope()` (2024.2+) inside `actionPerformed`.
+Do not route every action through a service merely to obtain a scope. For directly launched
+action work, use the Action System-owned public API for the minimum target:
+`e.coroutineScope` on 2026.1+, documented `currentThreadCoroutineScope()` on
+2024.2–2025.3, and an injected service scope on 2024.1. The 2026.1 property remains valid for
+the action lifetime chosen by Action System; do not cache it outside `actionPerformed`.
 
 ### `Disposable` services
 
@@ -150,3 +153,18 @@ child lifetime such as per-document state parented under the service. See
 
 Services that need to persist across IDE restarts implement `PersistentStateComponent`.
 See `08_ui_settings_persistent_state.md`.
+
+## Fixed-source evidence
+
+Service scope guidance follows the official coroutine-scope contract. The 2026.1 action
+scope and 2026.2.2 public declaration are recorded in:
+
+- [Coroutine Scopes](https://plugins.jetbrains.com/docs/intellij/coroutine-scopes.html)
+- [Launching Coroutines](https://plugins.jetbrains.com/docs/intellij/launching-coroutines.html)
+- [`AnActionEvent.java` at `idea/2026.2.2`](https://github.com/JetBrains/intellij-community/blob/1c7e601c0423e544917046c23763b15d0282e2a3/platform/editor-ui-api/src/com/intellij/openapi/actionSystem/AnActionEvent.java)
+- [`MessageBus.kt` at `idea/2026.2.2`](https://github.com/JetBrains/intellij-community/blob/1c7e601c0423e544917046c23763b15d0282e2a3/platform/extensions/src/com/intellij/util/messages/MessageBus.kt)
+
+`AnActionEvent.getCoroutineScope()` and service constructor injection are external public
+contracts. `MessageBus.connect(CoroutineScope)` is also public and unannotated at the pinned
+commit. `AnActionEvent.installCoroutineScope()` and platform scope-holder implementations are
+internal and must not be called, reflected into, or cast to.

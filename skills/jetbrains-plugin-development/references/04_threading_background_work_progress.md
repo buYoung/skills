@@ -79,4 +79,6 @@ For scheduled / repeating work, use `AppExecutorUtil.getAppScheduledExecutorServ
 
 **Never** create your own `Executors.newFixedThreadPool(...)` or raw `Thread`. They survive
 plugin unload, leaking threads and the classloader. Use `AppExecutorUtil` or, on 2024.1+, a
-service-injected `CoroutineScope`.
+service-injected `CoroutineScope`. For work launched directly by `actionPerformed`, prefer
+the Action System-owned scope: `e.coroutineScope` on 2026.1+, documented
+`currentThreadCoroutineScope()` on 2024.2–2025.3, and a service scope on 2024.1.

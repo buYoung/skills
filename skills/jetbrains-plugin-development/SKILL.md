@@ -16,13 +16,16 @@ description: >-
 # JetBrains IDE Plugin Development (IntelliJ Platform SDK)
 
 This skill carries the IntelliJ Platform SDK domain knowledge needed to write, debug, and modify
-JetBrains IDE plugins competently. It is opinionated toward 2024.1+ targets (Kotlin coroutines,
-IntelliJ Platform Gradle Plugin 2.x, light services with `@Service`, dynamic plugin defaults) and
-calls out where pre-2024.1 patterns are still required.
+JetBrains IDE plugins using only APIs supported for external plugins. The source baseline is
+IntelliJ Community tag `idea/2026.2.2`, commit `1c7e601c0423e544917046c23763b15d0282e2a3`.
+Guidance for 2024.1+ remains version-conditioned; this source baseline does not raise a
+plugin's minimum supported IDE version automatically.
 
 ## How to use this skill
 
-1. Read the **mental model** below — it is small but governs almost every decision.
+1. Establish the target IDE product/build, minimum supported version, IntelliJ Platform
+   Gradle Plugin version, and Java/Kotlin toolchain from the project. Read the **Public API
+   boundary** and **mental model** below before selecting APIs.
 2. Pick the reference file from the **Capability index** that matches the task and read it before editing.
 3. For end-to-end shapes — how the registrations, classes, and `plugin.xml` of a feature line up — open the matching folder under `examples/`.
 4. Before declaring any plugin-modifying task done, walk the **Pre-flight checklist**.
@@ -32,6 +35,33 @@ specific about strings (`language="JAVA"` vs `"java"`, EP IDs, attribute spellin
 character is enough to silently disable a feature. When unsure, surface the question to the user
 with the relevant reference cited — and verify the spelling in the IDE's `plugin.xml` editor,
 which auto-completes valid EP names from the loaded plugin set and underlines unknown ones.
+
+## Public API boundary
+
+This rule applies to every reference, example, API call, base type, implementation, and EP
+registration in this package. Use only APIs supported for external plugins. Java/Kotlin
+`public` visibility alone does not establish that support.
+
+- Reject `private`, `@ApiStatus.Internal`, `@IntellijInternalApi`, internal EPs, and
+  implementation classes not intended for external use. Inspect the exact member, containing
+  types, supertypes, package annotations, module visibility, documentation, and EP declaration metadata in the
+  target version. Respect `NonExtendable` and `OverrideOnly` contracts as well.
+- Never bypass this boundary with reflection, accessibility overrides, internal casts,
+  copied internal implementations, or suppressed inspections. Risk acceptance is not an exception.
+- Internal source is evidence for understanding behavior only. If no supported API can
+  implement the requested feature, explain the limitation and offer the nearest public API
+  alternative; do not fabricate an equivalent capability.
+- Evaluate external availability and stability separately. An `Experimental` API is eligible
+  only after external use is confirmed; state its applicable versions and instability and
+  prefer a stable public alternative. Neither a missing annotation nor successful compilation
+  proves that an API is supported or stable.
+- For changed API guidance, record the source tag, commit, source links, public-status evidence,
+  and applicable versions. Check the minimum version separately from the baseline. If status
+  remains unverified, keep that candidate out of recommended examples.
+
+Read [00_public_api_baseline.md](references/00_public_api_baseline.md) for the pinned evidence
+and version boundaries. IDE completion and Plugin Verifier supplement this review; neither
+grants permission to use an internal API.
 
 ## Mental model — five invariants you must hold
 
@@ -46,11 +76,11 @@ These five invariants explain almost every "why doesn't this work?" question.
    leaks across projects, threads, and dynamic reloads. Put state in a service
    (`@Service` / `@Service(Service.Level.PROJECT)`), and have extensions look it up on demand.
 3. **Threading is non-negotiable.** Reading platform model state (PSI, VFS, Document, project model)
-   needs a Read Lock. Writing needs a Write Lock and **must** start on the EDT (or via the
-   suspending `writeAction`/`backgroundWriteAction`). Long work belongs on a background thread
+   needs the API's documented read access. Writing needs the documented write context;
+   dispatcher and suspending write behavior depend on the target version (see `04_threading_model.md`). Long work belongs on a background thread
    with progress and cancellation. EDT freezes are user-visible; lock violations are immediate
    exceptions or data corruption. New code on 2024.1+ uses Kotlin coroutines
-   (`Dispatchers.EDT`, `readAction { }`, `writeAction { }`, `cs.launch { }`).
+   (`cs.launch { }`, `readAction { }`, and the target-version dispatcher and write API).
 4. **`Disposer` is how lifecycle works.** Resources tie into a `Disposable` parent and the
    platform calls `dispose()` post-order when the parent goes away. Services are usually the
    right parent. Never use `Application` or `Project` directly as a parent — that traps
@@ -82,7 +112,7 @@ Reference filenames are prefixed by category for fast scanning: `01_core`, `02_r
 - [02_runtime_legacy_component_migration.md](references/02_runtime_legacy_component_migration.md): Migrating `ApplicationComponent`, `ProjectComponent`, or `ModuleComponent` to services, extensions, listeners, and startup activities.
 - [02_runtime_deprecated_api_migrations.md](references/02_runtime_deprecated_api_migrations.md): Deprecated listener, coroutine-scope, action, and Plugin DevKit migration checks.
 - [03_lifecycle_disposer.md](references/03_lifecycle_disposer.md): `Disposable` trees, safe parent selection, cleanup patterns, `Alarm`, and disposal triggers.
-- [03_lifecycle_leak_diagnostics.md](references/03_lifecycle_leak_diagnostics.md): Disposer leak debugging, `LeakHunter`, sandbox checks, and leak-prone patterns.
+- [03_lifecycle_leak_diagnostics.md](references/03_lifecycle_leak_diagnostics.md): Disposer leak debugging, sandbox and heap checks, and leak-prone patterns without internal test APIs.
 - [04_threading_model.md](references/04_threading_model.md): EDT/BGT mental model, lock rules, dumb mode overview, and threading invariants.
 - [04_threading_read_write_actions.md](references/04_threading_read_write_actions.md): Classic read/write actions, `ReadAction.nonBlocking`, `WriteCommandAction`, `invokeLater`, modality, and annotations.
 - [04_threading_background_work_progress.md](references/04_threading_background_work_progress.md): `Task.Backgroundable`, progress indicators, cancellation, synchronous progress, and fire-and-forget work.
@@ -148,7 +178,7 @@ Reference filenames are prefixed by category for fast scanning: `01_core`, `02_r
 - [09_project_modules_roots_file_index.md](references/09_project_modules_roots_file_index.md): `Module`, roots, content entries, order entries, and `ProjectFileIndex`.
 - [09_project_libraries_sdks_facets.md](references/09_project_libraries_sdks_facets.md): `LibraryTablesRegistrar` and modifying libraries via Write Action, `AdditionalLibraryRootsProvider`/`SyntheticLibrary`, `ProjectJdkTable` and custom `SdkType`/`ProjectSdkSetupValidator`, and `FacetManager`/`FacetType` for per-module tech config.
 - [09_project_workspace_model.md](references/09_project_workspace_model.md): Modern entity-based project structure — `ImmutableEntityStorage`/`MutableEntityStorage`, `WorkspaceEntity` subclasses (`ModuleEntity`, `ContentRootEntity`, `LibraryEntity`), suspend `WorkspaceModel.update`, change `Flow<VersionedStorageChange>`, and `SymbolicEntityId`/`ExternalMappingKey` for external-system tracking.
-- [09_project_view.md](references/09_project_view.md): Project View tree customization — `TreeStructureProvider` to re-bucket/hide/decorate children, `ProjectViewNodeDecorator` for suffix/icon overlays, `AbstractProjectViewPane` for custom panes, and public selection helpers without internal pane extractor APIs.
+- [09_project_view.md](references/09_project_view.md): Public Project View customization with `TreeStructureProvider`, `ProjectViewNodeDecorator`, and the supported `AbstractProjectViewPane` extension contract, plus limits on internal selection-helper and extractor methods.
 - [09_project_lifecycle.md](references/09_project_lifecycle.md): Project lifecycle hooks — `ProjectActivity` (suspend) and `StartupActivity.DumbAware` via `<postStartupActivity>`, `ProjectManagerListener`, `ModuleListener`, `ModuleRootListener`.
 - [09_project_model_diagnostics.md](references/09_project_model_diagnostics.md): Project-model pitfalls — `defaultProject` misuse, holding `Project` references on application-level state, root-model edits outside Write Action, missing `model.commit()`/`dispose()`, EDT iteration of `ProjectFileIndex`, ignoring `isExcluded`, non-`DumbAware` `StartupActivity`.
 - [10_execution_run_debug_configurations.md](references/10_execution_run_debug_configurations.md): Run/debug configurations, factories, `RunProfileState`, runners, run line markers, and before-run tasks.
@@ -162,7 +192,7 @@ Reference filenames are prefixed by category for fast scanning: `01_core`, `02_r
 - [11_distribution_i18n_resource_bundles.md](references/11_distribution_i18n_resource_bundles.md): Resource bundles, localized strings, `@Nls`, and language-pack contributions.
 - [11_distribution_file_live_templates.md](references/11_distribution_file_live_templates.md): `<internalFileTemplate>` for New-File templates (Velocity `.ft` files under `resources/fileTemplates/internal/`, name must match) and `<defaultLiveTemplates>` XML at `resources/liveTemplates/`.
 - [11_distribution_vcs_extensions.md](references/11_distribution_vcs_extensions.md): VCS plugin EPs — `AbstractVcs`, `ChangeProvider`, `VcsDirtyScopeManager`, `ContentRevision`/`FilePath`/`VcsRevisionNumber`, `VcsRoot`/`VcsRootChecker`, diff/merge tools, and when to extend the existing Git plugin via `<depends optional config-file>` instead of a new `AbstractVcs`.
-- [11_distribution_plugin_verifier.md](references/11_distribution_plugin_verifier.md): `verifyPlugin` Gradle task (2.x replacement for `runPluginVerifier`) — `pluginVerification.ides { recommended()/create()/local() }`, blocking issues (missing classes, `@Internal` usage from outside, plugin-class static reachability) vs informational `@Experimental` warnings.
+- [11_distribution_plugin_verifier.md](references/11_distribution_plugin_verifier.md): `verifyPlugin` Gradle task (2.x replacement for `runPluginVerifier`), binary compatibility and API-status reports, and limits distinct from sandbox behavior and unload verification.
 - [11_distribution_plugin_signing_marketplace.md](references/11_distribution_plugin_signing_marketplace.md): Plugin signing and Marketplace publishing.
 - [11_distribution_deployment_checklist.md](references/11_distribution_deployment_checklist.md): Pre-release checklist, deployment mistakes, and release-related references.
 
@@ -224,6 +254,8 @@ Run through this whenever you touch plugin code or `plugin.xml`. Most regression
 
 - [ ] `plugin.xml` parses (open in IDE, no red underlines; XML DTD validation enabled).
 - [ ] `<depends>com.intellij.modules.platform</depends>` is present.
+- [ ] Every API use, inheritance/implementation, and EP registration satisfies the public API
+      boundary above on each supported branch, with source/status evidence recorded.
 - [ ] Every new EP usage cites a real EP — verified against the IDE's `plugin.xml`
       completion (which only offers EPs from the plugins your `<depends>` resolved).
       Language IDs spelled correctly (case-sensitive).
@@ -239,9 +271,9 @@ Run through this whenever you touch plugin code or `plugin.xml`. Most regression
       `CancellationException` rather than swallowing them.
 - [ ] PSI/Document writes are inside a `WriteCommandAction` (or `writeCommandAction { }`),
       so they participate in undo.
-- [ ] No new `Dispatchers.Main`, `GlobalScope`, `kotlinx.coroutines.runBlocking`,
-      raw `new Thread(...)`, or `Executors.new*ThreadPool()` — replaced with `Dispatchers.EDT`,
-      injected `cs`, `runBlockingCancellable`, and `AppExecutorUtil`.
+- [ ] Dispatchers and read/write APIs match the target version and preserve modality,
+      cancellation, lifetime, and undo behavior; see the `04_threading_*` references.
+      No unowned `GlobalScope`, blocking UI waits, or raw thread-pool migration shortcuts.
 - [ ] Run **Plugin DevKit** inspections: "Non-default constructors for service and extension class",
       "Cancellation check in loops", "Plugin XML errors". They catch most violations
       automatically.
@@ -250,17 +282,22 @@ Run through this whenever you touch plugin code or `plugin.xml`. Most regression
 - [ ] If targeting multiple IDE versions: the `verifyPlugin` Gradle task (2.x; older guides
       may call it `runPluginVerifier`) passes against the declared `sinceBuild` and a
       recent build.
-- [ ] If altering existing functionality: confirm dynamic reload still works
-      (`autoReload = true`, install/uninstall in sandbox without IDE restart).
+- [ ] If altering existing functionality: exercise dynamic install/update/uninstall in the
+      sandbox without IDE restart. Rebuild changed classes/resources before checking
+      `autoReload`; the setting does not compile source or prove unload safety.
+
+Report each check as passed, failed, or not run with the actual command, target build, and
+observed result. Plugin Verifier is static compatibility analysis, not feature execution.
+These examples are partial integration skeletons; do not claim compilation or IDE execution
+without an independently buildable host project and an actual run.
 
 ## Conventions used across this skill
 
 - "EDT" = Event Dispatch Thread (Swing UI thread). "BGT" = any non-EDT thread.
 - "PCE" = `com.intellij.openapi.progress.ProcessCanceledException`.
 - "EP" = extension point. "Light service" = service declared via `@Service` (no `plugin.xml`).
-- API stability tags follow `@ApiStatus`: `Internal` is forbidden for plugin code,
-  `Experimental` may break across versions, `Obsolete` has a stable replacement, plain public
-  is stable. Where a reference notes "Experimental", treat it as a deliberate trade-off.
+- API availability and stability are separate: apply the public API boundary above before
+  considering `Experimental`; follow the documented replacement for `Obsolete` APIs.
 - Code samples are Kotlin where the platform offers a Kotlin-friendly API (which is most
   of 2024.1+); Java appears when an API has no Kotlin form or when describing legacy code.
 

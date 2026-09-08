@@ -14,25 +14,11 @@ val trace: Throwable? = Disposer.getDisposalTrace(suspectDisposable)
 Useful when an object is unexpectedly already disposed (or unexpectedly still alive after
 its parent disposed).
 
-### `LeakHunter` (test framework)
-
-```kotlin
-LeakHunter.checkProjectLeak()
-LeakHunter.checkNonDefaultProjectLeak()
-```
-
-Walks the heap for the leaked object's reachable references. Used in IntelliJ's own tests;
-worth adopting in plugin tests when you suspect long-lived references.
-
-### `Disposer.assertIsEmpty()`
-
-Test-only assertion that all `Disposer.newDisposable()` instances created during the test
-have been disposed. `UsefulTestCase.tearDown` calls it automatically.
-
 ### Plugin Verifier
 
-The `verifyPlugin` Gradle task (2.x) flags some classes of leaks (e.g., usage of internal APIs that prevent
-unload) at build time. It does not catch all runtime leaks but catches a useful subset.
+The `verifyPlugin` Gradle task (2.x) performs static compatibility checks. It does not prove
+that runtime objects are released or that the plugin dynamically unloads. Use the manual
+sandbox check below for unload behavior.
 
 ### Manual sandbox check
 

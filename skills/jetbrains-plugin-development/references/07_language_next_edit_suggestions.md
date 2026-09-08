@@ -1,5 +1,15 @@
 # Next Edit Suggestions
 
+## API boundary and version
+
+This boundary is checked against IntelliJ Community `idea/2026.2.2` at commit
+`1c7e601c0423e544917046c23763b15d0282e2a3`. The public
+[`EditorExtensionPoints.xml`](https://github.com/JetBrains/intellij-community/blob/1c7e601c0423e544917046c23763b15d0282e2a3/platform/platform-resources/src/META-INF/EditorExtensionPoints.xml)
+declares `com.intellij.inline.edit.awaiter`, but its
+[`InlineEditAwaiter`](https://github.com/JetBrains/intellij-community/blob/1c7e601c0423e544917046c23763b15d0282e2a3/platform/platform-impl/codeinsight-inline/src/com/intellij/codeInsight/inline/edit/InlineEditAwaiter.kt)
+contract is `@ApiStatus.Internal`. Descriptor visibility alone does not make it an external
+plugin API.
+
 ## Contents
 
   - Public documentation boundary
@@ -61,15 +71,16 @@ When a user asks to build Next Edit-like behavior:
   `InlineCompletionProvider`; see `07_language_inline_completion.md`.
 - If the requested behavior is "jump to next changed location", that is a different IDE
   action family and not Next Edit Suggestions.
-- If the requested behavior depends on JetBrains AI or LLM plugin internals, require the
-  user to provide that plugin source or official API documentation before writing code.
+- If the requested behavior depends on JetBrains AI or LLM plugin internals, explain that it
+  cannot be implemented through supported external-plugin API and offer the public inline
+  completion alternative.
 
 ### Diagnostics checklist
 
 1. Check public SDK docs, extension point metadata, or user-provided project sources before
    assuming Next Edit provider API availability.
-2. Treat `@ApiStatus.Internal` classes as forbidden for plugin code unless the user explicitly
-   accepts branch-locked internal API risk.
+2. Treat `@ApiStatus.Internal` classes and internal EPs as forbidden for plugin code. Do not
+   bypass the restriction with reflection, access changes, or casts to implementation types.
 3. Do not create a sample `next.edit.provider` EP; no such public EP was found in the
    public SDK documentation.
 4. If the feature can be expressed as gray text at the caret, use

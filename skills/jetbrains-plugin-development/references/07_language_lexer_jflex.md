@@ -4,6 +4,11 @@
 
 The platform recommends JFlex for lexers. Output is a `FlexLexer` that you wrap with
 `FlexAdapter` to produce the platform's `Lexer`.
+With the IntelliJ Platform Gradle Plugin 2.18.1 setup in this skill, apply
+`org.jetbrains.intellij.platform.grammarkit` to obtain the `generateLexer` task. The same
+plugin also provides Grammar-Kit parser generation; do not add a separate `jflex()`
+dependency helper or apply the standalone `org.jetbrains.grammarkit` plugin alongside it.
+For an older build, check the generator plugin supported by that Gradle plugin version.
 
 `MyLang.flex`:
 
@@ -52,3 +57,14 @@ public class MyLexerAdapter extends FlexAdapter {
 ```
 
 A new `MyLexerAdapter()` per call site — lexers are stateful and not reusable.
+
+`FlexLexer`, `FlexAdapter`, `Lexer`, `IElementType`, and `TokenType` are the public lexer
+surface used by this example in the `2026.2.2` source baseline. Do not cast to unsupported
+platform lexer implementations or use reflection to reach their internals. Plugin-owned
+generated lexer types remain usable through their normal generated contract. Check any newer lexer helper for `@ApiStatus.Internal` or
+`@IntellijInternalApi` before putting it in plugin code.
+
+The generation and API guidance was checked against the
+[`idea/2026.2.2` source snapshot](https://github.com/JetBrains/intellij-community/tree/1c7e601c0423e544917046c23763b15d0282e2a3),
+the [Grammar-Kit Gradle plugin documentation](https://plugins.jetbrains.com/docs/intellij/tools-intellij-platform-gradle-plugin-plugins.html),
+and the [official lexer guide](https://plugins.jetbrains.com/docs/intellij/implementing-parser-and-psi.html).

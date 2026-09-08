@@ -13,18 +13,18 @@ swap.
 | Old | New |
 |---|---|
 | `class MyService { fun runAsync() { executor.submit { … } } }` | `class MyService(private val cs: CoroutineScope) { fun runAsync() = cs.launch { … } }` |
-| `private val executor = Executors.newFixedThreadPool(N)` | Drop it. Use the injected `cs` and `Dispatchers.Default`/`Dispatchers.IO`/`Dispatchers.EDT`. For a strict pool, build one over `cs`: `val pool = cs.coroutineContext + limitedParallelism(N)`. |
+| `private val executor = Executors.newFixedThreadPool(N)` | Drop it. Use the injected `cs` and `Dispatchers.Default`/`Dispatchers.IO`. To cap parallelism, launch with `Dispatchers.Default.limitedParallelism(N)`; do not create an orphan scope. |
 | `Thread { … }.start()` | `cs.launch { … }` |
 | `ApplicationManager.getApplication().executeOnPooledThread { … }` (returning `Future`) | `cs.async { … }` returning `Deferred<T>` |
 | `CompletableFuture<T>` | `Deferred<T>` (via `cs.async { }`); `await()` to consume |
-| `ApplicationManager.getApplication().invokeLater({ … }, ModalityState…)` | `withContext(Dispatchers.EDT) { … }` (modality-aware) |
-| `ApplicationManager.getApplication().invokeAndWait({ … }, ModalityState…)` | `withContext(Dispatchers.EDT) { … }` (always blocks the suspending caller until done) |
+| `ApplicationManager.getApplication().invokeLater({ … }, ModalityState…)` | `withContext(modality.asContextElement() + Dispatchers.EDT) { … }`; keep the original modality explicitly |
+| `ApplicationManager.getApplication().invokeAndWait({ … }, ModalityState…)` | Same suspending form; it waits without blocking the caller thread |
 | `ReadAction.compute { … }` | `readAction { … }` |
 | `ReadAction.nonBlocking { … }.inSmartMode(p).submit(executor)` | `smartReadAction(project) { … }` |
-| `WriteAction.run { … }` (already on EDT) | `edtWriteAction { … }` |
-| `WriteCommandAction.runWriteCommandAction(project) { … }` | `writeCommandAction(project, "name") { … }` |
+| `WriteAction.run { … }` (already on EDT) | `edtWriteAction { … }` on 2025.1+; on 2024.1–2024.3 keep `withContext(Dispatchers.EDT)` plus classic `WriteAction.run` |
+| `WriteCommandAction.runWriteCommandAction(project) { … }` | Keep it for stable-only APIs, or use public `@Experimental` `writeCommandAction(project, "name") { … }` after recording the target-version risk |
 | `ProgressManager.run(Task.Backgroundable…)` | `cs.launch { withBackgroundProgress(project, title) { reportProgress(N) { r -> … } } }` |
-| `ProgressManager.runProcessWithProgressSynchronously(…)` | `cs.launch { withModalProgress(project, title) { … } }`, or keep classic if you must stay on the EDT and block |
+| `ProgressManager.runProcessWithProgressSynchronously(…)` | `cs.launch { withModalProgress(project, title) { … } }`, or keep classic when callers require its synchronous return contract |
 | `Disposable` + manual cleanup of thread / future | Inject `CoroutineScope`. Drop the `Disposable`. |
 | `try { … } catch (e: Exception) { log(e) }` | Add `if (e is CancellationException) throw e` (or split into two catches) |
 | `blockingContext { foo() }` | `foo()` (2024.2+) |
@@ -86,9 +86,12 @@ class MyService(
 Notes on the migration:
 
 - `Disposable` and explicit cancellation disappear; the injected `cs` covers cancellation.
-- `invokeLater + WriteCommandAction.runWriteCommandAction` collapses into a single suspending
-  `writeCommandAction(project, name) { }`.
-- The EDT hop is implicit in `writeCommandAction` (which acquires the EDT-bound write lock).
+- `invokeLater + WriteCommandAction.runWriteCommandAction` can collapse into the public
+  `@Experimental` suspending `writeCommandAction(project, name) { }` when the supported
+  version range accepts that API. Otherwise keep the stable classic call.
+- The suspending `writeCommandAction` keeps the EDT and undo contracts. In contrast,
+  `writeAction` runs the write phase on a background thread in 2026.2.2; substituting it
+  would change behavior.
 - `serviceImplementation` XML registration disappears in favor of `@Service`.
 
 When the legacy code is exposed publicly (other plugins or non-coroutine call sites), keep
@@ -104,3 +107,14 @@ fun analyzeBlocking(file: VirtualFile): List<String> = runBlockingCancellable {
 
 For EDT call sites, do not block; either offer a coroutine API or schedule with
 `cs.launch { … }`.
+
+### Preserve behavior across platform versions
+
+- On 2024.1-era targets, `writeAction` switched to EDT and was experimental.
+- On 2025.1+, `edtWriteAction` is the stable, explicit choice for legacy EDT writes.
+- At `idea/2026.2.2` (`1c7e601c0423e544917046c23763b15d0282e2a3`), `writeAction`
+  delegates to `backgroundWriteAction`. Audit every called API before choosing it.
+- For a coroutine launched by an action, use `AnActionEvent.coroutineScope` on 2026.1+,
+  `currentThreadCoroutineScope()` on 2024.2–2025.3, or an injected service scope on 2024.1.
+
+See the fixed-source links and public API status in `04_threading_coroutines_2024.md`.

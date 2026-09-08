@@ -6,6 +6,11 @@ buildable Gradle project. The generated lexer/parser code, Gradle setup, and IDE
 intentionally omitted; with the BNF/flex sources here plus the Gradle setup from
 `references/01_core_gradle_project.md`, the IntelliJ Platform Gradle Plugin generates the rest.
 
+Apply the [public API baseline](../references/00_public_api_baseline.md) before copying any
+snippet. Re-check every API, superclass, and extension point against the exact target IDE;
+examples that use a public `@ApiStatus.Experimental` contract state their version requirement
+in the paired reference.
+
 | Folder | Pairs with reference |
 |---|---|
 | `simple_language_plugin/` | `references/07_language_pipeline.md` end-to-end |
