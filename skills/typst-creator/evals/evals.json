@@ -40,13 +40,102 @@
     {
       "id": 4,
       "prompt": "Create a self-contained Typst project-status.typ document in this workspace without choosing a Typst version for me. Detect the available compiler, include a divider between summary and details when supported, and provide a short compatibility handoff.",
-      "expected_output": "The skill detects the installed Typst 0.15.1 compiler, selects the 0.15 reference, and produces compiling source with transparent verification evidence.",
+      "expected_output": "Detect the compiler actually available in the evaluation workspace, choose compatible features, and report exact evidence.",
       "files": [],
       "expectations": [
-        "The handoff states that the workspace compiler was detected as Typst 0.15.1 rather than inferring a version from source syntax.",
-        "The handoff identifies both common topic references and the Typst 0.15 version reference.",
-        "The source uses divider because the detected compiler supports it.",
-        "The generated project-status.typ compiles successfully with the detected Typst 0.15.1 compiler."
+        "The detected version is established by running the workspace compiler, not by assuming 0.15.1.",
+        "The selected version reference matches the detected compiler.",
+        "The source uses divider only if the detected version supports it; otherwise it uses a compatible separator.",
+        "The generated source compiles with the detected compiler."
+      ]
+    },
+    {
+      "id": 5,
+      "prompt": "Create inherited-features.typ for Typst 0.15.1. Use the dedicated title element, skewed fractions, and str.normalize to show that a decomposed accented letter normalizes to the composed form. Explain which version reference establishes each feature and compile the result.",
+      "expected_output": "A verified 0.15.1 document using the inherited 0.14 features with the correct reference route.",
+      "files": [],
+      "expectations": [
+        "The source uses title, a skewed math fraction, and str.normalize.",
+        "The handoff identifies the 0.14 feature reference and the 0.15 target reference.",
+        "The document compiles with 0.15.1 and the normalization assertion succeeds."
+      ]
+    },
+    {
+      "id": 6,
+      "prompt": "Create portable.typ, a one-page status report that compiles unchanged on all stable Typst releases from 0.13.0 through 0.15.1. Include a captioned table, a curve drawing, a tiling fill, and inline JSON decoded from bytes. Use the supplied compilers to verify every release. Report exactly which versions were checked.",
+      "expected_output": "One common-subset source verified by all seven compilers with no removed or later-only API.",
+      "files": [],
+      "expectations": [
+        "A single source uses curve, tiling, a captioned table, and a top-level JSON bytes loader.",
+        "The same source compiles with all seven exact stable releases.",
+        "The handoff distinguishes compilation evidence from identical rendering."
+      ]
+    },
+    {
+      "id": 7,
+      "prompt": "Migrate migration.typ from Typst 0.13.1 to 0.15.1 and save migrated.typ. Replace removed drawing, tiling, and data-decoding APIs and symbol names. Preserve the content and explain the replacements. Compile with 0.15.1.",
+      "expected_output": "The supplied old source is migrated using current supported counterparts.",
+      "files": [
+        "evals/inputs/migration.typ"
+      ],
+      "expectations": [
+        "The old drawing path, pattern, and json.decode usages are replaced.",
+        "The old sect and plus.circle symbols use supported replacements.",
+        "The migrated file compiles with 0.15.1 and retains the values and three sections."
+      ]
+    },
+    {
+      "id": 8,
+      "prompt": "Fix existing.typ for Typst 0.15.1 and save fixed.typ. The document needs a landscape A4 page with a page-reference supplement and a captioned table, followed by a floating image across both columns. Fix the invalid options without removing the existing headings, labels, caption text, or data. Compile the result.",
+      "expected_output": "A corrected, compiling existing document with valid page, figure, and image arguments.",
+      "files": [
+        "evals/inputs/existing.typ",
+        "evals/inputs/assets/diagram.svg"
+      ],
+      "expectations": [
+        "The source retains landscape A4 and uses a supported page supplement value.",
+        "The captioned table and image use valid kind, scope, and positional source arguments.",
+        "The original headings, labels, captions, and table data remain.",
+        "The fixed document compiles with 0.15.1."
+      ]
+    },
+    {
+      "id": 9,
+      "prompt": "In this environment no Typst compiler can be executed. Create unavailable.typ for a simple two-section PDF-oriented report without an explicit version request. Use only the skill's references; do not run or install a compiler. Provide the intended command and distinguish assumed target, documentation checks, and unperformed compilation.",
+      "expected_output": "Source with an assumed 0.15.1 target and honest no-compiler verification limits.",
+      "files": [],
+      "expectations": [
+        "The handoff says 0.15.1 is an assumed target, not a detected compiler.",
+        "It explicitly states that compilation and visual verification were not performed.",
+        "The source is returned and a usable intended compile command is supplied."
+      ]
+    },
+    {
+      "id": 10,
+      "prompt": "Create paper.typ for Typst 0.15.1: an A5 report with a table of contents, numbered headings, one footnote, a captioned table of 60 numbered observations with a repeating header, and an IEEE bibliography citing knuth1984 from references.bib. Include a short Korean/English paragraph using an available Korean font. Make the long table break across pages. Compile and inspect the output.",
+      "expected_output": "A readable multipage paper with references, repeated headers, visible Korean text, and complete data.",
+      "files": [
+        "evals/inputs/references.bib"
+      ],
+      "expectations": [
+        "The report includes the outline, footnote, numbered headings, citation, and bibliography.",
+        "All 60 observations appear and the header repeats on continuation pages.",
+        "A Korean-capable font is selected from the available environment and Korean text remains visible.",
+        "The document compiles with 0.15.1 and the handoff reports actual output inspection."
+      ]
+    },
+    {
+      "id": 11,
+      "prompt": "Create slides.typ for Typst 0.13.0 as three static 16:9 PDF slides about an experiment: overview, method, results. Use a reusable slide function, visible slide numbers, a two-column method slide with the supplied diagram.svg, and a short equation on the results slide. Do not use external packages. Compile and check that there are exactly three slides with no initial blank page.",
+      "expected_output": "A three-page 16:9 deck compatible with 0.13.0 and a verification handoff.",
+      "files": [
+        "evals/inputs/assets/diagram.svg"
+      ],
+      "expectations": [
+        "The source uses a reusable slide function and no external package.",
+        "There are exactly three 16:9 pages with visible slide numbers and no blank first page.",
+        "The method slide has two columns and the results slide contains an equation.",
+        "The deck compiles with 0.13.0 and actual page checks are reported."
       ]
     }
   ]

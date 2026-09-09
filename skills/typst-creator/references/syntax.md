@@ -1,5 +1,7 @@
 # Typst Common Syntax Reference
 
+Checked: 2026-09-09. Tables summarize selected parameters; consult the official signature for positional/named and settable restrictions. Code blocks are independent snippets unless dependencies are stated.
+
 Typst has three syntactical modes: Markup, Math, and Code. This file contains syntax shared by stable Typst 0.13.0 through 0.15.1. Read the selected file under `versions/` before using version-specific elements, parameters, or behavior.
 
 ## Function Parameters
@@ -240,3 +242,10 @@ Shorthand meaning depends on the active mode.
 | Arrow right | `->` |
 | Arrow left | `<-` |
 | Double arrow | `<->` |
+
+## Sources
+
+- [Syntax](https://typst.app/docs/reference/syntax/)
+- [Heading](https://typst.app/docs/reference/model/heading/)
+- [Lists](https://typst.app/docs/reference/model/list/)
+- [Raw text](https://typst.app/docs/reference/text/raw/)

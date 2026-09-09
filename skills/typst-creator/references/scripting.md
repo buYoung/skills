@@ -1,5 +1,7 @@
 # Typst Common Scripting Reference
 
+Checked: 2026-09-09. Tables summarize selected parameters; consult the official signature for positional/named and settable restrictions. Code blocks are independent snippets unless dependencies are stated.
+
 Typst includes a built-in scripting language for logic and data manipulation. This file contains scripting constructs shared by stable Typst 0.13.0 through 0.15.1. Read the selected file under `versions/` before using version-specific collection, path, or conversion APIs.
 
 ## Variables
@@ -79,7 +81,7 @@ Key-value pairs for structured data. Access values using dot notation or the `at
 
 ## Functions
 
-Functions encapsulate reusable logic and can return both values and content. Define them with `let` and call them with parentheses.
+Functions encapsulate reusable logic and can return both values and content. Define them with `let` and call them with parentheses. Captured outer bindings are read-only inside a function: `let total = 0; let bump() = { total += 1 }` cannot mutate `total`. Compute and return a new value, mutate a function-local collection, or use document-order [state and counters](context.md) when the result depends on placement.
 
 ### Function Definition
 
@@ -92,7 +94,7 @@ Named functions use `let name(parameters) = expression`. Arrow syntax creates an
 
 ### Default Parameters
 
-Provide fallback values with `:` syntax. Parameters with defaults become optional when calling the function.
+The `:` syntax declares an optional named parameter with a default. It cannot be supplied as another positional argument: call `greet("Bob", greeting: "Hi")`, not `greet("Bob", "Hi")`.
 
 ```typst
 #let greet(name, greeting: "Hello") = [#greeting, #name!]
@@ -189,7 +191,7 @@ Standard operators for arithmetic, comparison, and logical operations. Note that
 
 ## String Operations
 
-Strings are immutable sequences of characters. Methods return new strings rather than modifying in place.
+Strings are immutable sequences of Unicode codepoints. Lengths and indices use UTF-8 bytes: `"한".len()` is `3`, not `1`. Iteration and `clusters()` operate on grapheme clusters (user-perceived characters); `codepoints()` exposes individual codepoints. Use `s.clusters().len()` for a grapheme count and do not split multibyte text at guessed byte offsets. String methods return new values rather than modifying the string in place.
 
 ```typst
 #let s = "Hello, World!"
@@ -207,17 +209,17 @@ Strings are immutable sequences of characters. Methods return new strings rather
 
 ## Import and Modules
 
-Organize code across files using imports. Import specific items or use `*` to import everything from a module.
+Organize code across files using imports. Import specific items or use `*` to import everything from a module. `import` brings bindings into scope, while `include` inserts a file's content. The following fragments require the named files and exports; see [Tooling](tooling.md) for roots, packages, and assets.
 
 ```typst
-// Import from file
-#import "template.typ": conf, title
+// Run beside evals/fixtures/assets, or copy that assets directory with this snippet.
+#import "assets/imports/template.typ": conf, title
 
 // Import all
-#import "utils.typ": *
+#import "assets/imports/utils.typ": *
 
 // Import with alias
-#import "math.typ": formula as f
+#import "assets/imports/math.typ": formula as f
 ```
 
 ## Data Loading
@@ -243,7 +245,7 @@ Compare types to type values rather than their string names. String compatibilit
 
 ## Context
 
-The `context` keyword provides access to document state that depends on location, such as page numbers, counters, and current styles. Required for introspection queries.
+The `context` keyword provides access to document state that depends on location, such as page numbers, counters, and current styles. It returns opaque content, not an ordinary value that can be inspected outside the context expression. Perform every calculation depending on contextual values inside it. Show rules can provide implicit context; read [Context, State, and Queries](context.md) for location availability, document order, and convergence.
 
 ```typst
 // Access current location/state
@@ -256,3 +258,10 @@ The `context` keyword provides access to document state that depends on location
 #set text(lang: "ko")
 #context text.lang  // "ko"
 ```
+
+## Sources
+
+- [Scripting](https://typst.app/docs/reference/scripting/)
+- [Functions](https://typst.app/docs/reference/foundations/function/)
+- [Strings](https://typst.app/docs/reference/foundations/str/)
+- [Context](https://typst.app/docs/reference/context/)

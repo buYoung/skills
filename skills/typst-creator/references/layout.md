@@ -1,5 +1,25 @@
 # Typst Common Layout Reference
 
+## Contents
+
+- [Function Parameters](#function-parameters)
+- [Page Setup](#page-setup)
+- [Spacing](#spacing)
+- [Alignment](#alignment)
+- [Blocks and Boxes](#blocks-and-boxes)
+- [Grid Layout](#grid-layout)
+- [Tables](#tables)
+- [Figures](#figures)
+- [Columns](#columns)
+- [Positioning](#positioning)
+- [Transforms](#transforms)
+- [Length, Ratio, and Fraction Units](#length-ratio-and-fraction-units)
+- [Page Breaks](#page-breaks)
+- [Padding](#padding)
+- [Sources](#sources)
+
+Checked: 2026-09-09. Tables summarize selected parameters; consult the official signature for positional/named and settable restrictions. Code blocks are independent snippets unless dependencies are stated.
+
 Page setup, positioning, and layout elements shared by stable Typst 0.13.0 through 0.15.1. Read the selected file under `versions/` before using version-specific page, list, image, or export features.
 
 ## Function Parameters
@@ -13,23 +33,23 @@ Configures page dimensions, margins, headers, footers, and numbering. This is ty
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
 | `paper` | str | `"a4"` | `"a4"`, `"us-letter"`, `"a5"`, `"a3"`, etc. |
-| `width` | auto \| length | `auto` | Custom page width |
-| `height` | auto \| length | `auto` | Custom page height |
+| `width` | auto \| length | `210mm` | A4 width by default; `auto` grows to fit content |
+| `height` | auto \| length | `297mm` | A4 height by default; `auto` disables automatic page breaks |
 | `margin` | auto \| relative \| dictionary | `auto` | Margins: single value, `(x:, y:)`, or `(top:, bottom:, left:, right:)` |
 | `columns` | int | `1` | Number of columns |
 | `fill` | auto \| none \| color \| gradient \| tiling | `auto` | Page background fill; export targets interpret `auto` |
 | `numbering` | none \| str \| function | `none` | Page number format: `"1"`, `"i"`, `"1 / 1"` |
 | `number-align` | alignment | `center + bottom` | Page number alignment |
 | `header` | none \| auto \| content | `auto` | Header content |
-| `header-ascent` | relative | `30%` | Header distance from top |
+| `header-ascent` | relative | `30%` | Raise header into top margin; percentages refer to that margin |
 | `footer` | none \| auto \| content | `auto` | Footer content |
-| `footer-descent` | relative | `30%` | Footer distance from bottom |
+| `footer-descent` | relative | `30%` | Lower footer into bottom margin; percentages refer to that margin |
 | `background` | none \| content | `none` | Background content |
 | `foreground` | none \| content | `none` | Foreground overlay |
-| `flipped` | bool | `false` | Mirror inside/outside margins and binding |
+| `flipped` | bool | `false` | Swap page dimensions for landscape orientation |
 | `binding` | auto \| alignment | `auto` | Binding side for two-sided layout |
-| `supplement` | auto \| none \| content \| function | `auto` | Page-reference supplement |
-| `body` | content | required | Page content |
+| `supplement` | auto \| none \| content | `auto` | Page-reference supplement; does not accept a function |
+| `body` | content | `[]` | Page content |
 
 ### `grid` Function
 
@@ -78,7 +98,7 @@ Use `table.cell` for fine control over individual cells, including spanning mult
 | `fill` | auto \| none \| color \| gradient \| tiling | `auto` | Cell fill |
 | `align` | auto \| alignment | `auto` | Cell alignment |
 | `inset` | auto \| relative \| dictionary | `auto` | Cell padding override |
-| `stroke` | auto \| none \| stroke \| dictionary | `auto` | Cell border override |
+| `stroke` | none \| length \| color \| gradient \| stroke \| tiling \| dictionary | `(:)` | Cell border override; omitted edges inherit the table stroke |
 | `breakable` | auto \| bool | `auto` | Allow the cell to break across pages |
 | `body` | content | required | Cell content |
 
@@ -90,12 +110,12 @@ Wraps content (images, tables, code) with automatic numbering and captions. Figu
 |-----------|------|---------|-------------|
 | `body` | content | required | Figure content |
 | `caption` | none \| content | `none` | Caption text |
-| `kind` | auto \| str \| function | `auto` | Figure type: `"image"`, `"table"`, `"raw"` |
+| `kind` | auto \| str \| function | `auto` | Built-in kinds use functions `image`, `table`, `raw`; strings define custom kinds |
 | `supplement` | auto \| none \| content \| function | `auto` | Reference prefix: `"Figure"`, `"Table"` |
 | `numbering` | none \| str \| function | `"1"` | Figure number format |
 | `gap` | length | `0.65em` | Gap between body and caption |
 | `placement` | none \| auto \| alignment | `none` | Float placement: `auto`, `top`, `bottom` |
-| `scope` | str | `"local"` | Numbering scope |
+| `scope` | str | `"column"` | Placement relative to `"column"` or `"parent"`; only affects floating figures |
 | `outlined` | bool | `true` | Include the figure in an outline |
 
 ### `image` Function
@@ -104,7 +124,7 @@ Embeds external images in the document. Supports PNG, JPG, GIF, and SVG formats 
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
-| `source` | str \| bytes | required | Image path string, encoded image bytes, or raw pixel bytes |
+| `source` | str \| bytes | required, positional | Image path string, encoded image bytes, or raw pixel bytes; not `source: ...` |
 | `format` | auto \| str \| dictionary | `auto` | Encoded format or raw-pixel `(encoding:, width:, height:)` description |
 | `width` | auto \| relative | `auto` | Image width |
 | `height` | auto \| relative \| fraction | `auto` | Image height |
@@ -115,7 +135,7 @@ Embeds external images in the document. Supports PNG, JPG, GIF, and SVG formats 
 
 ## Page Setup
 
-Page configuration is typically done once at the document start. These settings affect all subsequent pages unless overridden.
+Page configuration is typically done once at the document start. These settings affect subsequent content within their scope. A new page set rule can start a new page. For two-sided layouts use `margin: (inside: ..., outside: ...)` and `binding`; `flipped` controls orientation, not binding.
 
 ### Basic Page Configuration
 
@@ -146,7 +166,7 @@ Automatic page numbers with customizable format. Use `"1"` for arabic, `"i"` for
 
 ### Header and Footer
 
-Headers and footers accept arbitrary content. Use `context` to access the current page number and other document state.
+Headers and footers accept arbitrary content. Use `context` to access the current page number and other document state. An explicit footer replaces automatic bottom-aligned numbering; include the page counter yourself. The same applies to a header and top-aligned numbering. Logical page counters can differ from physical page positions after resets.
 
 ```typst
 #set page(
@@ -285,7 +305,7 @@ Specify column count or widths. Content is placed sequentially into cells.
 ```typst
 #table(
   columns: 3,
-  [Header 1], [Header 2], [Header 3],
+  table.header([Header 1], [Header 2], [Header 3]),
   [Cell 1], [Cell 2], [Cell 3],
   [Cell 4], [Cell 5], [Cell 6],
 )
@@ -324,11 +344,13 @@ Use `table.cell` with `colspan` or `rowspan` to merge cells across columns or ro
 
 ## Figures
 
-Figures wrap content with automatic numbering and captions. Add labels for cross-referencing with `@label` syntax.
+Figures wrap content with automatic numbering and captions. Add labels for cross-referencing with `@label` syntax. Use `kind: table` for the built-in table counter. A custom string kind needs an explicit supplement such as `kind: "algorithm", supplement: [Algorithm]`.
+
+This fragment requires the bundled image: run beside `evals/fixtures/assets` or copy that directory with the snippet. A complete example is [api-regressions.typ](../evals/fixtures/api-regressions.typ).
 
 ```typst
 #figure(
-  image("diagram.png", width: 80%),
+  image("assets/diagram.svg", width: 80%),
   caption: [A descriptive caption],
 ) <fig:diagram>
 
@@ -356,7 +378,7 @@ Control exact element placement when automatic flow isn't sufficient.
 
 ### Place (Absolute Positioning)
 
-Position elements relative to page or container edges. Does not affect document flow.
+Position elements relative to the parent container. At the root, this means the page's text area; use `page.background` or `page.foreground` for the full page including margins. Default overlaid content occupies no space, but the call inserts an invisible block and can break a paragraph. Wrap an inline annotation in a zero-size `box` when appropriate. With `float: true`, placement displaces in-flow content.
 
 ```typst
 #place(
@@ -419,3 +441,11 @@ Add space around content. Use named parameters for asymmetric padding.
 #pad(x: 1em, y: 0.5em)[Padded content]
 #pad(left: 2em)[Left-padded only]
 ```
+
+## Sources
+
+- [Page](https://typst.app/docs/reference/layout/page/)
+- [Table](https://typst.app/docs/reference/model/table/)
+- [Figure](https://typst.app/docs/reference/model/figure/)
+- [Image](https://typst.app/docs/reference/visualize/image/)
+- [Place](https://typst.app/docs/reference/layout/place/)

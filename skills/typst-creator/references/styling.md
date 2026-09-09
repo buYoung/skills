@@ -1,5 +1,7 @@
 # Typst Common Styling Reference
 
+Checked: 2026-09-09. Tables summarize selected parameters; consult the official signature for positional/named and settable restrictions. Code blocks are independent snippets unless dependencies are stated.
+
 Typst uses set rules and show rules for styling documents. This file contains styling patterns shared by stable Typst 0.13.0 through 0.15.1. Read the selected file under `versions/` before using version-specific properties such as Typst 0.15 variable-font variations.
 
 ## Function Parameters
@@ -23,7 +25,7 @@ Controls typography including font family, size, color, and language settings. T
 | `tracking` | length | `0pt` | Letter spacing |
 | `spacing` | relative | `100%` | Word spacing |
 | `baseline` | length | `0pt` | Baseline shift |
-| `body` | content | required | Text content |
+| `body` | content | `[]` | Content body; the constructor also has a separate positional string form, `text("...")` |
 
 ### `par` Function
 
@@ -62,7 +64,7 @@ Creates block-level containers with visual styling options like backgrounds, bor
 
 ## Set Rules
 
-Set rules apply default property values to all instances of an element within a scope. They cascade like CSS and are the primary mechanism for consistent document styling.
+Set rules supply defaults from their position until the end of the current block or file. They do not restyle earlier content. Explicit function arguments override these defaults. Only parameters documented as settable (and supported shorthand parameters) can be configured with a set rule; required positional content is supplied at the call site.
 
 ### Syntax
 
@@ -113,14 +115,11 @@ Show rules transform how elements are displayed. Unlike set rules which configur
 
 ### Basic Show Rule
 
-The basic form takes an element type and a transformation function. The `it` parameter receives the matched element.
+For property changes, prefer a show-set rule so later show-set rules can override the style. Use a transformation function only when the content representation itself changes; its `it` parameter receives the matched element. A set rule inside that function cannot be overridden by a later show-set rule outside it.
 
 ```typst
-// Transform all headings
-#show heading: it => {
-  set text(fill: blue)
-  it
-}
+// Style all headings with an overridable rule
+#show heading: set text(fill: blue)
 
 // Transform specific element
 #show "typst": [*Typst*]
@@ -133,24 +132,30 @@ A shorthand syntax that combines show rules with set rules. Use when you want to
 ```typst
 // Apply set rule to specific element
 #show heading: set text(fill: navy)
-#show raw: set text(font: "Fira Code")
+#show raw: set text(font: "DejaVu Sans Mono")
 ```
 
 ### Show with Function
 
-For complex transformations, define a function that receives the element and returns modified content. Access element properties through the `it` parameter.
+For complex transformations, define a function that receives the element and returns modified content. Replacing its display with `it.body` alone omits its visible numbering. Reconstruct that display if needed; this does not imply that the original heading's semantic identity has disappeared. Keep ordinary styles in separate show-set rules.
 
 ```typst
+#show heading.where(level: 1): set text(size: 18pt)
 #show heading.where(level: 1): it => {
   pagebreak(weak: true)
-  set text(size: 18pt)
-  block(it.body)
+  block[
+    #if it.numbering != none {
+      counter(heading).display(it.numbering)
+      h(0.3em)
+    }
+    #it.body
+  ]
 }
 ```
 
 ### Selector Types
 
-Selectors determine which elements a show rule matches. Use `.where()` to filter by specific property values.
+Selectors determine which elements a show rule matches. Use `.where()` to filter element fields, not arbitrary computed styles. Show rules, like set rules, apply forward to the end of their block or file. Show rules provide style context, but location context requires a locatable matched element; see [Context](context.md).
 
 | Selector | Example |
 |----------|---------|
@@ -183,7 +188,7 @@ A typical document preamble combines set rules and show rules to establish consi
 )
 
 #set text(
-  font: "Noto Sans KR", // Requires this font to be installed or provided.
+  font: "NanumGothic", // Requires this font to be installed or provided.
   size: 10pt,
   lang: "ko",
 )
@@ -215,3 +220,27 @@ To achieve a classic academic paper appearance similar to LaTeX defaults, use th
 #show raw: set text(font: "DejaVu Sans Mono")
 #show heading: set block(above: 1.4em, below: 1em)
 ```
+
+## Fonts and Multilingual Typography
+
+Check `typst fonts` for the actual environment before selecting a family. CLI `--font-path` adds project fonts; the web app can discover uploaded font files. A language such as `lang: "ko"` controls language-sensitive behavior but does not install or select a Korean font.
+
+Use an ordered font list for mixed scripts. Family descriptors can restrict coverage with `covers`; the common 0.13+ interface supports a Unicode-character regex or the documented `"latin-in-cjk"` coverage set. Verify fallback glyphs rather than assuming a successful compilation proves all characters are visible.
+
+Environment-dependent example: both named families must be available. Replace the Korean family with one actually installed or supplied.
+
+```typst
+#set text(font: ("Libertinus Serif", "NanumGothic"), lang: "ko")
+English and 한국어 can share a paragraph.
+```
+
+Math needs an OpenType math font. Configure it independently, for example `show math.equation: set text(font: "New Computer Modern Math")`. The font in a quoted math string does not automatically become the surrounding prose font; see [Math](math.md#text-in-math).
+
+Typst 0.15 adds variable font axes through `text.variations` and normalizes family suffixes; consult the [0.15 reference](versions/0.15.md). Use static fonts for 0.13/0.14 compatibility. When diagnosing layout changes, compare the actual font files and versions as well as the compiler.
+
+## Sources
+
+- [Styling](https://typst.app/docs/reference/styling/)
+- [Text and fonts](https://typst.app/docs/reference/text/text/)
+- [Paragraph](https://typst.app/docs/reference/model/par/)
+- [Block](https://typst.app/docs/reference/layout/block/)

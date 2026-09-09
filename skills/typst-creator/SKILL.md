@@ -1,73 +1,87 @@
 ---
 name: typst-creator
-description: Create, update, review, or diagnose Typst source for documents, reports, papers, and presentations. Use whenever a task needs Typst markup, styling, scripting, math, or layout; resolve the target compiler and generate code compatible with stable Typst 0.13.0 through 0.15.1, including a common mode for output that must work across multiple supported versions.
+description: Create, update, review, migrate, or diagnose Typst (.typ) source for documents, reports, papers, and presentations. Use for Typst markup, styling, scripting, math, layout, bibliography, and compiler/export issues. Resolve the compiler and generate source for stable Typst 0.13.0 through 0.15.1, including source shared across supported releases.
 ---
 
 # Typst Document Creation
 
-Generate `.typ` source with syntax and APIs valid for the resolved Typst compiler. This skill supports stable Typst 0.13.0 through 0.15.1.
+Create the requested Typst source using the resolved compiler's language and export capabilities. This skill covers stable 0.13.0, 0.13.1, 0.14.0, 0.14.1, 0.14.2, 0.15.0, and 0.15.1. Sources were checked on 2026-09-09; this is a documented support range, not a promise about later releases.
 
-## Resolve the Target Version
+## Resolve the Target
 
-Resolve the exact compiler before choosing APIs. Use the first available source of evidence:
+Use the first applicable evidence: the user's requested version, a project toolchain/CI pin, then the active compiler's `typst --version`. Resolve a minor-only request to its supported latest patch: `0.13 → 0.13.1`, `0.14 → 0.14.2`, `0.15 → 0.15.1`. If none is established, use **0.15.1 as an assumed target**, not as a detected installation.
 
-1. An exact version explicitly requested by the user.
-2. An exact version pinned by project CI, build commands, or toolchain configuration.
-3. `typst --version` from the active workspace.
-4. Typst 0.15.1 when no exact version can be established.
+Record both the requested target and the executable actually available. If they differ, compilation with the available executable verifies only that version. For an unsupported release or prerelease, explain the boundary and establish a supported target or explicitly qualified best-effort work before claiming compatibility.
 
-Do not infer a version from document syntax. Interpret a minor-only target as its latest supported patch: `0.13` as `0.13.1`, `0.14` as `0.14.2`, and `0.15` as `0.15.1`.
+Establish the export target from the request or existing build. Default document creation to `.typ` source intended for PDF; preserve an existing export target. HTML and bundle export have experimental feature flags and distinct semantics.
 
-If the resolved version is outside 0.13.0–0.15.1 or is a prerelease, do not claim compatibility. Ask the user to select a supported target or explicitly authorize best-effort output.
+## Select Knowledge by Task and Version
 
-## Choose Compatibility Mode
+1. Open the [compatibility index](references/versions/index.md) to locate relevant additions, removals, and migration boundaries.
+2. Read only the needed topic references from the table below.
+3. Apply the mode-specific version route:
+   - **Exact version:** Read the target minor's reference and any earlier reference the index points to for a needed feature. Earlier additions remain available unless a later change removes or alters them.
+   - **Version range:** Read all minor references crossed by the range. Use the common API subset for that range. If it cannot satisfy a requested capability, explain why and offer version-specific alternatives.
+   - **Migration or review:** Inspect the source and destination and every intervening minor boundary in either direction. Identify removed APIs, changed semantics, and necessary replacements.
+4. A reference's restrictions on newer APIs apply only when its own minor line is the final target. They are not global prohibitions when reading that reference for an inherited feature.
 
-- **Exact-version mode:** Generate for one resolved release. Read the relevant common topic references and exactly one minor-version reference.
-- **Range mode:** Generate one source file for multiple supported releases. Read each minor-version reference crossed by the requested range, then use only the common subset that remains valid throughout the range.
-- **Migration or review mode:** Read the source and destination minor-version references. Report deprecated, removed, or behavior-changing APIs before proposing code.
+For example, a 0.15 document using `title` and `frac.style` needs their 0.14 details as well as the 0.15 migration constraints. Do not interpret a missing entry as evidence that an API is unsupported.
 
-In range mode, prefer forward-compatible APIs available since 0.13, such as `curve` instead of the deprecated `path` element, `tiling` instead of `pattern`, and top-level data-loading functions instead of deprecated `.decode` functions.
-
-## Route References
-
-Read only the common topics needed for the task, plus the version references required by the selected compatibility mode.
-
-| Need | Reference |
+| Task | Read |
 |---|---|
-| Markup, mode switching, headings, lists, links, references | [Syntax](references/syntax.md) |
-| Set/show rules, text, paragraphs, blocks | [Styling](references/styling.md) |
-| Values, collections, functions, control flow, imports | [Scripting](references/scripting.md) |
-| Equations, matrices, delimiters, symbols | [Math](references/math.md) |
-| Pages, grids, tables, figures, images, positioning | [Layout](references/layout.md) |
-| Typst 0.13.0–0.13.1 behavior and patch notes | [Typst 0.13](references/versions/0.13.md) |
-| Typst 0.14.0–0.14.2 behavior and patch notes | [Typst 0.14](references/versions/0.14.md) |
-| Typst 0.15.0–0.15.1 behavior and patch notes | [Typst 0.15](references/versions/0.15.md) |
+| Markup, modes, headings, lists, links and labels | [Syntax](references/syntax.md) |
+| Set/show rules, text, fonts and multilingual typography | [Styling](references/styling.md) |
+| Values, functions, collections, imports and data | [Scripting](references/scripting.md) |
+| Equations, symbols, delimiters and math fonts | [Math](references/math.md) |
+| Pages, grids, tables, figures and positioning | [Layout](references/layout.md) |
+| Counters, state, location, queries and convergence | [Context](references/context.md) |
+| Papers, outlines, citations, footnotes and long documents | [Documents](references/documents.md) |
+| Compiler, roots, packages, inputs, exports and diagnostics | [Tooling](references/tooling.md) |
+| Slide pages, reusable layouts and presentation packages | [Presentations](references/presentations.md) |
 
-The common references intentionally omit version-specific parameters and behavior. Do not add an API from current general knowledge without checking the selected version reference.
+### When Local Knowledge Is Insufficient
+
+Check the target release's official changelog and source tag, and the relevant official API documentation. Current API pages describe the current release, so establish introduction/removal boundaries before applying them to older targets. Record material uncertainty if the target's behavior cannot be confirmed. Topic references are curated starting points, not exhaustive API specifications.
+
+Use the image source as a positional argument, distinguish drawing `curve` from 0.15 file `path`, and prefer `tiling` and top-level byte-loading functions over deprecated names in new source.
 
 ## Work Sequence
 
-1. Resolve the target version and compatibility mode.
-2. Read the smallest relevant set of common and version references.
-3. Trace user-provided templates, imports, packages, fonts, assets, and compiler options before changing source.
-4. Generate or revise Typst source without changing caller-owned options or unrelated document structure.
-5. Compile with the resolved compiler when it is available. Treat compilation under another version as useful evidence only for that other version.
-6. Report the resolved version, references used, compatibility limits, and verification evidence.
+1. Resolve the compiler, compatibility mode, and requested output.
+2. Read the relevant references and inspect the existing template, imports, fonts, assets, labels, bibliography and export settings.
+3. Write or revise source. Separate content from reusable formatting; preserve the existing document's meaningful structure and selected resources unless the requested change affects them.
+4. Compile with the exact target when available and inspect diagnostics, including warnings. If unavailable, deliver source with explicit verification limits rather than inventing a successful run.
+5. For document layout work, render and inspect the output for clipping, overlaps, table continuation, numbering, references and glyph coverage. For syntax-only questions, use a small compilation check when helpful without creating a full document workflow.
+6. Return the source/edits and the compatibility handoff below. Provide rendered files when the task calls for them.
 
-## Compatibility Guardrails
+Successful compilation does not establish identical rendering between releases or conformance to an accessibility standard. Check the properties the user requested in the final output.
 
-- Preserve user-selected fonts, page options, labels, bibliography data, package versions, and export targets unless the request changes them.
-- Use forward slashes in file paths. Typst 0.15 rejects backslashes in paths, and forward slashes work across the supported range.
-- Avoid deprecated APIs in new range-compatible output even when an older target still accepts them.
-- Keep version-specific examples in the matching version reference rather than the common topic references.
-- Do not describe a compiler bug fix as a language feature available in earlier patch releases.
-- Most core features need no package, but do not claim that a task needs no package when the requested capability depends on one.
+## Compatibility Handoff
 
-## Return Contract
+Include each of the following, briefly, outside the document body unless the user wants this information in the document:
 
-Return the requested `.typ` source or edits, followed by a concise compatibility handoff containing:
+- The exact target or range, whether it was requested, pinned, detected or assumed, and the executable actually used.
+- The common/topic references and minor-version references actually consulted, using their relative filenames. This makes feature provenance reviewable, including features inherited from an earlier minor release.
+- Material replacements, fallbacks or export limitations; the actual compile command and result; warnings and unperformed checks.
+- For range work, list the releases compiled and separately state whether rendered output was compared. Explicitly distinguish successful compilation across releases from a guarantee of identical rendering.
 
-- resolved Typst version or version range;
-- selected common and version references;
-- deprecated, removed, or fallback behavior that affected the result;
-- compile command and result, or an explicit statement that verification was not run.
+## Bundled Verification
+
+The [validator](scripts/validate_version_support.py) uses Python 3.9+ and supplied Typst executables; it does not install compilers. It compiles common fixtures on each selected release and earlier feature fixtures on later releases. This is a compilation check, not a semantic or visual judge.
+
+From the skill directory:
+
+```sh
+python3 scripts/validate_version_support.py --compiler 0.15.1=/path/to/typst
+python3 scripts/validate_version_support.py --typst-0.14 /path/to/typst-0.14.2
+```
+
+Repeat `--compiler VERSION=PATH` for the seven exact releases and add `--require-all` for full coverage. Legacy minor flags retain their latest-patch meaning. Exit codes: 0 for success, 1 for verification failure, 2 for invalid arguments. Warnings and unchecked releases remain visible; a partial run is not a full-range result. Version queries time out after 10 seconds and individual compilations after 60 seconds.
+
+See [fixture instructions](evals/fixtures/README.md) for assets, expected output, HTML/bundle checks and visual checks; [evaluation prompts](evals/evals.json) exercise the skill's behavior beyond compilation.
+
+## Official Entry Points
+
+- [Typst reference](https://typst.app/docs/reference/)
+- [Changelog and release-specific migration notes](https://typst.app/docs/changelog/)
+- [Official compiler releases](https://github.com/typst/typst/releases)

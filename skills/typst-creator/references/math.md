@@ -1,5 +1,27 @@
 # Typst Common Math Reference
 
+## Contents
+
+- [Function Parameters](#function-parameters)
+- [Math Mode Entry](#math-mode-entry)
+- [Basic Notation](#basic-notation)
+- [Common Functions](#common-functions)
+- [Sums and Products](#sums-and-products)
+- [Matrices and Vectors](#matrices-and-vectors)
+- [Brackets and Delimiters](#brackets-and-delimiters)
+- [Common Greek Letters](#common-greek-letters)
+- [Operators and Symbols](#operators-and-symbols)
+- [Alignment](#alignment)
+- [Cases](#cases)
+- [Text in Math](#text-in-math)
+- [Accents](#accents)
+- [Cancel and Strikethrough](#cancel-and-strikethrough)
+- [Spacing in Math](#spacing-in-math)
+- [Math Fonts and Accessible Descriptions](#math-fonts-and-accessible-descriptions)
+- [Sources](#sources)
+
+Checked: 2026-09-09. Tables summarize selected parameters; consult the official signature for positional/named and settable restrictions. Code blocks are independent snippets unless dependencies are stated.
+
 Mathematical notation syntax shared by stable Typst 0.13.0 through 0.15.1. Read the selected file under `versions/` for version-specific math parameters, layout changes, and symbol removals.
 
 ## Function Parameters
@@ -181,7 +203,7 @@ Matched delimiters scale automatically. Use `lr()` for asymmetric or custom deli
 ```typst
 $(a + b)$           // parentheses
 $[a + b]$           // brackets
-${a + b}$           // braces (use lr for scaling)
+${a + b}$           // matched braces also auto-scale
 $lr(( a/b ))$       // auto-scaling
 $abs(x)$            // absolute value
 $norm(x)$           // norm
@@ -254,7 +276,7 @@ $f(x) = cases(
 
 ## Text in Math
 
-Wrap regular text in quotes to include it in equations. Quoted text renders in the document's text font rather than math italics.
+Wrap regular text in quotes to include it in equations without treating it as a variable. Quoting does not automatically select the surrounding document's text font. For a specific prose font, define a text helper outside the equation, for example `let prose = text.with(font: "Libertinus Serif")`, and insert `#prose[where]` inside math. Use `math.upright` for upright mathematical symbols rather than treating variables as prose.
 
 ```typst
 $x "where" x > 0$
@@ -295,3 +317,15 @@ $a " " b$           // explicit space
 $a med b$           // medium space
 $a thick b$         // thick space
 ```
+
+## Math Fonts and Accessible Descriptions
+
+Use a math-capable OpenType font for equations, independently of the prose family. For example, `show math.equation: set text(font: "New Computer Modern Math")` selects an available math family. Verify symbol coverage and baseline alignment in the rendered output.
+
+For 0.14+ equations, provide a natural-language description with `math.equation(alt:)` when accessible output is required. The 0.15 HTML exporter adds MathML; do not assume this makes older HTML exports equivalent. See [Tooling](tooling.md).
+
+## Sources
+
+- [Math](https://typst.app/docs/reference/math/)
+- [Delimiters](https://typst.app/docs/reference/math/lr/)
+- [Math text font behavior](https://github.com/typst/typst/issues/366)
