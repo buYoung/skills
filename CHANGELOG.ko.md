@@ -6,6 +6,42 @@
 
 ## [Unreleased]
 
+## [1.8.0] - 2026-09-09
+
+### 추가
+
+- `document-writing`에 문서 유형별 작성 흐름과 디자인 시스템 문서 템플릿 추가
+- `react-guide`에 React 18/19 SSR·스트리밍·hydration, `vite-guide`에 Vite 7/8 SSR 통합 가이드 추가
+
+### 개선
+
+- `document-writing`의 디자인 방향 설정, 브랜드 자산 재사용, 반복 피드백 기준 개선
+- `agents-md-generator`의 기존 문서 최초 편입 확인, 주요 사실의 출처 추적과 보존 검토 개선
+- 코드 리뷰 스킬의 기본 범위를 미커밋 변경 전체로 확대하고 버전별 동작 추적과 오탐 확인 개선
+- `jetbrains-vmoptions`의 튜닝을 실제 실행 환경과 측정 근거에 맞추고 재시작 확인·복구 절차 개선
+- `kysely-converter`를 쿼리 작성·수정·리팩터링·타입 오류 진단까지 확장하고 Kysely 0.29.5 가이드 개선
+- `release-it`의 단일 프로젝트·모노레포 버전 선택과 단계별 확인, 취소 후 남은 상태 안내 개선
+- `system-prompt-creator`의 요구사항 기반 평가와 프롬프트 개정 간 비교 절차 개선
+- `typst-creator`의 장문·내보내기·발표 자료 작성 가이드와 7개 안정 버전 호환성 확인 개선
+- `task-brief-creator`와 caveman 변형의 요구사항 확인, 검토 종료 기준과 briefset 예제 개선
+
+### 수정
+
+- `document-writing`의 FDD 근거 검토와 정책 적용 범위 보존, PNG 검증 기준 수정
+- `agents-md-generator`의 여러 줄 Gradle 선언 탐지 오류 수정
+- `task-brief-creator`의 경로·Markdown 구조·의존성 검증 오류 수정
+
+### 변경
+
+- `jetbrains-plugin-development`의 API 가이드를 IntelliJ 2026.2.2 기준으로 갱신하고 공개 API만 사용하도록 변경
+- 코드 리뷰 결과는 결함과 유지보수성 의견을 구분하고 요청한 경우에만 판정을 제공하도록 변경
+- `task-brief-creator`의 최상위 Out of Scope 제외 항목에 `[hard]`·`[deferred]`를 필수화하고, 항목이 없으면 `None — <reason>`만 허용하도록 변경
+- `task-brief-creator`의 경로 참조에 `Route:` 표기와 별도 파일시스템 진입점을 요구하도록 변경
+
+### 제거
+
+- `veo-prompt-director` 스킬과 README의 관련 안내 제거
+
 ### 추가
 
 - 사람이 읽기 좋은 구조화 문서를 위한 `document-writing` skill 추가 — 10개 문서 유형 라우팅, 점진적 reference 로딩, 근거 기반 편집, 구조 검증 지원. Design System Document는 제품 UI와 storefront 시각 자산 출력 세트를 분리하고, allowlist 없이 범위에 포함된 임의의 디지털 storefront를 동적으로 식별해 현재 1차 자료를 조사. 현실형 fixture 행동 eval, 균형형 선택 사례 60개, 스킬 사용·미사용 쌍대 실행, tool·출처 기록, negative control, blind 비교, 정적 review, 실제 PNG canary와 로컬·CI·release evidence 검증 추가

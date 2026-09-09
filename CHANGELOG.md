@@ -6,6 +6,42 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [1.8.0] - 2026-09-09
+
+### Added
+
+- Added `document-writing` for routed document authoring, with design system templates, branding guidance, and design direction workflows.
+- Added React 18/19 SSR, streaming, and hydration guidance, plus Vite 7/8 SSR integration guidance.
+
+### Improved
+
+- Expanded `kysely-converter` to cover query authoring, modification, refactoring, and type error diagnosis, with Kysely 0.29.5 guidance.
+- Improved code reviews with full uncommitted-change coverage, version-specific behavior tracing, and false-positive checks.
+- Separated defects from maintainability feedback in code reviews, with verdicts provided only when requested.
+- Improved `agents-md-generator` with source tracing, preservation checks, and confirmation before managing existing content.
+- Improved `release-it` guidance with version selection, step-by-step confirmations, cancellation, and remaining-state reporting.
+- Added requirement-based evaluation guidance to `system-prompt-creator`, including evidence and comparisons across prompt revisions.
+- Expanded `typst-creator` guidance for long documents, exports, and presentations, with compatibility checks across seven stable releases.
+- Improved both task brief variants with clearer requirement questions, bounded review rounds, and complete briefset examples.
+
+### Fixed
+
+- Fixed `document-writing` guidance for storefront contracts, PNG validation, grounded FDD reviews, and policy applicability.
+- Fixed `agents-md-generator` detection of multiline Gradle declarations.
+- Updated `jetbrains-plugin-development` guidance to IntelliJ 2026.2.2 and required public APIs.
+- Fixed `jetbrains-vmoptions` guidance to use actual runtime evidence, minimal tuning changes, restart verification, and rollback.
+- Fixed path, Markdown structure, and dependency validation in both task brief variants.
+
+### Changed
+
+- Required `[hard]` or `[deferred]` on every top-level Out of Scope exclusion in task briefs, or only `None — <reason>` in the section.
+- Required `Route:` labels and separate filesystem entry points for task brief route references.
+- Changed `release-it` confirmations to native y/n prompts with decline as the default.
+
+### Removed
+
+- Removed the unused `veo-prompt-director` skill.
+
 ### Added
 
 - Added `document-writing` for human-readable structured documents with ten routed document types, progressively loaded references, source-grounded editing, and structural validation. Design System Documents provide separate product UI and storefront visual asset output sets; any in-scope digital storefront is identified dynamically and researched from current first-party material without an allowlist. Added realistic fixture-backed behavior evals, 60 balanced selection cases, paired with-skill/without-skill runs, tool and source receipts, negative controls, blind comparison, static review, an actual PNG canary, and local/CI/release evidence validation.
