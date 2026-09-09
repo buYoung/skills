@@ -38,6 +38,34 @@ Use this reference for substantial creation, rewriting, and review. Readability 
 - Omit optional sections that provide no reader value.
 - Keep necessary nuance, limitations, and safety conditions even when they make the document longer.
 
+## Evidence-preserving editing examples
+
+These are illustrative inputs, not claims about a real system. Use the [drafting and revision sequence](drafting-and-revision.md#edit-prose-then-check-meaning) to review content before polishing and recheck meaning afterward.
+
+### Keep an observation within its evidence
+
+- Supplied evidence: during a pilot, some participants completed tasks faster; the cause was not established.
+- Before: "The tool makes users faster."
+- After: "Some pilot participants completed tasks faster; the pilot did not establish whether the tool caused the change."
+- Why: the revision restores the observed population and uncertainty instead of making an unsupported general causal claim.
+- Limit: do not invent a percentage or a wider population to sound concrete. Broader claims require additional evidence.
+
+### Preserve the condition for permission
+
+- Supplied rule: engineers may use production access only after manager approval.
+- Before: "Engineers are permitted to use production access only in cases where approval has first been obtained from their manager."
+- After: "Engineers may use production access only after manager approval."
+- Why: shorter wording retains both permission and its prerequisite.
+- Limit: deleting "only after manager approval" would change the policy. Other roles or emergency exceptions require their own supporting authority.
+
+### Connect an action to a supplied result
+
+- Supplied instructions: once the server is running, request `GET /health`; the expected response is `{"status":"ok"}`.
+- Before: "Check that the server works."
+- After: "Once the server is running, request `GET /health` and confirm that the response is `{"status":"ok"}`."
+- Why: the reader can identify the starting condition, action, and observable result from supplied information.
+- Limit: this confirms the documented health check, not every application feature. Do not derive an unverified shell command or invent recovery steps.
+
 ## Human review rubric
 
 Rate each dimension as strong, acceptable, or weak:

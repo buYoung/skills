@@ -125,15 +125,21 @@ After routing:
 
 For all substantial creation, rewrite, or review work, read [human-readable-writing.md](references/shared/human-readable-writing.md). Read [source-grounding.md](references/shared/source-grounding.md) only when factual claims require sources or verification. Read [existing-document-edits.md](references/shared/existing-document-edits.md) only when modifying or reviewing an existing document.
 
+For substantial authoring or review, read [drafting-and-revision.md](references/shared/drafting-and-revision.md) to connect preparation, content review, prose editing, and completion. For focused updates, normalization, or fact-checking, apply only its relevant steps to the requested scope; a mechanical correction does not require the full workflow. Read the selected type's review or validation reference for its applicable quality and completion criteria, without loading unrelated references. Type-specific structures, operation boundaries, and validation sequences take precedence over this shared method.
+
 ### 8. Gather context before drafting
 
 Establish the audience, intended outcome, authoritative inputs, constraints, and output destination. Infer what is safely recoverable from supplied material or the repository. Ask only when an unresolved choice would materially change the document's scope, behavior, or tradeoffs.
+
+Before drafting, identify the requested coverage, applicable type-specific completion conditions, and how material unknowns must be handled. Accept notes, fragments, questions, and supplied conversation records as starting material. When a new draft or substantial rewrite needs an outline, optionally organize reader questions and existing evidence using the shared drafting reference; reuse an established outline or decision note when it already serves that purpose.
 
 Do not invent missing decisions or facts. Mark unresolved content explicitly when no live user can answer.
 
 ### 9. Draft and verify
 
 Follow the selected references. Use their structure as a reader-centered default, not as filler. Generic document types may omit sections that do not help the reader. FDD follows its stricter profile and validator contract.
+
+Review content before polishing prose: check both whether readers can find the answers they need and whether material requirements and source facts survived accurately. Resolve content issues within the operation's scope, then edit wording. If editing changes meaning, certainty, conditions, or obligations, recheck the affected passages and their dependencies. Review and fact-check report findings rather than applying corrections. Keep any type-specific structural and semantic checks in their required order.
 
 Before delivery, confirm:
 
@@ -167,6 +173,8 @@ Before delivery, confirm:
 When editing, preserve fenced code blocks, paths, identifiers, exact logs, quotations, and user-owned custom sections unless the user explicitly asks to change them. Preserve caller options and established document contracts. Warn before any instruction that can destroy data or materially disrupt a system.
 
 ## Completion
+
+Use the completion conditions established before drafting. Necessary uncertainty handled under the selected type's rules is not automatically unfinished authoring: a record can faithfully preserve an open decision, and a report can conclude that evidence is insufficient. Conversely, marking a gap does not satisfy a type's blocking requirement. Once the requested scope and required checks are satisfied, stop when only optional embellishment remains; do not narrow requested coverage or omit necessary evidence to finish sooner.
 
 Before reporting completion, compare the resolved output contract and promised paths with the actual final artifact tree. Fix missing owners, links, or files first; if they cannot be produced, report the work as incomplete instead of claiming completion. Report the selected document type, the artifact produced or reviewed, validation performed, and any limitation that remains unverified. Never claim an unrun check passed.
 

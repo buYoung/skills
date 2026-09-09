@@ -298,7 +298,7 @@ def contract_digest(skill_root: Path) -> str:
     files = [skill_root / "SKILL.md"]
     files.extend(path for path in (skill_root / "scripts").glob("*.py") if path.name != "validate_fdd.py")
     files.extend((skill_root / "references" / "document-types" / "design-system").rglob("*.md"))
-    files.extend(skill_root / "references" / "shared" / name for name in ("human-readable-writing.md", "source-grounding.md", "existing-document-edits.md"))
+    files.extend(skill_root / "references" / "shared" / name for name in ("human-readable-writing.md", "source-grounding.md", "existing-document-edits.md", "drafting-and-revision.md"))
     files.extend((skill_root / "evals").rglob("*"))
     included = [path for path in files if path.is_file() and path.relative_to(skill_root).as_posix() != "evals/production-evidence.json" and path.relative_to(skill_root).as_posix() not in {"evals/evals.json", "evals/trigger-evals.json"} and not path.relative_to(skill_root).as_posix().startswith("evals/evidence/")]
     digest = hashlib.sha256()

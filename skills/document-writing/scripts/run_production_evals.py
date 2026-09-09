@@ -210,7 +210,7 @@ def contract_hash(skill_path: Path) -> str:
     files.extend((skill_path / "references" / "document-types" / "design-system").rglob("*.md"))
     files.extend(
         skill_path / "references" / "shared" / name
-        for name in ("human-readable-writing.md", "source-grounding.md", "existing-document-edits.md")
+        for name in ("human-readable-writing.md", "source-grounding.md", "existing-document-edits.md", "drafting-and-revision.md")
     )
     files.extend((skill_path / "evals").rglob("*"))
     included = [
