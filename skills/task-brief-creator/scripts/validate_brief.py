@@ -9,7 +9,7 @@ Usage:
 Exit codes:
     0 - All checks pass with no warnings
     1 - One or more required checks failed, or a warning was reported
-    2 - File not found or unreadable
+    2 - Invalid arguments/repository root, or file not found/unreadable
 
 What this script checks (STRUCTURAL ONLY):
     - Filename matches YYYY-MM-DD-<type>-<slug>.md pattern with a real
@@ -35,8 +35,8 @@ What this script checks (STRUCTURAL ONLY):
     - `## Related Files / Entry Points` contains at least one path-shaped
         inline-code entry; non-proposed paths and root filenames exist on disk
         (skipped only when `(proposed)` appears immediately after that path
-        token; tokens starting with `/` only warn — they are often routes, not
-        files)
+        token; URLs and explicit `Route:` entries are supplementary; only
+        entry tokens before the prose separator count as filesystem paths)
     - Optional constraints use `## Constraints`, sit between `## Scope`
         and `## Related Files / Entry Points`, and are non-empty
 
@@ -135,7 +135,10 @@ OUT_OF_SCOPE_PREFIX_RE = re.compile(r"^\s*-\s+\[(hard|deferred)\]\s+.+")
 # `(proposed)`. This catches fake first-token paths without turning later code
 # symbols into missing files.
 ROOT_FILE_RE = re.compile(r"^[A-Za-z0-9._-]+\.[a-z0-9][a-z0-9._-]*$")
+ROOT_DOTFILE_RE = re.compile(r"^\.[A-Za-z0-9][A-Za-z0-9._-]*$")
 ROOT_EXTENSIONLESS_BASENAME_RE = re.compile(r"^[A-Za-z][A-Za-z0-9_-]*$")
+FENCE_RE = re.compile(r"^[ \t]*(`{3,}|~{3,})(.*)$")
+URL_RE = re.compile(r"^[A-Za-z][A-Za-z0-9+.-]*://|^mailto:", re.IGNORECASE)
 CURRENT_STATE_PREFIX_RE = re.compile(
     r"^\s*-\s+\[(confirmed|inferred)\]\s+\S+"
 )
@@ -215,6 +218,51 @@ class Report:
         return "\n".join(lines)
 
 
+def structural_lines(text: str) -> list[str]:
+    """Mask fenced examples without changing line positions or list indentation."""
+    lines: list[str] = []
+    fence_character = ""
+    fence_length = 0
+    fence_indent = 0
+    for line in text.splitlines():
+        match = FENCE_RE.match(line)
+        indent = len(line.expandtabs()) - len(line.expandtabs().lstrip())
+        if fence_character:
+            if (
+                match
+                and match.group(1)[0] == fence_character
+                and len(match.group(1)) >= fence_length
+                and not match.group(2).strip()
+            ):
+                fence_character = ""
+                lines.append("")
+                continue
+            if fence_indent < 4 or not line.strip() or indent >= fence_indent:
+                lines.append("")
+                continue
+            # A deeply indented code example also ends when its list/code
+            # container ends, even without a literal closing fence.
+            fence_character = ""
+        if match and not (match.group(1)[0] == "`" and "`" in match.group(2)):
+            fence_character = match.group(1)[0]
+            fence_length = len(match.group(1))
+            fence_indent = indent
+            lines.append("")
+        else:
+            lines.append(line)
+    return lines
+
+
+def validate_title_count(text: str, report: Report) -> None:
+    """Examples inside code fences are not document titles."""
+    title_count = sum(
+        bool(re.match(r"^ {0,3}#(?:\s|$)", line))
+        for line in structural_lines(text)
+    )
+    if title_count != 1:
+        report.fail(f"Document must contain exactly one H1 title; found {title_count}.")
+
+
 def parse_sections(
     text: str,
 ) -> tuple[
@@ -239,7 +287,7 @@ def parse_sections(
     current_h2: str | None = None
     current_h3: str | None = None
 
-    for raw_line in text.splitlines():
+    for raw_line in structural_lines(text):
         if raw_line.startswith("# "):
             # Title line — ignored here (handled separately).
             continue
@@ -595,6 +643,11 @@ def validate_sections(
     # 6. `Scope` must have In Scope and Out of Scope subsections with bullets.
     if "Scope" in h2:
         subs = h3.get("Scope", {})
+        if h3_titles_by_h2.get("Scope", []) != ["In Scope", "Out of Scope"]:
+            report.fail(
+                "`## Scope` must contain exactly `### In Scope` then "
+                "`### Out of Scope`, once each and in that order."
+            )
         for sub_name in ("In Scope", "Out of Scope"):
             if sub_name not in subs:
                 report.fail(f"`## Scope` is missing `### {sub_name}` subsection.")
@@ -605,11 +658,7 @@ def validate_sections(
                 )
             else:
                 report.ok(f"`### {sub_name}` has content bullets.")
-        out_of_scope_bullets = [
-            line.strip()
-            for line in subs.get("Out of Scope", [])
-            if BULLET_RE.match(line)
-        ]
+        out_of_scope_bullets = top_level_bullets(subs.get("Out of Scope", []))
         malformed_none_bullets = [
             line
             for line in out_of_scope_bullets
@@ -626,13 +675,12 @@ def validate_sections(
             for line in out_of_scope_bullets
             if not NONE_BULLET_PREFIX_RE.match(line)
         ]
-        if prefix_candidates and not any(
-            OUT_OF_SCOPE_PREFIX_RE.match(line) for line in prefix_candidates
-        ):
-            report.warn(
-                "`### Out of Scope` has no `[hard]` or `[deferred]` "
-                "classified bullet. This is allowed, but classified guardrails "
-                "make exclusions clearer for downstream coding agents."
+        if len(prefix_candidates) != len(out_of_scope_bullets) and len(out_of_scope_bullets) != 1:
+            report.fail("`### Out of Scope` cannot mix `- None — <reason>` with exclusions.")
+        if any(not OUT_OF_SCOPE_PREFIX_RE.match(line) for line in prefix_candidates):
+            report.fail(
+                "Every top-level `### Out of Scope` exclusion must start with "
+                "`[hard]` or `[deferred]`; use only `- None — <reason>` when none exist."
             )
 
     # 7. Checklist sections must use `- [ ]` format. Indented sub-bullets
@@ -659,7 +707,7 @@ def validate_sections(
 
     # 8. Open Questions must be populated and remain executable when unanswered.
     if "Open Questions" in h2:
-        body = [line.strip() for line in h2["Open Questions"] if line.strip()]
+        body = [line for line in h2["Open Questions"] if line.strip()]
         if not body:
             report.fail(
                 "`## Open Questions` is empty — write `- None — <reason>` if genuinely none."
@@ -668,14 +716,14 @@ def validate_sections(
             question_bullets = [
                 line for line in body if BULLET_RE.match(line) and not line[:1].isspace()
             ]
-            non_bullet_content = [line for line in body if not BULLET_RE.match(line)]
+            non_bullet_content = [line for line in body if line not in question_bullets]
             none_bullets = [
                 line
                 for line in question_bullets
                 if NONE_BULLET_PREFIX_RE.match(line)
             ]
             if non_bullet_content:
-                report.fail("`## Open Questions` must contain bullets only.")
+                report.fail("`## Open Questions` must contain top-level bullets only.")
             elif none_bullets:
                 if len(question_bullets) != 1:
                     report.fail(
@@ -825,6 +873,7 @@ def looks_like_path(s: str, allow_extensionless_root: bool = True) -> bool:
     return (
         "/" in s
         or bool(ROOT_FILE_RE.match(s))
+        or bool(ROOT_DOTFILE_RE.match(s))
         or (
             allow_extensionless_root
             and (
@@ -851,8 +900,9 @@ def validate_entry_paths(
 
     Skips a path only when `(proposed)` appears immediately after that
     inline-code token. PRs, URLs, and bare identifiers are not checked.
-    Tokens starting with '/' (routes or absolute paths) only warn when
-    missing — they are often URL routes, not repo files. Trailing `:N` /
+    Only the entry before the prose separator is checked. URLs and explicit
+    `- Route:` entries are supplementary references, not file entry points.
+    Trailing `:N` /
     `:N-M` suffixes (also repeated, e.g. `:12:5`) are stripped before
     the disk check.
     """
@@ -864,8 +914,20 @@ def validate_entry_paths(
     proposed_path_count = 0
     unresolved = 0
     for line in top_level_bullets(h2["Related Files / Entry Points"]):
-        for token_number, match in enumerate(INLINE_CODE_RE.finditer(line)):
+        if line.startswith("- Route:"):
+            continue
+        # Find the prose separator outside inline code (paths may contain spaces).
+        entry_end = len(line)
+        code_spans = [(match.start(), match.end()) for match in INLINE_CODE_RE.finditer(line)]
+        for separator in re.finditer(r"\s+—\s+", line):
+            if not any(start <= separator.start() < end for start, end in code_spans):
+                entry_end = separator.start()
+                break
+        entry = line[:entry_end]
+        for token_number, match in enumerate(INLINE_CODE_RE.finditer(entry)):
             raw = match.group(1).strip()
+            if URL_RE.match(raw):
+                continue
             cleaned = LINE_NUM_SUFFIX_RE.sub("", raw)
             is_proposed = has_adjacent_proposed_marker(line, match.end())
             is_extensionless_basename = bool(
@@ -960,6 +1022,7 @@ def main(argv: list[str]) -> int:
     print(f"Validating: {path}")
     print()
 
+    validate_title_count(text, report)
     file_type = validate_filename(path, report)
     title_type, _ = validate_title(lines[0] if lines else "", file_type, report)
     h2, h3, h2_titles, h3_titles_by_h2 = parse_sections(text)

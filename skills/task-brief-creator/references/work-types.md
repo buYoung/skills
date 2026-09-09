@@ -37,7 +37,7 @@ Three types require an extra H2 section between `Current State (As-Is)` and `Des
 | Type | Required Section | Why this section, for this type |
 |---|---|---|
 | `fix` | `## Reproduction` | The reproduction-first profile needs the repro pinned (steps, environment, frequency, observed vs expected) — not buried in As-Is. The agent verifies against this section, using existing checks first and adding a failing test only when allowed. |
-| `perf` | `## Baseline Measurement` | The measurement-first profile needs the baseline number stated explicitly (current measurement, method, environment, target). Without it, "improvement" is unverifiable. |
+| `perf` | `## Baseline Measurement` | The measurement-first profile needs a measured baseline or an explicit Stage 1 measurement route (method, environment, workload, evidence deliverable), plus the agreed target or structured user-owned target question. Improvement must not be claimed before measurement. |
 | `refactor` | `## Behavior Contract` | The behavior-preservation profile needs the contract named: which observable behaviors must stay invariant, which tests / specs / artifacts lock them, how preservation is verified. |
 
 The other seven types (`feat`, `chore`, `docs`, `test`, `style`, `build`, `ci`) use the nine required sections only, including `Execution Plan`.

@@ -28,12 +28,11 @@ Inline `rg` / `Read`, ~5 reads / 6 greps:
 
 - `src/auth/LoginForm.tsx` — form submission handler. Calls
   `validatePassword()` then POSTs to `/api/login`.
-- `src/auth/validation.ts:34` — `validatePassword()` runs a
-  `decodeURIComponent` on the input as part of a defensive cleanup that
-  was added in PR #211. **Hypothesis:** on iOS Safari, the keyboard
-  inserts `@` as a literal that interacts badly with this decode step
-  (`%` being absent makes the call mostly a no-op except in edge cases
-  involving lone `%` characters near `@`). Needs reproduction to confirm.
+- `src/auth/validation.ts:34` — `validatePassword()` calls
+  `decodeURIComponent` on raw input, added in PR #211. This is an
+  investigation lead, not a demonstrated iOS-specific cause. Capture the
+  actual input and failure before attributing the bug to decoding; `@`
+  alone does not establish a malformed percent-encoding sequence.
 - `cypress/e2e/login.cy.ts` — existing E2E suite. Has a "valid login"
   case but no characters-in-password edge cases.
 - No iOS Safari-specific test harness; team uses BrowserStack on demand.
@@ -51,7 +50,7 @@ The author selects `fix` from the explicit defect and routes patch-versus-remove
 |---|---|---|---|
 | 1 | Reproduction detail | Provide the observed environment so it can be pinned in `## Reproduction`: exact iOS Safari version and device, the failing test account (no literal password — name where the secret lives), the observed error surface, and how often it reproduces. | `fix` plans need a reproducible failing state before implementation. The codebase can identify the likely validation site, but only the user can supply the observed environment, account, and frequency. |
 | 2 | Out of Scope boundary | Lock both the broader validation-chain refactor and the `/api/login` request/response contract out of scope. | Stage 3 found both adjacent to the suspected line. Touching them would widen the defect fix into unrelated behavior change. |
-| 3 | Regression coverage permission | Allow one Cypress case that proves the failure before the fix and passes afterward. | Repository policy requires user permission before adding a new test case. |
+| 3 | Regression coverage permission | Allow one Cypress case for the shared password-submission contract on a supported desktop browser; retain BrowserStack iPhone Safari verification for the reported device-specific failure. | Repository policy requires user permission before adding a new test case. |
 
 User: approve rows 2-3; for row 1 the user supplies the values —
 iOS Safari 17 on iPhone 14 via BrowserStack, QA account
@@ -77,66 +76,66 @@ a bounded Worker decision. Stage 5 follows.
 fix
 
 ## Current State (As-Is)
-- [confirmed] Login flow reject valid credentials on iOS Safari when password contain `@`; same credentials succeed elsewhere — Evidence: pinned BrowserStack reproduction below.
-- [inferred] `validatePassword()` raw `decodeURIComponent` call likely interaction site — Confirm by: isolate step against pinned failure and inspect PR #211 contract.
+- [confirmed] user reports rejected valid credentials on iOS Safari with `@`-containing password — Evidence: Stage 4 BrowserStack observations recorded below; Stage 1 verifies report.
+- [inferred] `validatePassword()` calling `decodeURIComponent` on raw input is likely interaction site — Confirm by: compare pinned failure before and after isolating that step and inspect PR #211's contract.
 
 ## Reproduction
-- Steps: open `/login` on iOS Safari 17, then enter known-valid QA account `qa+iossafari@example.com` whose password contain `@` (password: see 1Password item "QA iOS Safari"), then tap "Log in".
-- Observed: form return "invalid credentials" toast; no network error in dev tools.
-- Expected: same credentials succeed (verified working on desktop Safari 17, Chrome 124, Firefox 125 against same backend).
-- Environment: iOS Safari 17 on iPhone 14 (BrowserStack); reproduce against `main` branch dev build and current production build.
+- Steps: open `/login` on iOS Safari 17, enter known-valid QA account `qa+iossafari@example.com` whose password contains `@` (password: see 1Password item "QA iOS Safari"), tap "Log in".
+- Observed: form returns "invalid credentials" toast.
+- Expected: known-valid QA account can log in; Stage 1 records actual comparison-browser results without assuming them.
+- Environment: iOS Safari 17 on iPhone 14 (BrowserStack); reproduces against `main` branch dev build and current production build.
 - Frequency: always — 5/5 attempts on fresh session.
 
 ## Desired Outcome (To-Be)
-- Login succeed on iOS Safari 17 with passwords containing `@`, match desktop browser behavior.
-- Validation chain stay structurally the same; only offending step change.
-- User-approved Cypress regression case capture bug so it cannot silently return.
+- Login succeeds on iOS Safari 17 with passwords containing `@`, while preserving successful login behavior on comparison browsers.
+- validation chain stays structurally same; only offending step changes.
+- approved Cypress case covers shared password-submission contract on supported browser; actual iOS Safari evidence verifies reported failure.
 
 ## Scope
 ### In Scope
-- Fix validation step in `src/auth/validation.ts` that mishandle `@` on iOS Safari.
-- Add user-approved Cypress E2E case that exercise failing input.
+- Fix validation step in `src/auth/validation.ts` that mishandles `@` on iOS Safari.
+- Add approved Cypress case for evidenced shared submission contract; do not claim it reproduces iPhone-only failure.
 ### Out of Scope
-- [hard] Refactor or restructure validation chain beyond offending step.
-- [hard] Change `/api/login` request or response contract.
-- [deferred] Review other characters that may have similar issues — separate brief if found.
+- [hard] Refactoring or restructuring validation chain beyond offending step.
+- [hard] Changing `/api/login` request or response contract.
+- [deferred] Reviewing other characters that may have similar issues — separate brief if found.
 
 ## Related Files / Entry Points
 - `src/auth/validation.ts:34` — `validatePassword()`; suspected `decodeURIComponent` interaction with `@` on iOS Safari.
-- `src/auth/LoginForm.tsx` — submission handler; call `validatePassword` before POSTing.
+- `src/auth/LoginForm.tsx` — submission handler; calls `validatePassword` before POSTing.
 - `cypress/e2e/login.cy.ts` — add regression case here.
-- PR #211 — introduced `decodeURIComponent` cleanup; check original motivation before remove outright.
+- PR #211 — introduced `decodeURIComponent` cleanup; check original motivation before removing it outright.
 
 ## Execution Plan
-### Stage 1 — Pin failure and validation contract
-- Starts when: Documented BrowserStack environment and referenced QA credential available.
-- Work: Reproduce failure and establish input contract PR #211 intended to preserve.
-- Deliverable: Pinned failing case plus evidence identifying smallest compatible correction boundary.
+### Stage 1 — Pin the failure and validation contract
+- Starts when: documented BrowserStack environment and referenced QA credential are available.
+- Work: Reproduce failure and establish which input contract PR #211 intended to preserve.
+- Deliverable: pinned BrowserStack iOS failure, recorded comparison-browser results, and evidence identifying smallest compatible correction boundary.
 - Ends when:
-  - [ ] Documented failure reproduces on unfixed code and PR #211 purpose is recorded.
+  - [ ] documented failure reproduces on unfixed code and PR #211 motivation is recorded.
 - Handoff: Stage 2 receives pinned failure and compatibility boundary.
-- Replan when: Failure does not reproduce or evidence points outside `validatePassword()`.
-- Worker decision: Patch or remove decoding step from evidence, while URL-significant passwords and login API contract stay compatible.
+- Replan when: failure does not reproduce or evidence points outside `validatePassword()`.
+- Worker decision: Patch or remove decoding step according to pinned evidence, provided URL-significant passwords and login API contract remain compatible.
 
-### Stage 2 — Correct and verify login path
+### Stage 2 — Correct and verify the login path
 - Starts when: Stage 1 provides pinned failure and compatibility boundary.
 - Work: Apply bounded validation correction and exercise user-approved regression coverage.
-- Deliverable: Corrected login path with red-to-green evidence and cross-browser results.
+- Deliverable: corrected login path with iPhone Safari before/after evidence and supported-browser Cypress results.
 - Ends when:
-  - [ ] Pinned iOS Safari case passes and adjacent URL-significant password cases remain valid.
+  - [ ] pinned iOS Safari case passes and adjacent URL-significant password cases remain valid.
 - Handoff: Overall verification receives corrected path, regression evidence, and compatibility results.
-- Replan when: Smallest correction requires `/api/login` contract or validation-chain structure change.
+- Replan when: smallest compatible correction requires changing `/api/login` contract or validation-chain structure.
 
 ## Side Effect Checkpoints
-- [ ] Existing `valid login` Cypress case still pass (no regression on happy path).
+- [ ] Existing `valid login` Cypress case still passes (no regression on happy path).
 - [ ] Passwords containing other URL-significant characters (`%`, `+`, `&`) still validate correctly on all browsers.
-- [ ] Original motivation for `decodeURIComponent` step (per PR #211) remain addressed, or explicitly noted as obsolete.
+- [ ] original motivation for `decodeURIComponent` step (per PR #211) remains addressed, or is explicitly noted as obsolete.
 
 ## Acceptance Criteria
-- [ ] Because user approved new test coverage for this fix, new Cypress case in `cypress/e2e/login.cy.ts` reproduce failure on unfixed code before fix applied.
-- [ ] New case pass after fix on same iOS Safari target.
-- [ ] Manual verification on iOS Safari 17 with QA account's `@`-containing password result in successful login.
-- [ ] Full Cypress suite stay green.
+- [ ] reported failure is pinned on unfixed code in BrowserStack iPhone Safari before correction.
+- [ ] approved Cypress case verifies shared password-submission contract on supported desktop browser; its results are not labeled iPhone Safari results.
+- [ ] Manual verification on iOS Safari 17 with QA account's `@`-containing password results in successful login.
+- [ ] Full Cypress suite stays green.
 
 ## Open Questions
 - None — no user-owned decision remains; patch-versus-remove is bounded by Stage 1 evidence and compatibility constraints.
@@ -164,14 +163,14 @@ scope. From the brief alone:
    account `qa+iossafari@example.com` with the password from the
    1Password item "QA iOS Safari", per `Reproduction`).
    Confirm the failure on `main` to verify the repro is real.
-2. Add user-approved Cypress case in `cypress/e2e/login.cy.ts` (named in `Related
-   Files / Entry Points` and required by `Acceptance Criteria` #1) that
-   exercises failing input. Confirm it fails on unfixed code before
-   patching.
+2. Record the shared password-submission contract and add the approved
+   Cypress case on a supported desktop browser. Pin a red-to-green case
+   there only if the observed cause reproduces there; keep the original
+   iPhone Safari failure and its verification separate.
 3. Open `src/auth/validation.ts:34` (named in `Related Files / Entry
    Points` with the suspected interaction site already noted) and read
    PR #211's motivation before patching, as required by Stage 1's investigation and bounded `Worker decision`.
-4. Patch the offending step. The new Cypress case must flip green; full
+4. Patch the offending step. The device-specific before/after check and the supported-browser Cypress case must pass; full
    suite stays green (per `Acceptance Criteria` and `Side Effect
    Checkpoints`).
 
@@ -184,9 +183,9 @@ names the account and where its password lives.
 
 ## Notes
 
-- **Why the Acceptance Criteria lead with an approved regression check** —
-  the `fix` behavior profile requires reproduction-first. Because the
-  Stage 4 answer allows a new Cypress case, this example names that case.
+- **Why the Acceptance Criteria lead with the actual device reproduction** —
+  the `fix` behavior profile requires reproduction-first on the affected
+  target. The approved Cypress case is a separate supported-browser contract check.
   Without that permission, the brief would use an existing test or manual
   reproduction path instead.
 - **Why Side Effect Checkpoint #2 lists URL-significant characters** —
@@ -206,3 +205,5 @@ names the account and where its password lives.
   flow on iOS Safari with `@` in password — narrow), TARGET (the auth
   module — Stage 3 confirms `validation.ts`). All four derivable, no
   halt needed.
+
+Browser feasibility: [Cypress browser support](https://docs.cypress.io/app/references/launching-browsers#webkit-experimental) describes experimental desktop WebKit; it is not an iPhone Safari target. [BrowserStack Cypress targets](https://www.browserstack.com/docs/automate/cypress/browsers-and-os) likewise list desktop OS/browser combinations. The documented BrowserStack iPhone session is a separate manual verification route.

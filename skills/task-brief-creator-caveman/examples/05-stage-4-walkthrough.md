@@ -111,7 +111,7 @@ refactor
 
 ## Current State (As-Is)
 - [confirmed] `src/hooks/useAuth.ts` export 7 named values; 14 component files depend on surface — Evidence: exports plus repo import search.
-- [confirmed] Three internal helpers have no reach outside `useAuth.ts` — Evidence: repo-wide symbol search.
+- [confirmed] 3 internal helpers have no reach outside `useAuth.ts` — Evidence: repo-wide symbol search.
 - [confirmed] `useAuthSelector` imported in 4 dashboard components — Evidence: named-import search.
 - [confirmed] `src/hooks/__tests__/useAuth.test.ts` carry 23 behavior cases — Evidence: existing test declarations.
 - [confirmed] `src/contexts/AuthContext.tsx` coupled through reducer/dispatch and frozen by Stage 4 scope decision — Evidence: provider imports and approved row.
@@ -120,7 +120,7 @@ refactor
 - Locked: every case in `src/hooks/__tests__/useAuth.test.ts` (all 23 tests).
 - Locked: the named-export shape of `useAuth.ts` — same names, same call signatures, same return types.
 - Locked: `src/contexts/AuthContext.tsx` — file diff must be zero lines.
-- Verification: `pnpm vitest src/hooks/__tests__/useAuth.test.ts` green before and after; `git diff --stat src/contexts/AuthContext.tsx` returns 0; the 14 importing component files compile and test without modification.
+- Verification: `pnpm vitest run src/hooks/__tests__/useAuth.test.ts` green before and after; `git diff --exit-code HEAD -- src/contexts/AuthContext.tsx` exits 0 with empty output; the 14 importing component files compile and test without modification.
 
 ## Desired Outcome (To-Be)
 - `useAuth.ts` internally reorganized — helpers grouped, dead branches removed, naming consistent — with no observable change to consumers.
@@ -145,7 +145,7 @@ refactor
 - `src/components/dashboard/` — imports `useAuthSelector`; do not edit.
 
 ## Execution Plan
-### Stage 1 — Lock behavior and export baseline
+### Stage 1 — Lock the behavior and export baseline
 - Starts when: Existing hook suite, export surface, and frozen consumer files available.
 - Work: Verify behavior contract and record public/internal boundary before edits.
 - Deliverable: Green baseline and export/consumer map constraining refactor.
@@ -197,8 +197,8 @@ patch is needed.
 ## Stage 5.7 — Cold-Pickup Verification
 
 Gate evaluation: work type is `refactor` — type ∈ {fix, perf, refactor}
-fires the auto-ON gate regardless of input simplicity (the 5
-user-decision rows from Stage 4 would fire it independently). The
+fires the auto-ON gate regardless of input simplicity (the one
+user-decision row from Stage 4 would fire it independently). The
 structural validator passed in Stage 5 and downstream execution reconstruction
 aligned in Stage 5.5, so the pass runs.
 
@@ -213,8 +213,23 @@ Its report:
 ```yaml
 verdict: clean
 first_actions:
-  - Run `pnpm vitest src/hooks/__tests__/useAuth.test.ts` on `main` to confirm the 23-case baseline is green.
-  - Open `src/hooks/useAuth.ts` and map the 7 named exports against the locked surface before touching internals.
+  - Read the saved behavior contract and identify the recorded pre-work baseline.
+  - Open `src/hooks/useAuth.ts` and map the locked exports before implementation.
+execution_reconstruction:
+  first_stage: Stage 1 verifies behavior and the export baseline before edits.
+  ordered_route:
+    - Stage 1 baseline → Stage 2 internal refactor → overall verification.
+  deliverables_and_handoffs:
+    - Stage 2 receives the green baseline and public/internal boundary; overall verification receives the focused refactor and original baseline evidence.
+  verification_signals:
+    - Run the documented `pnpm vitest run src/hooks/__tests__/useAuth.test.ts` against the existing suite; expect all 23 cases to pass before and after the refactor.
+    - Inspect the frozen-file diff and compile unchanged consumers; expect no frozen-file change and no consumer type errors.
+  no_change_routes:
+    - None — the requested internal reorganization remains to be done; a failing baseline causes replanning.
+  replan_boundaries:
+    - Stop dependent edits and return to the plan author if the baseline fails, an internal helper has an external consumer, or cleanup needs a frozen-file change.
+  completion_basis:
+    - Evaluate whole-work Acceptance Criteria after both stages and every Side Effect Checkpoint finish.
 ask_backs: []
 missing_concerns: []
 over_terse_bullets: []
@@ -222,7 +237,7 @@ over_terse_bullets: []
 
 `verdict: clean` with empty `ask_backs`, `missing_concerns`, and
 `over_terse_bullets` is termination trigger 4 (Clean pass) — the loop
-stops after 1 pass with no patches, and the pass-1 snapshot is deleted.
+stops after 1 pass with no patches. The final artifact hashes and checks are recorded, and the shared round-1 snapshot is deleted after reporting.
 Had the sub-agent flagged an over-terse bullet, it would have been
 treated as register drift and rewritten in normal prose under the
 Auto-Clarity carve-out — never matched against a Stage 4 row as
@@ -250,7 +265,7 @@ A coding agent receiving only the saved brief should be able to start,
 preserve the locked behavior, and decide completion without asking for
 more scope. From the brief alone:
 
-1. Run `pnpm vitest src/hooks/__tests__/useAuth.test.ts` against `main`
+1. Run `pnpm vitest run src/hooks/__tests__/useAuth.test.ts` against `main`
    to confirm the 23-case baseline is green (Behavior Contract).
 2. Open `src/hooks/useAuth.ts` (only edit target named in `Related
    Files / Entry Points`) and restructure internals — group helpers,
@@ -311,3 +326,30 @@ brief if it is ever needed.
   concrete brief edit, and dependent facts are called out in `근거`.
   It is not a generic "add or change?" prompt; it is a compact decision
   register the user can approve or override by row.
+
+
+## Requirements Clarification and Fallback Walkthroughs
+
+These are worked interaction scenarios, not measured agent runs. Apply the
+same policy in normal chat prose for both variants; only saved plan prose
+changes register.
+
+| Situation | Question and recommendation | Answer or lack of answer | Required outcome |
+|---|---|---|---|
+| "Remember the selected theme" leaves persistence duration unclear. Code shows an existing preference store. | Ask whether the choice lasts for this session or across sessions; recommend the existing persistent store and cite that pattern. | User chooses session-only. | Update Desired Outcome, Scope, execution stages, and acceptance together; do not preserve the rejected persistent-store recommendation as a requirement. |
+| A new System theme option has unspecified live OS-change behavior; preserving the current snapshot until reload is reversible and safe. | Ask whether to subscribe to live changes; recommend the existing lifecycle pattern, and disclose the safe snapshot fallback plus a milestone before UI acceptance. | Question is left unanswered after an opportunity to respond. | Save the snapshot fallback as a non-blocking Open Question with that milestone; mark it unconfirmed. At the milestone, ask again before proceeding. |
+| The same request would break a persisted preference format and no compatible fallback is established. | Ask whether the break and migration are intended; explain the existing consumers and recommend preserving compatibility pending the decision. | No answer; the requested implementation cannot use that recommendation as an executable fallback. | Halt without writing a new plan. Do not invent the migration choice. |
+| Review notices a theme animation that could be added but is unnecessary for the requested theme setting. | Present it as an optional enhancement, with exclusion as the default. | No answer. | Keep animation excluded; do not add a new module, acceptance threshold, or implementation stage for it. |
+| Performance work names a target but no baseline measurement exists. | Ask only for unavailable workload/environment facts; put the measurement method and evidence deliverable in Stage 1. | User supplies the representative workload. | Save a measurement-first route; do not fabricate a current number or require the user to run the benchmark. |
+| User says "cancel this task" while questions remain. | No further clarification is needed to interpret the cancellation. | Task cancelled. | Stop authoring and checks. Do not apply unanswered-question defaults or write a new plan. |
+
+A representative saved fallback retains the established shape:
+
+```markdown
+- [non-blocking] Should System follow live OS-theme changes? — Default: retain the OS-theme snapshot until reload, preserving the current behavior; Reconfirm before: UI acceptance.
+```
+
+The fallback is a declared temporary route, not an approved product decision.
+A user who instead says "finish the questions and write with those defaults"
+permits authoring when the stated defaults are safe; this differs from cancelling
+the task.

@@ -27,7 +27,8 @@ The **chat interaction language follows the user's input** — Korean input gets
 ### In Scope
 - <bullet>
 ### Out of Scope
-- <bullet>
+- [hard] <must-not-touch boundary>
+- [deferred] <excluded follow-up, if any>
 
 ## Related Files / Entry Points
 - `<path>` — <one-line purpose>
@@ -115,7 +116,7 @@ Short factual description of how things are today.
 This is the baseline the `Desired Outcome (To-Be)` will be compared against.
 
 - Use as many bullets as the task needs, but keep each bullet to one coherent unit of current context.
-- Anchor the snapshot: have the first bullet record the reference point — `as of <short-sha> on <branch>` — so the facts have a fixed baseline when the brief is consumed later.
+- Anchor the snapshot with the inspected revision/branch when available, or the inspection date and checkout location when version-control metadata is unavailable. Do not emit unfilled `<short-sha>` or `<branch>` placeholders in a saved plan.
 - Concrete: name the function, the module, the UX behavior.
   - Good: `LoginForm` validates email only `onBlur` — users don't see the error until they try to submit.
   - Bad: Login UX is not great.
@@ -173,8 +174,7 @@ Examples:
 - Bad: `It's slow.` (not measurable)
 - Bad: `Improve performance significantly.` (no baseline, no target)
 
-If the user cannot give a baseline, push back during Stage 4.
-Do not invent a number.
+If the baseline is not measured yet, say so and give Stage 1 the measurement method, workload/environment inputs, and required evidence deliverable before optimization. Ask for user-held workload/environment facts when unavailable, and clarify the target threshold if product intent is ambiguous. Do not invent a baseline or require the user to perform the measurement.
 
 ### § Behavior Contract (`refactor` only)
 
@@ -227,7 +227,7 @@ Out of Scope is the higher-leverage one: it stops the downstream agent from bein
   - Good: Do not change the `PaymentService` interface — other teams depend on it.
   - Bad: Don't touch unrelated code.
     (too generic — every brief has this)
-- Prefix out-of-scope bullets when the distinction matters:
+- Prefix every top-level out-of-scope exclusion:
   - `[hard]` means the agent must not touch this in this brief.
   - `[deferred]` means valid follow-up work, intentionally excluded now.
 - Do not put implementation judgment in `Out of Scope`.
@@ -284,7 +284,10 @@ Rules:
 - Existing paths must exist in the repo as of the codebase review step.
 - Proposed new paths are allowed only when the user confirms them or the target directory / naming pattern is clear from the repo.
 - The proposed marker is the exact literal token `(proposed)` placed immediately after the inline-code path — variants like `(proposed edit)` or `(proposed path)` are not recognized by the structural validator, and a marker later in the line does not skip validation for earlier paths.
-- Root filenames such as `package.json` and `README.md` are checked on disk just like slash-bearing paths. A safe extensionless basename such as `LICENSE`, `Makefile`, `Dockerfile`, or `Pipfile` is checked when it is the first inline-code token, already exists at the repository root, or carries the exact adjacent `(proposed)` marker. This makes a made-up first entry fail while later code symbols such as `STANDARD_SECTIONS` remain symbols; use `()` for code symbols.
+- Root filenames such as `package.json`, `README.md`, and `.gitignore` are checked on disk just like slash-bearing paths. A safe extensionless basename such as `LICENSE`, `Makefile`, `Dockerfile`, or `Pipfile` is checked when it is the first inline-code token, already exists at the repository root, or carries the exact adjacent `(proposed)` marker. This makes a made-up first entry fail while later code symbols such as `STANDARD_SECTIONS` remain symbols; use `()` for code symbols.
+- Put file entry points before the first prose-separating ` — ` outside inline code. Inline code after it is explanation, not another file to validate. Multiple file tokens before the separator are all checked.
+- URLs are supplementary references, not filesystem paths. Write a route as ``- Route: `/login` — <purpose>`` and provide a separate file/directory entry for its implementation. Neither URLs nor routes satisfy the mandatory file-entry count.
+
 - Prefer stable locators over bare line numbers.
   Good: `` `validate_entry_paths()` in `scripts/validate_brief.py` — tighten `(proposed)` handling.``
   Risky: `` `scripts/validate_brief.py:570` — fix this.``
@@ -376,7 +379,7 @@ Distinct from `Execution Plan`: stage completion belongs under each stage's `End
 - Do not require new test files, fixture files, or automation unless the user or repository rules allow them.
   If a small malformed sample is needed only to prove behavior, specify that it should be temporary or scratch-only when the repository permits, and should not be committed unless explicitly requested.
 
-If the user cannot give concrete criteria, push back during Stage 4 — do not invent them.
+Derive technical proof paths from input and code evidence. Ask when the desired behavior or acceptance threshold remains ambiguous, offering a grounded recommendation. If unanswered, record a safe fallback and reconfirmation point; halt when no safe fallback exists. Do not invent user acceptance requirements.
 
 ### § Open Questions
 
@@ -464,13 +467,13 @@ feat
 
 ## Side Effect Checkpoints
 - [ ] Existing in-app hotkeys still work (no regression).
-- [ ] macOS accessibility permission prompt appears only once, on first launch.
+- [ ] Verify the chosen plugin/platform permission requirements against its documentation and record the actual setup/result.
 - [ ] When global hotkey registration fails, the app does not crash and the Settings screen shows an error.
 
 ## Acceptance Criteria
 - [ ] All 5 default shortcuts fire successfully while the app is backgrounded.
 - [ ] Shortcut edits in the Settings UI apply immediately without a restart.
-- [ ] In a release build, hotkey registration completes within ≤ 100ms of app launch.
+- [ ] In a release build, verify all five background actions after registration reports ready and record the tested build and result.
 
 ## Open Questions
 - [non-blocking] On Linux, if support is unavailable, should the Settings section be hidden or shown as disabled? — Default: hide the unsupported section; Reconfirm before: Linux release scope is approved.

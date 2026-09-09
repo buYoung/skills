@@ -48,14 +48,13 @@ demonstration. See `references/stage-4-interview.md` for the
 decision-table policy and `references/cold-pickup.md` for the
 cold-pickup execution rules.
 
-Under the dummy-path precondition above, the brief outputs in `01`,
-`02`, and `05` each pass `scripts/validate_brief.py` with exit code 0
-and 0 warnings. For `04`, the parent and child 01 as shown — together
-with minimal conforming versions of children 02 and 03, which the
-example only sketches — pass `scripts/validate_briefset.py` (one
-invocation, transitive child checks) with exit code 0 and 0 warnings;
-each child also passes `validate_brief.py` individually with 0
-warnings. Run the validators from the installed skill package
-directory. When the extracted briefs live outside the hypothetical host
-repo, pass that host repo as `--repo-root <repository-root>` so standard
-entry-point paths do not need artifact-only rewrites.
+Under the dummy-path precondition above, extract the complete saved blocks in
+`01`, `02`, `04`, and `05` using their documented filenames. Example `04`
+includes the parent and all three complete children, so it needs no invented
+stand-in children. Run `validate_brief.py` for single plans and
+`validate_briefset.py` for the parent from the target repository root using
+the absolute installed script path. For an isolated artifact tree, pass
+`--repo-root <repository-root>` explicitly. Example `03` is intentionally
+invalid. Caveman example `06`, when present, is another complete single plan.
+The displayed semantic review reports are worked illustrations, not measured
+agent-run results; a live run must report the checks it actually completed.

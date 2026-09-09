@@ -25,6 +25,22 @@ They are the stable decision-table contract: number, decision content, recommend
 
 ---
 
+## Requirements and Recommendations
+
+Ask about a requirement when the input and bounded code review support multiple materially different interpretations of the goal, behavior, scope, or acceptance boundary.
+Explain the uncertainty and meaningful alternatives in the existing four-column table; recommend the smallest option that fulfils the stated intent and cite the evidence.
+Do not postpone intent clarification by exploring more implementation branches, and do not convert an uncertain interpretation into a firm obligation just to enumerate every input item.
+
+When the user appears to have missed a necessary condition, explain how it affects the requested outcome and recommend a concrete addition.
+Mark optional enhancements as recommendations and keep them separate from required clarification. They remain excluded if unanswered; do not create extra architecture, tooling, or verification obligations without a task-related reason.
+Ask first and allow the user an opportunity to respond. A selected safe fallback may keep a plan executable, but it does not make the recommendation an approved user decision.
+If a safe fallback exists, keep the unresolved decision in the exact default/reconfirm `Open Questions` form; otherwise halt without saving.
+
+Measured facts, implementation choices, and deeper technical unknowns remain author/worker work. User-held observations, reproduction conditions, and external facts unavailable to the author may be requested as factual inputs; distinguish those requests from product decisions.
+For performance work, investigate the current baseline instead of requiring the user to measure it; ask only for target intent, user-held workload constraints, or unavailable environment information.
+
+---
+
 ## Decision Collection
 
 Before presenting the table, build a decision register from Stage 3 review notes plus residual input gaps.
@@ -56,14 +72,14 @@ User-owned topology constraints, when any
 
 Tree-construction rules:
 
-- A row is only worth asking if the user must decide something.
+- A row is worth asking when the user must make a decision or supply a specific observation unavailable from the reviewed artifacts.
   If a node maps to "general background", drop it — Stage 4 is not a context-gathering interview.
-- Each row maps to a concrete brief change: add, remove, narrow, broaden, split, defer, or keep as a structured non-blocking `Open Questions` item with a safe default.
+- Each row maps to a concrete brief change or missing factual input: add, remove, narrow, broaden, split, defer, or keep as a structured non-blocking `Open Questions` item with a safe default.
 - If one decision changes whether another is relevant, state the dependency in `근거` and order the rows parent-before-child.
   After the user answers, prune irrelevant rows before applying changes.
 - If a node can be answered by reading the codebase, mark it *codebase-resolvable* and resolve it before the table.
   If it needs deeper technical investigation, put that work into `Execution Plan` with a `Replan when` boundary.
-  Technical facts do not become user questions.
+  Do not delegate the technical investigation to the user; request only specific user-held observations unavailable from the artifacts.
 - Product intent, business rules, future scope, acceptance thresholds, sequencing preferences, and ownership decisions are **not** codebase-resolvable.
   Code findings can support the recommendation, but the user still decides.
 - Output mode and work type are author-owned when code and input make them evident.
@@ -118,7 +134,7 @@ Each row follows this contract:
 
 - **`순번`** — stable row number.
   The user can answer "1 OK, 2 change to..." without quoting the whole table.
-- **`내용`** — the actual decision the user must make.
+- **`내용`** — the actual decision the user must make, or the specific unavailable observation they are asked to supply.
   Phrase it as a decision question, not as background.
 - **`수정 추천안`** — the concrete change you recommend applying to the brief.
   This can be "include in scope", "exclude from scope", or "keep as a structured non-blocking Open Question with this safe default".
@@ -134,7 +150,7 @@ Rules:
 - If the table has many rows, group them by section in the `내용` text, but keep the four-column table shape.
 - After the user answers, apply the decision to the draft brief plan.
   If an answer invalidates later rows, drop or revise those rows before continuing.
-- A timeout, cancellation, or no response is not approval.
+- An unanswered or skipped question is not approval. Ask first and allow a reasonable opportunity to answer before applying a fallback.
   For a non-blocking row that already names a safe fallback and reconfirmation point, activate that fallback, preserve the row in structured `Open Questions` form, and continue without another approval round.
   For any blocking row, halt without writing.
 - If a saved single brief or briefset contains structured non-blocking `Open Questions`, present those items after save using the same four-column table and patch the saved file after the user answers.
@@ -147,13 +163,13 @@ Rules:
 Proceed to Stage 5 only when **any** of these is true:
 
 - Every mandatory user-owned decision is decided (the brief can be drafted).
-- The user explicitly stops (`stop`, `enough`, `그만`, `충분해`, `done`) and no blocking user-owned decision remains; otherwise halt without writing.
+- The user explicitly ends the interview and asks to continue authoring, and no blocking user-owned decision remains. A request to stop or cancel the task instead stops authoring without further writes.
 - Every remaining user-owned decision is non-blocking, has a safe fallback, and has a reconfirmation point; save each one as `- [non-blocking] <question> — Default: <safe fallback>; Reconfirm before: <stage or milestone>`.
 
 If a user-owned decision has no safe fallback and execution cannot continue without it, **HALT** in Stage 4 and create no file.
 External ownership does not make a blocking decision safe to defer.
-If the user does not answer, cancels, or lets structured input expire, apply the same split: non-blocking rows use their declared fallback and proceed to Stage 5; any blocking row halts without writing.
-Silence never changes a row's ownership or counts as approval.
+If the user leaves a question unanswered, skips the question, or lets structured input expire, apply the same split: non-blocking rows use their declared fallback and proceed to Stage 5; any blocking row halts without writing.
+Silence never changes a row's ownership or counts as approval. A task cancellation stops work; do not apply the unanswered-question fallback to it.
 
 After a safe termination, proceed to Stage 5 (save + structural validate), Stage 5.5 (downstream execution reconstruction), and Stage 5.6 (content and executability self-check) exactly as documented in `SKILL.md`, then cold-pickup verification (Stage 5.7) when its gate fires.
 Stage 4 does not change the saved-brief structure.

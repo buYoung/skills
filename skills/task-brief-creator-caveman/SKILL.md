@@ -66,7 +66,7 @@ Load references only when their decision point arrives:
 3. Read [references/work-types.md](references/work-types.md) during Stage 2 when the work type is not obvious or when the type changes downstream behavior.
 4. Read [references/briefset.md](references/briefset.md) during Stage 1 when multiple execution contexts are plausible.
 5. Read [references/bloat-decomposition.md](references/bloat-decomposition.md) only after a candidate child brief is independently executable but still looks oversized or mixed.
-6. Read [references/stage-4-interview.md](references/stage-4-interview.md) before presenting user-owned decisions.
+6. Read [references/stage-4-interview.md](references/stage-4-interview.md) before the Stage 4 ownership pass, including requirements clarification and recommendations.
 7. Read [references/template.md](references/template.md) while composing the saved Markdown.
 8. Read [references/cold-pickup.md](references/cold-pickup.md) when the Stage 5.7 gate fires or the user forces cold-pickup.
 
@@ -78,7 +78,7 @@ Caveman style applies to saved brief prose only, not to planning, validation, or
 
 ## When This Skill Runs
 
-- **Manual trigger only.** The user invokes this skill explicitly (via slash command, `/task-brief-creator-caveman`, or similar).
+- **Explicit caveman intent.** Run when the user requests a caveman-register implementation work plan or invokes this skill by name. Mere mention while reviewing or editing the skill is not a request to generate a plan; normal-prose plan requests route to `task-brief-creator`.
 - Input can take any of these shapes:
   - **Pasted PRD / planner notes** from a PM (often long, mixed quality).
   - **Rough task notes** typed into chat (one or two lines).
@@ -110,9 +110,9 @@ This skill is the caveman variant of `task-brief-creator`.
 The saved brief is written in caveman **full** mode — fragments, dropped articles, short synonyms — as a **register transform** of the normal-mode brief.
 Other intensity levels (`lite`, `ultra`, `wenyan-*`) are out of scope; do not switch.
 
-**Caveman compresses *register*, not *content*.** A caveman plan and its normal-mode equivalent must carry **the same facts, bullets, section depth, execution stages, required fields, and nested checklist depth**.
+**Caveman compresses *register*, not *content*.** The pre-conversion content inventory and the caveman plan must carry **the same facts, bullets, section depth, execution stages, required fields, and nested checklist depth**.
 Shorter sentences, dropped articles, and short synonyms are the only changes.
-If the caveman version has fewer bullets than the normal-mode version would have, that is content compression — not a caveman transform — and is forbidden.
+If conversion merges distinct inventory items, removes a condition, or drops a stage, restore those items; do not justify lost content as a register change.
 There is no token-count target; the goal is a primitive-sounding register over a fully enumerated work instruction, not a smaller document.
 
 **Two hard rules — both absolute:**
@@ -124,7 +124,7 @@ There is no token-count target; the goal is a primitive-sounding register over a
 
 - Articles (`a` / `an` / `the`) dropped.
 - Filler (`just` / `really` / `basically` / `actually` / `simply`) dropped.
-- Pleasantries / hedging dropped.
+- Pleasantries dropped; uncertainty, negation, conditions, and obligation stay intact.
 - Sentence fragments OK; pattern `[thing] [action] [reason]. [next].`
 - Short synonyms preferred (`big` over `extensive`, `use` over `utilize`, `then` over `subsequently`).
 
@@ -389,6 +389,14 @@ Use this exact table shape for user-decision questions:
 Keep these four headers exactly as written, even when the surrounding conversation is not Korean.
 They are the stable decision-table contract: number, decision content, recommended change, and rationale.
 
+**Intent before enumeration.** Preserve each requirement's meaning, not an unresolved interpretation of its words.
+If input and bounded review leave multiple plausible goals, behaviors, scope boundaries, or completion criteria, ask the user before treating one interpretation as the task.
+Use the existing decision table to show the ambiguity, concrete alternatives, recommended interpretation, and supporting evidence.
+Distinguish a missing condition needed for the stated goal from an optional enhancement; label recommendations as proposals, not existing requirements.
+Offer only task-relevant additions. An unanswered optional enhancement stays excluded; do not enlarge the plan to make it look more complete.
+Ask first and allow an opportunity to answer. If no answer arrives and a safe fallback exists, save it with its reconfirmation milestone in `Open Questions`; never label it approved.
+If no safe fallback exists, halt without saving. A task cancellation stops authoring; it is not permission to use fallbacks and continue.
+
 User-owned gaps to close before drafting:
 
 - **Desired Outcome (To-Be)** — confirm when absent, ambiguous, or when the codebase review suggests more than one plausible interpretation.
@@ -400,14 +408,14 @@ User-owned gaps to close before drafting:
 - **Open Questions** — keep only non-blocking user-owned decisions with safe fallback and reconfirm milestone.
 
 Author determines output mode, work type, entry points, side-effect checks, and technical sequencing when input and codebase make them evident.
-Technical unknowns become investigation stages, bounded `Worker decision` fields, `Replan when` conditions, constraints, or author-selected defaults.
+Technical unknowns become investigation stages, bounded `Worker decision` fields, `Replan when` conditions, constraints, or author-selected defaults. Ask the user for relevant observations or access details only when they hold information unavailable from the reviewed artifacts; do not ask them to perform the technical investigation.
 
-**Decision-table rule.** Each row must be a real decision, not a vague status note.
+**Decision-table rule.** Each row must request a real decision or a specific unavailable user-held observation, not a vague status note.
 `내용` states what the user must decide.
 `수정 추천안` states the concrete brief change you recommend.
 `근거` cites the input, codebase finding, existing pattern, or risk.
 After the user answers, patch the draft plan in memory before composing the brief.
-A timeout, cancellation, or no response is not approval: non-blocking rows use their declared safe fallback, remain in structured `Open Questions` form, and proceed; any blocking row halts without writing.
+An unanswered or skipped question is not approval: non-blocking rows use their declared safe fallback, remain in structured `Open Questions` form, and proceed; any blocking row halts without writing.
 Full decision classification, table rules, and termination rules live in `references/stage-4-interview.md`.
 
 Before writing `Open Questions`:
@@ -446,11 +454,25 @@ The user reviews the file in their editor in Stage 6, where real markdown render
    - Exit **0** → continue to Stage 5.5; the validator result is reported in the Stage 6 banner.
    - Exit **1** (structural failure) → fix file and rerun validator without asking user.
      If same structural cause still fails after two repair attempts, leave file in place and carry residual failure into Stage 6.
-   - Exit **2** (file I/O error) → the save did not actually land; investigate and retry.
+   - Exit **2** (file I/O error) → inspect the actual error: invalid arguments, invalid `--repo-root`, missing artifact, or unreadable file. Correct the cause; do not infer that a saved file disappeared or recreate it unnecessarily.
 
    The validator only checks **structural** conformity (section presence, checklist format, filename pattern, type coherence).
    It does *not* judge content quality — Stage 5.5 execution reconstruction, Stage 5.6 self-check, Stage 5.7 cold-pickup, and human review do that.
    Passing validator ≠ good brief; failing validator = malformed brief.
+
+### Shared Validation Budget and Artifact State
+
+A validation run covers the single plan or the entire parent-and-children set. It has at most **five rounds**, including the initial round.
+A round starts from one saved artifact state, runs structural validation, Stage 5.5, Stage 5.6, and gated Stage 5.7 in that order.
+Keep the existing two-repair limit for the same structural cause; structural repairs before Stage 5.5 remain inside that round.
+Any content edit after Stage 5.5 starts the next round from structural validation; do not restart a stage-local unlimited loop or reset the counter for a child.
+Collect briefset reports against the same artifact state before applying related patches together. Unchanged children need not be rewritten, but each round still covers every required document.
+At each round start, snapshot all authored files to a unique scratch directory outside the repository and record the round, file membership, content hashes, findings, decisions, and checks actually completed.
+Do not apply a content patch unless a round remains to validate it. At round five, retain the latest well-formed artifact or restore a previously checked snapshot when a demonstrated regression requires it; stop automatic repairs and report remaining gaps.
+Restoration is set-wide: restore parent and affected children from the same recorded state, remove only files created by this run that are absent from that snapshot, and rerun structural validation.
+Reuse an earlier semantic result only for exactly the restored content hashes and unchanged input/decisions; otherwise report it unverified. Restoration does not open a sixth repair round.
+A new user answer or requested edit starts a new validation run. An internal retry, unavailable agent, or renamed file does not reset the budget.
+Delete scratch snapshots after the final state and residuals have been reported. The Stage 5.7 reference uses this shared bookkeeping and adds no per-child retry budget.
 
 ### Stage 5.5 — Downstream Execution-Reconstruction Check
 
@@ -460,7 +482,10 @@ Purpose: observe how fresh coding agent naturally reconstructs saved plan as wor
 Explanation must recover first stage, intended order, each stage deliverable and addressable handoff, verification input and expected signal when present, any no-change branch, replan boundaries, and whole-work completion basis after side-effect checks.
 This checks direction and executability, not full input coverage; Stage 5.6 remains coverage check.
 
-Spawn a sub-agent and send only a natural work-start request in the user's ordinary style, containing the saved brief path.
+Use a new sub-agent with no inherited conversation, prior findings, or reused reviewer context, and enforce a read-only task boundary.
+Send only a natural work-start request in the user's ordinary style, containing the saved brief path.
+The agent explains intended work; it must not execute the plan, edit files, or run its implementation commands.
+If independent context or read-only operation cannot be provided, or the agent fails without a usable result, record Stage 5.5 as unavailable with the reason. Do not claim an aligned reconstruction or substitute an informed self-review.
 For briefset mode, include only the briefset parent path.
 Do not include the original user request, Stage 3 findings, Stage 4 decisions, suspected gaps, validation criteria, expected answer format, or any hint about what might be wrong.
 Do not ask the sub-agent to "verify", "review", "audit", "compare", or "find missing items".
@@ -484,7 +509,7 @@ Treat only material drift as a failure:
 - The sub-agent assumes work that the brief did not intend.
 - Caveman compression made execution reconstruction ambiguous or wrong.
 
-If material drift appears, patch plan, rerun structural validator, and run execution-reconstruction check again with same information boundary.
+If material drift appears, patch only within the shared round budget, restart from structural validation, and run a fresh execution-reconstruction check with the same information boundary.
 Do not fix drift by changing the sub-agent prompt.
 Fix the brief.
 
@@ -532,13 +557,13 @@ Run this checklist:
 - [ ] **Question discipline:** every `Open Questions` item is genuinely user-owned.
   Every saved question is non-blocking and names safe default plus reconfirm milestone; move technical/reversible choices into investigation, `Worker decision`, `Replan when`, constraints, or deferred scope.
   If `Open Questions` says `None`, the brief made the necessary calls instead of hiding them.
-- [ ] **Caveman parity:** bullet count, enumerate depth, and per-section content volume are identical to what an equivalent normal-mode brief would carry from the same input.
-  If you mentally re-render this brief in normal prose and a bullet would split into two, put it back in two bullets here.
+- [ ] **Caveman parity:** compare the saved prose with the pre-conversion inventory of requirements, conditions, quantities, stages, deliverables, and handoffs. Each concern remains separately addressable; identifiers, uncertainty, negation, and obligation retain their meaning.
+  Do not infer parity from an imagined normal-mode brief or from bullet counts alone.
   Caveman is register-only.
 
 If any check fails, fix the brief in place with `Edit`, then re-run the structural validator (`validate_brief.py` for a single brief, `validate_briefset.py` for a briefset parent).
 Because the file changed after Stage 5.5, re-enter the validation chain at Stage 5.5 before running Stage 5.6 again.
-Loop until the latest saved file passes Stage 5.5 and Stage 5.6 in order.
+Continue only within the shared five-round budget. Stop on a repeated unresolved gap with no justified patch or on budget exhaustion; report the latest file as incomplete, not passed.
 
 The self-check outcome is separate from structural validator and downstream execution-reconstruction check — report all in Stage 6.
 A brief can pass structural validation and still fail this self-check; in that case the file is incomplete even though it is well-formed.
@@ -574,14 +599,14 @@ The full trigger-phrase lists and the rule for inputs containing both live in `r
 
 **Skip on residual validator failure.** Stage 5.7 is skipped only when structural validation still fails after two repair attempts.
 
-Reasons that are **not** valid skips when a gate has fired: token budget, latency, inferred host policy, "the brief looks fine".
-If a gate fires and Stage 5.7 is skipped anyway, the Stage 6 banner is wrong and the loop is broken.
+The shared round cap and documented unavailable/unfinished outcomes are explicit termination conditions. Token cost, latency preference, inferred host policy, and "the brief looks fine" do not authorize silently skipping an otherwise required run.
+If a gate fires, Stage 6 must report the actual cold-pickup result or the documented reason it could not run.
 
 **Mechanism — when the gate fires, read `references/cold-pickup.md` (report schema, pass bookkeeping, routing table, termination triggers, banner formats), then:**
 
-1. Snapshot the saved brief for this pass (rollback anchor — see *Pass Bookkeeping and Rollback* in the reference).
-2. Spawn an `Explore` or `general-purpose` sub-agent.
-   If the host cannot spawn sub-agents, use the *Sub-Agent Unavailable Fallback* in the reference — never silently skip a gated-ON run.
+1. Use the current round's set-wide snapshot and ledger (see *Pass Bookkeeping and Rollback* in the reference).
+2. Spawn a fresh read-only sub-agent without inherited conversation or previous reports.
+   If independent read-only execution is unavailable or fails, use the *Sub-Agent Unavailable Fallback* in the reference — never silently skip a gated-ON run.
 3. Hand it **only the original user input or planning notes plus the brief path** — no Stage 3 uncertainty register, Stage 4 decisions, suspected gaps, decomposition rationale, Stage 5.5 execution-reconstruction result, or Stage 5.6 self-check result.
    Do not include hints such as what to inspect, what might be missing, or which split you expect the sub-agent to prefer.
    For briefset mode, parent pass receives original input plus parent path. Each child pass receives original input, same parent path, and one child path.
@@ -596,7 +621,7 @@ Caveman is a register transform; if compression made a bullet ambiguous, the sub
 **Drift handling.** When the report's `verdict` is `needs_changes` or `blocked`, or when any unrejected `ask_backs` / `missing_concerns` / `over_terse_bullets` survive routing — `Edit` the saved brief in place to close the gap, re-run the structural validator, re-enter Stage 5.5, then Stage 5.6, and only then re-evaluate the Stage 5.7 gate.
 Route every `ask_backs[*]` / `missing_concerns[*]` through the routing table in the reference before patching, including the disagreement-vs-drift check against answered Stage 4 rows.
 `over_terse_bullets[*]` are caveman-register findings; they never match a Stage 4 row `내용`, so they are always treated as drift — patch in place under the Auto-Clarity carve-out, never as disagreement.
-Loop until one of the six termination triggers in the reference fires (Regression, Oscillation, Stable findings, Clean pass, No-op pass, Hard cap — evaluated in that priority order).
+Continue within the shared validation budget until one of the six termination triggers in the reference fires (Regression, Oscillation, Stable findings, Clean pass, No-op pass, Hard cap — evaluated in that priority order).
 
 Cold-pickup never overrides a Stage 4 decision the user already locked, never invents Acceptance Criteria, Side Effect Checkpoints, or Out-of-Scope guardrails the input did not imply, and never silently rewrites `Open Questions` — drift fixes either resolve a question into another section or leave the question intact for the user.
 
@@ -638,7 +663,7 @@ Hand off to the user for review.
    The banner stays as shown; do not append `self-check skipped` / `cold-pickup skipped` lines in this case.
 
    If Stage 5.5 surfaced execution-reconstruction drift, mention what was patched (for example, missing Stage 2 deliverable or ambiguous caveman handoff).
-   If the structural validator passed but the Stage 5.6 self-check surfaced gaps that you fixed in place, report it the same way (e.g., "self-check found 2 input concerns missing from In Scope and one bullet that had been merged for caveman compression; restored them, re-validated").
+   If structural validation passed but the Stage 5.6 self-check surfaced gaps fixed within the shared budget, report it the same way (e.g., "self-check found 2 input concerns missing from In Scope and one bullet that had been merged for caveman compression; restored them, re-validated").
    If Stage 5.7 patched the brief after cold-pickup drift, report it the same way (e.g., `cold-pickup flagged 2 gap(s) and 1 over-terse bullet; patched in place`).
    If the user used Force OFF triggers, report `cold-pickup skipped per user request`.
    If Stage 5.7 was auto-skipped because no auto-ON trigger fired, report `cold-pickup skipped: trivial signals (...)` with the signal snapshot shown in the banner case above.
@@ -656,10 +681,10 @@ Hand off to the user for review.
    ```
 
    After user answers, patch saved plan, move resolved decisions into appropriate sections, leave only structured non-blocking user questions, rerun validator, Stage 5.5 execution reconstruction, Stage 5.6 self-check, then Stage 5.7 gate.
-   If user gives no answer, cancels, or lets structured input expire, keep declared defaults active and questions unchanged; they do not block coding agent before named reconfirmation milestones.
+   If the user leaves a question unanswered, skips that question, or lets structured input expire, keep declared defaults active and questions unchanged; they do not block coding agent before named reconfirmation milestones.
    Chat stays normal prose; only saved brief body prose uses caveman full mode.
 
-4. The user owns "done." Do not stage or commit the file.
+4. The user owns "done." A task cancellation stops further edits and verification. Do not stage or commit the file.
    Loop on Stage 6 until they explicitly stop.
 
 **Why save-then-review:** an earlier iteration rendered the full brief in chat for approval *before* writing to disk.
@@ -710,20 +735,19 @@ python3 <skill-dir>/scripts/validate_brief.py \
   docs/briefs/2026-04-23-feat-global-hotkey-system.md
 ```
 
-Exit codes: `0` pass with no warnings, `1` structural failure or any reported warning, `2` file I/O error.
+Exit codes: `0` pass with no warnings, `1` structural failure or any reported warning, `2` argument, repository-root, or file I/O error.
 
 Scope of the validator (deliberately structural only):
 
-- Filename pattern, title format, type coherence across filename / title / section value, and slug length.
-- Presence and template order of all nine required H2 sections + `In Scope` / `Out of Scope` H3s; duplicate H2 sections are rejected.
+- Filename pattern, exactly one H1 title outside fenced code, title format, type coherence across filename / title / section value, and slug length.
+- Presence and template order of all nine required H2 sections + exactly one `In Scope` then `Out of Scope` H3; duplicate H2 sections are rejected. Fenced examples do not establish sections or checklist items.
 - `[confirmed]` / `[inferred]` prefixes in `Current State (As-Is)`, unique consecutive execution-stage headings with required fields, and structured non-blocking `Open Questions` shape.
 - Type-conditional section (`Reproduction` / `Baseline Measurement` / `Behavior Contract`) present and populated for the matching type; `- N/A — <reason>` cannot be mixed with other bullets.
 - Top-level bullet content in narrative sections; top-level `- [ ]` items in checklist sections; populated `Open Questions` with `- None — <reason>` when no questions remain.
-- `Related Files / Entry Points` contains at least one path-shaped inline-code top-level entry; non-proposed paths and root filenames resolve on disk, while confirmed future paths use the exact adjacent `(proposed)` marker. A safe extensionless root basename is checked when it is the first inline-code token of a bullet, already exists at the repository root, or uses that exact marker. This accepts real files such as `Pipfile` without mistaking later symbols such as `STANDARD_SECTIONS` for paths; an invented first-token name fails.
+- `Related Files / Entry Points` validates file tokens before the first prose-separating em dash outside inline code. At least one existing file/directory or adjacent `(proposed)` path is required. Root files, including dotfiles, resolve on disk. URLs and ``- Route: `/path` — <purpose>`` entries are supplementary and do not satisfy the file-entry requirement. Descriptive inline code after the separator is not checked as a file.
 - Optional `--repo-root` lets isolated brief artifacts validate their entry points against actual target checkout.
 - Optional `Constraints` heading shape.
-- `Out of Scope` bullets without `[hard]` or `[deferred]` classification are reported as warnings.
-  Any warning makes validation fail; the validator does not judge whether the classification is semantically correct.
+- Every top-level `Out of Scope` exclusion needs `[hard]` or `[deferred]`; a sole `- None — <reason>` means no exclusions. Missing labels fail. Other warnings also make validation fail; semantic correctness remains a content-review responsibility.
 
 Out of scope (still on content review): whether evidence labels are truthful, stage outcomes and handoffs are executable, Out-of-Scope entries are real guardrails, entry points are good, Acceptance Criteria are measurable, type section is sufficient, and caveman conversion preserves meaning.
 
@@ -782,7 +806,7 @@ The structural validator catches format errors after the fact; this list catches
 - [ ] If internal completion and user / operator success differ, both are represented in the brief and verification does not confuse one for the other.
 - [ ] If type is `fix` / `perf` / `refactor`, the type-conditional section (`Reproduction` / `Baseline Measurement` / `Behavior Contract`) is present and populated — `- N/A — <reason>` if genuinely none.
 - [ ] `Out of Scope` has at least one specific entry (or an explicit "None — self-contained." with rationale).
-  Use `[hard]` for must-not-touch guardrails and `[deferred]` for follow-up work when the distinction matters.
+  Prefix every top-level exclusion with `[hard]` for must-not-touch guardrails or `[deferred]` for follow-up work; a sole `- None — <reason>` is the alternative.
 - [ ] Broad review findings have been triaged into must-fix / check-while-here / deferred; brief does not ask downstream agent to fix every valid concern discovered during review.
 - [ ] If plan asks worker to prove validator or workflow bug, proof path uses existing scripts or temporary scratch artifacts only when repository/user rules allow them.
 - [ ] `Acceptance Criteria` are measurable (checkable, not aspirational).
@@ -798,16 +822,16 @@ The structural validator catches format errors after the fact; this list catches
 - [ ] Auto-Clarity carve-outs stayed in normal prose (code, paths, identifiers, error strings, quantitative expressions, ordered repro steps, behavior contracts, constraints with semantic risk).
 - [ ] Section headers, title, and `## Work Type` value were not caveman-rewritten.
 - [ ] `- N/A — <reason>` escape hatch (where used) keeps the literal `N/A —` token; only the reason after the em dash is caveman.
-- [ ] **Enumerate parity:** bullet count and per-section enumerate depth match what an equivalent normal-mode brief would carry.
+- [ ] **Enumerate parity:** the pre-conversion content inventory maps to separate saved bullets with the same concern and checklist depth.
   No bullet was merged, no concern was dropped, and no qualifier was removed for register reasons.
   Caveman compressed *how* each bullet reads, not *how many* bullets there are.
-- [ ] **Execution parity:** stage count, field labels/order, nested `Ends when` depth, handoff recipients, deliverables, and replan conditions match normal-mode equivalent.
+- [ ] **Execution parity:** stage count, field labels/order, nested `Ends when` depth, handoff recipients, deliverables, and replan conditions match the pre-conversion inventory.
 
 ## Post-Run Checklist (before the Stage 6 banner)
 
 Evaluated after Stage 5.5 / 5.6 / 5.7 have run or been skipped, immediately before reporting the Stage 6 banner — these items cannot be checked before `Write`.
 
-- [ ] Cold-pickup ran when any auto-ON trigger fired (briefset / stage-4-rows ≥ 1 / non-empty `Open Questions` / type ∈ `{fix, perf, refactor}`) OR the user used Force ON triggers.
+- [ ] Cold-pickup ran when an auto-ON trigger or Force ON applied and earlier checks reached it; otherwise Stage 6 names the documented unfinished/unavailable outcome. No unrun check is passed.
 - [ ] Cold-pickup auto-skipped with `trivial signals (...)` snapshot when no auto-ON trigger fired and no Force ON was used.
 - [ ] Cold-pickup skipped per user request (`cold-pickup skipped per user request`) when Force OFF was used, even if auto-ON triggers would have fired.
 - [ ] Stage 6 banner reflects what actually ran — a silent skip on a fired gate is **not** acceptable.

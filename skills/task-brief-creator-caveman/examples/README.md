@@ -46,7 +46,7 @@ otherwise the path-existence check will correctly flag them as missing.
 | [03-halt-ambiguous.md](03-halt-ambiguous.md) | Vague one-liner | — | Halt case; what the four-anchor check rejects, what additional input would flip it to CONTINUE, and where the narrow target probe fits when only TARGET is missing. (No saved brief — chat-only, normal prose.) |
 | [04-briefset-checkout-i18n.md](04-briefset-checkout-i18n.md) | Tech-lead Korean note | briefset (`refactor`+`feat`+`fix`) | Addressable handoffs, pairwise parallel/hotspot rules, no-change branches, and verification inputs/signals; saved parent and child bodies use caveman full without compressing fixed fields. |
 | [05-stage-4-walkthrough.md](05-stage-4-walkthrough.md) | Korean refactor note | `refactor` | Codebase probes remove technical questions, one user-owned scope decision remains, and Stage 5.5 reconstructs the executable route while checking caveman ambiguity. |
-| [06-caveman-style-feat.md](06-caveman-style-feat.md) | Pasted English spec | `feat` | Minimal conversion demo preserving evidence tags, full execution grammar, `(proposed)`, `≤ 100ms`, tooltip text, and structured normal-prose questions. |
+| [06-caveman-style-feat.md](06-caveman-style-feat.md) | Pasted English spec | `feat` | Minimal conversion demo preserving evidence tags, full execution grammar, `(proposed)`, five-action coverage, tooltip text, and structured normal-prose questions. |
 
 Stage 4 always runs an ownership pass and uses the Markdown decision table
 with `순번`, `내용`, `수정 추천안`, and `근거` only when user-owned decisions remain.
@@ -60,18 +60,13 @@ demonstration, and use `06` for the smallest caveman conversion. See
 `references/cold-pickup.md` for the cold-pickup execution rules, and
 `references/caveman-style.md` for the caveman conversion rules.
 
-Under the dummy-path precondition above, the brief outputs in `01`,
-`02`, `05`, and `06` each pass `scripts/validate_brief.py` with exit
-code 0 and 0 warnings.
-For `04`, the parent and child 01 as shown — together with minimal
-conforming caveman versions of children 02 and 03, which the example
-only sketches — pass `scripts/validate_briefset.py` (one invocation,
-transitive child checks) with exit code 0 and 0 warnings; each child
-also passes `validate_brief.py` individually with 0 warnings. Caveman
-compresses prose, not structure — the structural validator does not
-check writing style, so caveman bodies pass exactly the same checks as
-their normal-prose equivalents. Run the validators from the installed
-skill package directory. When extracted briefs live outside the
-hypothetical host repo, pass that host repo as
-`--repo-root <repository-root>` so standard entry-point paths do not
-need artifact-only rewrites.
+Under the dummy-path precondition above, extract the complete saved blocks in
+`01`, `02`, `04`, and `05` using their documented filenames. Example `04`
+includes the parent and all three complete children, so it needs no invented
+stand-in children. Run `validate_brief.py` for single plans and
+`validate_briefset.py` for the parent from the target repository root using
+the absolute installed script path. For an isolated artifact tree, pass
+`--repo-root <repository-root>` explicitly. Example `03` is intentionally
+invalid. Caveman example `06`, when present, is another complete single plan.
+The displayed semantic review reports are worked illustrations, not measured
+agent-run results; a live run must report the checks it actually completed.

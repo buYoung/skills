@@ -47,7 +47,7 @@ Three concrete entry points → save threshold met.
 
 | 순번 | 내용 | 수정 추천안 | 근거 |
 |---|---|---|---|
-| 1 | Default shortcut combinations finality | Flag the five default combinations as draft in `Open Questions`; implementer may propose defaults, product confirms before merge. | Input names five shortcut actions but does not provide concrete key combinations. Codebase review cannot decide product defaults. |
+| 1 | Default shortcut combinations finality | Flag the five default combinations as draft in `Open Questions`; Stage 1 proposes and records one combination per action for local implementation and verification, and product confirms before merge. | Input names five shortcut actions but does not provide concrete key combinations. Codebase review cannot decide product defaults. |
 | 2 | Linux behavior for unavailable global-hotkey support | Show the shortcut-editing section as disabled with an explanatory tooltip. | Linux is out of scope for shipping, but Settings may still render in shared UI paths. Disabled state makes the missing capability explicit. |
 
 User: approve rows 1-2.
@@ -87,7 +87,7 @@ feat
 ## Constraints
 - Tauri v2 plugin only — v1 alternative not on table.
 - Windows + macOS ship together. Linux best-effort, ship after.
-- macOS accessibility permission flow must not block first launch — defer prompt to first hotkey use.
+- Follow the documented permission requirements of the chosen plugin/platform; do not assume an accessibility prompt is required without evidence.
 
 ## Related Files / Entry Points
 - `src/hotkeys/useHotkey.ts` — current in-app hotkey impl; need coexistence path with global hotkey.
@@ -97,13 +97,14 @@ feat
 
 ## Execution Plan
 ### Stage 1 — Stabilize shortcut contract
-- Starts when: Existing in-app actions, platform support, and five draft defaults confirmed.
-- Work: Establish global registration contract without changing in-app action semantics.
-- Deliverable: Shortcut contract and platform capability state ready for Settings.
+- Starts when: Existing in-app actions and platform support inspected; user permits a provisional five-action draft before merge approval.
+- Work: Propose and record five draft key combinations, then establish global registration contract without changing in-app action semantics.
+- Deliverable: Five-action draft combination table, shortcut contract, and platform capability state ready for Settings.
 - Ends when:
   - [ ] Five actions have stable ids, draft defaults, and failure reporting.
 - Handoff: Stage 2 receives shortcut contract and capability state.
-- Replan when: Tauri v2 cannot preserve action contract on Windows or macOS.
+- Replan when: Tauri v2 cannot preserve action contract on Windows or macOS; stop dependent work and return to plan author for compatibility/scope clarification.
+- Worker decision: Propose draft combinations from existing app conventions; use only for local implementation and verification until product approval before merge.
 
 ### Stage 2 — Expose editable shortcuts
 - Starts when: Stage 1 provides contract and capability state.
@@ -116,7 +117,7 @@ feat
 
 ### Stage 3 — Verify platform behavior
 - Starts when: Integrated surface available in Windows, macOS, and Linux builds.
-- Work: Verify foreground compatibility, background invoke, permission timing, failure handling, and unsupported state.
+- Work: Verify foreground compatibility, background invoke, documented platform setup, failure handling, and unsupported state.
 - Deliverable: Platform evidence ready for whole-work acceptance evaluation.
 - Ends when:
   - [ ] Required platform scenarios and side-effect checkpoints have results.
@@ -125,23 +126,21 @@ feat
 
 ## Side Effect Checkpoints
 - [ ] Existing in-app hotkey still fire when window focused (no regression).
-- [ ] macOS accessibility permission prompt appear once, on first hotkey use, not at app launch.
+- [ ] Verify the documented macOS plugin setup and required permissions, recording the actual result; unavailable permission produces the existing Settings failure state.
 - [ ] Linux build with plugin unavailable: Settings section render disabled + tooltip; no crash.
 - [ ] Plugin registration failure → app no crash; user-visible error in Settings.
 
 ## Acceptance Criteria
 - [ ] All 5 default shortcut fire successfully while app backgrounded on Windows + macOS.
 - [ ] Shortcut edit in Settings UI apply immediately, no app restart.
-- [ ] Release build: hotkey registration complete ≤ 100ms of plugin init.
+- [ ] In release builds, verify background invocation after plugin registration reports ready; record the tested build and result without inventing a timing threshold.
 - [ ] Linux: Settings section render disabled with tooltip "global hotkey unsupported on this system" when plugin reports unavailable.
 
 ## Open Questions
-- [non-blocking] Are the five default key combinations final, or should the implementer propose a draft? — Default: use the documented draft; Reconfirm before: merge approval.
-- [non-blocking] Should OS-default shortcut conflict detection enter this plan? — Default: defer it to a follow-up; Reconfirm before: Stage 2 scope is frozen.
+- [non-blocking] Are the five default key combinations final, or should the implementer propose a draft? — Default: use the five-action draft generated and recorded in Stage 1 for local implementation and verification only; Reconfirm before: merge approval.
 ```
 
-Validator: passes structurally (`-v` not needed for this run, no
-collisions). The `(proposed)` marker on
+Validator: the saved example is expected to pass under the documented dummy-path setup; no filename collision occurs. The `(proposed)` marker on
 `src/settings/SettingsScreen.tsx` exempts it from path-existence
 check.
 
@@ -175,7 +174,7 @@ A coding agent opening the saved brief without prior context:
 3. Reads `## Desired Outcome (To-Be)` → end state is 5 backgrounded
    shortcuts + Settings editor.
 4. Reads `## Constraints` → Tauri v2 only, no v1 fallback,
-   permission prompt must defer.
+   documented platform setup must be verified.
 5. Reads `## Out of Scope` → does not invest in conflict detection or
    multi-profile.
 6. Routes to `src/hotkeys/useHotkey.ts`, `src-tauri/Cargo.toml`,
@@ -193,13 +192,10 @@ different register, not token reduction.
 - Body prose is caveman full; section headers, the title format, code
   paths, identifiers, PR numbers, the `(proposed)` marker, and the
   `- [ ]` checklist marker are all preserved verbatim.
-- Constraints section keeps `≤ 100ms` and `Tauri v2 plugin only`
-  precision — caveman compressed the connective tissue, not the
-  threshold.
+- Requirements keep `Tauri v2 plugin only` and the five named actions intact. No unsupported timing threshold or permission-prompt behavior is introduced.
 - Acceptance Criteria stayed measurable; checklist items survive
   caveman because they were already concrete.
 - The Linux fallback note (`disabled with tooltip "global hotkey
-  unsupported on this system"`) keeps the literal tooltip string
-  verbatim — error / UI strings are an Auto-Clarity carve-out.
+  unsupported on this system"`) preserves the example's authored tooltip string — error / UI strings are an Auto-Clarity carve-out.
 - Stage 4 interview, Stage 6 save report, and this `Notes` section are
   all in normal prose. Caveman never crosses into chat.

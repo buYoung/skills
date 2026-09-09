@@ -8,7 +8,7 @@ Where caveman's defaults would risk technical ambiguity in a brief, this documen
 
 **Caveman is a register transform, not a content reduction.** Every rule below applies to *how* prose is written (articles, fillers, phrasing, sentence shape).
 None of them apply to *what* the brief contains.
-Bullet count, enumerate depth, `Execution Plan` stage count, required field count/order, nested `Ends when` checklist depth, number of distinct concerns per section, and input coverage are identical to a normal-mode plan written from the same input.
+Before converting prose, establish a content inventory from the input, reviewed evidence, and user decisions: requirements, conditions, quantities, execution stages, deliverables, and handoffs. Preserve that inventory, its separate bullets, required field order, and nested checklist depth through conversion. Do not claim parity by imagining an unseen normal-mode output.
 If a caveman rule below would force you to drop a fact, a bullet, or a distinct concern to satisfy a register goal, the rule yields — correctness and completeness always beat compression.
 
 ---
@@ -35,7 +35,7 @@ Drop:
 
 - Articles: `a`, `an`, `the`.
 - Filler: `just`, `really`, `basically`, `actually`, `simply`, `literally`, `obviously`.
-- Pleasantries / hedging: `please`, `kindly`, `I think`, `it seems that`, `arguably`, `probably`.
+- Pleasantries: `please`, `kindly`. Preserve epistemic qualifiers such as `probably`, `may`, `appears`, and `unconfirmed` when they express uncertainty; never turn an inference into a confirmed fact.
 - Throat-clearing intros: `In order to …`, `It is worth noting that …`, `One thing to consider is …`.
 
 Compress (register-only — never collapse meaning):
@@ -76,6 +76,7 @@ Inside the brief, these substrings are **never** caveman-rewritten:
 | Function names, identifiers, type names, env var names | Verbatim referents. |
 | PR numbers (`PR #128`), issue numbers, commit hashes, URLs | Verbatim referents. |
 | Error strings (quoted) | Must match logs / search verbatim. |
+| Negation, conditions, uncertainty, and obligation (`not`, `only if`, `may`, `must`, `should`) | Preserve their scope and strength; they are meaning, not filler. |
 | Quantitative expressions (numbers, units, thresholds, versions, environment conditions) | They define acceptance and compatibility; `30Hz`, `≤ 5KB gzipped`, `iOS 17+`, and `only on cold start` must survive intact. |
 | `# [<type>] <title>` line | Title format is contract. |
 | `## ` and `### ` section headers | Validator parses these. |
@@ -123,7 +124,7 @@ Caveman OK.
 Each bullet is one fragment describing today's behavior.
 
 - Normal: `LoginForm validates email only on blur — users do not see the error until they try to submit.`
-- Caveman: `` `LoginForm` email validate on blur only. User no see error till submit. ``
+- Caveman: `` `LoginForm` email validate on `onBlur` only. User no see error till submit. ``
 
 Every load-bearing bullet still starts with `[confirmed]` or `[inferred]`.
 Keep stable evidence locator or `Confirm by:` probe explicit even when surrounding prose is terse.
@@ -257,11 +258,11 @@ Normal prose:
 
 Caveman full:
 
-> `LoginForm` validate email on blur only.
+> `LoginForm` validate email on `onBlur` only.
 > User no see error till submit attempt.
 
 Both carry the same technical claim.
-The caveman version drops 17 words.
+The comparison is about preserved meaning and identifiers; no word-count target applies.
 
 ---
 

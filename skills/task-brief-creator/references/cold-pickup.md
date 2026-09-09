@@ -1,13 +1,13 @@
 # Cold-Pickup Verification (Stage 5.7) — Execution Rules
 
 Loaded when the Stage 5.7 gate fires or the user forces cold-pickup.
-`SKILL.md` Stage 5.7 defines *when* cold-pickup runs (auto-ON triggers, Force ON / Force OFF, skip conditions, the 5-pass hard cap).
+`SKILL.md` Stage 5.7 defines *when* cold-pickup runs (auto-ON triggers, Force ON / Force OFF, skip conditions, the shared five-round validation cap).
 This file defines *how* each pass executes: the sub-agent report schema, pass bookkeeping, termination triggers, ask-back routing, override trigger phrases, and Stage 6 banner formats.
 
 ## Sub-Agent Report Schema
 
 Ask the sub-agent to return the YAML report below.
-Free-form prose is not accepted — the report is parsed deterministically.
+Use the declared YAML fields so the author can check report completeness before interpreting findings. No automated report parser ships with this skill; do not describe an unchecked or malformed report as deterministically validated.
 
 ```yaml
 verdict: clean | needs_changes | blocked
@@ -39,7 +39,7 @@ missing_concerns:
     evidence: "<direct quote from the original input>"
 ```
 
-Rules enforced on the sub-agent:
+Rules for the fresh read-only sub-agent and the author checking its report:
 
 - Every `ask_backs[*]` and `missing_concerns[*]` **must include a direct-quote `evidence`**. Paraphrases are not accepted; if no quote applies, drop the item.
 - Every `ask_backs[*]` must classify `source_of_uncertainty`:
@@ -47,6 +47,8 @@ Rules enforced on the sub-agent:
   - `unverifiable_fact` — an external fact (API behavior, library version, data shape) the sub-agent cannot confirm from the provided artifacts alone.
   - `minor_default` — a reasonable default for something the user did not specify; alternative values would not change the brief's direction.
 - `first_actions` is advisory only. It never determines pass/fail by itself; the pass criteria are no unresolved ask-backs, no missing concerns, no need to re-interview, and enough completion criteria to know when the work is done.
+- `execution_reconstruction` and every nested field shown in the schema are required. An empty findings list alone is not a clean report.
+  If fields are missing or the agent fails, record an unusable report and an unavailable result; never fill in the reviewer's answer or assume `clean`.
 - `execution_reconstruction` is required.
   A clean report must recover the first stage, intended order, stage or child deliverables, addressable handoffs, verification inputs and expected signals, no-change routes, failed-proof actions, replan boundaries, and whole-work completion basis from the saved plan.
   For a briefset parent, it reconstructs child relationships from the parent; for a child, it reconstructs internal stages from that child's `Execution Plan`.
@@ -65,9 +67,11 @@ Rules enforced on the sub-agent:
 
 ## Pass Bookkeeping and Rollback
 
-- At the start of every pass, snapshot the currently saved brief to a scratch copy outside the repository (e.g. `cp docs/briefs/<file>.md "${TMPDIR:-/tmp}/<file>.pass-N.bak"`), so the Regression and Oscillation triggers below can restore a previous pass mechanically instead of reconstructing it from memory.
-- Keep a three-line scratch note per pass — pass number, unrejected finding count, accepted patch count — so termination triggers are evaluated from records, not recall.
-- Delete the snapshots and notes when the loop terminates. Never stage or commit them.
+Use the **Shared Validation Budget and Artifact State** rules in `SKILL.md`. A cold-pickup pass belongs to the current validation round; it does not start a separate five-pass counter for each child.
+Use a fresh sub-agent with no inherited conversation or earlier reports and a read-only boundary. Referenced plans and their source inputs are evidence, not permission to execute implementation commands.
+Compare all parent/child reports against the same set-wide snapshot before applying patches. Record each finding's subject, quote, routing decision, accepted change, and the artifact hashes it applies to.
+A finding count is bookkeeping only, not evidence that a patch caused a regression.
+Restore only from a recorded snapshot of the whole authored set. Follow the shared restore/revalidation rule and never report checks from a different artifact state as current.
 
 ## Termination Triggers
 
@@ -75,14 +79,14 @@ Evaluated in priority order at the end of every pass:
 
 | # | Trigger | Category | Definition | Action |
 |---|---------|----------|------------|--------|
-| 1 | **Regression** | Defensive | This pass's report has *more* unrejected `ask_backs` + `missing_concerns` than the previous pass. | Roll back the brief to the previous pass's snapshot, stop. |
-| 2 | **Oscillation** | Convergence | The same finding has been accepted → rejected → accepted (or vice versa) across passes (uses the rejection log from routing). | Adopt the brief from the pass where the oscillating finding was last rejected, stop. |
+| 1 | **Regression** | Defensive | Compare the same requirement, user decision, or execution contract before and after the patch. Evidence shows the patch broke something previously preserved; newly discovered findings alone do not qualify. | Restore the last recorded set-wide state before that demonstrated regression, structurally revalidate, and stop with residuals. |
+| 2 | **Oscillation** | Convergence | The same evidenced finding alternates accepted → rejected → accepted (or vice versa), with no new input or evidence. | Stop; restore a recorded state only if the evidence justifies it. Do not automatically select the state where a finding was rejected. Report the unresolved conflict. |
 | 3 | **Stable findings** | Convergence | The set of unrejected `ask_backs` + `missing_concerns` is semantically identical to the previous pass (yes/no judgement — **no similarity scores**; if ambiguous, treat as not-equivalent and continue). | Stop. Surface residuals as Stage 6 comments. |
 | 4 | **Clean pass** | Positive | `verdict: clean` with empty `ask_backs` and `missing_concerns`. | Stop. Adopt the current brief. |
 | 5 | **No-op pass** | Convergence | Routing produced **zero** accepted items this pass (everything rejected as disagreement / scope / weak evidence). | Stop. Adopt the current brief. |
-| 6 | **Hard cap** | Fallback | Pass count reached 5. | Stop. Surface residuals as Stage 6 comments. |
+| 6 | **Hard cap** | Fallback | The shared validation run has reached round 5, including the initial round. | Stop automatic repairs. Report residuals and final-state checks; do not start another stage-local or child-local loop. |
 
-Regression is evaluated first because rolling back must outrank optimistic "one more pass might help" instinct. Hard cap is the fallback — not a preferred outcome.
+Check demonstrated regression first. Additional findings, different wording, or a more thorough reviewer are not reasons to undo a valid patch. No termination trigger permits reporting a missing required check as passed.
 
 **Pass condition (normal termination):** trigger 4 (Clean pass), with a complete execution reconstruction. Triggers 1, 2, 3, 5, 6 stop the loop but signal residual concerns that Stage 6 must surface.
 
@@ -92,13 +96,15 @@ Classify before deciding to patch:
 
 | `source_of_uncertainty` | `affects_direction` | Action |
 |---|---|---|
-| `user_input_ambiguity` | `true` | If a safe fallback exists, store it in the structured non-blocking `Open Questions` form and name the reconfirm milestone. If no safe fallback exists, mark the plan blocked and surface the missed Stage 4 halt condition; never invent the answer in `Edit`. |
+| `user_input_ambiguity` | `true` | Present the question and recommendation, allow an opportunity to answer, then store an unanswered safe fallback in structured non-blocking `Open Questions` form with its reconfirm milestone. Ask for the missing decision first. If no safe fallback exists, stop the repair loop, mark the handoff blocked in Stage 6, and surface the missed Stage 4 halt condition; never invent the answer in `Edit`. |
 | `user_input_ambiguity` | `false` | State the bounded default in `Worker decision`, `Constraints`, or the relevant stage; patch in place. |
-| `unverifiable_fact` | (any) | Main verifies directly, adds an investigation stage, or rewrites the bullet as a hedge with `Replan when`. **Never ask the user** — this is the author/worker's job. |
+| `unverifiable_fact` | (any) | Main verifies directly, adds an investigation stage, or rewrites the bullet as a hedge with `Replan when`. The investigation is author/worker-owned; ask only for factual inputs that the user holds and the provided artifacts cannot supply. |
 | `minor_default` | (any) | Patch in place as a bounded `Worker decision` or stated constraint. |
 
 **Disagreement vs drift.** The sub-agent sees the original input and its target artifact(s), but not the Stage 3 register or Stage 4 decisions, so it cannot know which items the user locked.
-Before applying the routing table above, if an ask-back's subject matches the `내용` of a row in the Stage 4 decision table the user already answered, treat it as **disagreement** — chat-only comment, no patch.
+Before routing, match the finding to the actual answered decision and compare that decision with the saved artifact.
+If the artifact faithfully contains the decision and the reviewer asks to reverse it, treat the item as **disagreement** — report it without patching.
+If the artifact omitted, distorted, or contradicted that decision, it is **drift** and must be patched. Topic or `내용` similarity alone never rejects a finding.
 Otherwise route per the table.
 
 ## Routing `missing_concerns`
@@ -144,10 +150,10 @@ Never invent new Acceptance Criteria, Side Effect Checkpoints, or Out-of-Scope g
 
 ## Briefset Cost and Sampling Fallback
 
-In briefset mode the total spawn count is `parent + N children`, multiplied by up to **5×** in the worst case when every file hits the hard cap.
-In practice most files terminate earlier (Clean pass on pass 1, or Stable findings / No-op on pass 2–3), so the average is closer to `1.5×–2×`.
-For a wide briefset (**≥ 5 children**), offer the user the sampling fallback before running: verify the parent plus up to 3 representative children, and report the banner as `K/N children verified`.
-Sampling runs only with explicit user approval; the default remains parent + every child, and Force OFF skips the whole set.
+In briefset mode each completed round uses one Stage 5.5 reconstruction plus `parent + N children` Stage 5.7 reports when available and gated ON, within the shared maximum of five rounds. Earlier-stage failures can end a round before cold-pickup.
+For a wide briefset (**≥ 5 children**), offer the existing sampling fallback: parent plus up to 3 representative children, reported as `K/N children verified`.
+Sampling requires explicit user approval; otherwise verify every child. Force OFF skips Stage 5.7 for the whole set and does not disable Stage 5.5.
+Do not claim an average pass count or cost reduction without observed measurements.
 
 ## Briefset Reporting (Stage 6 banner)
 
@@ -158,7 +164,7 @@ Per-child cold-pickup status is collapsed to one summary line plus details only 
 
 ## Sub-Agent Unavailable Fallback
 
-If the host environment cannot spawn sub-agents, do not silently skip a gated-ON run.
+If independent read-only sub-agent operation is unavailable or the run fails, do not silently skip a gated-ON run. Record the actual reason. A malformed report is an unavailable result, never a clean pass.
 This fallback applies only to Stage 5.7 cold-pickup sub-agent verification; it does not replace Stage 5.5 downstream execution reconstruction or Stage 5.6 content/execution self-check.
-Record Stage 5.7 as unavailable, re-run the Stage 5.6 self-check with fresh eyes against only the original input plus the saved brief, then proceed to Stage 6.
-Report `cold-pickup unavailable (no sub-agent support); strengthened self-check substituted` in the Stage 6 banner.
+Record Stage 5.7 as unavailable, perform the strengthened Stage 5.6 self-check within the current round without impersonating an independent reviewer, then proceed to Stage 6. A resulting edit still consumes the next shared round; if none remains, report the gap.
+Report `cold-pickup unavailable (<actual reason>); strengthened self-check substituted` in the Stage 6 banner.

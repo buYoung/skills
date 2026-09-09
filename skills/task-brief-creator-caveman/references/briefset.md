@@ -91,7 +91,7 @@ docs/briefs/YYYY-MM-DD-<type>-<set-slug>-NN-<child-slug>.md          # children
 Enforcement levels:
 
 - The combined slug budget (≤40 chars) is machine-enforced — `validate_brief.py` reports a FAIL when exceeded.
-- The set-slug ≤15 limit is advisory, but the validator reports a warning when it is exceeded. A warning makes the overall validation fail, so shorten it before accepting the briefset.
+- The set-slug must be ≤15 for acceptance. Exceeding it is reported as a warning, and warnings make overall validation fail; shorten it before accepting the briefset.
 - Child filename consistency with the parent (same date and exact `<set-slug>-NN-<child-slug>` order) is machine-enforced by `validate_briefset.py`.
 
 **Examples:**
@@ -176,7 +176,7 @@ Convert only its saved body-prose values to caveman full mode; keep headings, pa
   A child can be dependency-free and still be unsafe to parallelize because it edits a shared file.
   Use each child's finalized full `docs/briefs/...md` path, describe exactly one pair per bullet, call out both can-parallel and must-not-parallel cases, and name `Join when` for each pair.
   Never place three children in one pair declaration and never declare the same pair both ways.
-  A direct predecessor/successor pair cannot be `Can run together`.
+  A direct or indirect predecessor/successor pair cannot be `Can run together`. A serialized pair belongs in different execution waves.
   Short labels or basenames do not establish child membership.
   Put every pair in one top-level bullet with the exact `Can run together:`, `Must not overlap:`, and `Join when:` labels; do not add prose before or between entries.
 - **Conflict Hotspots** — concrete paths under shared editing pressure, expressed one child pair at a time.
@@ -186,8 +186,7 @@ Convert only its saved body-prose values to caveman full mode; keep headings, pa
   List writers, not read-only consumers, in `Children`.
   i18n message bundles, shared schemas, top-level config, route tables, and generated barrel files default to hotspots.
   Put every hotspot in one top-level bullet and preserve the exact `Children:`, `Access:`, `Owner:`, and `Rule:` labels and casing; do not add prose before or between entries.
-- **Shared Constraints** — constraints that apply to every child.
-  Per-child constraints stay inside the child brief.
+- **Shared Constraints** — constraints that apply to every child, including initiative-wide `[deferred]` exclusions. Repeat applicable execution constraints in the children; per-child-only constraints stay in their child.
 - **Global Acceptance Criteria** — set-level "done" criteria, including integration-level checks no individual child can verify alone.
   Each command-based item names the command, complete target/input, and expected exit/output/state; each manual item names the inspected artifact and expected observation.
   For a no-match success, also prove the intended target population was non-empty and fully scanned.
@@ -203,7 +202,7 @@ If a section legitimately has nothing, write `- None — <reason>` with a one-li
 - Children follow `references/template.md` exactly — the same nine required H2 sections, same per-section guidance, same writing rules.
 - The parent is authoritative for relationships among children; each child's `Execution Plan` is authoritative for stages inside that child.
 - Children also follow `references/caveman-style.md`; preserve stage count, field order, checklist depth, and every content obligation while shortening only prose values.
-- Children include their own `Acceptance Criteria` (independent), `Side Effect Checkpoints`, and `Open Questions`.
+- Children include their own `Acceptance Criteria` (independent), `Side Effect Checkpoints`, and `Open Questions`. Repeat applicable parent constraints in each child's `Constraints` / `Out of Scope`; do not rely on the worker having read the parent.
 - Child `Open Questions` contains only Stage 4-approved non-blocking user decisions with a safe default and reconfirm milestone.
   Use `- None — <reason>` when no user-owned decision remains.
 - Children **do not** carry status.
@@ -260,7 +259,7 @@ Track user-owned uncertainties as candidate questions during the review.
 Route technical unknowns into the affected child's investigation stage, `Worker decision`, or `Replan when`; do not silently resolve or drop them.
 Each child's `Related Files / Entry Points` should be a distinct slice — if two children point at the same primary entry point, they probably collapse into one.
 Track shared contracts separately from child-local findings.
-If an id, key, event, schema, persisted value, generated file, route, command, or payload is used by more than one child or by existing consumers outside the briefset, put that contract in the parent `Shared Constraints` or `Global Acceptance Criteria`, then repeat only the child-specific verification inside the affected child.
+If an id, key, event, schema, persisted value, generated file, route, command, or payload is used by more than one child or by existing consumers outside the briefset, put that contract in the parent `Shared Constraints` or `Global Acceptance Criteria`, then repeat the applicable constraints and child-specific verification inside each affected child. A child-only reader must receive the constraints needed to execute safely.
 
 Before locking the child list, run an **already-satisfied gate** against current code and current verification signals:
 
@@ -321,7 +320,7 @@ Save in this order:
 5. Run `scripts/validate_brief.py` on each child as a sanity check (optional — the briefset validator covers this transitively).
 6. Run `scripts/validate_briefset.py` on the parent.
    It re-runs child structural validation, so a single parent invocation covers the whole set.
-   Run the validator from the skill package directory (the directory containing SKILL.md, referred to as `<skill-dir>`):
+   Run from the target repository root, with `<skill-dir>` resolved to the absolute installed package directory:
 
    ```bash
    python3 <skill-dir>/scripts/validate_briefset.py \
@@ -338,7 +337,7 @@ Save in this order:
 
 On exit 1, repair the affected parent or child file and rerun `validate_briefset.py` without asking the user.
 If the same structural cause still fails after two repair attempts, leave the files in place and report the residual failure in Stage 6.
-Treat exit 2 as an I/O failure and investigate or retry the save.
+For exit 2, inspect the actual argument, repository-root, missing-file, or read error. Correct that cause; do not infer save failure or rewrite an existing file unnecessarily.
 
 ### Stage 5.5 — Downstream Interpretation Check (briefset)
 
@@ -356,24 +355,24 @@ Briefset mode adds one parent-specific coverage rule:
 - **Parent decomposition coverage:** every input-implied execution context maps to a child brief.
   If the input describes 4 work units and the parent lists 3 children, the missing unit must either become a 4th child or be explicitly justified as folded into an existing child (with the *exists because* clause updated).
   A folded unit's distinct concerns — acceptance criteria, edge cases, constraints, side-effect checkpoints — must reappear in the absorbing child's matching sections; folding is where requirement depth is most often silently lost, so verify the migration here.
-  Each child also survives a BDR pass from `bloat-decomposition.md` — no child triggers ≥ 2 bloat signals, and no atomic-change-unit (K1) was split.
-  If either fails, re-decompose before saving.
+  Each child also survives a BDR pass from `bloat-decomposition.md` — each child either has fewer than two bloat signals or records why K1/K2 or the two-pass decomposition limit keeps it together; no atomic-change-unit (K1) is split.
+  Re-decompose only an unexamined candidate with no keep-together exception and remaining decomposition budget. A retained large child must still have an executable route.
 - **Parent contract coverage:** shared contracts discovered during Stage 3 appear in parent `Shared Constraints`, `Conflict Hotspots`, or `Global Acceptance Criteria`.
   Children may add local checks, but the parent must carry the cross-child compatibility rule so parallel work cannot silently break it.
 - **Handoff address parity:** every dependency edge has one repo-relative deliverable path and minimum format; the exact path appears in the predecessor's output/no-change handoff and the successor's first-stage start condition.
   A child name, result label, branch nickname, or prose such as "when the verified result is available" is not an address.
-- **Coordination consistency:** each parallelization and hotspot item describes one child pair; no pair is both parallel and serialized; no direct dependency pair is parallel; a `parallel-safe` hotspot names the ownership partition and join rule.
+- **Coordination consistency:** each parallelization and hotspot item describes one child pair; no pair is both parallel and serialized; no direct or indirect dependency pair is parallel, and serialized pairs occupy different waves; a `parallel-safe` hotspot names the ownership partition and join rule.
 - **No-change safety:** already-satisfied candidates were removed or collapsed before save, while every surviving child's Stage 1 says how to prove no edits are needed, where that evidence goes, and who performs bounded correction/re-verification if proof fails.
   A no-change branch must still tell successors whether to continue, skip, or replan.
 - **Verification concreteness:** every child stage and parent dependency edge names a repository-supported command or bounded inspection, its concrete inputs, and an observable expected signal such as an exit code, output token, created state, or threshold.
   A command that expects no matches also names the target population so an empty or wrong input cannot masquerade as success.
-- **Deferred coverage:** valid findings excluded from the current briefset appear as `[deferred]` in the parent when they affect the whole initiative, or in the relevant child when they affect only that child.
+- **Deferred coverage:** valid findings excluded from the current briefset appear as `[deferred]` in the parent `Shared Constraints` when they affect the whole initiative, or in the relevant child when they affect only that child.
   Do not drop a finding merely because it is outside the chosen child boundaries.
 
 Each child runs all items in the standard Stage 5.6 self-check from `SKILL.md`, including execution-stage continuity and whole-work completion separation, but its input-coverage boundary is the scope allocated to that child by the parent plus relevant shared constraints.
 Sibling-owned concerns from the umbrella input are not missing from the target child; parent decomposition coverage checks them across the set.
-If the parent or any child fails any Stage 5.6 self-check item, fix the affected file in place, re-run `validate_briefset.py`, and re-enter the validation chain at Stage 5.5.
-Run caveman parity on the parent and every child: the parent must retain every child, dependency, ordering edge, parallel join, conflict hotspot, shared constraint, and global acceptance criterion from its normal-mode equivalent; each child must retain every normal-mode fact, bullet, stage, field, and checklist level.
+If the parent or any child fails a Stage 5.6 item, batch the justified patches against the same snapshot and re-enter structural validation in the next shared round. Stop with residuals if no round remains; there is no separate counter for each child.
+Run caveman parity on the parent and every child against their pre-conversion content inventories: preserve every child, dependency, ordering edge, parallel join, conflict hotspot, shared constraint, global acceptance criterion, fact, stage, field, and checklist level. An imagined normal-mode output is not evidence of parity.
 Do not skip the child self-check on the assumption "the parent covers it" — children are independently executable, so they are independently completeness-checked.
 
 ### Stage 5.7 — Cold-Pickup Verification (briefset)
@@ -399,7 +398,7 @@ If the parent or any child contains structured non-blocking `Open Questions`, pr
 ```
 
 After the user answers, patch the affected parent or child files in place, move resolved questions into the appropriate sections, leave only structured non-blocking user decisions in `Open Questions`, then re-run `validate_briefset.py`, Stage 5.5, Stage 5.6, and the Stage 5.7 gate.
-If the user does not answer, cancels, or lets structured input expire, keep every declared fallback active and leave the corresponding questions unchanged; they do not block child execution before their named reconfirmation milestones.
+If a question is unanswered, skipped, or expires without a task cancellation, keep every declared fallback active and leave the corresponding questions unchanged; they do not block child execution before their named reconfirmation milestones.
 Iterate on disk via `Edit`; do not re-render the briefs into chat.
 
 ---
@@ -420,7 +419,7 @@ Iterate on disk via `Edit`; do not re-render the briefs into chat.
 - `Execution Order`, `Dependencies`, `Parallelization`, and `Conflict Hotspots` use top-level bullets only; any non-empty prose before or outside those bullets fails.
 - Every non-empty `Dependencies` entry uses the fixed predecessor, deliverable path, format, successor, start, verification, inputs, and expected-signal fields.
 - Each dependency path exists or carries the adjacent `(proposed)` marker, matches the predecessor's execution-order location, appears in the producer child's output/no-change handoff, and appears in the successor child's first-stage `Starts when`; the predecessor wave is strictly earlier than the successor wave.
-- Every `Parallelization` entry describes exactly one pair, includes its own non-empty `Join when:`, and cannot mark a dependency pair parallel or declare one pair both ways.
+- Every `Parallelization` entry describes exactly one pair, includes its own non-empty `Join when:`, and cannot mark a direct or indirect dependency pair parallel or declare one pair both ways. Serialized pairs cannot share an execution wave.
 - Every `Conflict Hotspots` entry describes exactly one pair with `serialized` or `parallel-safe` access; serialized entries name a full-path owner, and serialized hotspots cannot contradict a parallel declaration.
 - Parent filename date is a real calendar date.
 - Parent sections appear exactly once and in canonical order.

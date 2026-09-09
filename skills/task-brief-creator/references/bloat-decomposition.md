@@ -133,7 +133,7 @@ B5 is a by-product signal — it only justifies a split in conjunction with one 
 6. **Apply the surviving cut.** Replace the original candidate with the post-cut children.
 7. **Re-run bloat detection** on each new child.
    If a child still triggers ≥ 2 signals, BDR can iterate, but cap iteration depth at **two passes per candidate** (each child has its own iteration budget).
-   Beyond that the input is probably too fat to ship in a single briefset and the user should be told.
+   When that limit is reached, retain the candidate with the examined exception and an executable stage sequence, or ask only if a user-owned scope decision is required. Do not keep splitting to satisfy a signal-count checklist. Count descendants against the original candidate's two-pass budget; a cut does not reset it.
    As a separate global sanity check: if the post-BDR child count exceeds ~8, surface a "briefset is unusually wide; consider splitting the umbrella" comment to the user — that scale typically signals an under-scoped umbrella, not a successful decomposition.
 
 ---

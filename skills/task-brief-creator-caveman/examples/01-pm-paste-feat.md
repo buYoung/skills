@@ -124,7 +124,7 @@ feat
 - `src/feature-flags/flags.ts` — add `flag.darkMode`.
 
 ## Execution Plan
-### Stage 1 — Establish theme preference contract
+### Stage 1 — Establish the theme preference contract
 - Starts when: Existing provider, preference hook, and flag pattern confirmed.
 - Work: Establish gated System / Light / Dark state preserving old light-only path when disabled.
 - Deliverable: Persisted preference and provider contract ready for Settings surface.
@@ -134,7 +134,7 @@ feat
 - Replan when: Existing consumers require contract change outside Settings-only scope.
 - Worker decision: Attach OS-theme listener only while System active unless provider lifecycle makes always-on listener simpler without behavior change.
 
-### Stage 2 — Integrate Settings experience
+### Stage 2 — Integrate the Settings experience
 - Starts when: Stage 1 provides persisted preference and provider contract.
 - Work: Expose three-option Theme row and connect gated provider behavior.
 - Deliverable: Integrated Settings-only dark-mode experience ready for verification.
@@ -151,7 +151,7 @@ feat
 ## Acceptance Criteria
 - [ ] Theme row in Settings → Appearance offer System / Light / Dark; choice persist across reload.
 - [ ] When pref = System, active theme match OS preference on first paint (no flash of light theme).
-- [ ] Toggling between Light and Dark update Settings screen within one render frame (no full-screen reload).
+- [ ] Selecting Light or Dark updates Settings without a full-screen reload; verify both selections using the existing Settings scenario.
 - [ ] Production builds with `flag.darkMode = false`: no dark-mode code paths reachable from UI.
 
 ## Open Questions

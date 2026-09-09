@@ -9,7 +9,7 @@ Usage:
 Exit codes:
     0 - All checks pass on parent and every referenced child with no warnings
     1 - One or more required checks failed, or a warning was reported
-    2 - File not found or unreadable
+    2 - Invalid arguments/repository root, or file not found/unreadable
 
 What this script checks (STRUCTURAL ONLY):
 
@@ -90,6 +90,7 @@ from validate_brief import (  # noqa: E402
     validate_filename as validate_child_filename,
     validate_sections as validate_child_sections,
     validate_title as validate_child_title,
+    validate_title_count,
 )
 
 USAGE = (
@@ -317,18 +318,18 @@ def validate_parent_sections(
             )
 
     if "Open Questions" in h2:
-        body = [line.strip() for line in h2["Open Questions"] if line.strip()]
+        body = [line for line in h2["Open Questions"] if line.strip()]
         question_bullets = [
             line for line in body if BULLET_RE.match(line) and not line[:1].isspace()
         ]
-        non_bullet_content = [line for line in body if not BULLET_RE.match(line)]
+        non_bullet_content = [line for line in body if line not in question_bullets]
         none_bullets = [
             line
             for line in question_bullets
             if NONE_BULLET_PREFIX_RE.match(line)
         ]
         if non_bullet_content:
-            report.fail("Parent `## Open Questions` must contain bullets only.")
+            report.fail("Parent `## Open Questions` must contain top-level bullets only.")
         elif not question_bullets:
             report.fail("Parent `## Open Questions` has no bullet items.")
         elif none_bullets and len(question_bullets) != 1:
@@ -818,12 +819,23 @@ def parse_parallelization_contract(
             "`## Parallelization` declares the same child pair both "
             f"parallel and serialized: {sorted(pair)}."
         )
-    dependency_pairs = {
-        frozenset((edge.predecessor, edge.successor)) for edge in dependency_edges
-    }
+    successors: dict[str, set[str]] = {}
+    for edge in dependency_edges:
+        successors.setdefault(edge.predecessor, set()).add(edge.successor)
+    dependency_pairs: set[frozenset[str]] = set()
+    for predecessor in successors:
+        pending = list(successors[predecessor])
+        visited: set[str] = set()
+        while pending:
+            successor = pending.pop()
+            if successor in visited:
+                continue
+            visited.add(successor)
+            dependency_pairs.add(frozenset((predecessor, successor)))
+            pending.extend(successors.get(successor, set()) - visited)
     for pair in can_run_pairs & dependency_pairs:
         report.fail(
-            "`## Parallelization` declares a predecessor/successor pair as "
+            "`## Parallelization` declares a direct or indirect predecessor/successor pair as "
             f"parallel: {sorted(pair)}."
         )
     return can_run_pairs, must_not_pairs
@@ -835,7 +847,7 @@ def validate_hotspot_contract(
     repo_root: Path,
     can_run_pairs: set[frozenset[str]],
     report: Report,
-) -> None:
+) -> set[frozenset[str]]:
     """Validate pairwise hotspot access and parallel consistency."""
     blocks = top_level_bullet_blocks(h2.get("Conflict Hotspots", []))
     if not blocks:
@@ -843,14 +855,14 @@ def validate_hotspot_contract(
             "`## Conflict Hotspots` must contain top-level pair bullets or "
             "`- None — <reason>`."
         )
-        return
+        return set()
     if any(NONE_WITH_REASON_RE.match(block[0].strip()) for block in blocks):
         if len(blocks) != 1:
             report.fail(
                 "`## Conflict Hotspots` cannot mix `- None — <reason>` "
                 "with hotspot entries."
             )
-        return
+        return set()
 
     serialized_pairs: set[frozenset[str]] = set()
     for entry_number, block in enumerate(blocks, start=1):
@@ -898,6 +910,7 @@ def validate_hotspot_contract(
             "A child pair is `Can run together` but a conflict hotspot marks "
             f"the same pair `Access: serialized`: {sorted(pair)}."
         )
+    return serialized_pairs
 
 
 def validate_coordination_references(
@@ -926,12 +939,20 @@ def validate_coordination_references(
         execution_waves,
         report,
     )
-    can_run_pairs, _ = parse_parallelization_contract(
+    can_run_pairs, must_not_pairs = parse_parallelization_contract(
         h2, child_references, dependency_edges, report
     )
-    validate_hotspot_contract(
+    serialized_pairs = validate_hotspot_contract(
         h2, child_references, repo_root, can_run_pairs, report
     )
+    for pair in must_not_pairs | serialized_pairs:
+        first, second = sorted(pair)
+        first_wave = execution_waves.get(first)
+        if first_wave is not None and first_wave == execution_waves.get(second):
+            report.fail(
+                f"Serialized children cannot share Wave {first_wave}: {sorted(pair)}. "
+                "Place them in separate execution waves."
+            )
     return dependency_edges, execution_locations
 
 
@@ -1176,6 +1197,7 @@ def validate_child_brief(
         return
 
     sub = Report()
+    validate_title_count(text, sub)
     file_type = validate_child_filename(child_path, sub)
     title_type, _ = validate_child_title(lines[0], file_type, sub)
     h2, h3, h2_titles, h3_titles_by_h2 = parse_sections(text)
@@ -1338,6 +1360,7 @@ def main(argv: list[str]) -> int:
     print(f"Validating briefset: {path}")
     print()
 
+    validate_title_count(text, report)
     parent_identity = validate_parent_filename(path, report)
     validate_parent_title(lines[0], report)
     h2, _, h2_titles, _ = parse_sections(text)

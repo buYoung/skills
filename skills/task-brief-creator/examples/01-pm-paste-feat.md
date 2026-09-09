@@ -151,7 +151,7 @@ feat
 ## Acceptance Criteria
 - [ ] Theme row in Settings → Appearance offers System / Light / Dark and the choice persists across reload.
 - [ ] When pref = System, the active theme matches the OS preference on first paint (no flash of light theme).
-- [ ] Toggling between Light and Dark updates the Settings screen within one render frame (no full-screen reload).
+- [ ] Selecting Light or Dark updates Settings without a full-screen reload; verify both selections using the existing Settings scenario.
 - [ ] In production builds with `flag.darkMode = false`, no dark-mode code paths are reachable from the UI.
 
 ## Open Questions
