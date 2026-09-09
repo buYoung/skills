@@ -6,6 +6,12 @@
 
 ## [Unreleased]
 
+## [1.8.1] - 2026-09-09
+
+### 내부
+
+- `validate.yml`과 `release.yml`에서 `document-writing`의 중복 검증 작업 정리
+
 ## [1.8.0] - 2026-09-09
 
 ### 추가

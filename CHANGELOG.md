@@ -6,6 +6,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [1.8.1] - 2026-09-09
+
+### Internal
+
+- Removed redundant `document-writing` validation jobs from CI and release workflows.
+
 ## [1.8.0] - 2026-09-09
 
 ### Added
