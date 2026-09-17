@@ -45,7 +45,7 @@ otherwise the path-existence check will correctly flag them as missing.
 | [02-rough-typed-fix.md](02-rough-typed-fix.md) | One-line typed task | `fix` | `Reproduction` gates Stage 1, stage completion stays separate from whole-work acceptance, and credentials remain references; step order survives caveman conversion. |
 | [03-halt-ambiguous.md](03-halt-ambiguous.md) | Vague one-liner | — | Halt case; what the four-anchor check rejects, what additional input would flip it to CONTINUE, and where the narrow target probe fits when only TARGET is missing. (No saved brief — chat-only, normal prose.) |
 | [04-briefset-checkout-i18n.md](04-briefset-checkout-i18n.md) | Tech-lead Korean note | briefset (`refactor`+`feat`+`fix`) | Addressable handoffs, pairwise parallel/hotspot rules, no-change branches, and verification inputs/signals; saved parent and child bodies use caveman full without compressing fixed fields. |
-| [05-stage-4-walkthrough.md](05-stage-4-walkthrough.md) | Korean refactor note | `refactor` | Codebase probes remove technical questions, one user-owned scope decision remains, and Stage 5.5 reconstructs the executable route while checking caveman ambiguity. |
+| [05-stage-4-walkthrough.md](05-stage-4-walkthrough.md) | Korean refactor note | `refactor` | Codebase probes remove technical questions, one user-owned scope decision remains, the Stage 5.6 self-check confirms intent fidelity and caveman parity, and a user-requested cold-pickup pass comes back clean with no over-terse bullets. |
 | [06-caveman-style-feat.md](06-caveman-style-feat.md) | Pasted English spec | `feat` | Minimal conversion demo preserving evidence tags, full execution grammar, `(proposed)`, five-action coverage, tooltip text, and structured normal-prose questions. |
 
 Stage 4 always runs an ownership pass and uses the Markdown decision table
@@ -54,11 +54,12 @@ Saved questions use `- [non-blocking] ... — Default: ...; Reconfirm before: ..
 technical unknowns and reversible choices move into stages, replan boundaries, or worker decisions.
 Use `01` / `02` / `04` for type-specific output shape (`feat` /
 `fix` / briefset), use `05` for the most focused Stage 4
-decision-table walkthrough plus the shortest Stage 5.5 execution reconstruction and Stage 5.7 cold-pickup
-demonstration, and use `06` for the smallest caveman conversion. See
-`references/stage-4-interview.md` for the decision-table policy,
-`references/cold-pickup.md` for the cold-pickup execution rules, and
-`references/caveman-style.md` for the caveman conversion rules.
+decision-table walkthrough plus the shortest Stage 5.6 self-check and
+user-requested Stage 5.7 cold-pickup demonstration, and use `06` for the
+smallest caveman conversion. See `references/stage-4-interview.md` for
+the decision-table policy, `references/cold-pickup.md` for the opt-in
+cold-pickup execution rules, and `references/caveman-style.md` for the
+caveman conversion rules.
 
 Under the dummy-path precondition above, extract the complete saved blocks in
 `01`, `02`, `04`, and `05` using their documented filenames. Example `04`

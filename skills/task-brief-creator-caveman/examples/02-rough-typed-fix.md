@@ -146,12 +146,15 @@ fix
 ## Post-Save Verification Summary
 
 This example focuses on the saved brief shape.
-In a live run, Stage 5.5, Stage 5.6, and Stage 5.7 still run after the
-file is written and structurally validated.
-Because the work type is `fix`, Stage 5.7 cold-pickup is auto-ON even if
-the input is short; the final Stage 6 banner would report the structural
-validation separately from execution reconstruction,
-content/execution self-check, caveman parity, and cold-pickup outcome.
+In a live run, the Stage 5.6 content and intent self-check still runs after
+the file is written and structurally validated; for a `fix` it confirms
+that `Reproduction` still gates Stage 1, that the input's scope and
+acceptance threshold survived into the brief, and that caveman parity held.
+The work type does not start Stage 5.7 — cold-pickup is opt-in, so the
+Stage 6 banner reports structural validation, then content validation
+(self-check plus caveman parity), then `cold-pickup not run (opt-in)` with
+the `run cold-pickup` hint.
+The user can request the independent sub-agent read at any point in Stage 6.
 
 ## Picked Up Cold — Coding Agent's First Actions
 

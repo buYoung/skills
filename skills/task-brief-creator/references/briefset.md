@@ -47,7 +47,7 @@ Always check:
 - Whether parent validation is intentionally looser than child validation, or whether the difference is a contract gap.
 - Whether parent and child filename rules match the validator's actual checks.
 - Whether save order resolves final child paths before the parent references them.
-- Whether Stage 5.5, Stage 5.6, and Stage 5.7 apply to parent and children in the documented order.
+- Whether the Stage 5.6 self-check applies to parent and children as documented, and how an opt-in Stage 5.7 request covers the set.
 
 Put only the briefset issues that are necessary for the current work in scope.
 Record independent briefset hardening as `[deferred]` when it is real but not required for the requested fix.
@@ -263,7 +263,6 @@ Before locking the child list, run an **already-satisfied gate** against current
   If that proof fails, the plan must stop successors and give the parent an explicit correction, re-verification, topology, and handoff recalculation route instead of ending at a bare condition.
 
 When only part of a child's requested outcome may already be satisfied, keep the child but give Stage 1 an observable `No-op when` condition and an addressable `No-op handoff`.
-This `no-work-needed` result is unrelated to Stage 5.7's `No-op pass` termination trigger.
 
 When reviewing an existing briefset-capable skill or generator, tag findings as one of:
 
@@ -330,14 +329,7 @@ On exit 1, repair the affected parent or child file and rerun `validate_briefset
 If the same structural cause still fails after two repair attempts, leave the files in place and report the residual failure in Stage 6.
 For exit 2, inspect the actual argument, repository-root, missing-file, or read error. Correct that cause; do not infer save failure or rewrite an existing file unnecessarily.
 
-### Stage 5.5 — Downstream Interpretation Check (briefset)
-
-Run the downstream execution-reconstruction check from `SKILL.md` Stage 5.5 against the **parent briefset file only**.
-The sub-agent receives a natural work-start request with the parent path, not each child path, and no original user request or validation rubric.
-Its explanation must recover which child starts first, child order, every handoff path and minimum format, each verification input and expected signal, every no-change branch, parallel joins, conflict ownership, and the global completion basis.
-If the reconstruction drops a child, changes execution order, misses an addressable deliverable/handoff, loses a no-change route, cannot state a verification input and expected signal, broadens scope, or misses a parent constraint, patch the parent or affected child, re-run `validate_briefset.py`, and re-enter the validation chain at Stage 5.5.
-
-### Stage 5.6 — Content-Level Self-Check (briefset)
+### Stage 5.6 — Content and Intent Self-Check (briefset)
 
 Run the self-check from `SKILL.md` Stage 5.6 on the **parent** and on **every child** independently.
 Briefset mode adds one parent-specific coverage rule:
@@ -361,21 +353,22 @@ Briefset mode adds one parent-specific coverage rule:
 
 Each child runs all items in the standard Stage 5.6 self-check from `SKILL.md`, including execution-stage continuity and whole-work completion separation, but its input-coverage boundary is the scope allocated to that child by the parent plus relevant shared constraints.
 Sibling-owned concerns from the umbrella input are not missing from the target child; parent decomposition coverage checks them across the set.
-If the parent or any child fails a Stage 5.6 item, batch the justified patches against the same snapshot and re-enter structural validation in the next shared round. Stop with residuals if no round remains; there is no separate counter for each child.
+If the parent or any child fails a Stage 5.6 item, batch the justified patches against the same artifact state, re-run `validate_briefset.py`, then run the self-check again within the two-pass budget in `SKILL.md`; there is no separate budget per child. Stop with residuals when the budget is exhausted.
 Do not skip the child self-check on the assumption "the parent covers it" — children are independently executable, so they are independently completeness-checked.
 
-### Stage 5.7 — Cold-Pickup Verification (briefset)
+### Stage 5.7 — Cold-Pickup Verification (briefset, opt-in)
 
-Briefset mode is an auto-ON trigger for the Stage 5.7 cold-pickup verification in `SKILL.md`: the **parent and every child** run their own cold-pickup pass.
-The parent pass receives the original input and parent path and checks the set as a whole, following the referenced children when needed.
-Each child pass receives the original input, parent path, and one child path; use the parent as the scope-allocation map, and do not treat sibling-owned work as missing from the target child.
-For briefsets with 5 or more children, the agent may offer the user a sampling fallback — parent plus up to 3 representative children — instead of the full set.
-Force OFF from the user skips cold-pickup for the whole set.
-The Stage 6 banner reports `K/N children verified` alongside the parent outcome.
+Briefset mode does not start Stage 5.7 by itself; the user must request it as described in `SKILL.md` and `references/cold-pickup.md`.
+When requested, the parent and every child the user did not exclude each get one fresh read-only sub-agent and one pass.
+The parent pass receives the original input file and the parent path and checks the set as a whole, following the referenced children when needed.
+Each child pass receives the original input file, the parent path, and one child path; the parent is the scope-allocation map, and sibling-owned work is not missing from the target child.
+For briefsets with 5 or more children, state the spawn count and offer parent plus up to 3 representative children before spawning.
+Collect every report before patching, patch against the same artifact state, re-run `validate_briefset.py` and Stage 5.6, and stop; another pass needs another request.
+The Stage 6 banner uses the briefset formats in `references/cold-pickup.md` (`parent + N/N children clean`, flagged details, or `K/N children verified` when sampled).
 
 ### Stage 6 — Review + Iterate
 
-Report the parent path, the child paths, the structural validator outcome (parent + per-child), and a separate executability outcome covering Stage 5.5 execution reconstruction, Stage 5.6 self-check (parent + per-child), and Stage 5.7 cold-pickup — collapse per-document verdicts to `K/N children verified` where appropriate.
+Report the parent path, the child paths, the structural validator outcome (parent + per-child), and a separate content outcome covering the Stage 5.6 self-check (parent + per-child) and the Stage 5.7 cold-pickup line — `not run (opt-in)` by default — collapsing per-document verdicts to `K/N children verified` where appropriate.
 
 If the parent or any child contains structured non-blocking `Open Questions`, present a combined decision table immediately after the save report:
 
@@ -385,7 +378,7 @@ If the parent or any child contains structured non-blocking `Open Questions`, pr
 | 1 | <parent or child path + non-blocking user decision> | <recommended patch to apply> | <safe default and reconfirm milestone> |
 ```
 
-After the user answers, patch the affected parent or child files in place, move resolved questions into the appropriate sections, leave only structured non-blocking user decisions in `Open Questions`, then re-run `validate_briefset.py`, Stage 5.5, Stage 5.6, and the Stage 5.7 gate.
+After the user answers, patch the affected parent or child files in place, move resolved questions into the appropriate sections, leave only structured non-blocking user decisions in `Open Questions`, then re-run `validate_briefset.py` and Stage 5.6; re-run Stage 5.7 only if the user asks again.
 If a question is unanswered, skipped, or expires without a task cancellation, keep every declared fallback active and leave the corresponding questions unchanged; they do not block child execution before their named reconfirmation milestones.
 Iterate on disk via `Edit`; do not re-render the briefs into chat.
 

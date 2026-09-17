@@ -171,7 +171,7 @@ External ownership does not make a blocking decision safe to defer.
 If the user leaves a question unanswered, skips the question, or lets structured input expire, apply the same split: non-blocking rows use their declared fallback and proceed to Stage 5; any blocking row halts without writing.
 Silence never changes a row's ownership or counts as approval. A task cancellation stops work; do not apply the unanswered-question fallback to it.
 
-After a safe termination, proceed to Stage 5 (save + structural validate), Stage 5.5 (downstream execution reconstruction), and Stage 5.6 (content and executability self-check) exactly as documented in `SKILL.md`, then cold-pickup verification (Stage 5.7) when its gate fires.
+After a safe termination, proceed to Stage 5 (save + structural validate) and Stage 5.6 (content and intent self-check) exactly as documented in `SKILL.md`; Stage 5.7 cold-pickup runs only when the user requests it.
 Stage 4 does not change the saved-brief structure.
 
 ---

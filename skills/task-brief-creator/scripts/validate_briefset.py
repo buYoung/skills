@@ -55,7 +55,7 @@ What this script checks (STRUCTURAL ONLY):
 Like `validate_brief.py`, this script does not judge content quality —
 whether the decomposition is sensible, whether dependencies are correct,
 whether parallel joins are safe, whether acceptance criteria are measurable.
-The Stage 5.5–5.7 executability checks and Stage 6 human review cover that.
+The Stage 5.6 self-check, the opt-in Stage 5.7 cold-pickup, and Stage 6 human review cover that.
 """
 
 from __future__ import annotations

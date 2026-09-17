@@ -163,12 +163,14 @@ feat
 ## Post-Save Verification Summary
 
 This example focuses on the saved brief shape.
-In a live run, Stage 5.5, Stage 5.6, and Stage 5.7 still run after the
-file is written and structurally validated.
-Because Stage 4 produced user-decision rows, Stage 5.7 cold-pickup is
-auto-ON unless the user explicitly disables it; the final Stage 6 banner
-would report structural validation separately from the execution
-reconstruction, content/execution self-check, and cold-pickup outcome.
+In a live run, the Stage 5.6 content and intent self-check still runs after
+the file is written and structurally validated; it re-reads the saved file
+and compares purpose, scope, entry points, constraints, and acceptance
+thresholds against the input and the answered Stage 4 rows.
+Stage 5.7 cold-pickup does not run by default — the Stage 6 banner reports
+structural validation, then content validation, then
+`cold-pickup not run (opt-in)` with the `run cold-pickup` hint.
+The user can request the independent sub-agent read at any point in Stage 6.
 
 ## Picked Up Cold — Coding Agent's First Actions
 

@@ -505,14 +505,18 @@ One `validate_briefset.py` invocation covers the whole set — it re-runs
 child, so the three `child ...: structural checks OK.` lines above *are*
 the per-child validation.
 
-**Stage 5.7 note** — briefset mode is itself an auto-ON trigger for
-cold-pickup verification: the parent and every child each run their own
-sub-agent pass (per-child signal gating is intentionally disabled in
-briefset mode). With all four files terminating on a clean first pass,
-the Stage 6 banner reports the collapsed form
-`cold-pickup: 1/1 parent + 3/3 children verdict:clean (no ask-backs, no missing concerns)`.
-See `references/cold-pickup.md` for the report schema and termination
-triggers, and example 05 for a full single-file pass.
+**Stage 5.7 note** — briefset mode does not start cold-pickup by itself.
+The Stage 5.6 self-check runs on the parent and on each child, and the
+Stage 6 banner reports `cold-pickup not run (opt-in)` with the
+`run cold-pickup` hint.
+If the user requests it, the parent and each of the three children get
+one fresh read-only sub-agent and one pass each (four spawns, no loop);
+with five or more children the agent would state the spawn count and
+offer a parent-plus-three sample first.
+With all four reports clean, the banner shows the collapsed form
+`cold-pickup: parent + 3/3 children clean`.
+See `references/cold-pickup.md` for the report schema and routing, and
+example 05 for a full single-file pass.
 
 ---
 

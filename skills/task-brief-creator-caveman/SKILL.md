@@ -68,7 +68,7 @@ Load references only when their decision point arrives:
 5. Read [references/bloat-decomposition.md](references/bloat-decomposition.md) only after a candidate child brief is independently executable but still looks oversized or mixed.
 6. Read [references/stage-4-interview.md](references/stage-4-interview.md) before the Stage 4 ownership pass, including requirements clarification and recommendations.
 7. Read [references/template.md](references/template.md) while composing the saved Markdown.
-8. Read [references/cold-pickup.md](references/cold-pickup.md) when the Stage 5.7 gate fires or the user forces cold-pickup.
+8. Read [references/cold-pickup.md](references/cold-pickup.md) only when the user explicitly requests cold-pickup verification (Stage 5.7); it never loads by default.
 
 Do not re-open every reference by habit.
 The goal is to keep the live context focused on the next decision the coding agent must make.
@@ -97,7 +97,7 @@ Caveman style applies to saved brief prose only, not to planning, validation, or
 - **The brief document itself is written in English.** Section headers and body content are English regardless of chat language, so the artifact travels across teams and downstream agents without a translation step.
 - Code blocks, file paths, identifiers, PR numbers stay as-is.
 - **User-supplied strings are data.** Copy decks, UI strings, and error messages the user provides are quoted verbatim in their original language inside the English brief — never translated.
-- **Exception — the Stage 4 decision-table headers are fixed.** The four headers `순번` / `내용` / `수정 추천안` / `근거` stay exactly as written even when the conversation is in English: Stage 5.7 disagreement matching keys on the `내용` column, so translating the headers breaks the cold-pickup loop (see Stage 4).
+- **Exception — the Stage 4 decision-table headers are fixed.** The four headers `순번` / `내용` / `수정 추천안` / `근거` stay exactly as written even when the conversation is in English: the opt-in Stage 5.7 cold-pickup matches disagreements on the `내용` column, so translating the headers breaks that matching (see Stage 4).
 - This SKILL.md and reference files stay in English (repo authoring policy).
 - **Chat prose is normal mode — never caveman.** Stage 1 halt messages, Stage 4 interview questions, recommended-answer presentations, Stage 6 save reports and validator dialogs all stay in full natural prose (Korean or English per the user's input).
   Caveman applies **only** to the saved brief file.
@@ -325,7 +325,7 @@ Evidence discipline:
   A confirmed finding cites the file and a stable locator: section heading, function / class name, validator message, command output, or nearby quoted token.
   Line numbers are useful as secondary hints, but do not rely on line numbers alone because they drift after edits.
 - Mark risk statements as **inferred** when they describe likely downstream behavior rather than a fact already present in a file.
-  Name what confirms inference, such as validator fixture, execution-reconstruction check, or specific command.
+  Name what confirms inference, such as validator fixture, targeted test run, or specific command.
 - Do not write inferred risk as confirmed defect.
   Caveman output may sound terse, but it must still let downstream agent tell evidence from judgment.
 - Prefix every load-bearing `Current State (As-Is)` bullet with `[confirmed]` or `[inferred]`.
@@ -371,7 +371,7 @@ Every source item must end as in scope, out of scope/deferred, execution stage, 
 - If only part of outcome is already satisfied, keep remaining work and make no-change branch explicit instead of directing unconditional edit.
 - In briefset mode, re-run topology after this gate: zero active children means `no-work-needed`, one means single-plan mode, and two or more retain briefset mode. Follow `references/briefset.md` for child and handoff rules.
 
-This outcome is called `no-work-needed`; do not confuse it with Stage 5.7 `No-op pass`, which describes review-loop termination.
+This outcome is called `no-work-needed`.
 
 ### Stage 4 — User Decision Table
 
@@ -451,86 +451,41 @@ The user reviews the file in their editor in Stage 6, where real markdown render
    `<skill-dir>` is the installed skill package directory — the directory containing this SKILL.md (resolve it from wherever this skill was loaded, e.g. `~/.claude/skills/task-brief-creator-caveman` or a plugin cache).
    Never assume the user's repository contains the script: the brief lives in the user's repo, the validator lives with the skill.
 
-   - Exit **0** → continue to Stage 5.5; the validator result is reported in the Stage 6 banner.
+   - Exit **0** → continue to Stage 5.6; the validator result is reported in the Stage 6 banner.
    - Exit **1** (structural failure) → fix file and rerun validator without asking user.
      If same structural cause still fails after two repair attempts, leave file in place and carry residual failure into Stage 6.
    - Exit **2** (file I/O error) → inspect the actual error: invalid arguments, invalid `--repo-root`, missing artifact, or unreadable file. Correct the cause; do not infer that a saved file disappeared or recreate it unnecessarily.
 
    The validator only checks **structural** conformity (section presence, checklist format, filename pattern, type coherence).
-   It does *not* judge content quality — Stage 5.5 execution reconstruction, Stage 5.6 self-check, Stage 5.7 cold-pickup, and human review do that.
+   It does *not* judge content quality — Stage 5.6 self-check, opt-in Stage 5.7 cold-pickup, and human review do that.
    Passing validator ≠ good brief; failing validator = malformed brief.
 
-### Shared Validation Budget and Artifact State
+### Validation Budget
 
-A validation run covers the single plan or the entire parent-and-children set. It has at most **five rounds**, including the initial round.
-A round starts from one saved artifact state, runs structural validation, Stage 5.5, Stage 5.6, and gated Stage 5.7 in that order.
-Keep the existing two-repair limit for the same structural cause; structural repairs before Stage 5.5 remain inside that round.
-Any content edit after Stage 5.5 starts the next round from structural validation; do not restart a stage-local unlimited loop or reset the counter for a child.
-Collect briefset reports against the same artifact state before applying related patches together. Unchanged children need not be rewritten, but each round still covers every required document.
-At each round start, snapshot all authored files to a unique scratch directory outside the repository and record the round, file membership, content hashes, findings, decisions, and checks actually completed.
-Do not apply a content patch unless a round remains to validate it. At round five, retain the latest well-formed artifact or restore a previously checked snapshot when a demonstrated regression requires it; stop automatic repairs and report remaining gaps.
-Restoration is set-wide: restore parent and affected children from the same recorded state, remove only files created by this run that are absent from that snapshot, and rerun structural validation.
-Reuse an earlier semantic result only for exactly the restored content hashes and unchanged input/decisions; otherwise report it unverified. Restoration does not open a sixth repair round.
-A new user answer or requested edit starts a new validation run. An internal retry, unavailable agent, or renamed file does not reset the budget.
-Delete scratch snapshots after the final state and residuals have been reported. The Stage 5.7 reference uses this shared bookkeeping and adds no per-child retry budget.
+A validation run covers the single plan or the entire parent-and-children set.
+It consists of the structural validator followed by the Stage 5.6 self-check; nothing in the default run spawns a sub-agent.
+Structural repairs: at most two attempts for the same structural cause, then carry the residual failure into Stage 6.
+Self-check: at most two passes per run; every content edit re-runs the structural validator before the next pass.
+When the budget is exhausted, keep the latest well-formed file, stop automatic repairs, and report the remaining gaps as incomplete, never as passed.
+A new user answer or requested edit starts a new validation run.
+The opt-in Stage 5.7 cold-pickup runs once per explicit user request after a completed run; the patches it causes re-enter this budget from the structural validator.
+Before applying cold-pickup patches, copy the affected files to a scratch directory outside the repository so a patch that breaks a previously passing check can be restored; delete the copies after the final state has been reported.
 
-### Stage 5.5 — Downstream Execution-Reconstruction Check
-
-After structural validator passes, run blind downstream execution-reconstruction check before cold-pickup.
-This is not a review prompt and not a rubric-driven validation prompt.
-Purpose: observe how fresh coding agent naturally reconstructs saved plan as work to start.
-Explanation must recover first stage, intended order, each stage deliverable and addressable handoff, verification input and expected signal when present, any no-change branch, replan boundaries, and whole-work completion basis after side-effect checks.
-This checks direction and executability, not full input coverage; Stage 5.6 remains coverage check.
-
-Use a new sub-agent with no inherited conversation, prior findings, or reused reviewer context, and enforce a read-only task boundary.
-Send only a natural work-start request in the user's ordinary style, containing the saved brief path.
-The agent explains intended work; it must not execute the plan, edit files, or run its implementation commands.
-If independent context or read-only operation cannot be provided, or the agent fails without a usable result, record Stage 5.5 as unavailable with the reason. Do not claim an aligned reconstruction or substitute an informed self-review.
-For briefset mode, include only the briefset parent path.
-Do not include the original user request, Stage 3 findings, Stage 4 decisions, suspected gaps, validation criteria, expected answer format, or any hint about what might be wrong.
-Do not ask the sub-agent to "verify", "review", "audit", "compare", or "find missing items".
-Chat stays normal prose; the work-start request is not caveman.
-
-Example shape only — do not hard-code this sentence:
-
-```text
-<brief path> 작업 진행할꺼야. 우선 이 브리프 파일을 확인하고 어떻게 작업할껀지 의도 설명해줘.
-```
-
-Compare natural reconstruction against original request, saved `Execution Plan`, and user-locked Stage 4 decisions.
-Treat only material drift as a failure:
-
-- The work purpose is different.
-- The understood scope is materially wider or narrower.
-- The first work direction points away from the intended entry points or workflow.
-- First stage, intended order, stage deliverable, handoff, or replan boundary cannot be recovered.
-- Stage-local `Ends when` checks are confused with whole-work `Acceptance Criteria`.
-- A user constraint, exclusion, or acceptance threshold is missing from reconstruction.
-- The sub-agent assumes work that the brief did not intend.
-- Caveman compression made execution reconstruction ambiguous or wrong.
-
-If material drift appears, patch only within the shared round budget, restart from structural validation, and run a fresh execution-reconstruction check with the same information boundary.
-Do not fix drift by changing the sub-agent prompt.
-Fix the brief.
-
-This check is mandatory whenever the host can spawn a sub-agent.
-Do not downgrade it to a self-check because the plan looks obvious or because Stage 5.6 is clean.
-
-If host cannot spawn sub-agent, report execution-reconstruction check unavailable in Stage 6.
-Do not block the workflow waiting for sub-agent support; continue to Stage 5.6 and mark Stage 5.5 as unavailable in the save report.
-Do not replace it with a self-check; the point is the downstream agent's natural read.
-
-### Stage 5.6 — Content-Level Self-Check
+### Stage 5.6 — Content and Intent Self-Check
 
 The structural validator confirms the file has the required sections.
-It does not confirm the file is a *complete* work instruction.
-Before handing off in Stage 6, re-read the saved brief from disk and run a content-coverage self-check against the original input plus Stage 3 / Stage 4 findings.
-This checks whether input and codebase concerns survived into the plan; do not treat a clean Stage 5.5 reconstruction as proof that nothing is missing.
+It does not confirm the file is a *complete* work instruction, nor that it says what the user meant.
+Before handing off in Stage 6, re-read the saved brief from disk and run this self-check against the original input plus Stage 3 / Stage 4 findings.
+This is the only verification pass in the default run; an independent read by a fresh sub-agent is available on request through Stage 5.7.
 
 The brief is a work instruction, not a summary.
 Caveman compresses *how* the brief reads, never *what* it contains — so this self-check is identical to the normal-mode skill's check, plus one caveman-only parity item.
 Run this checklist:
 
+- [ ] **Intent fidelity:** read the saved file as a stranger would and compare it with the original input and the answered Stage 4 decisions.
+  The work purpose is the same; the scope is neither materially wider nor narrower; the first stage and entry points point where the input points; every user constraint, exclusion, and acceptance threshold survives; the brief assumes no work the input did not intend.
+  A user-locked Stage 4 decision counts as intent even when it differs from the raw input.
+  If caveman compression is what makes purpose or scope unclear, restore normal prose under the Auto-Clarity carve-out.
 - [ ] **Input coverage:** every distinct concern named in input maps to at least one bullet or stage (In Scope, Out of Scope, Related Files, Execution Plan, Constraints, Side Effect Checkpoints, Acceptance Criteria, or structured non-blocking Open Questions).
   If spec section is not implemented now, it appears in `Out of Scope` as `[hard]` / `[deferred]`, or in `Open Questions` only when a non-blocking user decision has safe default.
   Two unrelated implementation or verification obligations are never merged into one bullet.
@@ -561,118 +516,87 @@ Run this checklist:
   Do not infer parity from an imagined normal-mode brief or from bullet counts alone.
   Caveman is register-only.
 
-If any check fails, fix the brief in place with `Edit`, then re-run the structural validator (`validate_brief.py` for a single brief, `validate_briefset.py` for a briefset parent).
-Because the file changed after Stage 5.5, re-enter the validation chain at Stage 5.5 before running Stage 5.6 again.
-Continue only within the shared five-round budget. Stop on a repeated unresolved gap with no justified patch or on budget exhaustion; report the latest file as incomplete, not passed.
+If any check fails, fix the brief in place with `Edit`, re-run the structural validator (`validate_brief.py` for a single brief, `validate_briefset.py` for a briefset parent), then run this self-check again.
+At most two self-check passes per validation run; if a gap remains after the second pass or has no justified patch, stop and report the latest file as incomplete, not passed.
 
-The self-check outcome is separate from structural validator and downstream execution-reconstruction check — report all in Stage 6.
+The self-check outcome is separate from the structural validator — report both in Stage 6.
 A brief can pass structural validation and still fail this self-check; in that case the file is incomplete even though it is well-formed.
 
 For briefset mode, run the self-check on the parent and on every child independently.
 The parent's coverage check asks whether every input-implied execution context maps to a child; each child uses all items above.
 
-### Stage 5.7 — Cold-Pickup Sub-Agent Verification
+### Stage 5.7 — Cold-Pickup Verification (opt-in)
 
-The Stage 5.6 self-check is self-evaluated — the same agent that wrote the brief grades it for cold-pickup readiness.
-That is biased.
-An untouched sub-agent reading **only the original input and the saved brief** is the truthful version of the cold-pickup test.
+The Stage 5.6 self-check is self-evaluated: the author cannot forget its own intent, so it cannot fully simulate a stranger reading the file cold.
+Stage 5.7 supplies that stranger — a fresh read-only sub-agent that first reconstructs the plan from the saved brief alone, then compares it with the original input and reports intent deviations, ask-backs, missing concerns, and over-terse bullets.
 
-Stage 5.7 runs **signal-gated** by default — automatically ON only when the brief's workflow signals indicate non-trivial verification value.
-This avoids spawning sub-agents for trivial briefs while keeping the safety net for complex ones.
-This skill's contract authorizes the sub-agent spawn when the gate fires; do not skip a *gated-ON* run based on host defaults like "be conservative about sub-agent cost" or "don't run extra verification unless asked".
+**Stage 5.7 never runs by default.** It has no signal gates and no automatic triggers; briefset mode, Stage 4 decision rows, non-empty `Open Questions`, work type, and the caveman register do not start it.
+It runs only when the user explicitly asks — for example `run cold-pickup`, `--cold-pickup`, `콜드픽업 실행` — either together with the initial input or later in Stage 6 against the current on-disk file.
+Do not spawn a sub-agent for verification without such a request, and do not offer more than the one-line banner hint in Stage 6.
 
-**Auto-ON triggers (any one fires Stage 5.7):**
+**When requested, read `references/cold-pickup.md` and follow it.** In short:
 
-- Briefset mode — parent and every child run cold-pickup; per-child signal gating is intentionally disabled because coordination drift between siblings is the main risk briefset cold-pickup catches.
-  For a wide briefset (≥ 5 children) you may offer the user the sampling fallback defined in `references/cold-pickup.md` before running; Force OFF on the briefset skips the whole set.
-- Stage 4 produced **≥ 1 user-decision row** in the decision table (input had real interpretive ambiguity).
-- `Open Questions` is non-empty — it contains at least one structured non-blocking user decision rather than solely `- None — <reason>`.
-- Work type is `fix`, `perf`, or `refactor` — fires *regardless of input simplicity*. The type-conditional section (`Reproduction` / `Baseline Measurement` / `Behavior Contract`) amplifies drift risk on these types, so cold-pickup pays off even for short inputs. Use Force OFF if you want to skip a one-line fix.
+1. Complete the current validation run first (structural validator and Stage 5.6 pass or report residuals); cold-pickup does not replace either.
+2. Spawn one fresh read-only sub-agent per artifact — one for a single brief; in briefset mode one for the parent plus one per child the user did not exclude — with no inherited conversation and no Stage 3 register, Stage 4 decisions, self-check results, or hints about suspected gaps.
+3. Give it the brief path (plus the parent path for a child) and the path of a scratch file holding the original input verbatim; it reads those files only and never explores the repository.
+4. Collect the YAML report, route each finding through the reference's routing tables (disagreement vs drift against answered Stage 4 rows), patch drift in place, re-run the structural validator, then Stage 5.6.
+5. Report the outcome in the Stage 6 banner. One pass per request: do not re-run cold-pickup automatically after patching; the user asks again if they want another independent read.
 
-**Auto-OFF (trivial signals).** When none of the auto-ON triggers fire, Stage 5.7 is skipped automatically.
-The Stage 6 banner reports the skip with the signal snapshot — `cold-pickup skipped: trivial signals (single-brief, stage-4-rows=0, open-questions=none, type=<type>)` — so the user can see exactly which gates evaluated to false.
-
-**Trivial caveman briefs.** When no auto-ON trigger fires (briefset / stage-4-rows ≥ 1 / non-empty `Open Questions` / type ∈ `{fix, perf, refactor}`), Stage 5.7 is auto-skipped, so the over-terse check is not run on the saved file. This is intentional — trivial caveman briefs have little prose to compress, so the marginal value of the over-terse check is low relative to the sub-agent cost. Use Force ON if you want over-terse verification on a trivial caveman brief anyway.
-
-**User override.** Force ON runs Stage 5.7 despite trivial signals (e.g. `run cold-pickup`, `--cold-pickup`, `콜드픽업 강제`); Force OFF skips it despite firing signals (e.g. `skip cold-pickup`, `--no-cold-pickup`, `콜드픽업 끄기`).
-The full trigger-phrase lists and the rule for inputs containing both live in `references/cold-pickup.md`.
-
-**Skip on residual validator failure.** Stage 5.7 is skipped only when structural validation still fails after two repair attempts.
-
-The shared round cap and documented unavailable/unfinished outcomes are explicit termination conditions. Token cost, latency preference, inferred host policy, and "the brief looks fine" do not authorize silently skipping an otherwise required run.
-If a gate fires, Stage 6 must report the actual cold-pickup result or the documented reason it could not run.
-
-**Mechanism — when the gate fires, read `references/cold-pickup.md` (report schema, pass bookkeeping, routing table, termination triggers, banner formats), then:**
-
-1. Use the current round's set-wide snapshot and ledger (see *Pass Bookkeeping and Rollback* in the reference).
-2. Spawn a fresh read-only sub-agent without inherited conversation or previous reports.
-   If independent read-only execution is unavailable or fails, use the *Sub-Agent Unavailable Fallback* in the reference — never silently skip a gated-ON run.
-3. Hand it **only the original user input or planning notes plus the brief path** — no Stage 3 uncertainty register, Stage 4 decisions, suspected gaps, decomposition rationale, Stage 5.5 execution-reconstruction result, or Stage 5.6 self-check result.
-   Do not include hints such as what to inspect, what might be missing, or which split you expect the sub-agent to prefer.
-   For briefset mode, parent pass receives original input plus parent path. Each child pass receives original input, same parent path, and one child path.
-   Parent maps child scope: compare only concerns assigned to target child plus relevant shared constraints; never patch sibling-owned concern into target child.
-4. Collect the YAML report (schema and sub-agent rules in the reference) and route it against the original input plus the main agent's Stage 3 uncertainty register and Stage 4 decisions.
-   The sub-agent is not responsible for Stage 3 coverage it never saw; Stage 3 coverage remains a Stage 5.6 responsibility.
-
-**Caveman extension.** The cold-pickup reference schema includes `over_terse_bullets` for bullets that became too terse to preserve intent.
-Caveman is a register transform; if compression made a bullet ambiguous, the sub-agent flags it and the bullet is rewritten in normal prose under the Auto-Clarity carve-out before the brief passes Stage 5.7.
-`verdict: clean` is only valid when `ask_backs`, `missing_concerns`, and `over_terse_bullets` are all empty; the reference counts unrejected `over_terse_bullets` in the same termination checks as other findings.
-
-**Drift handling.** When the report's `verdict` is `needs_changes` or `blocked`, or when any unrejected `ask_backs` / `missing_concerns` / `over_terse_bullets` survive routing — `Edit` the saved brief in place to close the gap, re-run the structural validator, re-enter Stage 5.5, then Stage 5.6, and only then re-evaluate the Stage 5.7 gate.
-Route every `ask_backs[*]` / `missing_concerns[*]` through the routing table in the reference before patching, including the disagreement-vs-drift check against answered Stage 4 rows.
-`over_terse_bullets[*]` are caveman-register findings; they never match a Stage 4 row `내용`, so they are always treated as drift — patch in place under the Auto-Clarity carve-out, never as disagreement.
-Continue within the shared validation budget until one of the six termination triggers in the reference fires (Regression, Oscillation, Stable findings, Clean pass, No-op pass, Hard cap — evaluated in that priority order).
+**Caveman extension.** The report schema in the reference adds `over_terse_bullets` for bullets whose caveman compression left the coding agent unsure what to do.
+They are register findings, never disagreements: rewrite each flagged bullet in normal prose under the Auto-Clarity carve-out, and `verdict: clean` also requires `over_terse_bullets` to be empty.
+The sub-agent prompt, its report, and the banner stay in normal prose; caveman applies to the saved brief body only.
 
 Cold-pickup never overrides a Stage 4 decision the user already locked, never invents Acceptance Criteria, Side Effect Checkpoints, or Out-of-Scope guardrails the input did not imply, and never silently rewrites `Open Questions` — drift fixes either resolve a question into another section or leave the question intact for the user.
-
-**Reporting.** The cold-pickup outcome integrates into Stage 6 alongside structural validator, Stage 5.5 execution-reconstruction check, and Stage 5.6 self-check.
-For briefset mode, the banner uses the collapsed `parent + K/N children` format from the reference — one summary line plus details only on flagged children, not one line per child.
-The caveman pass-everything line additionally reports over-terse status: `cold-pickup: 1/1 parent + N/N children verdict:clean (no ask-backs, no missing concerns, no over-terse bullets)`.
+If a fresh read-only sub-agent cannot be spawned or returns an unusable report, report `cold-pickup unavailable (<actual reason>)`; the Stage 5.6 result stands on its own and is never relabeled as an independent read.
 
 ### Stage 6 — Review + Iterate
 
 The brief is on disk.
 Hand off to the user for review.
 
-1. Report path and one-line summary, then distinguish **structural validation** from **executability validation**.
-   Structural validation is Stage 5 validator result.
-   Executability validation combines Stage 5.5 execution reconstruction, Stage 5.6 content/execution self-check, and Stage 5.7 cold-pickup.
-   Use the user's chat language.
-   All four signals are reported together so the user can see whether the file is well-formed, naturally interpreted as intended, complete, *and* cold-pickup-ready.
+1. Report the path and one-line summary, then distinguish **structural validation** from **content validation**.
+   Structural validation is the Stage 5 validator result.
+   Content validation is the Stage 5.6 content and intent self-check (including caveman parity), followed by the Stage 5.7 cold-pickup line — `not run (opt-in)` by default, or its actual result when the user requested it.
+   Report unavailable, incomplete, restored, and exhausted outcomes explicitly; a missing required result is never a pass. Every reported check must belong to the final saved artifact state.
+   Use the user's chat language; the banner is normal prose, never caveman.
 
-   **English (validator + self-check + cold-pickup passed):**
-   > Saved — `docs/briefs/2026-04-23-feat-dark-mode-settings.md` (`feat`: Dark mode toggle in Settings; structural validation passed; executability validation passed — execution reconstruction aligned, content/execution self-check passed, caveman parity OK, cold-pickup terminated with `clean_pass` after 1 pass (no ask-backs, no missing concerns, no over-terse bullets)).
+   **English (validator + self-check passed, cold-pickup not requested):**
+   > Saved — `docs/briefs/2026-04-23-feat-dark-mode-settings.md` (`feat`: Dark mode toggle in Settings; structural validation passed; content validation passed — content and intent self-check passed, caveman parity OK; cold-pickup not run (opt-in)).
+   > Open it and let me know if anything needs editing. Say `run cold-pickup` if you want an independent read of the saved brief.
+
+   **Korean (validator + self-check passed, cold-pickup not requested):**
+   > 저장 완료 — `docs/briefs/2026-04-23-feat-dark-mode-settings.md` (`feat`: Dark mode toggle in Settings; 구조 검증 통과; 내용 검증 통과 — 내용/의도 자체 검증 통과, 문체 변환 동등성 확인; cold-pickup 미실행 (옵트인)).
+   > 파일 열어보고 고칠 부분 있으면 알려줘. 독립 검증이 필요하면 `콜드픽업 실행`이라고 말해줘.
+
+   **English (user requested cold-pickup, clean):**
+   > Saved — `docs/briefs/2026-04-23-feat-dark-mode-settings.md` (`feat`: Dark mode toggle in Settings; structural validation passed; content validation passed — content and intent self-check passed, caveman parity OK; cold-pickup: clean (no intent deviations, no ask-backs, no missing concerns, no over-terse bullets)).
    > Open it and let me know if anything needs editing.
 
-   Banner termination trigger reflects the actual loop outcome — `clean_pass` (normal), `regression`, `oscillation`, `stable_findings`, `no_op`, or `hard_cap`. Any non-`clean_pass` trigger means residual concerns must follow in the banner as bullet items.
-
-   **Korean (validator + self-check + cold-pickup passed):**
-   > 저장 완료 — `docs/briefs/2026-04-23-feat-dark-mode-settings.md` (`feat`: Dark mode toggle in Settings; 구조 검증 통과; 실행 가능성 검증 통과 — 실행 경로 복원 일치, 내용/실행 자체 검증 통과, 문체 변환 동등성 확인, cold-pickup `clean_pass`로 1회 만에 종료 (ask-back 없음, missing 없음, 과압축 지적 없음)).
-   > 파일 열어보고 고칠 부분 있으면 알려줘.
-
-   **English (validator + self-check passed, cold-pickup auto-skipped on trivial signals):**
-   > Saved — `docs/briefs/2026-04-23-feat-dark-mode-settings.md` (`feat`: Dark mode toggle in Settings; structural validation passed; executability validation passed — execution reconstruction aligned, content/execution self-check passed, caveman parity OK, cold-pickup skipped: trivial signals (single-brief, stage-4-rows=0, open-questions=none, type=feat)).
-   > Tell me `run cold-pickup` or `--cold-pickup` if you want the sub-agent verification anyway.
+   **English (user requested cold-pickup, findings):**
+   > Saved — `docs/briefs/2026-04-23-feat-dark-mode-settings.md` (`feat`: Dark mode toggle in Settings; structural validation passed; content validation passed — content and intent self-check passed after 1 patch, caveman parity OK; cold-pickup flagged 3 item(s): 2 patched in place, 1 left as a user decision).
+   > - d1 (`scope_narrower`): the input asks for the toggle on mobile too; added the mobile settings route to In Scope and Stage 2.
+   > - t1 (over-terse): `- Persist choice.` lost the storage target; restored to normal prose naming the `localStorage` key `theme`.
+   > - a1 (`user_input_ambiguity`, affects direction): "system default" could mean the OS theme or the app default — see the decision table below.
 
    **English (validator still fails after two repair attempts):**
-   > Saved — `docs/briefs/2026-04-23-feat-dark-mode-settings.md`, but structural validation still flags 2 issue(s) after two repair attempts: ✗ <first failure verbatim> ✗ <second failure verbatim>. The file is on disk; executability validation did not run.
+   > Saved — `docs/briefs/2026-04-23-feat-dark-mode-settings.md`, but structural validation still flags 2 issue(s) after two repair attempts: ✗ <first failure verbatim> ✗ <second failure verbatim>. The file is on disk; content validation did not run.
 
-   Mirror any banner into the user's chat language as the Korean example above shows — translate the prose, keep paths, filenames, and technical fields (`trivial signals (...)`, termination triggers, validator messages) verbatim.
+   Mirror any banner into the user's chat language as the Korean example above shows — translate the prose, keep paths, filenames, and technical fields (finding ids, `kind` values, classifications, validator messages) verbatim.
+   Briefset banners use the collapsed formats in `references/cold-pickup.md` and `references/briefset.md`.
 
-   When structural validation still fails after repair budget, Stage 5.5, Stage 5.6, and Stage 5.7 are **skipped**.
-   The banner stays as shown; do not append `self-check skipped` / `cold-pickup skipped` lines in this case.
+   When structural validation still fails after the repair budget, Stage 5.6 is **skipped** and Stage 5.7 is not offered — the plan is not yet well-formed enough to check content against.
+   The banner stays as shown; do not append `self-check skipped` / `cold-pickup not run` lines in this case.
 
-   If Stage 5.5 surfaced execution-reconstruction drift, mention what was patched (for example, missing Stage 2 deliverable or ambiguous caveman handoff).
-   If structural validation passed but the Stage 5.6 self-check surfaced gaps fixed within the shared budget, report it the same way (e.g., "self-check found 2 input concerns missing from In Scope and one bullet that had been merged for caveman compression; restored them, re-validated").
-   If Stage 5.7 patched the brief after cold-pickup drift, report it the same way (e.g., `cold-pickup flagged 2 gap(s) and 1 over-terse bullet; patched in place`).
-   If the user used Force OFF triggers, report `cold-pickup skipped per user request`.
-   If Stage 5.7 was auto-skipped because no auto-ON trigger fired, report `cold-pickup skipped: trivial signals (...)` with the signal snapshot shown in the banner case above.
+   If the Stage 5.6 self-check surfaced gaps fixed within the budget, say what you patched (e.g., "self-check found 2 input concerns missing from In Scope and one bullet that had been merged for caveman compression; restored them, re-validated").
+   If Stage 5.7 patched the brief, list each patched and residual finding as bullets under the banner, as shown above.
+   If the user requested cold-pickup and it could not run, report `cold-pickup unavailable (<actual reason>)` instead of a result.
 
 2. If the user requests changes, apply them with `Edit` against the on-disk file.
    Do **not** re-render the full brief into chat — that defeats the point of save-then-review.
-   Re-run the structural validator after each edit pass, then re-run Stage 5.5 and Stage 5.6, then re-evaluate the Stage 5.7 gate and report the delta.
+   Re-run the structural validator after each edit pass, then Stage 5.6, and report the delta.
+   Re-run Stage 5.7 only if the user asks for it again.
 
-3. If saved single plan contains structured non-blocking `Open Questions`, present them after save report using Stage 4 table:
+3. If saved single plan contains structured non-blocking `Open Questions` (after any Stage 5.7 patches have landed), present them after save report using Stage 4 table:
 
    ```markdown
    | 순번 | 내용 | 수정 추천안 | 근거 |
@@ -680,7 +604,7 @@ Hand off to the user for review.
    | 1 | <non-blocking user decision> | <recommended patch to apply to the plan> | <safe default and reconfirm milestone> |
    ```
 
-   After user answers, patch saved plan, move resolved decisions into appropriate sections, leave only structured non-blocking user questions, rerun validator, Stage 5.5 execution reconstruction, Stage 5.6 self-check, then Stage 5.7 gate.
+   After user answers, patch saved plan, move resolved decisions into appropriate sections, leave only structured non-blocking user questions, then rerun the validator and Stage 5.6.
    If the user leaves a question unanswered, skips that question, or lets structured input expire, keep declared defaults active and questions unchanged; they do not block coding agent before named reconfirmation milestones.
    Chat stays normal prose; only saved brief body prose uses caveman full mode.
 
@@ -829,10 +753,11 @@ The structural validator catches format errors after the fact; this list catches
 
 ## Post-Run Checklist (before the Stage 6 banner)
 
-Evaluated after Stage 5.5 / 5.6 / 5.7 have run or been skipped, immediately before reporting the Stage 6 banner — these items cannot be checked before `Write`.
+Evaluated after Stage 5.6 (and Stage 5.7 when the user requested it) has run, immediately before reporting the Stage 6 banner — these items cannot be checked before `Write`.
 
-- [ ] Cold-pickup ran when an auto-ON trigger or Force ON applied and earlier checks reached it; otherwise Stage 6 names the documented unfinished/unavailable outcome. No unrun check is passed.
-- [ ] Cold-pickup auto-skipped with `trivial signals (...)` snapshot when no auto-ON trigger fired and no Force ON was used.
-- [ ] Cold-pickup skipped per user request (`cold-pickup skipped per user request`) when Force OFF was used, even if auto-ON triggers would have fired.
-- [ ] Stage 6 banner reflects what actually ran — a silent skip on a fired gate is **not** acceptable.
-- [ ] Any edit after Stage 5.5, Stage 5.6, Stage 5.7, or Stage 6 re-entered the validation chain from structural validation, then Stage 5.5, then Stage 5.6, before Stage 5.7 was evaluated again.
+- [ ] Stage 5.6 ran against the file as saved on disk, within two passes; a gap left after the budget is reported as incomplete, never as passed.
+- [ ] No verification sub-agent was spawned without an explicit user request for cold-pickup.
+- [ ] When the user requested cold-pickup, Stage 5.7 ran once per artifact as the reference describes, or the banner names the documented `unavailable` reason; when they did not, the banner says `cold-pickup not run (opt-in)`.
+- [ ] Over-terse bullets flagged by a requested cold-pickup were restored to normal prose under Auto-Clarity, never argued as disagreement.
+- [ ] Stage 6 banner reflects what actually ran — no check is reported from an earlier artifact state.
+- [ ] Any edit after Stage 5.6, Stage 5.7, or Stage 6 re-ran the structural validator and then Stage 5.6 before the banner was reported.

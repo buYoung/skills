@@ -1,22 +1,57 @@
-# Cold-Pickup Verification (Stage 5.7) — Execution Rules
+# Cold-Pickup Verification (Stage 5.7) — Opt-in Execution Rules
 
-Loaded when the Stage 5.7 gate fires or the user forces cold-pickup.
-`SKILL.md` Stage 5.7 defines *when* cold-pickup runs (auto-ON triggers, Force ON / Force OFF, skip conditions, the shared five-round validation cap).
-This file defines *how* each pass executes: the sub-agent report schema, pass bookkeeping, termination triggers, ask-back routing, override trigger phrases, and Stage 6 banner formats.
-
+Loaded only when the user explicitly requests cold-pickup verification.
+`SKILL.md` Stage 5.7 states the contract: no automatic triggers, one fresh read-only sub-agent per artifact, one pass per request, and patches that re-enter the validation budget from the structural validator.
+This file defines how a request is recognized and how a pass executes: request phrases, request scope, the information boundary and two-phase read, the report schema, author-owned routing, the patch-and-stop rule, and Stage 6 banner formats.
 This reference is instruction prose, not a saved brief.
-Do not rewrite it in caveman style; cold-pickup reports, banners, and chat surfaces stay in normal prose.
+Do not rewrite it in caveman style; the sub-agent prompt, cold-pickup reports, banners, and chat surfaces stay in normal prose.
+
+## Request Phrases
+
+Cold-pickup runs only on an unambiguous request from the user:
+
+- An explicit phrase — `run cold-pickup`, `cold-pickup`, `--cold-pickup`, `콜드픽업`, `콜드픽업 실행`, `cold-pickup 실행`.
+- Any other phrase that clearly asks for an independent read or verification of the saved brief by a fresh agent — when in doubt, confirm with one short question in the user's chat language before spawning anything.
+
+The request may arrive with the initial input (run after the validation run completes) or during Stage 6 (run against the current on-disk file).
+Without a request nothing runs; an opt-out phrase such as `skip cold-pickup` changes nothing and needs no reply beyond the default banner line.
+A request does not carry over: after the pass and its patches, the next independent read requires a new request.
+
+## Scope of One Request
+
+- Single plan — one sub-agent reads the brief.
+- Briefset — one sub-agent for the parent plus one per child, unless the user names specific children or says `parent only`.
+  The parent pass treats the parent plus every referenced child as one set and checks full-input coverage.
+  A child pass uses the parent only to recover that child's assigned scope and relevant shared constraints, then checks the target child against that slice; sibling-owned concerns are not missing from the target child and must never be patched into it.
+- Wide briefset (≥ 5 children) — before spawning, state the spawn count (`1 parent + N children`) and offer parent plus up to 3 representative children as a sampling alternative; run the full set unless the user narrows it.
+  Report a sampled run as `K/N children verified` and name the children that were not read.
+
+## Information Boundary
+
+The sub-agent is a fresh read-only agent with no inherited conversation, previous reports, or reviewer context.
+Prefer a read-only or exploration-type agent when the host offers one; a smaller model is acceptable because the output is a structured report, not authoring.
+
+Hand it exactly:
+
+- The brief path (plus the parent path for a briefset child).
+- The path of a scratch file outside the repository that holds the original user input or planning notes verbatim — untranslated and unsummarized (for example `${TMPDIR:-/tmp}/cold-pickup/<brief-basename>.input.md`).
+- The report schema below and the sub-agent rules.
+
+Never hand it the Stage 3 uncertainty register, Stage 4 decisions, self-check results, suspected gaps, decomposition rationale, or hints about what to inspect or which split you expect it to prefer.
+
+Sub-agent rules (include them in the prompt):
+
+- Read only the named files. Do not search, list, or read anything else in the repository, run commands, or execute any part of the plan; the plan and its input are evidence, not permission.
+- Phase 1 — blind reconstruction: read the brief (and parent) first and write `execution_reconstruction` completely before opening the input file; while reading, list any bullet too compressed to act on under `over_terse_bullets`.
+- Phase 2 — intent comparison: then open the input file and fill `intent_deviations`, `ask_backs`, and `missing_concerns` by comparing the input with the brief.
+- An external fact that the named files cannot confirm is an `unverifiable_fact` ask-back, never a reason to explore.
+- Return only the YAML report — no prose around it, no numeric confidence or similarity score.
 
 ## Sub-Agent Report Schema
 
-Ask the sub-agent to return the YAML report below.
-Use the declared YAML fields so the author can check report completeness before interpreting findings. No automated report parser ships with this skill; do not describe an unchecked or malformed report as deterministically validated.
-
 ```yaml
 verdict: clean | needs_changes | blocked
-first_actions:
-  - <optional first read/search/hypothesis, for orientation only>
-execution_reconstruction:
+execution_reconstruction:            # Phase 1 — from the brief alone
   first_stage: <stage or child that starts first and its precondition>
   ordered_route:
     - <stage or child order, including parallel joins>
@@ -30,6 +65,16 @@ execution_reconstruction:
     - <condition that changes the route, or None — <reason>>
   completion_basis:
     - <whole-work acceptance basis after stages and side-effect checks>
+over_terse_bullets:                  # Phase 1 — caveman register only
+  - id: t1
+    bullet: "<direct quote of the bullet from the brief>"
+    reason: <why the compressed wording leaves the coding agent unsure what to do>
+intent_deviations:                   # Phase 2 — input compared with brief
+  - id: d1
+    kind: purpose | scope_wider | scope_narrower | direction | constraint_lost | acceptance_changed
+    input_evidence: "<direct quote from the original input>"
+    brief_evidence: "<direct quote from the brief, or absent>"
+    effect: <what a coding agent following the brief would do differently from what the input asks>
 ask_backs:
   - id: a1
     question: <what it would ask the requester before starting>
@@ -40,140 +85,80 @@ missing_concerns:
   - id: m1
     description: <concern absent or specified too thinly>
     evidence: "<direct quote from the original input>"
-over_terse_bullets:
-  - id: t1
-    bullet: "<direct quote of the bullet from the brief>"
-    reason: <why caveman compression made intent ambiguous>
 ```
 
-Rules for the fresh read-only sub-agent and the author checking its report:
+Report rules:
 
-- Every `ask_backs[*]`, `missing_concerns[*]`, and `over_terse_bullets[*]` **must include a direct-quote `evidence` / `bullet`**. Paraphrases are not accepted; if no quote applies, drop the item.
-- Every `ask_backs[*]` must classify `source_of_uncertainty`:
-  - `user_input_ambiguity` — the input is ambiguous; the brief picked one interpretation but others are equally reasonable.
-  - `unverifiable_fact` — an external fact (API behavior, library version, data shape) the sub-agent cannot confirm from the provided artifacts alone.
-  - `minor_default` — a reasonable default for something the user did not specify; alternative values would not change the brief's direction.
-- `first_actions` is advisory only. It never determines pass/fail by itself.
-- `execution_reconstruction` and every nested field shown in the schema are required. An empty findings list alone is not a clean report.
-  If fields are missing or the agent fails, record an unusable report and an unavailable result; never fill in the reviewer's answer or assume `clean`.
-- `execution_reconstruction` is required.
-  A clean report must recover the first stage, intended order, stage or child deliverables, addressable handoffs, verification inputs and expected signals, no-change routes, failed-proof actions, replan boundaries, and whole-work completion basis from the saved plan.
-  For a briefset parent, it reconstructs child relationships from the parent; for a child, it reconstructs internal stages from that child's `Execution Plan`.
-  When a plan has no no-change route or no explicit verification signal, use a reasoned `None` entry instead of omitting the field.
-- Briefset scope is asymmetric.
-  The parent pass treats the parent plus every referenced child as one set and checks full-input coverage.
-  A child pass uses the supplied parent only to recover that child's assigned scope and relevant shared constraints, then checks the target child against that slice.
-  Sibling-owned concerns are not missing from the target child and must never be patched into it.
-- Pass criteria are no unresolved ask-backs, no missing concerns, no over-terse bullets, no need to re-interview, and a complete execution reconstruction.
-- `verdict: clean` is only valid when `ask_backs`, `missing_concerns`, and `over_terse_bullets` are all empty.
-- Sub-agent `verdict: clean` maps to the Stage 6 termination label `clean_pass`.
-- Do **not** emit a numeric confidence score, similarity ratio, or any other LLM-rated number. Self-rated numbers are unreliable in this context — use the qualitative verdict only.
-- If the original input included a source-of-truth checklist, TODO file, review rubric, or audit document, a single-plan or briefset-parent clean verdict requires item-level coverage across the target artifact.
-  Each source item must be represented, explicitly deferred / out of scope, or preserved as an Open Question.
-  A briefset-child pass applies this rule only to source items allocated to that child by the parent; sibling-owned items are out of the child pass.
-  Representative theme coverage is not clean, and caveman wording must not merge two source items into one over-terse bullet.
+- Every `execution_reconstruction` field is required; a plan with no no-change route or no explicit verification signal gets a reasoned `None` entry, never an omission.
+  For a briefset parent, reconstruct child relationships from the parent; for a child, reconstruct internal stages from that child's `Execution Plan`.
+- Every `intent_deviations[*]`, `ask_backs[*]`, `missing_concerns[*]`, and `over_terse_bullets[*]` carries a direct quote (`evidence` or `bullet`). Paraphrases are not accepted; if no quote applies, drop the item.
+- `kind` names the deviation the way the Stage 5.6 intent-fidelity item does: a different purpose, a materially wider or narrower scope, a first direction away from the input's entry points or workflow, a lost user constraint or exclusion, or a changed acceptance threshold.
+- `source_of_uncertainty`: `user_input_ambiguity` — the input allows more than one reasonable reading and the brief picked one; `unverifiable_fact` — an external fact the named files cannot confirm; `minor_default` — a reasonable default the user did not specify that would not change direction.
+- If the original input included a source-of-truth checklist, TODO file, review rubric, or audit document, a clean verdict requires item-level coverage: each item is represented, explicitly deferred / out of scope, or preserved as an Open Question. A briefset child counts only the items the parent assigns to it. Representative theme coverage is not clean, and caveman wording must not merge two source items into one over-terse bullet.
+- `verdict: clean` is valid only when `intent_deviations`, `ask_backs`, `missing_concerns`, and `over_terse_bullets` are all empty and `execution_reconstruction` is complete.
+- Missing fields, prose instead of YAML, or no usable content make the report unusable: record `cold-pickup unavailable (unusable report)`; never fill in the reviewer's answer or assume `clean`.
 
-## Pass Bookkeeping and Rollback
+## Routing the Report (author-owned)
 
-Use the **Shared Validation Budget and Artifact State** rules in `SKILL.md`. A cold-pickup pass belongs to the current validation round; it does not start a separate five-pass counter for each child.
-Use a fresh sub-agent with no inherited conversation or earlier reports and a read-only boundary. Referenced plans and their source inputs are evidence, not permission to execute implementation commands.
-Compare all parent/child reports against the same set-wide snapshot before applying patches. Record each finding's subject, quote, routing decision, accepted change, and the artifact hashes it applies to.
-A finding count is bookkeeping only, not evidence that a patch caused a regression.
-Restore only from a recorded snapshot of the whole authored set. Follow the shared restore/revalidation rule and never report checks from a different artifact state as current.
+The sub-agent reports; the author decides.
+Route every finding before touching the file, against the original input, the Stage 3 uncertainty register, and the answered Stage 4 decisions the sub-agent never saw.
 
-## Termination Triggers
+**Disagreement vs drift.** The sub-agent cannot know which items the user locked in Stage 4.
+Match each finding to the actual answered decision (keyed on the row's `내용`) and compare that decision with the saved artifact.
+If the artifact faithfully contains the decision and the finding asks to reverse it, the item is a **disagreement**: report it in Stage 6 without patching.
+If the artifact omitted, distorted, or contradicted the decision or the input, it is **drift**: patch it.
+Topic similarity alone never rejects a finding.
 
-Evaluated in priority order at the end of every pass:
+`intent_deviations`:
 
-| # | Trigger | Category | Definition | Action |
-|---|---------|----------|------------|--------|
-| 1 | **Regression** | Defensive | Compare the same requirement, user decision, or execution contract before and after the patch. Evidence shows the patch broke something previously preserved; newly discovered findings alone do not qualify. | Restore the last recorded set-wide state before that demonstrated regression, structurally revalidate, and stop with residuals. |
-| 2 | **Oscillation** | Convergence | The same evidenced finding alternates accepted → rejected → accepted (or vice versa), with no new input or evidence. | Stop; restore a recorded state only if the evidence justifies it. Do not automatically select the state where a finding was rejected. Report the unresolved conflict. |
-| 3 | **Stable findings** | Convergence | The set of unrejected `ask_backs` + `missing_concerns` + `over_terse_bullets` is semantically identical to the previous pass (yes/no judgement — **no similarity scores**; if ambiguous, treat as not-equivalent and continue). | Stop. Surface residuals as Stage 6 comments. |
-| 4 | **Clean pass** | Positive | `verdict: clean` with empty `ask_backs`, `missing_concerns`, and `over_terse_bullets`. | Stop. Adopt the current brief. |
-| 5 | **No-op pass** | Convergence | Routing produced **zero** accepted items this pass (everything rejected as disagreement / scope / weak evidence). | Stop. Adopt the current brief. |
-| 6 | **Hard cap** | Fallback | The shared validation run has reached round 5, including the initial round. | Stop automatic repairs. Report residuals and final-state checks; do not start another stage-local or child-local loop. |
+| Situation | Action |
+|---|---|
+| The brief contradicts or omits what the input or an answered decision states | Drift — patch the responsible section (`Desired Outcome`, `Scope`, `Execution Plan`, `Constraints`, or `Acceptance Criteria`) and name the patch in the banner. |
+| The brief reflects a user-locked decision that differs from the raw input | Disagreement — report only. |
+| The input genuinely allows both readings | User-owned — present it as a Stage 4-style decision-table row with a recommended fallback; store a safe fallback as a structured non-blocking `Open Questions` item, or mark the handoff blocked in Stage 6 when no safe fallback exists. |
 
-Check demonstrated regression first. Additional findings, different wording, or a more thorough reviewer are not reasons to undo a valid patch. No termination trigger permits reporting a missing required check as passed.
-
-**Pass condition (normal termination):** trigger 4 (Clean pass), with a complete execution reconstruction. Triggers 1, 2, 3, 5, 6 stop the loop but signal residual concerns that Stage 6 must surface.
-
-## Routing `ask_backs`
-
-Classify before deciding to patch:
+`ask_backs`:
 
 | `source_of_uncertainty` | `affects_direction` | Action |
 |---|---|---|
-| `user_input_ambiguity` | `true` | Present the question and recommendation, allow an opportunity to answer, then store an unanswered safe fallback in structured non-blocking `Open Questions` form with its reconfirm milestone. Ask for the missing decision first. If no safe fallback exists, stop the repair loop, mark the handoff blocked in Stage 6, and surface the missed Stage 4 halt condition; never invent the answer in `Edit`. |
+| `user_input_ambiguity` | `true` | Present the question and recommendation to the user. Store an unanswered safe fallback in structured non-blocking `Open Questions` form with its reconfirm milestone; if no safe fallback exists, mark the handoff blocked in Stage 6. Never invent the answer in `Edit`. |
 | `user_input_ambiguity` | `false` | State the bounded default in `Worker decision`, `Constraints`, or the relevant stage; patch in place. |
-| `unverifiable_fact` | (any) | Main verifies directly, adds an investigation stage, or rewrites the bullet as a hedge with `Replan when`. The investigation is author/worker-owned; ask only for factual inputs that the user holds and the provided artifacts cannot supply. |
+| `unverifiable_fact` | (any) | Verify directly, add an investigation stage, or rewrite the bullet as a hedge with `Replan when`. Ask the user only for factual inputs they hold and the artifacts cannot supply. |
 | `minor_default` | (any) | Patch in place as a bounded `Worker decision` or stated constraint. |
 
-**Disagreement vs drift.** The sub-agent sees the original input and its target artifact(s), but not the Stage 3 register or Stage 4 decisions, so it cannot know which items the user locked.
-Before routing, match the finding to the actual answered decision and compare that decision with the saved artifact.
-If the artifact faithfully contains the decision and the reviewer asks to reverse it, treat the item as **disagreement** — report it without patching.
-If the artifact omitted, distorted, or contradicted that decision, it is **drift** and must be patched. Topic or `내용` similarity alone never rejects a finding.
-Otherwise route per the table.
-
-## Routing `missing_concerns`
-
-Classify each item before patching:
+`missing_concerns`:
 
 | Classification | Action |
 |---|---|
-| `infer_and_patch` | The concern is present in the original input and the brief omitted it, but the correct destination is reasonably inferable from the input, Stage 3 findings, or already-locked Stage 4 decisions. Patch the brief in place and mention the inferred addition in the Stage 6 save report. |
-| `conflicts_with_user_decision` | The concern is present in the original input, but the user already decided the opposite in Stage 4. Do not patch; surface it as a cold-pickup disagreement in Stage 6. |
-| `out_of_scope` | The concern is real but outside the current brief's scope or intentionally deferred. Do not patch unless it is missing from `Out of Scope`; if the deferral is not recorded, add the narrow `Out of Scope` bullet. |
+| `infer_and_patch` | Present in the input and omitted from the brief, with a destination inferable from the input, Stage 3 findings, or locked Stage 4 decisions — patch in place and name it in the banner. |
+| `conflicts_with_user_decision` | Present in the input, but the user decided the opposite in Stage 4 — do not patch; report it as a disagreement. |
+| `out_of_scope` | Real but outside this brief or intentionally deferred — add the narrow `Out of Scope` bullet only if the deferral is not yet recorded. |
 
-The main agent owns this routing. The sub-agent only reports the missing concern with evidence.
-Never silently drop an input concern merely because the sub-agent did not propose a patch.
-If reconstruction exposes a missing stage deliverable, handoff path/format, verification input/signal, no-change route, failed-proof action, replan boundary, or whole-work completion basis, patch the authoritative parent relationship section or child `Execution Plan` before the next pass.
-When source-of-truth input exists, route omitted source items even if the sub-agent reports only a representative sample; for a briefset child, route only the items that the parent assigns to that child.
-Never invent new Acceptance Criteria, Side Effect Checkpoints, or Out-of-Scope guardrails that are not implied by the input, codebase review, or a user decision.
+`over_terse_bullets`:
 
-## Override Trigger Phrases
+Register findings, never disagreements and never keyed to a Stage 4 row.
+Rewrite each flagged bullet in normal prose under the Auto-Clarity carve-out in `references/caveman-style.md`, preserving its content exactly; if the flagged bullet also hides a content gap, route that gap through the tables above.
 
-**Force ON (run despite trivial signals):**
+Never silently drop an input concern because the sub-agent did not propose a patch.
+When source-of-truth input exists, route omitted items even if the sub-agent reported only a sample; for a briefset child, route only the items the parent assigns to it.
+Never invent Acceptance Criteria, Side Effect Checkpoints, or Out-of-Scope guardrails that the input, codebase review, or a user decision does not imply.
+Never override a locked Stage 4 decision, and never silently rewrite `Open Questions` — a drift fix either resolves a question into another section or leaves it intact for the user.
 
-- An explicit phrase — `run cold-pickup`, `force cold-pickup`, `cold-pickup on`, `콜드픽업 강제`, `콜드픽업 실행`.
-- A flag-style hint — `--cold-pickup` or equivalent.
-- Any other phrase that unambiguously opts into cold-pickup verification — when in doubt, confirm with one short question before running.
+## After Routing: Patch, Revalidate, Stop
 
-**Force OFF (skip despite firing signals):**
-
-- An explicit phrase in the input — `skip cold-pickup`, `cold-pickup off`, `no cold-pickup`, `콜드픽업 건너뛰기`, `콜드픽업 끄기`, `cold-pickup 생략`.
-- A flag-style hint — `--no-cold-pickup` or equivalent.
-- Any other phrase that unambiguously opts out of cold-pickup verification — when in doubt, confirm with one short question before skipping.
-
-**Conflict resolution.** If the same input contains both Force ON and Force OFF triggers (e.g. `run cold-pickup` together with `--no-cold-pickup`), do not silently pick one — ask one short question in the user's chat language to disambiguate before deciding: e.g. `Got both Force ON and Force OFF — which one wins?` / `Force ON과 Force OFF가 모두 들어왔어. 어느 쪽으로 갈까?`.
+1. Before the first patch, copy the affected files to a scratch directory outside the repository as the regression guard.
+2. Apply all accepted patches for the request together — in briefset mode, collect every parent and child report first, then patch against the same artifact state.
+3. Re-run the structural validator (`validate_brief.py` or `validate_briefset.py`), then Stage 5.6, within the validation budget in `SKILL.md`.
+4. If a patch makes a previously passing structural or self-check item fail and two repairs do not fix it, restore the copied files, re-run the validator, and report that finding as unpatched.
+5. Stop. Do not spawn another cold-pickup pass; residual disagreements and user decisions go to the Stage 6 banner and the decision table, and the user requests the next pass if they want one.
+6. Delete the scratch copies and the input file after reporting.
 
 ## Banner Phrasing (Stage 6)
 
-- Auto-skip (no auto-ON trigger fired) — `cold-pickup skipped: trivial signals (single-brief, stage-4-rows=0, open-questions=none, type=<type>)`.
-- Force OFF (user opt-out) — `cold-pickup skipped per user request`.
-- Force ON (user override on trivial signals) — `cold-pickup forced by user over trivial signals (single-brief, stage-4-rows=0, open-questions=none, type=<type>); <termination trigger> after <N> pass(es)`.
-- Default gated run (auto-ON fired) — `cold-pickup <termination trigger> after <N> pass(es)` (no extra prefix — same shape as before).
-
-**Snapshot semantics.** Stage 4 always runs an ownership pass and emits the decision table only when user-owned rows remain, so `stage-4-rows=0` means the pass produced no user-decision rows. Likewise `open-questions=none` means the `Open Questions` section consists solely of `- None — <reason>`. And `type=<type>` in an auto-skip snapshot is always a type *outside* `{fix, perf, refactor}` — if it were inside, that trigger would have fired and the run would not have been skipped.
-
-## Briefset Cost and Sampling Fallback
-
-In briefset mode each completed round uses one Stage 5.5 reconstruction plus `parent + N children` Stage 5.7 reports when available and gated ON, within the shared maximum of five rounds. Earlier-stage failures can end a round before cold-pickup.
-For a wide briefset (**≥ 5 children**), offer the existing sampling fallback: parent plus up to 3 representative children, reported as `K/N children verified`.
-Sampling requires explicit user approval; otherwise verify every child. Force OFF skips Stage 5.7 for the whole set and does not disable Stage 5.5.
-Do not claim an average pass count or cost reduction without observed measurements.
-
-## Briefset Reporting (Stage 6 banner)
-
-Per-child cold-pickup status is collapsed to one summary line plus details only on flagged children, not one line per child:
-
-- Pass-everything case: `cold-pickup: 1/1 parent + N/N children verdict:clean (no ask-backs, no missing concerns)`.
-- Mixed case: `cold-pickup: 1/1 parent clean, K/N children clean, M flagged — see chat for details`, then list the flagged child paths and the specific drift items below.
-For caveman briefsets, append `no over-terse bullets` to the pass-everything case and include over-terse items in mixed-case details.
-
-## Sub-Agent Unavailable Fallback
-
-If independent read-only sub-agent operation is unavailable or the run fails, do not silently skip a gated-ON run. Record the actual reason. A malformed report is an unavailable result, never a clean pass.
-This fallback applies only to Stage 5.7 cold-pickup sub-agent verification; it does not replace Stage 5.5 downstream execution reconstruction or Stage 5.6 content/execution self-check.
-Record Stage 5.7 as unavailable, perform the strengthened Stage 5.6 self-check within the current round without impersonating an independent reviewer, then proceed to Stage 6. A resulting edit still consumes the next shared round; if none remains, report the gap.
-Report `cold-pickup unavailable (<actual reason>); strengthened self-check substituted` in the Stage 6 banner.
+- Not requested (default) — `cold-pickup not run (opt-in)`, followed by a one-line hint in the user's chat language that `run cold-pickup` gives an independent read of the saved brief.
+- Requested, clean — `cold-pickup: clean (no intent deviations, no ask-backs, no missing concerns, no over-terse bullets)`.
+- Requested, findings — `cold-pickup flagged <N> item(s): <K> patched in place, <M> left as disagreement/user decision`, followed by one bullet per finding with its id, its `kind` or classification (over-terse items as `t<n> (over-terse)`), and what was done.
+- Requested, unavailable — `cold-pickup unavailable (<actual reason>)`; the Stage 5.6 result stands on its own and is never relabeled as an independent read.
+- Briefset, all clean — `cold-pickup: parent + N/N children clean (no over-terse bullets)`.
+- Briefset, mixed — `cold-pickup: parent <clean|flagged>, K/N children clean, M flagged — details below`, then the flagged paths with their findings.
+- Briefset, sampled — replace `N/N` with `K/N children verified` and name the children that were not read.

@@ -506,16 +506,20 @@ child, so the three `child ...: structural checks OK.` lines above *are*
 the per-child validation. The validator checks structure only — the
 caveman register of the brief bodies is invisible to it.
 
-**Stage 5.7 note** — briefset mode is itself an auto-ON trigger for
-cold-pickup verification: the parent and every child each run their own
-sub-agent pass (per-child signal gating is intentionally disabled in
-briefset mode). `references/cold-pickup.md` requires one
-`over_terse_bullets` list in each caveman report. With all four files
-terminating on a clean first pass, the Stage 6 banner reports the
+**Stage 5.7 note** — briefset mode does not start cold-pickup by itself.
+The Stage 5.6 self-check (including caveman parity) runs on the parent and
+on each child, and the Stage 6 banner reports `cold-pickup not run (opt-in)`
+with the `run cold-pickup` hint.
+If the user requests it, the parent and each of the three children get
+one fresh read-only sub-agent and one pass each (four spawns, no loop);
+with five or more children the agent would state the spawn count and
+offer a parent-plus-three sample first.
+Each caveman report carries an `over_terse_bullets` list on top of the
+standard schema. With all four reports clean, the banner shows the
 collapsed form
-`cold-pickup: 1/1 parent + 3/3 children verdict:clean (no ask-backs, no missing concerns, no over-terse bullets)`.
-See `references/cold-pickup.md` for the report schema and termination
-triggers, and example 05 for a full single-file pass.
+`cold-pickup: parent + 3/3 children clean (no over-terse bullets)`.
+See `references/cold-pickup.md` for the report schema and routing, and
+example 05 for a full single-file pass.
 
 ---
 

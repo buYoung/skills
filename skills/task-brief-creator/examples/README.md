@@ -35,7 +35,7 @@ otherwise the path-existence check will correctly flag them as missing.
 | [02-rough-typed-fix.md](02-rough-typed-fix.md) | One-line typed task | `fix` | Short-input case; how `Reproduction` gates Stage 1, stage completion stays separate from whole-work acceptance, and credentials are referenced instead of embedded. |
 | [03-halt-ambiguous.md](03-halt-ambiguous.md) | Vague one-liner | — | Halt case; what the four-anchor check rejects, what additional input would flip it to CONTINUE, and where the narrow target probe fits when only TARGET is missing. |
 | [04-briefset-checkout-i18n.md](04-briefset-checkout-i18n.md) | Tech-lead Korean note | briefset (`refactor`+`feat`+`fix`) | Addressable handoffs, pairwise parallel/hotspot rules, no-change branches, and verification inputs/signals; the parent owns child coordination while each child `Execution Plan` owns its internal stages. |
-| [05-stage-4-walkthrough.md](05-stage-4-walkthrough.md) | Korean refactor note | `refactor` | Focused Stage 4 example; codebase probes remove technical questions, one user-owned scope decision remains, and Stage 5.5 reconstructs the executable route. |
+| [05-stage-4-walkthrough.md](05-stage-4-walkthrough.md) | Korean refactor note | `refactor` | Focused Stage 4 example; codebase probes remove technical questions, one user-owned scope decision remains, the Stage 5.6 self-check confirms intent fidelity, and a user-requested cold-pickup pass comes back clean. |
 
 Stage 4 always runs an ownership pass and uses the Markdown decision table
 with `순번`, `내용`, `수정 추천안`, and `근거` only when user-owned decisions remain.
@@ -43,10 +43,10 @@ Saved questions use `- [non-blocking] ... — Default: ...; Reconfirm before: ..
 technical unknowns and reversible choices move into execution stages, replan boundaries, or worker decisions.
 Use `01` / `02` / `04` for type-specific output shape (`feat` /
 `fix` / briefset), and use `05` for the most focused Stage 4
-decision-table walkthrough plus the shortest Stage 5.5 interpretation and Stage 5.7 cold-pickup
-demonstration. See `references/stage-4-interview.md` for the
-decision-table policy and `references/cold-pickup.md` for the
-cold-pickup execution rules.
+decision-table walkthrough plus the shortest Stage 5.6 self-check and
+user-requested Stage 5.7 cold-pickup demonstration. See
+`references/stage-4-interview.md` for the decision-table policy and
+`references/cold-pickup.md` for the opt-in cold-pickup execution rules.
 
 Under the dummy-path precondition above, extract the complete saved blocks in
 `01`, `02`, `04`, and `05` using their documented filenames. Example `04`

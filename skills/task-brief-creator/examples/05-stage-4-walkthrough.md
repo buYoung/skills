@@ -7,10 +7,10 @@ scope and contract questions in one Markdown decision table.
 **What this example shows:** how Stage 4 separates technical facts from
 user-owned decisions. Narrow codebase probes remove questions that do
 not need user judgment. The remaining questions are shown as rows with
-`순번`, `내용`, `수정 추천안`, and `근거`. Because the work type is
-`refactor`, the walkthrough also shows the Stage 5.5 downstream
-interpretation check and the Stage 5.7 cold-pickup gate firing and
-terminating on a clean first pass.
+`순번`, `내용`, `수정 추천안`, and `근거`. The walkthrough also shows the
+Stage 5.6 content and intent self-check, the default Stage 6 banner with
+cold-pickup not run, and a user-requested Stage 5.7 cold-pickup pass
+that comes back clean.
 
 The chat exchange below is in Korean because the user wrote in Korean.
 The saved brief is in English (skill output policy).
@@ -181,36 +181,45 @@ refactor
 
 ---
 
-## Stage 5.5 — Downstream Execution-Reconstruction Check
+## Stage 5.6 — Content and Intent Self-Check
 
-After structural validation passes, a sub-agent receives a natural
-work-start request with only the saved brief path. The sub-agent recovers
-Stage 1's behavior/export baseline, Stage 2's bounded refactor, the handoff
-into overall verification, and the replan boundary around frozen files.
-That reconstruction matches the user request and Stage 4 decisions, so no
-patch is needed.
+After structural validation passes, the author re-reads the saved brief
+from disk and runs the Stage 5.6 checklist against the original Korean
+input and the answered Stage 4 row. The intent-fidelity item confirms
+that the purpose (tidy `useAuth` internals), the frozen `AuthContext.tsx`
+and consumer files, the first stage (behavior/export baseline before
+edits), and the 23-case acceptance threshold all survived into the brief.
+No patch is needed, so the run completes in one self-check pass.
+
+Stage 6 banner (Korean, because the chat is Korean — structural validation
+reported separately from content validation; cold-pickup is opt-in and did
+not run):
+
+> 저장 완료 — `docs/briefs/2026-05-04-refactor-useauth-hook.md`
+> (`refactor`: Tidy `useAuth` hook internals while freezing public
+> surface; 구조 검증 통과; 내용 검증 통과 — 내용/의도 자체 검증 통과;
+> cold-pickup 미실행 (옵트인)).
+> 파일 열어보고 고칠 부분 있으면 알려줘. 독립 검증이 필요하면 `콜드픽업 실행`이라고 말해줘.
 
 ---
 
-## Stage 5.7 — Cold-Pickup Verification
+## Stage 5.7 — Cold-Pickup Verification (user-requested)
 
-Gate evaluation: work type is `refactor` — type ∈ {fix, perf, refactor}
-fires the auto-ON gate regardless of input simplicity (the user-decision
-row from Stage 4 would fire it independently). The structural validator
-passed in Stage 5 and downstream execution reconstruction aligned in
-Stage 5.5, so the pass runs.
+The user replies:
 
-Pass 1 — the saved brief is snapshotted, then a sub-agent receives
-**only** the original Korean input and the brief path: no Stage 3
-uncertainty register, no Stage 4 decisions, no Stage 5.5 downstream
-interpretation result, no Stage 5.6 self-check result. Its
-report:
+```
+콜드픽업 실행
+```
+
+One fresh read-only sub-agent is spawned for the single brief. It receives
+**only** the brief path and the path of a scratch file holding the original
+Korean input verbatim — no Stage 3 uncertainty register, no Stage 4
+decisions, no self-check result — and it may not search or read anything
+else in the repository. Phase 1 reconstructs the plan from the brief
+alone; phase 2 opens the input file and compares. Its report:
 
 ```yaml
 verdict: clean
-first_actions:
-  - Read the saved behavior contract and identify the recorded pre-work baseline.
-  - Open `src/hooks/useAuth.ts` and map the locked exports before implementation.
 execution_reconstruction:
   first_stage: Stage 1 verifies behavior and the export baseline before edits.
   ordered_route:
@@ -226,26 +235,26 @@ execution_reconstruction:
     - Stop dependent edits and return to the plan author if the baseline fails, an internal helper has an external consumer, or cleanup needs a frozen-file change.
   completion_basis:
     - Evaluate whole-work Acceptance Criteria after both stages and every Side Effect Checkpoint finish.
+intent_deviations: []
 ask_backs: []
 missing_concerns: []
 ```
 
-`verdict: clean` with empty `ask_backs` and `missing_concerns` is
-termination trigger 4 (Clean pass) — the loop stops after 1 pass with
-no patches. The final artifact hashes and checks are recorded, and the shared round-1 snapshot is deleted after reporting.
+`verdict: clean` with empty `intent_deviations`, `ask_backs`, and
+`missing_concerns` leaves nothing to route and nothing to patch; the pass
+ends here, the scratch input file is deleted, and no second pass runs
+unless the user asks again.
 
-Stage 6 banner (Korean, because the chat is Korean — structural validation
-reported separately from execution reconstruction, self-check, and cold-pickup):
+Updated Stage 6 banner:
 
 > 저장 완료 — `docs/briefs/2026-05-04-refactor-useauth-hook.md`
 > (`refactor`: Tidy `useAuth` hook internals while freezing public
-> surface; 구조 검증 통과; 실행 가능성 검증 통과 — 실행 경로 복원 일치,
-> 내용/실행 자체 검증 통과; cold-pickup `clean_pass`로 1회 만에 종료 (ask-back 없음,
-> missing 없음)).
+> surface; 구조 검증 통과; 내용 검증 통과 — 내용/의도 자체 검증 통과;
+> cold-pickup: clean (의도 이탈 없음, ask-back 없음, missing 없음)).
 > 파일 열어보고 고칠 부분 있으면 알려줘.
 
 The English equivalent of the cold-pickup field is
-`cold-pickup clean_pass after 1 pass`.
+`cold-pickup: clean (no intent deviations, no ask-backs, no missing concerns)`.
 
 ---
 

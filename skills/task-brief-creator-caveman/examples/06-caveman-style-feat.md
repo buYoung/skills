@@ -150,16 +150,15 @@ check.
 
 > Saved — `docs/briefs/2026-05-05-feat-global-hotkey-system.md`
 > (`feat`: Global hotkey system; structural validation passed;
-> execution reconstruction aligned; content/execution self-check passed — major
-> input concerns reflected, caveman parity held;
-> cold-pickup `clean_pass` after 1 pass — no ask-backs, no missing
-> concerns, no over-terse bullets). Body is in caveman full mode per
-> skill spec. Open it and let me know if anything reads ambiguously —
-> caveman compresses prose, not contracts, but human review catches
-> what compression should have backed off on.
+> content validation passed — content and intent self-check passed,
+> caveman parity OK; cold-pickup not run (opt-in)). Body is in caveman
+> full mode per skill spec. Open it and let me know if anything reads
+> ambiguously — caveman compresses prose, not contracts, but human review
+> catches what compression should have backed off on. Say `run cold-pickup`
+> if you want an independent read of the saved brief.
 
-(Stage 5.7 ran because two Stage 4 decision rows and a populated
-`Open Questions` both fired the auto-ON gate.)
+(The two Stage 4 decision rows and the populated `Open Questions` do not
+start Stage 5.7; cold-pickup runs only when the user requests it.)
 
 ---
 
