@@ -1,0 +1,41 @@
+{
+  "skill_name": "rust-guide",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Our API server keeps a `HashMap<String, Vec<Event>>` keyed by tenant id and on every request iterates it sorted by key to build a report. A teammate proposed switching to `BTreeMap`. Cargo.toml has edition = \"2021\" and rust-version = \"1.82\". Should we switch, and what else should we check before touching the code?",
+      "expected_output": "Separates semantics from performance: BTreeMap is the std-documented choice when sorted iteration or ranges are needed, while a HashMap plus sort at output time is the alternative when sorted output is occasional. Labels the performance side as needing a benchmark with the real key count and distribution, cites the std complexity table (O(1) expected vs O(log n)), mentions HashMap iteration order being arbitrary per process, and notes that any newer API suggested (e.g. extract_if) must respect the 1.82 MSRV.",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "We share `Arc<Mutex<HashMap<Uuid, Session>>>` across 32 worker threads and a profile shows about 40% of request time waiting on that lock. One suggestion is RwLock because reads dominate, another is a concurrent map crate. What do you recommend?",
+      "expected_output": "Treats the spreading Arc<Mutex<..>> as an ownership signal first (can sessions be owned per worker or sharded, or updated via messages). Presents RwLock as a candidate, not a guaranteed speedup, quoting std that the priority policy is OS dependent and warning about reader re-acquisition deadlock; requires a benchmark under the real thread count. Mentions narrowing guard scope, sharding, and snapshot-swap alternatives, and labels third-party maps as community patterns to measure rather than default answers.",
+      "files": []
+    },
+    {
+      "id": 3,
+      "prompt": "Set up the Cargo release profile for a CLI we ship to customers on x86_64 Linux and Apple Silicon macOS. We want a small binary and fast startup, but crash reports must include usable backtraces. We are on Rust 1.96.",
+      "expected_output": "Proposes concrete [profile.release] settings (codegen-units = 1, lto, opt-level \"s\" or \"z\" with the trade-off, panic strategy) while explaining that strip = \"symbols\" and panic = \"abort\" conflict with usable backtraces; recommends keeping line tables (debug = \"line-tables-only\") and notes that since 1.92 Linux keeps unwind tables with panic=abort. Warns against target-cpu=native for shipped binaries and says every setting must be measured for size and startup individually.",
+      "files": []
+    },
+    {
+      "id": 4,
+      "prompt": "Plan the migration of our workspace to edition 2024. Facts: three member crates on edition 2021, MSRV 1.79 declared in rust-version, a `static mut COUNTER` used from two threads, hand-written `extern` blocks for libgit2, and `std::env::set_var` calls in integration tests. What are the steps and what will `cargo fix` not do for us?",
+      "expected_output": "States that edition 2024 requires Rust 1.85.0 and therefore raises the MSRV; gives the official order (cargo update, cargo fix --edition on the old edition per member and per feature set, then set edition and resolver = \"3\" in the virtual workspace, build, test, cargo fmt with style_edition). Identifies the manual items: static mut references are denied with no automatic fix (replace with atomics/Mutex/OnceLock or &raw), unsafe extern signatures must be verified by hand, set_var becomes unsafe and needs a single-threaded audit, plus tail-expression and never-type fallback cases. Warns against allowing the migration lints wholesale.",
+      "files": []
+    },
+    {
+      "id": 5,
+      "prompt": "Review this FFI wrapper design for soundness before we publish it: C callbacks implemented as `extern \"C\" fn` in Rust that may panic on bad input, a struct holding a `*mut Ctx` for which we wrote `unsafe impl Send`, and a `transmute::<&[u8], &[u32]>` to reinterpret a byte buffer. We build with Rust 1.90, edition 2024.",
+      "expected_output": "Flags each issue with its rule: a panic reaching extern \"C\" aborts the process since 1.81, so callbacks need catch_unwind and an error return; unsafe impl Send requires no unsynchronized shared mutable state and cleanup that is valid on another thread, and asks what the C library guarantees about thread affinity; the slice transmute is unsound because of alignment and length semantics (reference to misaligned data is UB, slice metadata is element count), and recommends chunks_exact plus from_ne_bytes or a checked cast. Recommends Miri for the non-FFI parts, // SAFETY comments per block, and mentions edition 2024 unsafe extern and unsafe_op_in_unsafe_fn rules.",
+      "files": []
+    },
+    {
+      "id": 6,
+      "prompt": "Our CI pins Rust 1.84 and our published library declares rust-version = \"1.84\". What do we gain and what could break if we move CI to the current stable, and how should we set the new MSRV?",
+      "expected_output": "Uses the release notes range 1.85 through the current stable: highlights adoptable items (async closures, trait upcasting, let chains only on edition 2024, extract_if, file locks, cfg_select!) and watch-for items (missing_abi and mismatched_lifetime_syntaxes warnings, dangerous_implicit_autorefs deny, i586-pc-windows-msvc removal, lld default linker on x86_64 Linux, x86_64-apple-darwin Tier 2, v0 symbol mangling default, never-type fallback lints). Distinguishes toolchain upgrade from MSRV bump, cites Cargo SemVer treating an MSRV change as a minor bump with a published policy, and recommends an MSRV CI job with --locked and clippy.toml msrv.",
+      "files": []
+    }
+  ]
+}

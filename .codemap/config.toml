@@ -1,4 +1,4 @@
-# codemap-config-version: 5
+# codemap-config-version: 13
 # codemap-search repo-local config. Optional: with every key commented out (the state
 # below), this file reproduces the built-in behavior exactly. Uncomment and edit a line to
 # override its default. Resolution precedence is per key: repo > global > built-in default.
@@ -101,6 +101,24 @@
 # Existing-file schema sync adds new settings as commented blocks, not active values.
 # Markdown 문서(`.md`, `.mdx`)를 색인 기반 탐색에 포함합니다.
 # false이면 search/overview/codemap에서 제외하지만 직접 read/parse/find/grep은 유지됩니다.
+# [caller_context]
+
+
+
+
+
+
+# [analysis]
+# Rust 분석 대상 OS. 빈 값은 미지정이며 실행 컴퓨터의 OS를 추정하지 않습니다.
+# target_os = ""
+
+# [event_navigation]
+# 이벤트 관계 색인은 기본으로 켜져 있습니다. API 규칙과 한계는 docs/configuration.ko.md를 참고하세요.
+# is_enabled = true
+# 이벤트 분석과 관련 탐색 결과를 기본으로 제공합니다.
+# 이벤트 분석을 끌 때만 is_enabled를 false로 설정하세요. 명시한 값은 유지됩니다.
+# use_builtin_rules = true
+
 # [language_support]
 # 셸 스크립트
 # `.sh`, `.bash`, `.zsh`를 포함합니다.
@@ -122,3 +140,21 @@
 
 # [update]
 # config_auto_update = true
+
+[exclude]
+
+# 언어별 테스트 규칙: 목록을 바꾸면 사용자 설정으로 대체하고 []로 비활성화합니다.
+# test_calls = { javascript = ["describe", "describe.*", "it", "it.*", "test", "test.*", "suite", "suite.*"], typescript = ["describe", "describe.*", "it", "it.*", "test", "test.*", "suite", "suite.*"], dart = ["test", "group", "testWidgets"], ruby = ["describe", "context", "it", "specify"], powershell = ["Describe", "Context", "It"] }
+
+# 언어별 테스트 규칙: 목록을 바꾸면 사용자 설정으로 대체하고 []로 비활성화합니다.
+# test_decorators = { python = ["pytest.fixture", "pytest.mark.*", "unittest.skip", "unittest.skipIf", "unittest.skipUnless", "unittest.expectedFailure"] }
+
+# 언어별 테스트 규칙: 목록을 바꾸면 사용자 설정으로 대체하고 []로 비활성화합니다.
+# test_attributes = { rust = ["test", "tokio::test", "async_std::test", "rstest", "rstest::rstest", "cfg(test)"], java = ["Test", "ParameterizedTest", "RepeatedTest", "TestFactory", "TestTemplate", "Nested", "BeforeEach", "AfterEach", "BeforeAll", "AfterAll"], kotlin = ["Test", "ParameterizedTest", "RepeatedTest", "BeforeTest", "AfterTest", "BeforeEach", "AfterEach"], csharp = ["Fact", "Theory", "Test", "TestCase", "TestCaseSource", "TestFixture", "SetUp", "TearDown", "OneTimeSetUp", "OneTimeTearDown"], swift = ["Test", "Suite"], php = ["Test"] }
+
+# 작업공간 기준 테스트 파일 glob입니다. /가 없으면 파일 이름과 비교하며 []로 경로 판별을 끕니다.
+# test_file_patterns = ["**/tests/**", "**/test/**", "**/__tests__/**", "test_*.py", "*_test.*", "*.test.*", "*_spec.*", "*.spec.*", "*Test.java", "*Tests.java", "*IT.java"]
+
+# 자동 심볼·호출 관계에 테스트 영역을 포함합니다. 직접 read/grep한 원문은 유지됩니다.
+# should_include_test_code = false
+excluded_directories = [".idea", ".vscode", ".vs", "node_modules", ".yarn", "target", "dist", "build", "vendor", ".git", ".svn", ".hg", ".bzr", ".jj", ".sl", ".codemap", ".codemap-index", "**/.astro", "**/.next", "**/.nuxt", "**/.output", "**/.parcel-cache", "**/.svelte-kit", "**/.turbo", "**/.yarn", "**/build", "**/coverage", "**/dist", "**/node_modules"]

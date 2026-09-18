@@ -52,6 +52,7 @@ These skills are currently under evaluation and will be promoted to **Available 
 |-------|-------------|
 | [biz-opportunity-scout](skills/biz-opportunity-scout/) | Identify and validate profitable business opportunities by analyzing TAM/SAM/SOM, unit economics, competitive landscape, and PMF indicators with HTML report generation |
 | [iterative-self-review](skills/iterative-self-review/) | Iterative answer refinement loop. The main agent drafts a response and a sub-agent performs blind verification (only `user input + current answer`, no hints or history), reports back to the main agent only, and the loop terminates on a combination of positive (clean pass, severity floor), convergence (oscillation, stable findings, no-op, diminishing returns), defensive (regression), user-clarification, and hard-cap triggers. Evidence-mandatory findings, no numeric confidence scores. |
+| [rust-guide](skills/rust-guide/) | Rust 1.80+ engineering guidance for explanation, design, implementation, review, and diagnosis across collections, ownership and type design, error handling, API and crate design, threads/sync/atomics, performance and Cargo/rustc build configuration, unsafe/FFI soundness, Clippy-based review, and Rust release and Edition 2024 migration, with source-priority evidence labels. |
 
 ## 🔒 Private Skills
 
