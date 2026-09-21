@@ -14,18 +14,19 @@
 - [FFI: Declaring and Calling C](#ffi-declaring-and-calling-c)
 - [FFI: Callbacks and Panics](#ffi-callbacks-and-panics)
 - [FFI: Types and Ownership Across the Boundary](#ffi-types-and-ownership-across-the-boundary)
+- [Own a Foreign Allocation with a Rust Handle](#own-a-foreign-allocation-with-a-rust-handle)
 - [Sharing Raw Pointers Across Threads](#sharing-raw-pointers-across-threads)
 - [PhantomData](#phantomdata)
 - [Verification with Miri and Lints](#verification-with-miri-and-lints)
 - [Common Mistakes](#common-mistakes)
 - [Availability by Version](#availability-by-version)
-- [Review Checklist](#review-checklist)
+- [Practical Boundaries](#practical-boundaries)
 
-Examples compile on stable Rust 1.84 or later with edition 2024 unless a version is stated (edition 2024 requires `unsafe extern`, `#[unsafe(no_mangle)]`, and `unsafe {}` inside `unsafe fn`). Lock and atomic semantics are in [concurrency](concurrency.md); the edition migration steps for `unsafe` code are in [Rust 1.85 and edition 2024](../versions/1.85.md).
+Edition-2024 examples require Rust 1.85 or later, subject to any newer API version stated beside an example. That edition requires `unsafe extern` blocks and unsafe attributes such as `#[unsafe(no_mangle)]`. Omitting explicit `unsafe {}` around unsafe operations in an unsafe function triggers the default-warning `unsafe_op_in_unsafe_fn` lint; a deny setting makes it an error. Explicit blocks separate the caller's safety contract from the implementation's unsafe operations. Lock and atomic semantics are in [concurrency](concurrency.md); migration details are in [Rust 1.85 and edition 2024](../versions/1.85.md).
 
 ## What unsafe Unlocks
 
-The Rustonomicon lists exactly five operations that need `unsafe`:
+Unsafe operations include the following; each has additional validity requirements that the caller or implementation must uphold:
 
 1. Dereference raw pointers.
 2. Call `unsafe` functions, including C functions, compiler intrinsics, and the raw allocator.
@@ -37,7 +38,7 @@ Everything else, including integer overflow, leaks, and deadlocks, is safe Rust.
 
 ## Undefined Behavior
 
-The Reference's list of undefined behavior; any of these anywhere in the program invalidates all guarantees, even in code that never runs the offending line:
+Executing undefined behavior invalidates Rust's guarantees for that execution. Important cases include:
 
 - Data races.
 - Reading or writing through a dangling or misaligned pointer, or projecting a field or index out of bounds.
@@ -53,7 +54,7 @@ Memorize the invalid-value rule: `MaybeUninit<T>` exists because a `let x: u32;`
 
 ## Not Undefined Behavior
 
-The Reference lists behaviors the compiler does not consider unsafe: deadlocks, leaks of memory and other resources, exiting without running destructors, exposing randomized base addresses through pointer leaks, integer overflow (a panic in debug builds, two's-complement wrapping in release), and logic errors such as violating a `Hash`/`Eq` contract or mutating a key stored in a `BTreeMap`. They are still bugs, but `unsafe` code may not rely on their absence for soundness; for example, a guard type cannot assume its `Drop` will run because `mem::forget` is safe.
+Deadlocks, resource leaks, and exiting without destructors are not undefined behavior. Ordinary integer overflow is also not UB: checks can panic, and unchecked ordinary arithmetic wraps. Incorrect Eq/Hash/Ord implementations are logic errors that safe abstractions must handle without memory unsafety. Unsafe code cannot assume these conditions never occur; in particular, a guard cannot rely on Drop running because safe code can forget it.
 
 ## unsafe fn, unsafe Blocks, and SAFETY Comments
 
@@ -92,7 +93,7 @@ Conventions:
 
 ## Safe Abstractions Over unsafe
 
-The Rustonomicon: "the only bullet-proof way to limit the scope of unsafe code is at the module boundary with privacy." Keep the fields that carry an invariant private, keep the `unsafe` in the smallest module that can uphold the invariant, and expose a safe API. Everything outside that module can then be trusted without reading it.
+Keep invariant-bearing fields private and place unsafe operations inside a module whose safe API preserves those invariants. This makes the safety argument local: callers can use the API without recreating the raw-pointer proof. Public safe operations must still remain sound under every interaction their types permit.
 
 ```rust
 use std::mem::MaybeUninit;
@@ -158,7 +159,7 @@ impl<T, const N: usize> Default for FixedVec<T, N> {
 }
 ```
 
-The invariant is stated once on the struct, every `unsafe` block refers to it, and no public method can break it. Since 1.93, `<[MaybeUninit<T>]>::assume_init_ref` and `assume_init_drop` express the slice operations directly. The Rust Design Patterns book phrases the same rule as "Contain unsafety in small modules": `String` is a `Vec<u8>` with a UTF-8 invariant enforced by exactly this technique.
+The invariant is stated once on the struct, every `unsafe` block refers to it, and no public method can break it. Since 1.93, `<[MaybeUninit<T>]>::assume_init_ref` and `assume_init_drop` express the slice operations directly. A String similarly keeps its UTF-8 invariant behind operations that preserve it, rather than letting callers mutate arbitrary bytes through a safe API.
 
 ## Uninitialized Memory
 
@@ -166,13 +167,13 @@ Never create an integer, reference, or `bool` from uninitialized bytes, even to 
 
 | Need | Safe tool |
 |---|---|
-| Zero-filled buffer | `vec![0u8; n]`, `[0u8; N]`, `Box::new_zeroed` (1.92) for large allocations |
+| Zero-filled buffer | `vec![0u8; n]`, `[0u8; N]`, `Box::new_zeroed` (1.92) for zeroed allocation; it still returns MaybeUninit storage whose conversion to T needs valid zero bits |
 | Buffer filled by a reader | `Vec::with_capacity(n)` plus `Read::read_to_end`, or `resize(n, 0)` then `read_exact` |
 | Array built element by element | `std::array::from_fn(|i| ...)` |
 | Partially initialized storage | `MaybeUninit<T>` with `write`, then `assume_init*` under a documented invariant, as in `FixedVec` above |
 | Spare capacity of a `Vec` | `spare_capacity_mut()` returns `&mut [MaybeUninit<T>]`; `set_len` afterwards is `unsafe` and requires every element written |
 
-`mem::zeroed::<T>()` is only valid when all-zero bytes are a valid `T` (integers, floats, raw pointers, `Option<Box<T>>`); zeroed references, `NonNull`, `bool`-carrying enums with no zero variant, and `char`-free types are undefined behavior at the moment they are produced. `mem::uninitialized` is deprecated and unsound for almost every type.
+`mem::zeroed::<T>()` is valid only when all-zero bytes represent a valid T. Zero is valid for integers, floats, bool (false), char (NUL), and nullable representations such as Option<Box<T>>. It is invalid for references and NonNull, and can be invalid for an enum with no zero discriminant. Check the actual type and representation rather than assuming every struct or enum permits zero initialization. `mem::uninitialized` is deprecated and unsound for almost every type.
 
 ## Raw Pointers, Alignment, and Provenance
 
@@ -234,7 +235,7 @@ fn f32_bits(value: f32) -> u32 {
 }
 ```
 
-The Rustonomicon's transmute rules: the types must have the same size; the result must be a valid value (transmuting `3u8` to `bool` is undefined behavior); `&T` to `&mut T` is "always Undefined Behavior"; a transmuted reference without an explicit lifetime gets an unbounded one; compound types need identical layout, which the default `repr(Rust)` does not guarantee even between two identical-looking structs. The `bytemuck` and `zerocopy` crates provide checked casts for plain-old-data types and are the ecosystem answer to most byte-reinterpretation needs. Clippy `missing_transmute_annotations` (suspicious) asks for explicit type arguments so inference cannot pick a surprising type.
+For transmute, the types must have the same size; the result must be a valid value (transmuting `3u8` to `bool` is undefined behavior); `&T` to `&mut T` is "always Undefined Behavior"; a transmuted reference without an explicit lifetime gets an unbounded one; compound types need identical layout, which the default `repr(Rust)` does not guarantee even between two identical-looking structs. The `bytemuck` and `zerocopy` crates provide checked casts for plain-old-data types and are the ecosystem answer to most byte-reinterpretation needs. Clippy `missing_transmute_annotations` (suspicious) asks for explicit type arguments so inference cannot pick a surprising type.
 
 ## Replacing static mut
 
@@ -259,7 +260,7 @@ fn hostname() -> &'static str {
 }
 ```
 
-For single-threaded embedded targets without atomics, `Cell`/`RefCell` inside a `static` with a `Sync` wrapper, or the platform's critical-section primitive, replaces `static mut`.
+For embedded targets, use a synchronization abstraction justified for the actual interrupt/core/DMA model. One core can still be preempted by interrupts; wrapping Cell/RefCell in an unsafe Sync implementation does not establish safety. Follow the target/HAL critical-section contract in [embedded guidance](embedded-and-no-std.md#interrupts-atomics-and-shared-state).
 
 ## FFI: Declaring and Calling C
 
@@ -277,8 +278,8 @@ pub struct Point {
 unsafe extern "C" {
     // Signatures must match the C header exactly.
     fn strlen(s: *const c_char) -> usize;
-    // `safe`: sound to call with any argument, so callers need no unsafe block.
-    safe fn abs(value: c_int) -> c_int;
+    // The absolute value must be representable as c_int.
+    fn abs(value: c_int) -> c_int;
 }
 
 fn c_length(text: &str) -> Result<usize, std::ffi::NulError> {
@@ -287,7 +288,10 @@ fn c_length(text: &str) -> Result<usize, std::ffi::NulError> {
     Ok(unsafe { strlen(owned.as_ptr()) })
 }
 
-fn string_from_c(ptr: *const c_char) -> Option<String> {
+/// # Safety
+/// A non-null pointer must identify a live, readable NUL-terminated string that
+/// remains unmodified for this call. The terminator must be within its allocation and the total range must fit in isize::MAX bytes.
+unsafe fn string_from_c(ptr: *const c_char) -> Option<String> {
     if ptr.is_null() {
         return None;
     }
@@ -297,8 +301,10 @@ fn string_from_c(ptr: *const c_char) -> Option<String> {
     Some(text.to_string_lossy().into_owned())
 }
 
-fn magnitude(value: c_int) -> c_int {
-    abs(value)
+fn magnitude(value: c_int) -> Option<c_int> {
+    if value == c_int::MIN { return None; }
+    // SAFETY: excluding MIN makes the mathematical absolute value representable.
+    Some(unsafe { abs(value) })
 }
 ```
 
@@ -311,7 +317,7 @@ fn magnitude(value: c_int) -> c_int {
 
 ## FFI: Callbacks and Panics
 
-A panic that reaches an `extern "C"` function aborts the process (1.81 and later); it never unwinds into C. Callbacks convert panics to error codes with `catch_unwind`, and use `extern "C-unwind"` only when both sides are built to unwind through each other.
+A Rust panic escaping an `extern "C"` boundary aborts rather than unwinding into C. Where recovery is valid, catch an unwinding panic inside the callback and translate it to the foreign error protocol. catch_unwind cannot recover from panic=abort or undefined behavior. Use `extern "C-unwind"` only when the complete foreign-call path supports the intended unwinding behavior.
 
 ```rust
 use std::ffi::c_void;
@@ -323,26 +329,34 @@ struct Accumulator {
     total: i64,
 }
 
+/// # Safety
+/// user_data must point to a live, initialized, aligned Accumulator, with exclusive
+/// access for this call. No concurrent or reentrant callback may access that value.
 unsafe extern "C" fn on_value(user_data: *mut c_void, value: i32) -> i32 {
-    // SAFETY: `register` passed a pointer to a live `Accumulator`, and the C library promises
-    // to call back only while that object is registered and never from two threads at once.
+    // SAFETY: the callback's caller establishes the lifetime and exclusive-access contract.
     let accumulator = unsafe { &mut *user_data.cast::<Accumulator>() };
     match catch_unwind(AssertUnwindSafe(|| {
         accumulator.total += i64::from(value);
     })) {
         Ok(()) => 0,
-        Err(_) => -1, // a panic becomes an error code instead of unwinding into C
+        Err(payload) => {
+            // Dropping an arbitrary panic payload could itself panic.
+            std::mem::forget(payload);
+            -1
+        }
     }
 }
 
-fn register(accumulator: &mut Accumulator) -> (ValueCallback, *mut c_void) {
+fn callback_parts(accumulator: &mut Accumulator) -> (ValueCallback, *mut c_void) {
     (on_value, std::ptr::from_mut(accumulator).cast::<c_void>())
 }
 ```
 
-- Unregister callbacks in `Drop` of the owning Rust object so C never calls into freed memory.
-- A callback that must call back into an object behind `&mut` needs exclusive access guaranteed by the C library's threading contract; otherwise use a `Mutex` inside the object.
-- `catch_unwind` needs `UnwindSafe`; `AssertUnwindSafe` asserts it for closures that capture `&mut`, which is fine when a panic leaves the state in a shape the code tolerates.
+callback_parts only constructs the raw arguments; it does not register anything or extend the accumulator's lifetime. Invoke the returned callback only under its unsafe contract. A foreign API retaining these arguments needs an owning registration wrapper, as described under [foreign ownership](#own-a-foreign-allocation-with-a-rust-handle).
+
+- Establish that callbacks have stopped before releasing their state. Drop can request unregistration, but the foreign API must establish completion; safe code can also forget a registration handle.
+- Exclusive access includes same-thread reentrancy, not only parallel threads. Synchronization can protect shared state, but calling back while holding the same non-reentrant mutex can deadlock.
+- AssertUnwindSafe asserts that the captured state remains usable after an unwind; it does not roll back a partial update. This example has one integer assignment, and deliberately leaks a caught payload to avoid a second panic while reporting the failure. Panic hooks still run before a panic is caught.
 
 ## FFI: Types and Ownership Across the Boundary
 
@@ -358,6 +372,69 @@ fn register(accumulator: &mut Accumulator) -> (ValueCallback, *mut c_void) {
 | `usize` | `size_t` | Same width on all supported targets |
 
 Ownership crosses the boundary explicitly: a `Box::into_raw` handed to C is leaked until C returns it to a Rust function that calls `Box::from_raw`. Two allocators must never free each other's memory. Since 1.91 C-variadic functions can be declared (not defined) for `sysv64`, `win64`, `efiapi`, and `aapcs`.
+
+## Own a Foreign Allocation with a Rust Handle
+
+A safe wrapper needs an ownership protocol as well as a pointer validity check. This hosted example uses C malloc/free, initializes the bytes before creating Rust slices, and frees through the allocator that created the allocation. It requires those C functions to be linked by the target environment.
+
+```rust
+use std::{ffi::c_void, num::NonZeroUsize, ptr::NonNull};
+
+unsafe extern "C" {
+    fn malloc(size: usize) -> *mut c_void;
+    fn free(pointer: *mut c_void);
+}
+
+#[derive(Debug, PartialEq, Eq)]
+pub enum AllocationError { TooLarge, Failed }
+
+pub struct ForeignBuffer {
+    pointer: NonNull<u8>,
+    len: usize,
+}
+
+impl ForeignBuffer {
+    pub fn zeroed(len: NonZeroUsize) -> Result<Self, AllocationError> {
+        let len = len.get();
+        if len > isize::MAX as usize { return Err(AllocationError::TooLarge); }
+        // SAFETY: malloc accepts this size; its null result is handled below.
+        let raw = unsafe { malloc(len) }.cast::<u8>();
+        let pointer = NonNull::new(raw).ok_or(AllocationError::Failed)?;
+        // SAFETY: malloc returned unique storage for at least len bytes, aligned for u8.
+        unsafe { pointer.as_ptr().write_bytes(0, len) };
+        Ok(Self { pointer, len })
+    }
+
+    pub fn as_slice(&self) -> &[u8] {
+        // SAFETY: the initialized allocation remains owned by self for this borrow.
+        unsafe { std::slice::from_raw_parts(self.pointer.as_ptr(), self.len) }
+    }
+
+    pub fn as_mut_slice(&mut self) -> &mut [u8] {
+        // SAFETY: exclusive access to self gives exclusive access to its owned bytes.
+        unsafe { std::slice::from_raw_parts_mut(self.pointer.as_ptr(), self.len) }
+    }
+
+    pub fn into_raw(self) -> (*mut u8, usize) {
+        let result = (self.pointer.as_ptr(), self.len);
+        std::mem::forget(self); // transfer cleanup responsibility to the recipient
+        result
+    }
+}
+
+impl Drop for ForeignBuffer {
+    fn drop(&mut self) {
+        // SAFETY: this is the original live malloc pointer, uniquely owned by self.
+        unsafe { free(self.pointer.as_ptr().cast::<c_void>()) };
+    }
+}
+```
+
+Safe callers can borrow the bytes or transfer ownership out, but cannot construct a second owner from a pointer. After into_raw, the recipient must eventually use the matching C free; Rust must not recreate a Box from that allocation. Forgetting the wrapper leaks storage rather than enabling a double free. No manual Send/Sync implementation is provided: a foreign resource's transfer and shared-access contract must be established separately.
+
+A foreign API retaining pointers needs a longer-lived owner. For callbacks, a registration handle must keep the state at a stable address, prevent forbidden concurrent access, and unregister before releasing it. If unregistration can fail or callbacks remain in flight, Drop alone is not a sufficient “everything stopped” claim. Completion must establish that C can no longer call the pointer; leaking state can be safer than freeing it while callbacks remain possible.
+
+This is different from a call that borrows bytes only until it returns. Match the wrapper's lifetime to the actual foreign contract instead of making every pointer static or assuming a function-name convention implies ownership.
 
 ## Sharing Raw Pointers Across Threads
 
@@ -385,11 +462,11 @@ impl Handle {
 }
 ```
 
-The Rustonomicon's obligations: `Send` requires no unsynchronized shared mutable state and cleanup that is valid on another thread; `Sync` requires either no interior mutability or all mutation behind exclusive access. `Rc`, `Cell`, and `RefCell` inside the type make both impls unsound. When in doubt, wrap the handle in a `Mutex` and implement nothing.
+Send permits transferring ownership between threads, including destruction on the receiving thread. Sync permits sharing references between threads. Rc is neither Send nor Sync; Cell<T> and RefCell<T> are not Sync but can be Send when T is Send. A foreign handle also needs the foreign API's transfer, shared-access, and thread-affinity guarantees. A Mutex serializes access but cannot make a thread-affine handle transferable.
 
 ## PhantomData
 
-`PhantomData<T>` tells the compiler about ownership, variance, and auto traits for data a raw pointer points at. From the Rustonomicon's table:
+`PhantomData<T>` tells the compiler about ownership, variance, and auto traits for data a raw pointer points at. Common marker forms have the following effects:
 
 | Marker | Variance in `T` | `Send`/`Sync` | Drop check |
 |---|---|---|---|
@@ -410,7 +487,7 @@ A container that owns `T` through a raw pointer (`struct MyVec<T> { ptr: NonNull
 - Run the debug build: since 1.86 it panics on null-pointer reads, writes, and reborrows, and overflow checks catch arithmetic mistakes in index computations.
 - Clippy correctness lints (deny by default) for this area: `not_unsafe_ptr_arg_deref`, `uninit_vec`, `mem_replace_with_uninit`, `unsound_collection_transmute`, `zst_offset`, `size_of_in_element_count`, `transmuting_null`, `wrong_transmute`, `cast_slice_different_sizes`. Opt-in hygiene: `undocumented_unsafe_blocks`, `multiple_unsafe_ops_per_block`, `mem_forget`, `as_conversions` (restriction), `cast_ptr_alignment`, `ptr_as_ptr`, `borrow_as_ptr` (pedantic).
 - Sanitizers (`-Z sanitizer=address`, `thread`) on nightly complement Miri for code that calls into C.
-- For every `unsafe` block, review the `// SAFETY:` claim against the undefined-behavior list above; a claim that cannot be stated in one sentence usually hides a missing invariant.
+- A `// SAFETY:` explanation connects the operation to its invariants and the relevant validity requirements. Complex contracts can require more than one sentence; documentation and execution tools establish different kinds of evidence.
 
 ## Common Mistakes
 
@@ -445,15 +522,10 @@ A container that owns `T` through a raw pointer (`struct MyVec<T> { ptr: NonNull
 
 Per-release details live in [the versions index](../versions/index.md).
 
-## Review Checklist
+## Practical Boundaries
 
-- Each `unsafe` block has a one-sentence `// SAFETY:` claim tied to an invariant stated on the type or function.
-- Every `pub unsafe fn` has a `# Safety` section; every safe function is sound for all arguments.
-- Invariants live behind private fields in one module; the public API cannot break them.
-- No value is created from uninitialized or zeroed bytes unless every bit pattern is valid for its type.
-- No reference to misaligned or uninitialized memory exists, even transiently; `&raw` is used for packed fields.
-- `transmute` appears only with equal sizes, valid values, and matching layouts, and never between reference types with different pointees.
-- FFI signatures were checked against the C header; ownership of every pointer crossing the boundary is documented.
-- Callbacks cannot unwind into C; `catch_unwind` converts panics to error codes.
-- `unsafe impl Send`/`Sync` cite the foreign library's threading contract.
-- Miri ran on the pure-Rust `unsafe` code; the debug build ran the tests.
+A safe abstraction must preserve its invariants for every input and interaction available to safe callers. An unsafe API instead documents the additional obligations callers must uphold. SAFETY comments explain how those obligations justify particular operations; their adequacy depends on the argument, not a one-sentence limit.
+
+Initialization requires a valid value of the actual type. Raw-pointer construction does not establish alignment, readable extent, aliasing, or ownership; creating a reference imposes stronger validity requirements. Foreign interfaces add ABI, allocation/deallocation, callback lifetime, and thread-affinity contracts.
+
+A panic strategy must match the ABI and build configuration. catch_unwind handles unwinding Rust panics, not arbitrary foreign failures or aborting panics. Miri, sanitizers, and target execution expose different classes of mistakes and leave different gaps; a successful run is not a general proof of soundness.

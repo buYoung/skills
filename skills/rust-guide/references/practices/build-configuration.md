@@ -3,7 +3,9 @@
 ## Contents
 
 - [Profile Defaults](#profile-defaults)
+- [What the Settings Change](#what-the-settings-change)
 - [Recipes](#recipes)
+- [Compare Settings by the Cost They Change](#compare-settings-by-the-cost-they-change)
 - [Setting Reference](#setting-reference)
 - [Overrides and Precedence](#overrides-and-precedence)
 - [.cargo/config.toml](#cargoconfigtoml)
@@ -38,21 +40,27 @@ TOML blocks are fragments of `Cargo.toml` or `.cargo/config.toml` as labelled. C
 
 `test` inherits `dev`, `bench` inherits `release`, `cargo install` builds `release`. `cargo build --release` is shorthand for `--profile release`; custom profiles are selected with `--profile <name>` and output to `target/<name>/`.
 
+## What the Settings Change
+
+A profile controls several independent costs. Optimization level changes the compiler's transformation budget; LTO expands cross-unit optimization opportunities; codegen units trade parallel compilation against optimization opportunities. Debug information and symbol handling affect build/output size and diagnostics. Panic strategy changes unwinding behavior as well as generated code. Target features define which machines can execute the result.
+
+These controls can interact, so a throughput-oriented setting can increase build time or binary size, and a size-oriented setting can reduce runtime optimization opportunities. The Cargo defaults are a useful baseline. Evaluate only the settings relevant to the workload and deployment, retaining required error recovery and diagnostic behavior.
+
 ## Recipes
 
-Each recipe is a starting point to measure, not a final answer; the Performance Book notes every setting "may" help and asks for individual measurement.
+Each recipe is a starting point for comparison. Its effect depends on the workload, compiler, target, and deployment constraints.
 
-Maximum runtime speed:
+Throughput-oriented settings to evaluate:
 
 ```toml
 [profile.release]
 codegen-units = 1     # one unit: better optimization, slower compile
-lto = "fat"           # start with "thin" if compile time matters; "fat" for the last few percent
+lto = "fat"           # start with "thin" if compile time matters; compare "fat" only if its extra build cost is justified
 panic = "abort"       # only when catch_unwind and unwinding-based recovery are not used
 # add PGO and a benchmark-chosen allocator on top (see below)
 ```
 
-Minimum binary size:
+Size-oriented settings to compare:
 
 ```toml
 [profile.release]
@@ -87,13 +95,29 @@ Faster development iteration:
 
 ```toml
 [profile.dev]
-debug = "line-tables-only"   # 20-40% faster dev builds than full debuginfo per the Performance Book
+debug = "line-tables-only"   # less debug information to generate; no variable-level debugging
 
 [profile.dev.package."*"]
 opt-level = 2                # dependencies optimized once; your own crate stays at opt-level 0
 ```
 
 Reproducible CI (see [CI Flags](#ci-flags)): a pinned `rust-toolchain.toml`, `--locked`, and warnings denied from the environment rather than from source.
+
+## Compare Settings by the Cost They Change
+
+Use the existing deployment profile as the baseline and vary one relevant setting at a time. Preserve required semantics such as unwinding recovery and supported CPU features while comparing optimization settings.
+
+| Objective | Candidate comparison | Cost or condition to retain |
+|---|---|---|
+| Runtime throughput | Default release versus thin LTO, then a justified fat-LTO comparison | Link/build time and code size; a whole-program optimization is not always a runtime improvement |
+| Small distributed binary | opt-level s versus z, selected stripping and LTO | z disables loop vectorization; stripping changes diagnostic artifacts, and panic policy changes recovery |
+| Fast development iteration | Debug information level and selected dependency optimization | Dependency rebuild frequency and incremental behavior; optimizing every dependency can slow clean builds |
+| Actionable crash reports | Line tables/full symbols and platform symbol-file packaging | The exact matching debug artifacts must remain available for the deployed binary |
+| A known deployment CPU | A fixed target CPU/feature baseline | Build-machine native settings are unsuitable when deployment CPUs differ |
+
+`cargo build --timings` exposes compilation and linking contributions. `cargo build --release -v` shows the effective rustc invocations. A setting in Cargo.toml can be overridden by a profile override, config file, environment, or explicit flags; compare the effective build rather than the text of one manifest.
+
+Keep separate records for clean build time, incremental edit time, final artifact size, first use, and steady-state performance. A faster link and a faster application are different outcomes. Linker or LTO changes also need compatible native objects and build assumptions; cross-language optimization is not enabled just by adding lto to the Rust profile.
 
 ## Setting Reference
 
@@ -102,7 +126,7 @@ Reproducible CI (see [CI Flags](#ci-flags)): a pinned `rust-toolchain.toml`, `--
 | `opt-level` | `0`, `1`, `2`, `3`, `"s"`, `"z"` | `"s"` optimizes for size, `"z"` also disables loop vectorization. Cargo: "There may be surprising results, such as level 3 being slower than 2." |
 | `lto` | `false`, `true`/`"fat"`, `"thin"`, `"off"` | `false` = thin local LTO within the crate (rustc skips it at `codegen-units = 1` or `opt-level = 0`); `"thin"` = cross-crate thin LTO, faster than fat with similar gains; `"fat"` = whole-program; `"off"` = none |
 | `codegen-units` | integer ≥ 1 | Fewer units, better optimization, less parallelism |
-| `panic` | `"unwind"`, `"abort"` | `abort` is ignored for tests, benches, build scripts, and proc macros; every crate in the final binary must agree; `catch_unwind` cannot catch under `abort` |
+| `panic` | `"unwind"`, `"abort"` | `abort` is ignored for tests, benches, build scripts, and proc macros; the final target and panic runtime must support the chosen strategy; `catch_unwind` cannot catch under `abort` |
 | `debug` | `0`/`false`/`"none"`, `"line-directives-only"`, `"line-tables-only"`, `1`/`"limited"`, `2`/`true`/`"full"` | `"line-tables-only"` is enough for backtraces and most profilers |
 | `split-debuginfo` | `"off"`, `"packed"`, `"unpacked"` | rustc defaults: `packed` on MSVC and macOS, `off` on ELF |
 | `strip` | `"none"`, `"debuginfo"`, `"symbols"`, `true` (= symbols), `false` (= none) | Symbols stripped means no names in backtraces or profiles |
@@ -162,13 +186,13 @@ retry = 3
 ## Linkers
 
 - Since 1.90, `lld` is the default linker on `x86_64-unknown-linux-gnu`. Opt out with `-C linker-features=-lld` when a linker script or plugin depends on GNU `ld`.
-- Elsewhere, `-C link-arg=-fuse-ld=lld` (or `mold` on Linux) cuts link time on large binaries; the Performance Book states "there are no trade-offs to choosing another linker" for correctness, only availability.
+- Where supported, `-C link-arg=-fuse-ld=lld` or a compatible linker such as mold can reduce link time. Linker scripts, plugins, available flags, and deployment requirements can constrain compatibility.
 - Since 1.97 the `linker_messages` lint (warn) surfaces linker stderr that used to be hidden on success. Read the message; allow it per crate with `[lints.rust] linker_messages = "allow"` only when it is understood.
 - Unsupported `extern "<abi>"` strings are rejected consistently since 1.90; ABI typos that only failed in some positions now always fail.
 
 ## Profile-Guided Optimization
 
-PGO compiles twice: an instrumented build collects execution profiles, the final build uses them for inlining and layout decisions. The Performance Book cites gains of "10% or more" on suitable workloads.
+PGO first produces an instrumented build that collects execution profiles. A subsequent optimized build uses representative profiles to guide inlining and layout. The benefit depends on how closely the training workload matches deployment.
 
 ```sh
 rm -rf /tmp/pgo-data
@@ -182,18 +206,11 @@ RUSTFLAGS="-C profile-use=/tmp/pgo-data/merged.profdata" cargo build --release -
 
 ## Cross-Language LTO
 
-Inlining across Rust and C/C++ requires both sides to emit LLVM bitcode with the same LTO mode and compatible LLVM versions: compile C with `clang -flto=thin` (or `-flto=full` paired with `lto = "fat"`), build Rust with `-C linker-plugin-lto -C linker=clang -C link-arg=-fuse-ld=lld`. The rustc book's rule of thumb: use a linker plugin at least as new as the newest compiler involved, and prefer rustc and clang built on the same LLVM version. `rustc -vV` prints the LLVM version.
+Inlining across Rust and C/C++ requires both sides to emit compatible LLVM bitcode and use a consistent LTO mode: compile C with `clang -flto=thin`, and build Rust with `-C linker-plugin-lto -C linker=clang -C link-arg=-fuse-ld=lld`. For full LTO, use `-flto=full` on the C side and add `-C lto=fat` on the Rust side. Linker support and platform flags still depend on the target. Prefer rustc, clang, and the linker plugin built on the same LLVM version; a newer plugin alone is not a compatibility proof. `rustc -vV` prints the LLVM version.
 
 ## Allocators
 
-The system allocator is the default. `mimalloc` and `tikv-jemallocator` often reduce allocation cost and fragmentation for allocation-heavy servers, at the price of a larger baseline footprint and different memory-return behavior; measure throughput and RSS before adopting one.
-
-```rust,ignore
-#[global_allocator]
-static GLOBAL: mimalloc::MiMalloc = mimalloc::MiMalloc;
-```
-
-The Performance Book also documents jemalloc's transparent-huge-page configuration (`MALLOC_CONF="thp:always,metadata_thp:always"`) for Linux. An allocator is a whole-program choice; a library must never set one.
+Use [memory and allocation](memory-and-allocation.md#allocator-selection) for allocator policy. Defaults depend on the target/build; a reusable library should not impose a global allocator on consumers. Compare the actual workload's latency, throughput, memory retention, and fragmentation before replacement. No alternate allocator wrapper is currently a default catalog recommendation under the [selection policy](library-selection.md).
 
 ## Backtraces, Symbols, and panic=abort
 
@@ -221,8 +238,8 @@ The Performance Book also documents jemalloc's transparent-huge-page configurati
 
 - Pin the toolchain with `rust-toolchain.toml` (`channel = "1.98.1"` or `"stable"` with a documented upgrade routine).
 - `cargo build --locked` and `cargo test --locked` fail when `Cargo.lock` would change, so CI does not silently resolve new versions.
-- Deny warnings from the environment: `CARGO_BUILD_WARNINGS=deny` (1.97, does not invalidate the cache) or `RUSTFLAGS="-D warnings"`. Do not write `#![deny(warnings)]` in source: a new lint in the next toolchain breaks every consumer's build, which the Rust Design Patterns list as an anti-pattern, and `--cap-lints` in dependents cannot undo an in-source `deny`.
-- `cargo clippy --all-targets --all-features -- -D warnings` on the same toolchain the crate ships with (see [lints and review](lints-and-review.md#configuring-lints-in-cargotoml)).
+- A command-line or CI warning policy can be tied to a known toolchain: `CARGO_BUILD_WARNINGS=deny` (1.97) or `RUSTFLAGS="-D warnings"`. Broad in-source `deny(warnings)` can break local builds when new lints appear; dependency lint caps can lower configured severity. Use the scope that matches the intended policy.
+- `cargo clippy --all-targets --all-features -- -D warnings` on supported feature/target combinations with the chosen toolchain (see [lint configuration](lints-and-diagnostics.md#configuring-lints-in-cargotoml)). Use a feature matrix where all-features does not represent supported builds.
 - Cache `~/.cargo/registry`, `~/.cargo/git`, and `target/` keyed by lockfile hash; Cargo 1.88+ garbage-collects the global cache automatically (files unused for 3 months from the network, 1 month if regenerable), which a shared CI cache must tolerate.
 
 ## Verification

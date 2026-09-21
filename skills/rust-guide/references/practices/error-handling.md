@@ -2,14 +2,17 @@
 
 ## Contents
 
+- [Values, Propagation, and Error Information](#values-propagation-and-error-information)
+- [Design the Failure Boundary](#design-the-failure-boundary)
 - [Option, Result, or Panic](#option-result-or-panic)
 - [Anatomy of a Library Error Type](#anatomy-of-a-library-error-type)
 - [The Same Type with thiserror](#the-same-type-with-thiserror)
 - [Propagation with ? and From](#propagation-with--and-from)
 - [Application Errors with anyhow](#application-errors-with-anyhow)
-- [Box dyn Error for Prototypes](#box-dyn-error-for-prototypes)
+- [Box dyn Error for Dynamic Boundaries](#box-dyn-error-for-dynamic-boundaries)
 - [Exit Codes and main](#exit-codes-and-main)
 - [Public Error Types and Stability](#public-error-types-and-stability)
+- [An Opaque Error with Stable Recovery Information](#an-opaque-error-with-stable-recovery-information)
 - [Matching io::Error](#matching-ioerror)
 - [Errors Across Iterators](#errors-across-iterators)
 - [Combinators](#combinators)
@@ -20,9 +23,33 @@
 - [Lint Policy](#lint-policy)
 - [Common Mistakes](#common-mistakes)
 - [Availability by Version](#availability-by-version)
-- [Review Checklist](#review-checklist)
+- [Practical Boundaries](#practical-boundaries)
 
-Examples compile on stable Rust 1.80 or later with edition 2024 unless a version is stated. Blocks marked `deps` use `thiserror` 2 or `anyhow` 1. Public-API stability continues in [API and crate design](api-and-crate-design.md); panics across `extern "C"` in [unsafe and FFI](unsafe-and-ffi.md).
+Examples use stable APIs unless marked otherwise; see [compatibility](../../SKILL.md#compatibility). Blocks marked `deps` use `thiserror` 2 or `anyhow` 1. Public-API stability continues in [API and crate design](api-and-crate-design.md); panics across `extern "C"` in [unsafe and FFI](unsafe-and-ffi.md).
+
+## Values, Propagation, and Error Information
+
+`Result<T, E>` represents success or failure as a value; it does not require `E` to implement `Error`. Pattern matching handles the variants. In a Result-returning function, `?` returns early on `Err`, applying an available `From` conversion; it does not log, retry, or choose a recovery policy.
+
+`Display` supplies a human-readable message, while `Error::source` exposes a cause for reporting. A concrete enum or struct can carry information callers need for recovery. Erasing its type at a reporting boundary can simplify composition, but callers should not have to parse Display text to discover failure kinds.
+
+Start with the manual [error type](#anatomy-of-a-library-error-type) to understand the contract, then compare [thiserror](#the-same-type-with-thiserror) for deriving the same implementations. [Application reporting](#application-errors-with-anyhow) addresses a different need: adding context after the layer that makes recovery decisions. Panic behavior belongs to the separate [unwind/abort boundary](#panic-strategy-and-boundaries).
+
+## Design the Failure Boundary
+
+Choose the information callers need before choosing an error crate. Recovery can be necessary inside an application, while a library can intentionally expose an opaque error representation.
+
+| Caller need | Starting choice | Change when |
+|---|---|---|
+| One small, stable failure vocabulary | Concrete std/core error type implemented by hand | Repetitive Display/source conversions justify thiserror |
+| Programmatic recovery by kind | Typed variants or an opaque error with stable accessors | Avoid exposing implementation-specific distinctions callers should not depend on |
+| Human-facing context at an application boundary | anyhow or a suitable std-only reporting wrapper | Keep domain errors typed until recovery decisions are finished |
+| Heterogeneous dynamic errors | `Box<dyn Error>` with the required bounds | A documented typed contract would make callers' recovery more reliable |
+| Embedded/no heap | Small structured error, optionally core::error::Error on 1.81+ | Add allocation/reporting only if the environment and requirements permit it |
+
+thiserror generates ordinary Error/Display implementations; it does not replace std's error model or require applications to use a different type architecture. An opaque public struct can hide a private enum and expose only a stable kind or selected accessors. Use non_exhaustive where future expansion is intended, not on every type automatically.
+
+Attach actionable context at abstraction boundaries and preserve the source chain. Translate internal errors into public protocol/status codes at the relevant adapter; do not expose secrets or raw internal diagnostics as user-facing responses. Log at the layer deciding how the failure is handled rather than at every propagation step.
 
 ## Option, Result, or Panic
 
@@ -33,13 +60,13 @@ Examples compile on stable Rust 1.80 or later with edition 2024 unless a version
 | A precondition inside the program is violated (bug) | `panic!`, `assert!`, `unreachable!` | Not recoverable by callers; the program is already in a state the author did not anticipate |
 | Input from outside the program is invalid | `Result` from a validating constructor | Invalid input is expected, not a bug |
 | A library needs to report failure to any caller | Concrete error type implementing `std::error::Error` | Callers can match, log, and wrap it |
-| A binary needs to report failure to a human | `anyhow::Error` or `Box<dyn Error>` with context | Nobody matches on it; the message matters |
+| An application boundary reports failure to a human | `anyhow::Error` or a std-only reporting wrapper | Preserve typed errors earlier where recovery depends on their kind |
 
 A function returning `Option` where the caller needs to know why (not found versus permission denied) has thrown away information; a function returning `Result<T, ()>` has done the same.
 
 ## Anatomy of a Library Error Type
 
-A library error is an `enum` with one variant per failure kind, structured fields for what the caller needs, `Display` for humans, `Error::source` for the cause chain, and `#[non_exhaustive]` so variants can be added later. Everything below is standard library only.
+An error enum is useful when callers need distinct failure kinds. Use structured context, Display for humans, and source for causes. The example uses non_exhaustive to permit new variants; an opaque struct is another valid public design. Everything below is standard library only.
 
 ```rust
 use std::fmt;
@@ -77,13 +104,14 @@ impl std::error::Error for ConfigError {
 pub fn load_port(path: &str) -> Result<u16, ConfigError> {
     let text = std::fs::read_to_string(path)
         .map_err(|source| ConfigError::Io { path: path.to_owned(), source })?;
-    let line = text
+    let (line_number, line) = text
         .lines()
-        .find_map(|l| l.strip_prefix("port="))
+        .enumerate()
+        .find_map(|(index, line)| line.strip_prefix("port=").map(|value| (index + 1, value)))
         .ok_or(ConfigError::MissingKey { key: "port" })?;
     line.trim()
         .parse::<u16>()
-        .map_err(|source| ConfigError::Parse { line: 1, source })
+        .map_err(|source| ConfigError::Parse { line: line_number, source })
 }
 ```
 
@@ -126,7 +154,7 @@ pub enum ConfigError {
 }
 ```
 
-`#[source]` marks the cause; a field literally named `source` is picked up automatically. `#[from]` implies `#[source]` and generates a `From` impl, which is right only when the wrapped error can come from exactly one place in this type; otherwise use `map_err` to attach context, as `Io` and `Parse` do above. `#[error(transparent)]` forwards `Display` and `source` to a single inner error for pass-through wrappers.
+`#[source]` marks the cause; a field literally named `source` is picked up automatically. `#[from]` implies `#[source]` and generates a `From` impl, which fits when the conversion has one domain meaning and needs no call-site context; otherwise use `map_err` to attach context, as `Io` and `Parse` do above. `#[error(transparent)]` forwards `Display` and `source` to a single inner error for pass-through wrappers.
 
 ## Propagation with ? and From
 
@@ -176,7 +204,7 @@ fn import(dir: &std::path::Path) -> Result<usize, ImportError> {
 
 ## Application Errors with anyhow
 
-Binaries rarely match on error variants; they add context and print. `anyhow::Error` wraps any `std::error::Error + Send + Sync + 'static`, carries a context chain, and prints it with `{:#}` on one line or `{:?}` with a backtrace when `RUST_BACKTRACE` is set. It is "generally not a good choice for the public API of a library, but is widely used in applications."
+At a reporting boundary, applications often add context and print rather than match on every lower-level variant. Keep errors typed where the application still needs recovery decisions. `anyhow::Error` wraps any `std::error::Error + Send + Sync + 'static`, carries a context chain, and prints it with `{:#}` on one line or `{:?}` with a backtrace when `RUST_BACKTRACE` is set. It is "generally not a good choice for the public API of a library, but is widely used in applications."
 
 ```rust,deps
 use anyhow::{bail, ensure, Context, Result};
@@ -200,9 +228,9 @@ fn main() -> Result<()> {
 
 `with_context` takes a closure so the message is built only on failure. `downcast_ref::<T>()` recovers a concrete error when one code path does need to react. A library that uses `anyhow` internally still exposes its own error type at the public boundary.
 
-## Box dyn Error for Prototypes
+## Box dyn Error for Dynamic Boundaries
 
-`Box<dyn std::error::Error + Send + Sync>` needs no crate and accepts any error, `&str`, or `String` through `?`. It fits prototypes, examples, and tests; it gives callers no way to distinguish failures, so it does not belong in a library's public API.
+`Box<dyn std::error::Error + Send + Sync>` needs no external crate and accepts compatible concrete errors and string messages through conversions used by `?`. Downcasting can recover a known concrete error. It does not expose a closed failure vocabulary or guarantee a stable recovery contract; use it deliberately at dynamic/reporting boundaries. A public library whose callers need reliable recovery should expose documented variants or accessors instead.
 
 ```rust
 type BoxError = Box<dyn std::error::Error + Send + Sync + 'static>;
@@ -239,11 +267,11 @@ fn main() -> ExitCode {
 
 ## Public Error Types and Stability
 
-- Mark public error enums `#[non_exhaustive]` when introducing them; adding a variant is then a minor change.
-- Keep error types `Send + Sync + 'static` so they cross threads and wrap into `Box<dyn Error + Send + Sync>`. A static assertion in tests prevents a field change from silently losing the guarantee.
+- Use non_exhaustive for public enums intended to grow; a deliberately closed vocabulary or an opaque struct can be a better contract.
+- Promise Send + Sync + static where consumers need those bounds for task transfer or reporting wrappers. Borrowed or thread-local errors can be appropriate internally; preserve any bounds already promised publicly.
 - Implement `Debug`, `Display`, and `Error`; consider `Clone` and `PartialEq` only when the fields allow it (`io::Error` is neither).
-- Keep the size of `E` in check on hot paths; `Result<T, E>` is as large as the larger of `T` and `E`. Box a rarely used large payload. Clippy `result_large_err` (perf) warns above 128 bytes by default.
-- Never expose a third-party error type in a public API unless that crate is already a public dependency; wrap it or box it.
+- Keep the size of `E` in check on hot paths; the layout of `Result<T, E>` depends on both variants, alignment, and discriminant/niche optimization, not simply the size of E alone. Box a rarely used large payload. Clippy `result_large_err` (perf) warns above 128 bytes by default.
+- Exposing a third-party error type makes it part of the public dependency contract. Use a wrapper or opaque representation when that coupling is unnecessary; intentional public dependencies can be appropriate.
 
 ```rust
 #[derive(Debug)]
@@ -270,6 +298,74 @@ mod tests {
 }
 ```
 
+## An Opaque Error with Stable Recovery Information
+
+A public struct can hide implementation variants while exposing a small recovery vocabulary. This avoids forcing callers to depend on the exact parser or I/O error representation. The source chain remains available for diagnostics.
+
+```rust
+use std::{fmt, io, num::{NonZeroUsize, ParseIntError}, path::Path};
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[non_exhaustive]
+pub enum LoadKind { Missing, Invalid, Temporary, Other }
+
+#[derive(Debug)]
+pub struct LoadError(Repr);
+#[derive(Debug)]
+enum Repr { Io(io::Error), Number(ParseIntError), Zero }
+
+impl LoadError {
+    pub fn kind(&self) -> LoadKind {
+        match &self.0 {
+            Repr::Io(error) => match error.kind() {
+                io::ErrorKind::NotFound => LoadKind::Missing,
+                io::ErrorKind::TimedOut | io::ErrorKind::WouldBlock
+                    | io::ErrorKind::Interrupted => LoadKind::Temporary,
+                _ => LoadKind::Other,
+            },
+            Repr::Number(_) | Repr::Zero => LoadKind::Invalid,
+        }
+    }
+}
+impl fmt::Display for LoadError {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.write_str(match &self.0 {
+            Repr::Io(_) => "cannot read limit",
+            Repr::Number(_) => "limit is not an unsigned integer",
+            Repr::Zero => "limit must be nonzero",
+        })
+    }
+}
+impl std::error::Error for LoadError {
+    fn source(&self) -> Option<&(dyn std::error::Error + 'static)> {
+        match &self.0 {
+            Repr::Io(error) => Some(error),
+            Repr::Number(error) => Some(error),
+            Repr::Zero => None,
+        }
+    }
+}
+
+pub fn load_limit(path: &Path) -> Result<NonZeroUsize, LoadError> {
+    let text = std::fs::read_to_string(path).map_err(|e| LoadError(Repr::Io(e)))?;
+    let value = text.trim().parse::<usize>().map_err(|e| LoadError(Repr::Number(e)))?;
+    NonZeroUsize::new(value).ok_or(LoadError(Repr::Zero))
+}
+
+pub fn limit_or_default(path: &Path, default: NonZeroUsize) -> Result<NonZeroUsize, LoadError> {
+    match load_limit(path) {
+        Err(error) if error.kind() == LoadKind::Missing => Ok(default),
+        other => other,
+    }
+}
+```
+
+The application can default a missing optional file without treating malformed configuration or permission failures as absence. A Temporary classification is information for a retry policy, not permission to retry indefinitely: deadline, attempt budget, backoff, cancellation, and whether an operation is safe to repeat still belong to the operation's owner. This example performs a read; a write may have already produced side effects before its error.
+
+At the final CLI/logging boundary, add operation context and print the cause chain once. Erasing the concrete type there with anyhow or Box<dyn Error> can simplify reporting. Erasing it before limit_or_default would make the intended recovery contract harder to express. Avoid copying low-level error messages into public protocol responses when they contain paths or sensitive data.
+
+The stable public contract is kind(), Display, source(), and promised trait bounds. A future implementation can change its private parser representation while preserving that contract. An enum is simpler when callers legitimately need the complete variant structure; an opaque wrapper is useful when implementation details should remain private.
+
 ## Matching io::Error
 
 `io::Error` carries an `ErrorKind`; match on kinds instead of comparing `raw_os_error` codes, which differ per platform. Rust 1.83 added many specific kinds.
@@ -288,13 +384,9 @@ fn explain_write_failure(error: &io::Error) -> &'static str {
     }
 }
 
-fn is_retryable(error: &io::Error) -> bool {
-    matches!(
-        error.kind(),
-        ErrorKind::Interrupted | ErrorKind::WouldBlock | ErrorKind::TimedOut
-    )
-}
 ```
+
+An ErrorKind alone is not an application retry policy. Check the failed operation, partial progress, idempotency, deadline, and attempt budget. WouldBlock normally requires readiness handling, not a busy retry loop; a timeout does not prove that a remote side effect failed.
 
 `io::Error::new(kind, payload)` wraps a custom error with a kind; `io::Error::other(payload)` is the shorthand for `ErrorKind::Other`. `error.get_ref()` and `into_inner()` recover the payload.
 
@@ -420,18 +512,25 @@ fn checksum(bytes: &[u8]) -> u32 {
     bytes.iter().map(|&b| u32::from(b)).sum()
 }
 
-/// Called from C: no panic may cross this boundary.
+/// Computes a checksum, returning -1 for null pointers and -2 for an unwinding panic.
+///
+/// # Safety
+/// If both pointers are non-null, `ptr` must identify `len` initialized readable
+/// bytes within one allocation, with `len <= isize::MAX`. The input must remain
+/// valid and unmodified during this call. Even for zero length, it must be a
+/// properly aligned, non-null pointer suitable for an empty slice.
+/// `out` must be aligned and valid for writing one u32, must not overlap the input,
+/// and must permit exclusive access for the duration of the call.
 #[unsafe(no_mangle)]
-pub extern "C" fn checksum_bytes(ptr: *const u8, len: usize, out: *mut u32) -> i32 {
+pub unsafe extern "C" fn checksum_bytes(ptr: *const u8, len: usize, out: *mut u32) -> i32 {
     if ptr.is_null() || out.is_null() {
         return -1;
     }
-    // SAFETY: the C caller guarantees `ptr` points to `len` readable bytes and `out` is writable
-    // for the duration of this call.
+    // SAFETY: the caller guarantees a valid, initialized, immutable input range.
     let bytes = unsafe { std::slice::from_raw_parts(ptr, len) };
     match catch_unwind(AssertUnwindSafe(|| checksum(bytes))) {
         Ok(sum) => {
-            // SAFETY: `out` is non-null and writable per the contract above.
+            // SAFETY: the caller guarantees aligned, exclusive writable output storage.
             unsafe { out.write(sum) };
             0
         }
@@ -439,6 +538,8 @@ pub extern "C" fn checksum_bytes(ptr: *const u8, len: usize, out: *mut u32) -> i
     }
 }
 ```
+
+The unsafe signature makes the caller's obligations explicit to Rust callers too; C callers must uphold the same contract. Null checks cannot validate an arbitrary non-null pointer. `catch_unwind` handles unwinding panics, not undefined behavior or `panic = "abort"`.
 
 Set a panic hook (`std::panic::set_hook`) in binaries that need structured crash logs; since 1.81 the hook receives `PanicHookInfo`, and 1.91 adds `payload_as_str()`.
 
@@ -463,7 +564,7 @@ With `anyhow`, `{:#}` prints the same shape. Log an error once, at the level tha
 
 ## Documenting Errors and Panics
 
-Public functions document their failure modes in `# Errors` and `# Panics` sections (API Guidelines C-FAILURE); Clippy `missing_errors_doc` and `missing_panics_doc` (pedantic) check for them.
+Public functions document their failure modes in `# Errors` and `# Panics` sections; Clippy `missing_errors_doc` and `missing_panics_doc` (pedantic) check for them.
 
 ````rust
 /// Parses a TCP port.
@@ -486,7 +587,7 @@ pub fn parse_port(text: &str) -> Result<u16, std::num::ParseIntError> {
 }
 ````
 
-Doc examples use `?`, not `unwrap()` (C-QUESTION-MARK), so copied code keeps propagating errors.
+Doc examples use `?`, not `unwrap()`, so copied code keeps propagating errors.
 
 ## Lint Policy
 
@@ -503,7 +604,7 @@ Doc examples use `?`, not `unwrap()` (C-QUESTION-MARK), so copied code keeps pro
 
 ## Common Mistakes
 
-- Returning `Box<dyn Error>` from a library because it is convenient; callers cannot react to distinct failures.
+- Erasing errors before recovery decisions, or expecting downcasts to supply an undocumented stable public contract.
 - A single `From<io::Error>` impl on an error type that reads several files, so every failure says "I/O error" without saying which file.
 - Error messages that end with a colon and the inner error's message, then printing the chain too, which duplicates text.
 - `unwrap()` in a request handler on a value derived from user input.
@@ -525,12 +626,8 @@ Doc examples use `?`, not `unwrap()` (C-QUESTION-MARK), so copied code keeps pro
 
 Per-release details live in [the versions index](../versions/index.md).
 
-## Review Checklist
+## Practical Boundaries
 
-- `Option` is used only where absence needs no explanation; everything else returns `Result`.
-- Library error types are enums with structured fields, `Display`, `source()`, `#[non_exhaustive]`, and `Send + Sync + 'static`.
-- `From` impls exist only where the conversion is unambiguous; otherwise `map_err` adds context.
-- No `unwrap`/`expect` on input-derived values in library or service code; every remaining `expect` states its invariant.
-- Panic strategy, FFI boundaries, and thread joins agree with how panics are expected to surface.
-- Public functions document `# Errors` and `# Panics`; doc examples use `?`.
-- Errors are logged once with the full chain, at the layer that handles them.
+Keep the information needed for recovery until the responsible layer has acted on it. An enum, opaque error struct, or erased reporting wrapper can each be appropriate at a different boundary. Add context where an abstraction contributes useful information and preserve causes rather than logging the same propagation repeatedly.
+
+Expected input and capacity failures usually belong in Result. An expect can express an established invariant, but it should not stand in for validation of an external condition. Error propagation, task/thread failure, panic unwinding, process abort, and foreign calls have different behavior; an application's failure policy must account for the boundaries it actually crosses.

@@ -1,70 +1,64 @@
 ---
 name: rust-guide
-description: Use for explaining, designing, implementing, reviewing, refactoring, optimizing, migrating, or diagnosing Rust code and Cargo projects on stable Rust 1.80+ whenever Rust-specific engineering judgment is needed: ownership and type design, collection selection, error handling, public API and crate design, threads/sync/atomics, performance and Cargo/rustc build configuration, unsafe/FFI soundness, Clippy-based review, and Rust release or Edition 2024 migration. Use it whenever the user asks which type, collection, lock, or profile setting to use, whether code is idiomatic, why Rust code is slow, or what changed since a given Rust version, even without saying "best practice". Not a Rust learning tutorial; excludes framework- or runtime-specific APIs (specific async runtimes, web frameworks, embedded HALs), nightly-only features, toolchains below 1.80, and non-Rust build systems.
+description: Use to explain Rust language characteristics and established practical patterns, and to apply that knowledge in Rust development. Covers ownership, borrowing, lifetimes, traits and API design, collections, memory allocation, error handling, async execution and CPU parallelism, synchronization, module and crate boundaries, Cargo workspaces and monorepos, library selection, performance and SIMD, WebAssembly, embedded/no_std, unsafe/FFI, compiler diagnostics, build configuration, and MSRV/edition compatibility. Use for questions about how Rust works, idiomatic ways to structure code, why a compiler constraint exists, when a pattern or library fits, and its costs and exceptions. Connects mechanisms to practical examples, including std/core approaches and curated ecosystem libraries. Uses stable Rust with explicit API, edition, and target requirements; explains relevant nightly alternatives separately.
 license: MIT
 ---
 
 # Rust Guide
 
-Engineering advisor for production Rust on stable toolchains 1.80 and later, editions 2021 and 2024. It answers what to use, why, when to choose differently, and what the safety or performance trade-off is. It is not a tutorial: explain language semantics only as far as the decision in front of the user needs.
+Explain Rust's characteristics and established practical patterns by topic. Connect how the language and libraries work to recommended usage, applicable conditions, costs, pitfalls, and exceptions. Use examples that make these relationships concrete.
 
-## Establish Evidence First
+## Explain the Topic
 
-Collect what the project already fixes before recommending anything:
+Start with the concept needed to answer the question, then connect it to practice. For a substantial topic, cover **mechanism → practical pattern → applicable conditions → pitfalls and exceptions → example**. This is a way to develop the explanation, not a required response template. A narrow question may need only a paragraph or a small example.
 
-- Toolchain: `rust-toolchain.toml`, `rustup show active-toolchain`, `rustc --version`, CI toolchain pins.
-- Manifest: `edition`, `rust-version` (MSRV), `resolver`, `[profile.*]`, `[lints]`, `[features]`, workspace layout, `Cargo.lock` version.
-- Constraints: `std` vs `no_std`, target triples, FFI boundaries, async runtime in use, custom allocator.
-- Existing diagnostics: `cargo build`, `cargo clippy`, test failures, benchmarks, profiles.
+- Explain why a pattern works: ownership and resource lifetime, type guarantees, execution and synchronization, memory representation, or compilation behavior.
+- Develop the suitable std/core approach where it is useful. Explain what a dependency adds and what maintaining an equivalent implementation would cost; fewer dependencies alone do not justify writing a scheduler or unsafe allocator.
+- Treat `clone`, `dyn Trait`, `Arc<Mutex<T>>`, allocation, and abstractions according to their semantics and costs. A useful default has conditions and exceptions.
+- Use comparisons when the question involves alternatives. Classify their roles before comparing names, and use the [library selection policy](references/practices/library-selection.md) for new dependency recommendations.
+- Relate examples to observable behavior: who owns a buffer, which failure a caller can handle, when a task ends, or which configuration reaches a target.
 
-When facts are missing, continue with version-independent guidance and name the choice that depends on the missing fact. Do not assume the newest stable. Do not recommend an API without stating its stabilizing version when the project's MSRV could be below it. Treat nightly-only language and library features as out of scope unless the project already pins nightly; nightly-only verification tools such as Miri remain usable as checks.
+Match depth to the reader's question. Explain the underlying constraint when discussing a diagnostic; connect an established pattern to the supplied code when application is requested. Keep small examples focused, and explain any omitted runtime, device setup, dependency features, or failure handling that matters to their use.
 
-## Route
+## Account for the Environment
 
-Start with the closest reference; read a second one only when the task crosses topics. Each reference is self-contained: the rules, tables, and examples (which compile on stable Rust with edition 2024) are in the file; source URLs and verification notes are kept out of the skill text in `updates/`. The `versions/` directory has one file per release that carries an official deprecation or migration instruction; releases without one appear only in its index.
+Bring in environmental facts when they change the explanation: `core`/`alloc`/`std`, host and target, OS threads or interrupts, runtime, MSRV and edition, dependency features, public API, and deployment CPU baseline. A general language question needs no repository inspection. Use supplied code and manifests for project-specific questions, and state assumptions where relevant facts are unavailable.
+
+Distinguish workload costs such as I/O waiting, computation, contention, retained memory, startup, and build time. Explain the likely mechanism before suggesting a measurement; a performance hypothesis becomes a speedup claim only with comparable results.
+
+## Route by the Question
+
+Read the relevant section of the closest reference first. Long references have contents tables; expand to neighboring sections only when their concepts are needed. Follow cross-topic links for relationships such as ownership and allocation, async and cancellation, or workspace features and no_std.
 
 | Task signal | Read |
 |---|---|
-| `Vec`, `VecDeque`, `HashMap`, `BTreeMap`, `BinaryHeap` choice, capacity, hashing, iteration order | [collections](references/practices/collections.md) |
-| Ownership hierarchy, owned vs borrowed types, `Rc`/`Arc`/indices, newtype, typestate, enum vs trait vs generic vs `dyn`, `clone` pressure, interior mutability | [ownership and type design](references/practices/ownership-and-type-design.md) |
-| `Result`/`Option`/panic policy, error types for libraries vs applications, `?` conversions, reporting | [error handling](references/practices/error-handling.md) |
-| Public API shape, naming, conversion traits, sealed traits, SemVer, features, MSRV policy, docs | [API and crate design](references/practices/api-and-crate-design.md) |
-| Threads, channels, `Send`/`Sync`, `Mutex`/`RwLock`/`Condvar`, atomics and ordering, `Arc<Mutex<T>>` pressure, async boundary | [concurrency](references/practices/concurrency.md) |
-| "Why is it slow", allocation, cloning, iterators, layout, profiling, any performance claim | [performance](references/practices/performance.md) |
-| Release profile, LTO, `codegen-units`, `panic`, `strip`, PGO, `target-cpu`, binary size, compile time | [build configuration](references/practices/build-configuration.md) |
-| `unsafe`, raw pointers, aliasing, `MaybeUninit`, manual `Send`/`Sync`, FFI, Miri | [unsafe and FFI](references/practices/unsafe-and-ffi.md) |
-| Code review, Clippy groups, `[lints]`, `#[expect]`, lint policy for CI | [lints and review](references/practices/lints-and-review.md) |
-| Moving a crate or workspace to edition 2024 | [Rust 1.85 and edition 2024](references/versions/1.85.md) |
-| "What changed since 1.NN", deprecated or renamed APIs, new lints, behavior changes, toolchain upgrade planning | [versions index](references/versions/index.md), then the per-version files it lists for the range |
+| Ownership, borrowing, lifetimes, resource release | [Ownership and borrowing](references/practices/ownership-and-type-design.md#ownership-borrowing-and-resource-lifetimes), then [parameter and return types](references/practices/ownership-and-type-design.md#parameter-and-return-types) |
+| Newtype, typestate, enum/generic/dyn, shared ownership | [Type patterns](references/practices/ownership-and-type-design.md#newtypes), [dispatch](references/practices/ownership-and-type-design.md#enum-trait-generic-or-dyn), or [shared ownership](references/practices/ownership-and-type-design.md#shared-ownership-and-cycles) |
+| Lookup, ordering, queues, hashing, collection capacity | [Collection semantics and representation](references/practices/collections.md#semantics-representation-and-cost), then the relevant operation |
+| Allocation, buffer reuse, arena/pool, allocator, retained memory | [Memory and allocation](references/practices/memory-and-allocation.md#storage-allocation-and-release) |
+| Errors, std-only implementations, thiserror/anyhow, recovery/reporting | [The error model](references/practices/error-handling.md#values-propagation-and-error-information), [manual implementation](references/practices/error-handling.md#anatomy-of-a-library-error-type), or [reporting](references/practices/error-handling.md#application-errors-with-anyhow) |
+| Function/module/crate separation, visibility, core and adapters | [Modules and crate boundaries](references/practices/modules-and-crate-boundaries.md) |
+| Public API, traits, conversions, SemVer, documentation | [API and crate design](references/practices/api-and-crate-design.md) |
+| Workspace, monorepo, feature unification, shared versions/releases | [Workspaces and monorepos](references/practices/workspaces-and-monorepos.md) |
+| Crate comparisons, std versus dependencies, adoption/maintenance | [Library selection](references/practices/library-selection.md) |
+| Future/task/thread, Tokio/smol, Rayon/Crossbeam, blocking and limits | [Execution model and patterns](references/practices/async-and-parallel-execution.md#futures-tasks-and-threads) |
+| Async borrowing, Send, 'static, Pin/Unpin | [Task ownership](references/practices/async-and-parallel-execution.md#borrowing-and-task-ownership), [pinning](references/practices/async-and-parallel-execution.md#pin-and-unpin) |
+| Cancellation, timeouts, shutdown | [Cancellation](references/practices/async-and-parallel-execution.md#cancellation-is-an-ownership-contract), [shutdown](references/practices/async-and-parallel-execution.md#channels-locks-and-shutdown) |
+| Threads, locks, channels, atomics, Send/Sync, contention | [Concurrency](references/practices/concurrency.md#choosing-a-model); use its contents for the specific primitive |
+| Profiling, algorithms, layout, runtime and build-time bottlenecks | [Performance](references/practices/performance.md) |
+| Auto-vectorization, SIMD intrinsics, CPU detection, fallback | [SIMD](references/practices/simd.md) |
+| Browser/WASI, JS boundary, Wasm memory, workers and size | [WebAssembly](references/practices/webassembly.md) |
+| Firmware, no_std, no heap, interrupts, HAL, DMA, embedded async | [Embedded and no_std](references/practices/embedded-and-no-std.md) |
+| Cargo profiles, LTO, symbols, panic, PGO, compiler flags | [Build configuration](references/practices/build-configuration.md) |
+| Raw pointers, layout, aliasing, initialization, FFI | [Safety contracts](references/practices/unsafe-and-ffi.md#unsafe-fn-unsafe-blocks-and-safety-comments), then the relevant FFI or memory section |
+| Compiler errors, Clippy diagnostics, lint configuration | [Compiler diagnostics and lints](references/practices/lints-and-diagnostics.md) |
+| Edition 2024 migration | [Edition migration](references/versions/1.85.md) |
+| Toolchain upgrade and release compatibility | [Versions index](references/versions/index.md), then the relevant release files |
 
-## Source Authority and Evidence Labels
+## Compatibility
 
-Different questions have different authorities. Resolve conflicts upward and attach the label when stating a recommendation, so the user can tell a guarantee from an opinion.
-
-| Question | Authority | Label |
-|---|---|---|
-| What the language or a std type guarantees | Rust Reference, std docs, Rustonomicon for `unsafe`, Edition Guide, release notes | `Rust guarantees`, `std documents` |
-| How Cargo and rustc behave | Cargo Book, rustc Book | `Cargo documents`, `rustc documents` |
-| Official ecosystem convention | Rust API Guidelines, Clippy, rustfmt style guide | `official guideline` |
-| Recommended design under trade-offs | Google Comprehensive Rust (Idiomatic Rust, Concurrency), Rust Performance Book, Rust Atomics and Locks | Name the source: `Google recommends`, `Performance Book suggests`, `Atomics and Locks` |
-| Community idiom | Rust Design Patterns (unofficial) | `community pattern` |
-| Performance outcome on this workload | A measurement on this workload only | `needs benchmark` |
-
-"Best practice" without one of these labels is not an answer. `RwLock` is a candidate when readers dominate; it is not "faster than `Mutex`" until measured, because `std` documents that its scheduling policy is platform-dependent.
-
-## Decision Method
-
-1. Semantics before performance: choose the type whose guarantees match the requirement (ordering, uniqueness, `Ord`/`Hash` availability, sharing across threads), then optimize inside that choice.
-2. Ownership structure before synchronization: recurring `Arc<Mutex<T>>`, `Rc<RefCell<T>>`, or `clone()` to satisfy the borrow checker is a signal to redesign who owns what, not to add more locking.
-3. Measure before optimizing: confirm a release build, profile the hot path, change algorithm or data structure first, then allocation, then layout, then micro-optimizations, then compiler flags.
-4. Check Clippy before inventing a rule: if a lint already covers the pattern, cite it by name and group.
-5. Version-gate every API: state the stabilizing version for anything newer than 1.80, and check the edition when a rule differs between 2021 and 2024.
-6. Smallest reversible change: one design or configuration change at a time, verified against the same inputs.
-
-## Boundary
-
-The guide owns Rust language, `std`, Cargo, rustc, and Clippy decisions, including async fundamentals in `std` (`Future`, `Pin`, `IntoFuture`, `AsyncFn`) and their `Send`/blocking boundaries. Specific async runtimes, web frameworks, ORMs, embedded HALs, and other crates' APIs stay with that crate's own documentation; use this guide for the Rust-level judgment around them and say when a decision depends on the runtime. Nightly-only features and toolchains below 1.80 are out of scope; when a project pins one, say so and continue with version-independent guidance.
-
-## Response Contract
-
-Adapt to the request: give the decision, its evidence label, and the alternative that becomes correct when the stated assumption changes. Report changes or findings with the exact identifiers involved. Distinguish performed verification (`cargo check`, `cargo clippy`, `cargo test`, benchmarks, Miri) from remaining runtime risk. Claim a performance improvement only from a comparable before/after measurement. Never report a blocked, failed, or unrun check as passed.
+- Use the relevant topic's explanation, conditions, and examples to answer the question. Distinguish language/API guarantees, conditional practices, and measured outcomes.
+- Match APIs and dependencies to the project's features, MSRV, target, and runtime. Explain relevant nightly alternatives separately from the stable approach.
+- Release references cover Rust 1.80 onward. Each example has its own API requirements; edition 2024 requires Rust 1.85 even when its APIs are older. An older MSRV needs a supported edition and compatible APIs.
+- Apply the library catalog's role and suitability conditions. Popularity narrows candidates; it does not establish correctness or a performance benefit.
+- State assumptions and unresolved version or target constraints where they affect the answer. Describe compilation, target execution, and measured behavior only to the extent actually established.

@@ -3,38 +3,98 @@
   "evals": [
     {
       "id": 1,
-      "prompt": "Our API server keeps a `HashMap<String, Vec<Event>>` keyed by tenant id and on every request iterates it sorted by key to build a report. A teammate proposed switching to `BTreeMap`. Cargo.toml has edition = \"2021\" and rust-version = \"1.82\". Should we switch, and what else should we check before touching the code?",
-      "expected_output": "Separates semantics from performance: BTreeMap is the std-documented choice when sorted iteration or ranges are needed, while a HashMap plus sort at output time is the alternative when sorted output is occasional. Labels the performance side as needing a benchmark with the real key count and distribution, cites the std complexity table (O(1) expected vs O(log n)), mentions HashMap iteration order being arbitrary per process, and notes that any newer API suggested (e.g. extract_if) must respect the 1.82 MSRV.",
+      "prompt": "Explain how Vec, HashMap, and BTreeMap differ in representation and guarantees. For a small table that gets frequent lookups and sometimes produces sorted output, how do those differences affect practical use?",
+      "expected_output": "Connects contiguous storage, hashing/equality, and key ordering to operation costs and observable behavior. Explains why input size, iteration frequency, and output sorting matter; gives conditional patterns without promising an unmeasured speedup.",
       "files": []
     },
     {
       "id": 2,
-      "prompt": "We share `Arc<Mutex<HashMap<Uuid, Session>>>` across 32 worker threads and a profile shows about 40% of request time waiting on that lock. One suggestion is RwLock because reads dominate, another is a concurrent map crate. What do you recommend?",
-      "expected_output": "Treats the spreading Arc<Mutex<..>> as an ownership signal first (can sessions be owned per worker or sharded, or updated via messages). Presents RwLock as a candidate, not a guaranteed speedup, quoting std that the priority policy is OS dependent and warning about reader re-acquisition deadlock; requires a benchmark under the real thread count. Mentions narrowing guard scope, sharding, and snapshot-swap alternatives, and labels third-party maps as community patterns to measure rather than default answers.",
+      "prompt": "Why can a Rust function return a borrowed string from an argument but not from a String it creates locally? I also see APIs taking String, &str, Cow, or Arc. Explain how ownership and lifetimes connect these patterns.",
+      "expected_output": "Explains owner lifetime and reference relationships without suggesting that an annotation extends storage lifetime. Relates borrowing, owning, conditional ownership, and shared ownership to API needs and cloning costs, with a small coherent example rather than treating clones as defects.",
       "files": []
     },
     {
       "id": 3,
-      "prompt": "Set up the Cargo release profile for a CLI we ship to customers on x86_64 Linux and Apple Silicon macOS. We want a small binary and fast startup, but crash reports must include usable backtraces. We are on Rust 1.96.",
-      "expected_output": "Proposes concrete [profile.release] settings (codegen-units = 1, lto, opt-level \"s\" or \"z\" with the trade-off, panic strategy) while explaining that strip = \"symbols\" and panic = \"abort\" conflict with usable backtraces; recommends keeping line tables (debug = \"line-tables-only\") and notes that since 1.92 Linux keeps unwind tables with panic=abort. Warns against target-cpu=native for shipped binaries and says every setting must be measured for size and startup individually.",
+      "prompt": "I want to understand Cargo release profiles before configuring a distributed CLI. How do optimization level, LTO, codegen units, panic strategy, and debug information affect speed, size, build time, and useful crash reports?",
+      "expected_output": "Explains the separate mechanisms and interacting costs, using defaults as a baseline and settings as examples rather than a universal recipe. Distinguishes unwinding recovery from diagnostic information, accounts for deployment CPU compatibility, and identifies what a workload comparison can establish.",
       "files": []
     },
     {
       "id": 4,
-      "prompt": "Plan the migration of our workspace to edition 2024. Facts: three member crates on edition 2021, MSRV 1.79 declared in rust-version, a `static mut COUNTER` used from two threads, hand-written `extern` blocks for libgit2, and `std::env::set_var` calls in integration tests. What are the steps and what will `cargo fix` not do for us?",
-      "expected_output": "States that edition 2024 requires Rust 1.85.0 and therefore raises the MSRV; gives the official order (cargo update, cargo fix --edition on the old edition per member and per feature set, then set edition and resolver = \"3\" in the virtual workspace, build, test, cargo fmt with style_edition). Identifies the manual items: static mut references are denied with no automatic fix (replace with atomics/Mutex/OnceLock or &raw), unsafe extern signatures must be verified by hand, set_var becomes unsafe and needs a single-threaded audit, plus tail-expression and never-type fallback cases. Warns against allowing the migration lints wholesale.",
+      "prompt": "What is the relationship between the installed Rust toolchain, edition, rust-version, and Cargo resolver? Our library declares Rust 1.84 and edition 2021, while CI is considering a newer compiler.",
+      "expected_output": "Distinguishes the compiler used, edition semantics, declared MSRV, and dependency resolution. Explains that a toolchain upgrade alone need not raise the declared MSRV or change edition, that edition 2024 requires Rust 1.85, and that a resolver preference is not proof of compatibility.",
       "files": []
     },
     {
       "id": 5,
-      "prompt": "Review this FFI wrapper design for soundness before we publish it: C callbacks implemented as `extern \"C\" fn` in Rust that may panic on bad input, a struct holding a `*mut Ctx` for which we wrote `unsafe impl Send`, and a `transmute::<&[u8], &[u32]>` to reinterpret a byte buffer. We build with Rust 1.90, edition 2024.",
-      "expected_output": "Flags each issue with its rule: a panic reaching extern \"C\" aborts the process since 1.81, so callbacks need catch_unwind and an error return; unsafe impl Send requires no unsynchronized shared mutable state and cleanup that is valid on another thread, and asks what the C library guarantees about thread affinity; the slice transmute is unsound because of alignment and length semantics (reference to misaligned data is UB, slice metadata is element count), and recommends chunks_exact plus from_ne_bytes or a checked cast. Recommends Miri for the non-FFI parts, // SAFETY comments per block, and mentions edition 2024 unsafe extern and unsafe_op_in_unsafe_fn rules.",
+      "prompt": "How should a Rust-to-C interface represent buffer ownership, pointer validity, and failure? Please explain the contract using an exported function that reads bytes and writes a checksum, including what happens if Rust code panics.",
+      "expected_output": "Separates ABI from safety and documents the caller obligations needed for raw-pointer reads/writes, including range, alignment, lifetime, and aliasing. Explains why null checks alone cannot justify a safe raw-pointer API; distinguishes expected errors, unwinding panic handling, aborts, and undefined behavior.",
       "files": []
     },
     {
       "id": 6,
-      "prompt": "Our CI pins Rust 1.84 and our published library declares rust-version = \"1.84\". What do we gain and what could break if we move CI to the current stable, and how should we set the new MSRV?",
-      "expected_output": "Uses the release notes range 1.85 through the current stable: highlights adoptable items (async closures, trait upcasting, let chains only on edition 2024, extract_if, file locks, cfg_select!) and watch-for items (missing_abi and mismatched_lifetime_syntaxes warnings, dangerous_implicit_autorefs deny, i586-pc-windows-msvc removal, lld default linker on x86_64 Linux, x86_64-apple-darwin Tier 2, v0 symbol mangling default, never-type fallback lints). Distinguishes toolchain upgrade from MSRV bump, cites Cargo SemVer treating an MSRV change as a minor bump with a published policy, and recommends an MSRV CI job with --locked and clippy.toml msrv.",
+      "prompt": "Borrowing local data works when I await an async function directly, but spawning its future asks for Send and static lifetimes. Other APIs mention Pin or Unpin. How are these requirements related, and what practical patterns address each one?",
+      "expected_output": "Connects direct awaiting and independent task ownership to lifetime requirements, explains retained state and Send, and distinguishes static bounds from values living forever. Explains address-sensitive state and safe pinning independently of thread safety, allocation, and type erasure. Does not present async move, boxing, or unsafe impls as a universal fix.",
+      "files": []
+    },
+    {
+      "id": 7,
+      "prompt": "Explain Rust async execution and CPU parallelism. I know Tokio, Rayon, and Crossbeam, but do not understand whether they solve the same problem or which other established options are worth knowing.",
+      "expected_output": "Starts from futures, polling, tasks, threads, and the difference between waiting and computing. Classifies runtimes, compute pools, channels, and future composition, then introduces a concise set from the curated catalog with applicable conditions. Includes std where suitable and avoids portraying combinators or channels as interchangeable runtimes.",
+      "files": []
+    },
+    {
+      "id": 8,
+      "prompt": "In Rust async code, what does cancellation actually mean? If a request times out while background computation and I/O are in progress, how should I understand the lifetimes of the work and its results?",
+      "expected_output": "Distinguishes owned futures, handles, spawned tasks, and blocking work; dropping a handle or receiver does not generally terminate the producer. Explains partial progress, cooperative cancellation, side effects, bounded admission, and observing termination without promising rollback or a hard shutdown deadline.",
+      "files": []
+    },
+    {
+      "id": 9,
+      "prompt": "How does Rust error handling work from a parser through an application that retries some failures and prints others? What do thiserror and anyhow add, and what would the same structure look like using the standard library?",
+      "expected_output": "Explains Result, propagation/conversion, Display, and source information before library roles. Keeps recovery information available until the responsible layer handles it, shows that a small manual error type can suffice, and treats typed/opaque errors and reporting wrappers according to their contracts rather than a library-versus-application absolute rule.",
+      "files": []
+    },
+    {
+      "id": 10,
+      "prompt": "We are moving an image-processing core into browser WebAssembly. Please explain the important Rust/Wasm memory and execution patterns, especially exchanging image data with JavaScript and keeping the UI responsive.",
+      "expected_output": "Connects host capabilities, linear memory, data conversion, ownership, and JS view lifetime to practical boundary patterns. Explains why async does not offload CPU work, distinguishes worker messaging from shared-memory prerequisites, and discusses complete frame cost and deployed engine features without asserting that zero-copy or a native thread pool automatically works. Connects at least one representative Rust/host exchange to ownership, copying, and disposal; worker advice includes admission and completion behavior.",
+      "files": []
+    },
+    {
+      "id": 11,
+      "prompt": "How do Rust ownership and error patterns change on a bare-metal MCU with a small RAM budget? Explain what core, alloc, and std provide, and how buffers, interrupts, DMA, and async tasks fit together.",
+      "expected_output": "Preserves the language ownership model while distinguishing platform facilities. Explains fixed capacity and explicit failure, allocator availability, interrupt concurrency, DMA buffer lifetime, and task storage/timing. Gives portable patterns without inventing device-specific configuration or assuming no_std means no heap or hard real-time behavior. Relates a stateful fixed-capacity or driver pattern to real buffer/error transitions, and keeps device-specific guarantees separate from the generic ownership model.",
+      "files": []
+    },
+    {
+      "id": 12,
+      "prompt": "Explain the practical route from an ordinary Rust loop to SIMD. How do automatic vectorization, explicit intrinsics, portable APIs, and multi-core parallelism differ, and what can make a vectorized implementation inappropriate?",
+      "expected_output": "Explains lanes and independent work, preserves scalar semantics, and discusses layout, short inputs, tails, accessible loads, floating-point behavior, and bandwidth. Distinguishes stable target intrinsics from the verified current status of portable SIMD, native dispatch from Wasm module compatibility, and compilation from evidence of a speedup. Connects a representative operation to vector loads/operations/stores, remaining elements, and a safe dispatch/fallback boundary, with an explanation of what the generated-code and workload comparison establish.",
+      "files": []
+    },
+    {
+      "id": 13,
+      "prompt": "A long-running Rust process keeps more memory after processing one unusually large request, even after its Vec and String buffers are cleared. Explain the memory model and when buffer reuse, arenas, pools, or another allocator make sense.",
+      "expected_output": "Distinguishes ownership, length, capacity, live allocations, allocator retention, and process RSS. Relates each reuse strategy to lifetime and bounded retention, including destructor/exhaustion behavior where relevant. Does not promise clear, shrink_to_fit, deallocation, or an allocator replacement will immediately reduce RSS. Explains the acquisition/use/return and retention policy of a representative reuse pattern and the limits of a fallible reservation contract.",
+      "files": []
+    },
+    {
+      "id": 14,
+      "prompt": "A parser is growing and will be shared by a CLI, a service, and Wasm. Explain how to organize Rust functions, modules, crates, and packages, and when a trait or separate crate improves the structure.",
+      "expected_output": "Explains namespace/privacy, compilation, packaging, and public contracts before presenting a portable core and adapters as a conditional pattern. Uses cohesion, ownership, dependency direction, target needs, and real consumers rather than a line-count rule; describes generic/erased interfaces and build costs without promising that more crates or traits make code faster. Relates the proposed boundary to a concrete public surface and dependency direction, showing how the same operation is consumed before and after extraction.",
+      "files": []
+    },
+    {
+      "id": 15,
+      "prompt": "Our Cargo workspace has a CLI, a reusable core, and firmware. The combined host build passes, but the core fails when built alone. Explain the workspace and feature mechanisms behind this, and how shared dependencies and package versioning should be understood.",
+      "expected_output": "Explains feature unification, inherited/default features, member declarations, isolated package/target configurations, shared lockfiles, and root settings. Separates dependency resolution from lockstep or independent package releases and from target/MSRV compatibility, using a concrete dependency example rather than a blanket all-features prescription. Connects manifest features to actual cfg-controlled API availability and explains a concrete consumer whose missing feature is hidden by a combined build.",
+      "files": []
+    },
+    {
+      "id": 16,
+      "prompt": "For a Rust dependency shortlist, A has 4,000 repository stars and 20,000 recent downloads, B has 500 stars and 50 million recent downloads, and C has 5,000 stars and 5 million recent downloads. We already depend on B. How should these figures affect new recommendations and existing usage?",
+      "expected_output": "Explains the catalog admission floor as an editorial filter with two independent conditions, not proof of quality or unique users. Identifies C as numerically eligible without declaring it technically suitable, keeps adoption distinct from existing-use support, and considers role, maintenance, compatibility, security, licensing, and integration cost as relevant conditions. Does not invent current metrics.",
       "files": []
     }
   ]

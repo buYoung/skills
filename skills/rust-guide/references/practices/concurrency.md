@@ -17,9 +17,9 @@
 - [Deadlocks and Liveness](#deadlocks-and-liveness)
 - [Common Mistakes](#common-mistakes)
 - [Availability by Version](#availability-by-version)
-- [Review Checklist](#review-checklist)
+- [Practical Boundaries](#practical-boundaries)
 
-Examples compile on stable Rust 1.80 or later with edition 2024 unless a version is stated. Blocks marked `ignore` need an async runtime crate. Manual `unsafe impl Send`/`Sync` continues in [unsafe and FFI](unsafe-and-ffi.md); contention found in a profile continues in [performance](performance.md).
+Examples use stable APIs unless marked otherwise; see [compatibility](../../SKILL.md#compatibility). Blocks marked `ignore` need an async runtime crate. Manual `unsafe impl Send`/`Sync` continues in [unsafe and FFI](unsafe-and-ffi.md); async execution is explained in [futures, tasks, and threads](async-and-parallel-execution.md#futures-tasks-and-threads).
 
 ## Choosing a Model
 
@@ -27,7 +27,7 @@ Examples compile on stable Rust 1.80 or later with edition 2024 unless a version
 |---|---|---|
 | Hand work and its data to another thread, results come back later | `thread::spawn` + `mpsc` channel | Ownership moves; no shared state to protect |
 | Split a slice or collection across threads and join before returning | `thread::scope` | Threads borrow the data; the compiler checks the borrow ends at the scope |
-| Many threads read data that never changes after construction | `Arc<T>`, or a `static` with `LazyLock`/`OnceLock` | No lock needed; sharing is free after the clone |
+| Many threads read data that never changes after construction | `Arc<T>`, or a `static` with `LazyLock`/`OnceLock` | No data lock for immutable contents; reference counts and memory access still have costs |
 | Many threads update one small piece of state | `Arc<Mutex<T>>` with short critical sections | Simple, correct; measure before anything fancier |
 | Readers vastly outnumber a rare writer and read sections are long | `RwLock<T>` as a candidate | Only a benchmark decides whether it beats `Mutex` |
 | A counter, a flag, a sequence number | Atomic integer or `AtomicBool` | No lock, no blocking |
@@ -37,7 +37,7 @@ Examples compile on stable Rust 1.80 or later with edition 2024 unless a version
 
 Crate choices for each row (`rayon`, `crossbeam`, async runtimes, sharded maps, lock replacements) are in [Choosing a Parallelism Library](#choosing-a-parallelism-library).
 
-When `Arc<Mutex<T>>` starts appearing on most types, the ownership tree is missing: give the data one owning thread or task and let others send messages to it. The Comprehensive Rust course frames it as channels for transfer, shared state only when data must truly be shared.
+Widespread `Arc<Mutex<T>>` can indicate unclear ownership, but it can also represent genuinely shared mutable state. An owning task with message passing suits serialized updates; shared state suits overlapping access when its synchronization and lifetime are deliberate.
 
 ## Threads: spawn, scope, Builder
 
@@ -117,10 +117,11 @@ fn bounded_pipeline(items: Vec<String>) -> usize {
 
 | Types | `Send` | `Sync` | Reason |
 |---|---|---|---|
-| Primitives, `String`, `Vec<T>`, `Box<T>`, `Option<T>`, tuples and arrays of such types | yes | yes | Plain data |
+| Primitives and String | yes | yes | Transfer and shared access are supported |
+| Vec<T>, Box<T>, Option<T>, arrays and tuples | if their elements/fields are Send | if their elements/fields are Sync | A container does not make its payload thread-safe |
 | `Arc<T>` (`T: Send + Sync`), `Mutex<T>` (`T: Send`), `RwLock<T>` (`T: Send + Sync`), atomics | yes | yes | Synchronized internally |
-| `mpsc::Sender<T>` (1.72+), `SyncSender<T>` | yes | yes | Internally synchronized |
-| `mpsc::Receiver<T>`, `Cell<T>`, `RefCell<T>`, `OnceCell<T>` | yes | no | Unsynchronized interior mutability; fine to move, not to share |
+| `mpsc::Sender<T>` (1.72+), `SyncSender<T>` | if T: Send | if T: Send | Messages move between threads; sender access is synchronized |
+| `mpsc::Receiver<T>`, `Cell<T>`, `RefCell<T>`, `OnceCell<T>` | if T: Send | no | Transfer is different from concurrent shared access |
 | `MutexGuard<T>`, `RwLockReadGuard<T>` | no | yes (if `T: Sync`) | Must be released on the locking thread |
 | `Rc<T>`, `rc::Weak<T>` | no | no | Non-atomic reference count |
 | `*const T`, `*mut T` | no | no | The compiler cannot know what the pointer protects |
@@ -307,7 +308,7 @@ Atomics provide lock-free counters, flags, and the building blocks of locks. Rus
 | `Release` | stores and read-modify-write | Writes before this store become visible to a thread that `Acquire`-loads the stored value |
 | `Acquire` | loads and read-modify-write | Reads after this load see everything before the matching `Release` store |
 | `AcqRel` | read-modify-write | Both, for operations that read and write (`fetch_add`, `compare_exchange`) |
-| `SeqCst` | any | `Acquire`/`Release` plus one global order of all `SeqCst` operations; needed only when a proof depends on that total order |
+| `SeqCst` | any | `Acquire`/`Release` plus one global order of all `SeqCst` operations; useful when the protocol relies on that order; does not repair a flawed protocol |
 
 ```rust
 use std::sync::atomic::{AtomicBool, AtomicU32, AtomicU64, Ordering};
@@ -316,7 +317,7 @@ static REQUESTS: AtomicU64 = AtomicU64::new(0);
 
 fn count_request() -> u64 {
     // Relaxed: nothing else is published through this counter.
-    REQUESTS.fetch_add(1, Ordering::Relaxed) + 1
+    REQUESTS.fetch_add(1, Ordering::Relaxed).wrapping_add(1)
 }
 
 static STATS: [AtomicU64; 4] = [const { AtomicU64::new(0) }; 4];
@@ -339,19 +340,21 @@ fn read_stats() -> Option<[u64; 4]> {
 fn saturating_increment(counter: &AtomicU32, max: u32) -> Result<u32, u32> {
     // Compare-and-swap loop; returns the previous value on success, the current value on failure.
     counter.fetch_update(Ordering::AcqRel, Ordering::Acquire, |current| {
-        (current < max).then_some(current + 1)
+        (current < max).then(|| current + 1)
     })
 }
 ```
 
-Happens-before relationships you can rely on (from Rust Atomics and Locks): everything in a thread before `spawn` happens-before the spawned thread's body; the body happens-before `join` returns; unlocking a mutex happens-before the next lock of that mutex; an `Acquire` load that reads a `Release` store's value happens-after everything before that store.
+The publication example assumes one initialization before readers consume the data; repeated writers need a protocol that preserves snapshot consistency. The bounded increment uses lazy `then` so the addition is evaluated only below the bound, including when the current value is `u32::MAX`.
 
-Misconceptions the same book refutes:
+Synchronization relationships: everything in a thread before `spawn` happens-before the spawned thread's body; the body happens-before `join` returns; unlocking a mutex happens-before the next lock of that mutex; an `Acquire` load that reads a `Release` store's value happens-after everything before that store.
+
+Memory-ordering pitfalls:
 
 - Stronger ordering does not make writes visible sooner; the model "doesn't say anything about timing at all". `Relaxed` stores are not delayed.
 - Disabling optimizations or running on an in-order CPU does not remove the need for ordering; the compiler still reorders, and caches still reorder visibility.
 - `Relaxed` is not free when several cores write the same cache line; the contention is the cost, not the instruction.
-- `SeqCst` is not "the safe default": it is correct wherever a weaker ordering is correct, but it claims a global order the algorithm rarely needs and hides which operations synchronize. Treat it "as a warning sign" in review.
+- `SeqCst` supplies a single total order for sequentially consistent operations in addition to their acquire/release effects. It is a reasonable conservative choice when that order is useful; weaker orderings require an argument about the protocol's synchronization. Strong ordering alone does not make a multi-step algorithm correct.
 - There is no `Release` load and no `Acquire` store; `SeqCst` cannot manufacture one.
 
 Portability: `AtomicU64`/`AtomicI64` are absent on some 32-bit targets; gate with `#[cfg(target_has_atomic = "64")]`. All std atomics are lock-free where present, not necessarily wait-free. Since 1.95 `Atomic*::update`/`try_update` wrap the compare-and-swap loop.
@@ -375,263 +378,42 @@ CPU-bound pools use about one thread per core; blocking-I/O pools are sized by c
 
 ## Async Boundary
 
-Rust has no built-in runtime: "a runtime is just another crate". Futures are inert until polled; nothing runs without an executor. This guide covers the language-level rules; task spawning, timers, and I/O types come from the runtime's documentation.
+Choose the execution model, admission limits, cancellation ownership, and shutdown policy together. [Async and parallel execution](async-and-parallel-execution.md) contains the runtime comparison and a bounded task example.
 
-- Never block the executor. `std::thread::sleep`, synchronous file or socket I/O, and long CPU loops inside `async fn` stall every task on that worker. Use the runtime's async equivalents or move the work to its blocking pool.
-- Do not hold a `std::sync::MutexGuard` (or a `RefCell` borrow) across `.await`: the task may be suspended while holding it, blocking other tasks, and on a multi-threaded runtime the future would not be `Send`. Clippy `await_holding_lock` and `await_holding_refcell_ref` (suspicious) flag it. Take the lock, copy what you need, drop the guard, then await; or use the runtime's async mutex when the lock must span an await.
-- Cancellation is `drop`: a future dropped at an `.await` never resumes. Every await point is a possible exit, so avoid half-applied state across awaits, use guards for cleanup, and treat `select!` losers as cancelled work.
-- Tasks on work-stealing runtimes need `Send` futures: values held across `.await` must be `Send`, which excludes `Rc`, `RefCell` borrows, and lock guards.
-- `async fn` in traits (1.75) is not dyn-compatible without boxing; return `Pin<Box<dyn Future<Output = T> + Send + '_>>` or use the `async_trait` crate for trait objects. Async closures and `AsyncFn` bounds are stable since 1.85.
-- `Pin` promises that a value "must remain, valid, at that same address in memory, until its `drop` handler is called"; self-referential futures rely on it. Application code rarely needs `Pin` beyond `Box::pin` and `pin!`.
-
-```rust,ignore
-// Blocking work inside an async context, Tokio shown as one runtime's spelling.
-async fn checksum_file(path: std::path::PathBuf) -> std::io::Result<u32> {
-    // Wrong: blocks the executor thread while the OS reads the file.
-    // let bytes = std::fs::read(&path)?;
-
-    // Right: the runtime's blocking pool runs the synchronous read.
-    let bytes = tokio::task::spawn_blocking(move || std::fs::read(&path))
-        .await
-        .expect("blocking task panicked")?;
-    Ok(bytes.iter().map(|&b| u32::from(b)).sum())
-}
-```
+- Long CPU loops, blocking I/O, and synchronous waits can monopolize an executor worker. Task submission and blocking for completion are different operations.
+- Keep synchronous lock guards and RefCell borrows out of awaits that allow competing access. Local tasks remove some Send constraints, not the deadlock/reentrancy risk.
+- Dropping an owned future stops polling it. Dropping a Tokio/std JoinHandle detaches its task/thread; it does not stop that work. Started spawn_blocking work cannot be aborted by dropping or aborting its handle.
+- Read the cancellation-safety contract of operations used in select loops; an externally owned future borrowed into a branch can survive selection.
+- Desktop runtime assumptions do not apply to browser event loops or embedded executors. Async does not inherently require std.
 
 ## Choosing a Parallelism Library
 
-Start with `std`; add a crate only for a capability `std` lacks. Since 1.63 `std` has scoped threads, since 1.67 its `mpsc` channel is the `crossbeam-channel` design, and since 1.70/1.80 it has `OnceLock`/`LazyLock`, so several crates that used to be mandatory are now optional. Everything in this section is ecosystem material: verify the crate's current documentation for exact APIs, and treat any "faster" claim as `needs benchmark`.
+Use the [curated library policy](library-selection.md) and [execution-model comparison](async-and-parallel-execution.md). Start from the simplest design meeting the requirement, including the cost of maintaining std-only scheduling or synchronization code.
 
-| Work shape | `std` answer | Crate when `std` is not enough | Why the crate |
-|---|---|---|---|
-| Split a collection across cores and reduce | `thread::scope` over `chunks` | `rayon` (`par_iter`, `par_chunks`, `par_sort`, `join`, `scope`) | Work stealing balances uneven work and recursive splits; no hand-rolled pool |
-| Pool of independent CPU tasks | `thread::scope` or `spawn` per batch | `rayon::ThreadPool`, `rayon::spawn` | Reusable pool with a fixed size |
-| Pipeline with one consumer | `mpsc::sync_channel` | none | Bounded `std` channel already gives backpressure |
-| Several consumers, waiting on many channels, timeouts | `Arc<Mutex<Receiver>>`, polling loops | `crossbeam-channel` (`select!`, `tick`, `after`, cloneable `Receiver`) or `flume` (same, plus async methods) | `std` has no stable multi-consumer channel or `select` |
-| Thousands of concurrent I/O operations | none | `tokio` (default in the ecosystem), `smol` (small footprint); `async-std` is discontinued and its maintainers point to `smol` | Multiplexes many waiting operations on a few threads |
-| CPU-heavy or blocking work from async code | none | `tokio::task::spawn_blocking` for blocking calls; a `rayon` pool bridged with `oneshot` for parallel compute | The executor must never block |
-| Read-mostly shared configuration | `Arc<T>` swapped behind a `Mutex` | `arc-swap` (`ArcSwap<T>`: lock-free `load`, atomic `store`) | Readers never contend with the rare writer |
-| Concurrent map with many writers from many threads | `Mutex<HashMap>` or hand-made sharding | `dashmap` (sharded `RwLock` map) | Per-shard locking; check its deadlock rules before use |
-| Lock contention measured under `std::sync` | keep `Mutex`, shrink critical sections | `parking_lot` (`Mutex`, `RwLock`, `Condvar`; no poisoning, smaller, fair unlocking) | The Performance Book: "measure before switching to `parking_lot`" |
-| Lock-free queues, memory reclamation for lock-free structures | none | `crossbeam-queue` (`ArrayQueue`, `SegQueue`), `crossbeam-epoch` | Only with a demonstrated need and Miri/`loom` coverage |
-| 64-bit atomics on a 32-bit target, `no_std` synchronization | `cfg(target_has_atomic)` fallbacks | `portable-atomic`; `spin`, `critical-section`, `heapless` on embedded targets | Polyfills and interrupt-safe primitives |
-| Testing lock-free protocols | many-thread tests, Miri | `loom` | Exhaustive interleaving model checking of `loom::sync` types |
+| Need | Starting choice | Reason to change |
+|---|---|---|
+| A small borrowed batch | std::thread::scope | Rayon can manage uneven/recursive CPU work and reusable pools |
+| One-consumer bounded pipeline | std::sync::mpsc::sync_channel | Crossbeam adds multiple consumers and channel selection; flume adds sync/async bridging |
+| Many I/O waiters | Tokio or smol according to integrations | Existing runtime, host event loop, or no_std may dictate another execution model |
+| Shared map | `Mutex<HashMap<..>>` with a small critical section | Measured contention may justify partitioning, ownership transfer, or an eligible concurrent map |
+| Rarely replaced immutable configuration | Arc snapshot with a short synchronization boundary | arc-swap can provide a specialized publication mechanism |
 
-Selection rules:
+Third-party shared-state choices are conditional: parking_lot changes locking/poisoning behavior, dashmap uses shard locks with guard/deadlock constraints, and arc-swap serves snapshot publication. They are not interchangeable performance upgrades. Keep callbacks and unrelated waits outside guards; understand the chosen crate's lock order and snapshot consistency.
 
-1. Shape first: data parallelism (`rayon`), message passing (`std` or `crossbeam` channels), I/O concurrency (an async runtime). A service usually needs an async runtime for I/O plus `spawn_blocking` or a compute pool for CPU work; a batch tool usually needs `rayon` and nothing async.
-2. Blocking and async do not mix inside one thread: `rayon`, `std::thread`, and `crossbeam` block; calling them from an async task blocks that executor thread. Bridge with `spawn_blocking` or a `oneshot` channel.
-3. Ecosystem decides the runtime: `hyper`, `axum`, `tonic`, `reqwest`, and most database drivers assume `tokio`. A library that must stay runtime-agnostic uses the `futures` traits and feature-flags its runtime integrations.
-4. Prefer the `std` type until a measurement or a missing capability says otherwise; every crate here adds compile time and an upgrade surface.
-5. Portability: `rayon` and async runtimes need `std`; embedded targets use `heapless` queues, `critical-section`, and `portable-atomic`.
+Crossbeam's queues and epoch reclamation are building blocks for specialized structures; prefer an ordinary lock or channel when it meets the contract. For custom atomic protocols, loom can explore modeled interleavings and Miri can detect some execution violations; neither proves arbitrary lock-free code correct.
 
-### rayon
-
-```rust,deps
-use rayon::prelude::*;
-use rayon::ThreadPoolBuilder;
-
-fn total_len(docs: &[String]) -> usize {
-    docs.par_iter().map(|doc| doc.len()).sum()
-}
-
-fn build_compute_pool(threads: usize) -> rayon::ThreadPool {
-    ThreadPoolBuilder::new()
-        .num_threads(threads)
-        .thread_name(|index| format!("compute-{index}"))
-        .build()
-        .expect("thread pool")
-}
-
-fn sorted_on(pool: &rayon::ThreadPool, mut values: Vec<u64>) -> Vec<u64> {
-    pool.install(|| {
-        values.par_sort_unstable();
-        values
-    })
-}
-```
-
-- `par_iter()` on slices, `Vec`, `HashMap`, ranges, and other indexed collections; `par_bridge()` adapts a serial iterator at a cost. `rayon::join(a, b)` and `rayon::scope` express recursive fork-join.
-- The global pool is sized from `available_parallelism`; configure it once with `ThreadPoolBuilder::build_global`, or build a dedicated pool and run work inside `pool.install`.
-- CPU-bound closures only. Blocking I/O or a lock wait inside a rayon task idles a pool thread and can deadlock when the pool is saturated.
-- Splitting has overhead: small inputs run slower in parallel. Parallelize above a size threshold, tune granularity with `with_min_len`, and measure.
-- Floating-point reductions change association order, so sums differ between runs and thread counts; use integer accumulation or accept the non-determinism explicitly.
-- From `tokio`, run rayon work through `spawn_blocking` or a dedicated pool and return the result over a `oneshot` channel (example below).
-
-### crossbeam
-
-```rust,deps
-use crossbeam_channel::{bounded, select, tick, Receiver, Sender};
-use std::time::Duration;
-
-fn worker(jobs: Receiver<u32>, results: Sender<u32>) {
-    let heartbeat = tick(Duration::from_secs(5));
-    loop {
-        select! {
-            recv(jobs) -> job => match job {
-                Ok(job) => {
-                    let _ = results.send(job * 2);
-                }
-                Err(_) => break, // every Sender dropped: shut down
-            },
-            recv(heartbeat) -> _ => {
-                // periodic housekeeping while idle
-            }
-        }
-    }
-}
-
-fn start_workers(count: usize) -> (Sender<u32>, Receiver<u32>) {
-    let (job_tx, job_rx) = bounded::<u32>(64);
-    let (result_tx, result_rx) = bounded::<u32>(64);
-    for _ in 0..count {
-        let (jobs, results) = (job_rx.clone(), result_tx.clone()); // Receiver is Clone: multi-consumer
-        std::thread::spawn(move || worker(jobs, results));
-    }
-    (job_tx, result_rx)
-}
-```
-
-- `crossbeam-channel`: `select!` over several receivers and senders, `tick`/`after` timer channels, `bounded(0)` rendezvous, cloneable receivers for worker pools. `flume` offers the same shape with `send_async`/`recv_async` when one side is async.
-- `crossbeam-utils`: `CachePadded<T>` to keep hot atomics on separate cache lines, `AtomicCell<T>` for small `Copy` values; its scoped threads are superseded by `std::thread::scope`.
-- `crossbeam-queue` and `crossbeam-epoch` are for building lock-free structures, not for application code that a `Mutex<VecDeque>` already serves.
-
-### tokio and other async runtimes
-
-```rust,deps
-use std::sync::Arc;
-use tokio::sync::{oneshot, Semaphore};
-use tokio::task::JoinSet;
-
-async fn parallel_sum(input: Vec<u64>) -> u64 {
-    // Heavy compute goes to rayon; the async task only waits for the answer.
-    let (tx, rx) = oneshot::channel();
-    rayon::spawn(move || {
-        use rayon::prelude::*;
-        let sum: u64 = input.par_iter().sum();
-        let _ = tx.send(sum); // Err means the awaiting task was cancelled: nothing to do
-    });
-    rx.await.expect("compute task dropped the sender")
-}
-
-async fn file_len(path: std::path::PathBuf) -> std::io::Result<u64> {
-    // Blocking std I/O runs on the runtime's blocking pool, not on the async worker threads.
-    tokio::task::spawn_blocking(move || std::fs::metadata(path).map(|m| m.len()))
-        .await
-        .expect("blocking task panicked")
-}
-
-async fn process_all(items: Vec<String>, max_in_flight: usize) -> Vec<usize> {
-    let limit = Arc::new(Semaphore::new(max_in_flight));
-    let mut tasks = JoinSet::new();
-    for item in items {
-        let permit = Arc::clone(&limit).acquire_owned().await.expect("semaphore closed");
-        tasks.spawn(async move {
-            let _permit = permit; // released when the task finishes
-            item.len() // stand-in for an awaited request
-        });
-    }
-    let mut results = Vec::new();
-    while let Some(joined) = tasks.join_next().await {
-        results.push(joined.expect("task panicked"));
-    }
-    results
-}
-```
-
-- Runtime flavors: `multi_thread` (work stealing; spawned futures must be `Send + 'static`) and `current_thread` (single thread; `LocalSet` runs `!Send` tasks).
-- `tokio::sync::Mutex` only when a guard must be held across an `.await`; for short sections the `std` (or `parking_lot`) mutex is correct and cheaper, as the tokio documentation itself advises.
-- Channels by purpose: `mpsc` (bounded for backpressure), `oneshot` (one result), `broadcast` (fan-out; slow receivers lag and drop), `watch` (latest value, ideal for configuration), plus `Semaphore` to cap concurrency and `Notify` for wakeups.
-- `JoinSet` tracks a dynamic group of tasks; `select!` drops the losing branches, so every future in it must be cancellation-safe (no half-applied state at an `.await`).
-- `smol` provides a smaller runtime built from `async-executor`, `async-io`, and `blocking`; `async-std` is discontinued. Library authors code against the `futures` traits and let applications pick the runtime.
-
-### Shared-state crates
-
-```rust,deps
-use arc_swap::ArcSwap;
-use dashmap::DashMap;
-use parking_lot::Mutex;
-use std::sync::Arc;
-
-struct Config {
-    rate_limit: u32,
-}
-
-struct Service {
-    config: ArcSwap<Config>,         // read-mostly: lock-free loads, atomic replacement
-    sessions: DashMap<u64, String>,  // many writers from many threads
-}
-
-static RECENT: Mutex<Vec<u32>> = Mutex::new(Vec::new()); // parking_lot: const new, no poisoning
-
-impl Service {
-    fn new(config: Config) -> Self {
-        Service { config: ArcSwap::from_pointee(config), sessions: DashMap::new() }
-    }
-
-    fn rate_limit(&self) -> u32 {
-        self.config.load().rate_limit // no clone of Config, no lock
-    }
-
-    fn reload(&self, next: Config) {
-        self.config.store(Arc::new(next)); // readers see the old or the new value, never a mix
-    }
-
-    fn touch(&self, id: u64, user: &str) {
-        self.sessions
-            .entry(id)
-            .and_modify(|current| current.clear())
-            .or_insert_with(|| user.to_owned());
-        RECENT.lock().push(id as u32);
-    }
-
-    fn user(&self, id: u64) -> Option<String> {
-        // Clone out and drop the Ref immediately: holding it while calling into the same map
-        // again can deadlock on the shard lock, and it must never live across an .await.
-        self.sessions.get(&id).map(|entry| entry.value().clone())
-    }
-}
-```
-
-- `arc-swap`: `load()` returns a cheap guard; `store` swaps the whole `Arc`; `rcu` performs read-copy-update. Fits configuration, routing tables, feature flags.
-- `dashmap`: sharded map with a `HashMap`-like API; a `Ref`/`RefMut` holds a shard lock, so never hold one while touching the same map again or across `.await`; iteration locks shards one at a time. Not a replacement for a `Mutex<HashMap>` when the map is small or rarely contended.
-- `parking_lot`: drop-in `Mutex`/`RwLock`/`Condvar` with no poisoning (a panic while locked leaves the data as is), one-byte mutexes, `ReentrantMutex`, and fair unlocking. Adopt only after measuring contention with `std::sync`.
-
-### Embedded and testing crates
-
-- `portable-atomic` supplies `AtomicU64`, `AtomicU128`, and float atomics on targets that lack them, with a critical-section fallback on single-core chips.
-- `spin` gives spinlocks for `no_std`; on a preemptive OS a spinlock in user space is almost always the wrong choice.
-- `heapless` provides fixed-capacity queues (`spsc::Queue`) and maps without allocation; `critical-section` abstracts interrupt masking for interrupt-safe sharing.
-- `loom` runs a test body under every interleaving of its `loom::sync` replacements (`cfg(loom)` swaps the imports); use it for anything hand-built from atomics, alongside Miri for data-race detection.
-
-```rust,ignore
-#[cfg(loom)]
-mod loom_tests {
-    use loom::sync::atomic::{AtomicBool, Ordering};
-    use loom::sync::Arc;
-
-    #[test]
-    fn flag_is_published() {
-        loom::model(|| {
-            let ready = Arc::new(AtomicBool::new(false));
-            let writer = Arc::clone(&ready);
-            loom::thread::spawn(move || writer.store(true, Ordering::Release));
-            let _seen = ready.load(Ordering::Acquire); // loom explores both outcomes
-        });
-    }
-}
-```
+For interrupt sharing and missing atomics, follow the actual target/HAL synchronization contract in [embedded guidance](embedded-and-no-std.md). Do not replace it with a spinlock or unsafe Sync declaration solely to satisfy the type checker.
 
 ## Deadlocks and Liveness
 
-Deadlocks and leaks are not undefined behavior (the Reference lists them as safe), but they are bugs. Rules that prevent most of them:
+Deadlocks and leaks are not undefined behavior but they are bugs. Rules that prevent most of them:
 
 - Acquire locks in one global order; document it where two locks are ever held together.
-- Never call user callbacks, `Drop` implementations of foreign types, or async awaits while holding a lock.
+- Avoid callbacks and foreign destructors while holding locks. Do not suspend with a synchronous guard that competing work needs; an async guard across await requires a deliberate locking design.
 - Prefer `try_lock` with a fallback where liveness matters more than throughput.
 - Use channels or a single owner instead of two locks that reference each other.
 - Every `Condvar::wait` sits in a predicate loop; every waiter has a notifier that runs after the predicate changes.
-- The `parking_lot` crate offers `Mutex`/`RwLock` without poisoning and with different fairness; the Performance Book advises to "measure before switching" because std primitives have improved.
+- `parking_lot` offers Mutex/RwLock variants with different poisoning and fairness behavior. Compare the relevant contention pattern before changing synchronization libraries; the replacement also changes semantics.
 
 ## Common Mistakes
 
@@ -665,13 +447,10 @@ Deadlocks and leaks are not undefined behavior (the Reference lists them as safe
 
 Per-release details live in [the versions index](../versions/index.md).
 
-## Review Checklist
+## Practical Boundaries
 
-- Each shared value has a reason to be shared; transfers use channels or moves.
-- Guards are named, short-lived, and never cross I/O, callbacks, or `.await`.
-- Poisoning is handled deliberately (recover or propagate) rather than unwrapped by habit.
-- `RwLock` choices and `parking_lot` replacements are backed by a benchmark.
-- Every atomic's ordering is justified in a comment; `SeqCst` has a reason.
-- Channel shutdown relies on sender/receiver drop, and bounded channels exist where backpressure matters.
-- Async code never blocks the executor and never holds sync guards across awaits.
-- Tests run under Miri for lock-free code and with more threads than cores for lock code.
+A synchronization primitive protects a particular access protocol. Guard lifetime, lock ordering, callback reentrancy, and panic recovery affect that protocol independently of the primitive's throughput. RwLock is useful for some read-heavy access patterns, but its scheduling and contention costs still matter.
+
+Atomic ordering describes synchronization between operations; it does not turn a sequence of updates into a transaction. Queues and task limits also bound different resources: item count, payload bytes, waiting work, and retained results may each need a limit. Shutdown behavior follows ownership of senders, workers, and in-progress side effects.
+
+Interleaving exploration and Miri can exercise supported synchronization behavior; neither replaces the protocol's argument or establishes every application execution. See [execution patterns](async-and-parallel-execution.md) for async-specific boundaries.

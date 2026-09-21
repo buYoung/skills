@@ -2,9 +2,11 @@
 
 ## Contents
 
-- [Ownership Is a Tree](#ownership-is-a-tree)
+- [Ownership, Borrowing, and Resource Lifetimes](#ownership-borrowing-and-resource-lifetimes)
+- [Choose an Ownership Structure](#choose-an-ownership-structure)
 - [Parameter and Return Types](#parameter-and-return-types)
 - [Cow for Sometimes-Owned Data](#cow-for-sometimes-owned-data)
+- [Borrow While Parsing, Own at a Retention Boundary](#borrow-while-parsing-own-at-a-retention-boundary)
 - [Clones: Deliberate, Not Defensive](#clones-deliberate-not-defensive)
 - [Shared Ownership and Cycles](#shared-ownership-and-cycles)
 - [Interior Mutability](#interior-mutability)
@@ -23,13 +25,23 @@
 - [Async Functions in Traits](#async-functions-in-traits)
 - [Common Mistakes](#common-mistakes)
 - [Availability by Version](#availability-by-version)
-- [Review Checklist](#review-checklist)
+- [Practical Boundaries](#practical-boundaries)
 
-Examples compile on stable Rust 1.80 or later with edition 2024 unless a version is stated. Thread-shared state continues in [concurrency](concurrency.md); public-surface rules in [API and crate design](api-and-crate-design.md).
+Examples use stable APIs unless marked otherwise; see [compatibility](../../SKILL.md#compatibility). Thread-shared state continues in [concurrency](concurrency.md); public-surface rules in [API and crate design](api-and-crate-design.md).
 
-## Ownership Is a Tree
+## Ownership, Borrowing, and Resource Lifetimes
 
-"Every Rust value has precisely one owner at all times." A design that compiles easily has a tree: the application owns subsystems, subsystems own their state, functions borrow downward for the duration of a call. Borrows that must outlive the call, values with two owners, and back-references are where `Rc`, `Arc`, `RefCell`, lifetimes on structs, and `clone()` start to appear. Draw the tree before choosing any of those tools; most of the time the fix is to move the data to the component that actually owns it, or to pass a borrowed view down instead of storing it.
+Ownership determines responsibility for a value and its resources. Moving a `String` transfers that responsibility without cloning its text buffer. `Copy` permits implicit duplication; `Clone` is an explicit, type-defined operation whose cost and sharing behavior depend on the implementation. Ownership transfer, payload copying, and heap allocation are separate concepts.
+
+A reference provides access without taking ownership. Shared references permit shared access, with mutation available only through appropriate interior-mutability abstractions. An exclusive borrow provides mutable access while preventing conflicting accesses for the borrow's duration. Borrows of separate fields or disjoint slices can coexist when their separation is established.
+
+Lifetime annotations describe relationships between references; they do not keep an owner alive or extend a local variable's lifetime. Borrowing is useful for temporary access or a deliberate view into a longer-lived owner. Owned results fit freshly created data and independent lifetimes. A struct containing references also makes those lifetime relationships part of its API.
+
+Resource lifetime includes lock guards, files, and foreign handles as well as heap memory. RAII ties ordinary cleanup to destruction; early returns and unwinding therefore affect resource release. Process abort does not run destructors. Fallible completion, such as flushing a writer, often needs an explicit operation in addition to `Drop`. See [RAII](#raii-guards-and-drop) and [memory allocation](memory-and-allocation.md#storage-allocation-and-release).
+
+## Choose an Ownership Structure
+
+A clear ownership hierarchy is a useful starting point: components own state and functions borrow it for bounded work. Shared graphs, caches, and retained views can legitimately use Rc, Arc, interior mutability, indices, or arena handles. Choose those mechanisms from lifetime and mutation requirements rather than forcing every design into a tree or treating every clone as a defect. See [allocation](memory-and-allocation.md) for storage costs and [module boundaries](modules-and-crate-boundaries.md) for component ownership.
 
 Questions that settle most designs:
 
@@ -40,7 +52,7 @@ Questions that settle most designs:
 
 ## Parameter and Return Types
 
-Take the least specific borrowed view that does the job, and take ownership only when the function stores the value.
+Borrow when the operation only needs access; take ownership when it stores, consumes, transforms, or transfers the value. A small Copy value can simply be passed by value.
 
 | Situation | Parameter type | Accepts |
 |---|---|---|
@@ -50,7 +62,7 @@ Take the least specific borrowed view that does the job, and take ownership only
 | Mutate in place | `&mut [T]`, `&mut String` | the owner's exclusive borrow |
 | Store the value in `self` | `String`, `Vec<T>`, `PathBuf` (owned) or `impl Into<String>` | owned values; `impl Into` also accepts `&str` at the cost of a copy |
 | Call a callback once | `impl FnOnce(..)` | closures that move captured state |
-| Read a large `Copy` value | by value, not `&` | `Copy` types smaller than a pointer or two |
+| Read a small Copy value | Usually by value | For large Copy values, consider access patterns and copying cost |
 
 ```rust
 use std::path::Path;
@@ -84,7 +96,7 @@ impl Service {
 }
 ```
 
-`&String`, `&Vec<T>`, and `&Box<T>` as parameters add an indirection and reject callers that hold a `&str`, an array, or a boxed slice; Clippy `ptr_arg` (style) reports them. The API Guidelines' C-CALLER-CONTROL principle: the caller decides where data is copied or placed, so a function that only reads should not force an allocation.
+Parameters such as `&String` and `&Vec<T>` require a particular owning representation even when the function needs only a string or slice view. Clippy `ptr_arg` (style) identifies common cases where a borrowed view would accept more callers. Ownership-specific operations such as changing a Vec's capacity still need that concrete type. A borrowed-view API leaves copying and storage choices to the caller.
 
 Return borrowed data when it lives inside `self` or an argument and the caller can hold the borrow; return owned data when it is freshly computed. A returned `&str` tied to a local `String` does not compile, which is the borrow checker telling you the value needs an owner.
 
@@ -121,6 +133,39 @@ impl<'a> Label<'a> {
 ```
 
 `Cow<'a, [T]>` and `Cow<'a, Path>` work the same way. `to_mut()` converts to the owned variant on demand.
+
+## Borrow While Parsing, Own at a Retention Boundary
+
+Borrowed views avoid copying data while its input owner is already available. A long-lived cache or independent task may instead need a small owned result so a large input allocation can be released. Make that transition explicit in the API rather than extending lifetimes throughout unrelated layers.
+
+```rust
+#[derive(Debug, PartialEq, Eq)]
+pub struct SettingView<'a> { pub key: &'a str, pub value: &'a str }
+#[derive(Debug, PartialEq, Eq)]
+pub struct Setting { pub key: String, pub value: String }
+
+pub fn parse_setting(line: &str) -> Option<SettingView<'_>> {
+    let (key, value) = line.split_once('=')?;
+    let key = key.trim();
+    if key.is_empty() { return None; }
+    Some(SettingView { key, value: value.trim() })
+}
+
+impl SettingView<'_> {
+    pub fn into_owned(self) -> Setting {
+        Setting { key: self.key.to_owned(), value: self.value.to_owned() }
+    }
+}
+
+pub fn retained_setting(config: &str, wanted: &str) -> Option<Setting> {
+    config.lines().filter_map(parse_setting)
+        .find(|entry| entry.key == wanted).map(SettingView::into_owned)
+}
+```
+
+This parser treats a malformed line as absent from a search; a configuration validator needing line-specific failures should return a structured Result instead. The view's fields point into config. The owned setting contains only the selected strings and can outlive config, allowing the caller to drop a large input. Keeping Arc<String> plus offsets would avoid those small copies while retaining the entire allocation; that can be appropriate when many views share most of the input.
+
+A self-referential struct containing both a String and references into itself is not created merely by adding a lifetime parameter. Owned storage plus checked offsets/indices can represent that relationship without internal references. Mutation, reallocation, and UTF-8 character boundaries still constrain how those offsets may be used. Pin is not a general repair for a poorly chosen ownership boundary.
 
 ## Clones: Deliberate, Not Defensive
 
@@ -190,11 +235,11 @@ Interior mutability lets a `&T` mutate; it is the escape hatch for caches, count
 
 | Type | For | Cost and rules | Threads |
 |---|---|---|---|
-| `Cell<T>` | `Copy` values (counters, flags) | `get`/`set`/`update`; no borrow tracking | `Send`, `!Sync` |
-| `RefCell<T>` | Non-`Copy` values | `borrow`/`borrow_mut` checked at runtime; a second `borrow_mut` panics | `Send`, `!Sync` |
+| `Cell<T>` | Move/replace values; Copy permits get | No runtime borrow tracking | Send if T: Send; not Sync |
+| `RefCell<T>` | Runtime-checked borrowing | Conflicting borrows panic; try_borrow variants report failure | Send if T: Send; not Sync |
 | `OnceCell<T>` | Set once, read many | `get_or_init`; initializer panic leaves it empty | `!Sync` |
 | `LazyCell<T, F>` (1.80) | Lazily computed value | deref initializes | `!Sync` |
-| `Mutex<T>`, `RwLock<T>` | Shared mutable state across threads | blocking locks, poisoning | `Sync` when `T: Send` |
+| `Mutex<T>`, `RwLock<T>` | Shared mutable state across threads | Blocking locks, poisoning | Mutex: Sync if T: Send; RwLock additionally needs T: Sync |
 | `OnceLock<T>`, `LazyLock<T, F>` | One-time init across threads | see [concurrency](concurrency.md) | `Sync` |
 | Atomics | Counters and flags across threads | lock-free | `Sync` |
 
@@ -224,7 +269,7 @@ impl Metrics {
 }
 ```
 
-A `RefCell` borrow held across a call into unknown code is a latent panic; keep `borrow()` results in the smallest scope, and never return a `Ref`/`RefMut` from a public API. If a `RefCell` design later needs threads, every `RefCell` becomes a `Mutex` and every `Rc` an `Arc`; deciding thread-safety up front is cheaper.
+A RefCell borrow crossing unknown callbacks can cause reentrant borrow failures. Returning Ref/RefMut is possible but exposes a guard lifetime callers must understand. If sharing later crosses threads, reconsider ownership, messages, snapshots, or locks; mechanically replacing every Rc/RefCell with Arc/Mutex can preserve an unsuitable design.
 
 ## Newtypes
 
@@ -257,7 +302,7 @@ fn cancel_order(order: OrderId, requested_by: UserId) -> bool {
 }
 ```
 
-Derive `Clone`, `Copy` (for small values), `PartialEq`, `Eq`, `Hash`, `PartialOrd`, `Ord`, and `Debug` when the wrapped type has them and the semantics carry over; implement `Display` yourself. Do not derive `PartialOrd`/`Ord` for ids that have no meaningful order, and do not implement `Deref` to the inner type: the API Guidelines reserve `Deref` for smart pointers, and it would forward every method, defeating the purpose. Expose `get()`/`into_inner()` instead. Keep the field private when the type carries an invariant.
+Derive `Clone`, `Copy` (for small values), `PartialEq`, `Eq`, `Hash`, `PartialOrd`, `Ord`, and `Debug` when the wrapped type has them and the semantics carry over; implement `Display` yourself. Do not derive `PartialOrd`/`Ord` for ids that have no meaningful order, and do not implement `Deref` to the inner type: implicit access to the inner API can bypass the wrapper's intended contract. Expose `get()`/`into_inner()` instead. Keep the field private when the type carries an invariant.
 
 ## Enforce Invariants at the Boundary
 
@@ -355,7 +400,7 @@ impl Email<Sent> {
 }
 ```
 
-Typestate suits a small, fixed set of phases decided at compile time (builder stages, connection handshakes, request lifecycles). When phases are decided by runtime data, or the state set is large, use a state `enum` and return `Result` for invalid transitions; the Comprehensive Rust course notes that a runtime flag design means "Rust's type system cannot help enforce the correctness of our state transitions."
+Typestate suits a small, fixed set of phases decided at compile time (builder stages, connection handshakes, request lifecycles). When phases are decided by runtime data, or the state set is large, use a state `enum` and return `Result` for invalid transitions. Runtime transitions need explicit validation because their legal sequence is not encoded in the type.
 
 ## RAII Guards and Drop
 
@@ -399,7 +444,7 @@ impl<W: Write> Drop for Transaction<W> {
 }
 ```
 
-Rules from the API Guidelines: destructors never fail (C-DTOR-FAIL) and destructors that may block offer a non-blocking alternative (C-DTOR-BLOCK). `#[must_use]` on the guard type makes `Transaction::begin(w)?;` without a binding a warning. `mem::forget` and `ManuallyDrop` skip `Drop` without unsafety, so a guard cannot guarantee that cleanup runs; leaking is safe, it is just a bug.
+Drop cannot return an error. Provide an explicit fallible completion operation when callers need a result, and avoid unexpected blocking during destruction. `#[must_use]` on the guard type makes `Transaction::begin(w)?;` without a binding a warning. `mem::forget` and `ManuallyDrop` skip `Drop` without unsafety, so a guard cannot guarantee that cleanup runs; leaking is safe, it is just a bug.
 
 ## Drop Order Rules
 
@@ -461,7 +506,7 @@ fn close(conn: &mut Connection) -> Option<Vec<u8>> {
 
 ## Composition, Not Deref Inheritance
 
-Rust has no struct inheritance. Implementing `Deref` to a field to "inherit" its methods is an anti-pattern: every method of the inner type leaks into the outer type's API, method resolution becomes surprising, and the API Guidelines reserve `Deref` for smart pointers (C-DEREF). Compose and delegate the operations that make sense.
+Rust has no struct inheritance. Implementing `Deref` to a field to "inherit" its methods is an anti-pattern: every method of the inner type leaks into the outer type's API, method resolution becomes surprising. Deref is most predictable for pointer-like access rather than domain inheritance. Compose and delegate the operations that make sense.
 
 ```rust
 struct Engine {
@@ -502,10 +547,10 @@ Shared behavior across types goes into a trait with default methods; shared data
 
 | Need | Choose | Why |
 |---|---|---|
-| Closed set of alternatives you control | `enum` | Exhaustive `match`, no allocation, data per variant |
+| Closed set of alternatives you control | `enum` | Exhaustive `match`, inline variant storage; payloads may themselves allocate |
 | Behavior others may implement | `trait` | Open extension; the trait is the contract |
 | One concrete type per call site, hot path | generic `T: Trait` or `impl Trait` | Monomorphized and inlinable; "for each unique type that substitutes a parameter a new version of that function is generated" |
-| Heterogeneous collection, plugin boundary, smaller binary | `dyn Trait` behind `Box`, `&`, `Rc`, `Arc` | One copy of the code, vtable call, type erased |
+| Heterogeneous collection or an erased interface | `dyn Trait` behind `Box`, `&`, `Rc`, `Arc` | Dynamic dispatch can reduce type-specific code generation; pointer choice determines ownership |
 | Both open and restricted | sealed trait | Users can name and call it, cannot implement it |
 
 ```rust
@@ -535,7 +580,7 @@ impl Area for Shape {
     }
 }
 
-// Static dispatch: one instantiation per T, fully inlinable.
+// Static dispatch: specialized for T; the optimizer can inline the calls.
 fn total_area<T: Area>(items: &[T]) -> f64 {
     items.iter().map(Area::area).sum()
 }
@@ -546,11 +591,11 @@ fn total_area_dyn(items: &[Box<dyn Area>]) -> f64 {
 }
 ```
 
-Reaching for `dyn Trait` first is the pitfall the Comprehensive Rust course calls out: it trades knowledge the compiler and reader have for flexibility that may never be used, and it forces downcasts and allocations as soon as a type-specific operation is needed. Try an enum or generics first; use `dyn` when the set of types is open and heterogeneous at runtime, or when binary size matters more than the vtable call. Generic-heavy code pays in compile time and binary size; the Performance Book's `cargo llvm-lines` shows which generic functions are instantiated most.
+Use an enum for a closed set, generics for compile-time substitution, and dyn Trait for runtime heterogeneity or a deliberately erased interface. A borrowed trait object need not allocate or require downcasting. Generic instantiations can improve optimization while increasing code size/build time; dynamic dispatch has indirection and can reduce duplication. Choose according to extension requirements and measured costs.
 
 ## Dyn Compatibility
 
-A trait is usable as `dyn Trait` only when every method is callable through a vtable: no generic methods, no `Self` by value in arguments or returns, no associated constants, and no `where Self: Sized` on the trait itself. Methods that break the rule can opt out individually with `where Self: Sized`.
+A dyn-compatible trait cannot require Self: Sized or define associated constants. Its dispatchable methods need a supported receiver and cannot have type-generic parameters, opaque impl Trait/async returns, or use Self in other argument/return positions. Methods marked where Self: Sized are excluded from dynamic dispatch and can coexist with a dyn-compatible interface. Ordinary associated types are possible when specified on the trait object, such as dyn Iterator<Item = u8>; generic associated types prevent dyn compatibility.
 
 ```rust
 trait Storage {
@@ -571,7 +616,7 @@ fn read_all(stores: &[Box<dyn Storage>], key: &str) -> Vec<Vec<u8>> {
 }
 ```
 
-Since 1.86, `&dyn Sub` coerces to `&dyn Super` (trait upcasting), which removes the `fn as_super(&self) -> &dyn Super` boilerplate. Keep public traits dyn-compatible when trait objects are plausible for users (C-OBJECT); adding a generic method later without `where Self: Sized` is a breaking change for `dyn` users.
+Since 1.86, `&dyn Sub` coerces to `&dyn Super` (trait upcasting), which removes the `fn as_super(&self) -> &dyn Super` boilerplate. Keep public traits dyn-compatible when trait objects are plausible for users; adding a generic method later without `where Self: Sized` is a breaking change for `dyn` users.
 
 ## Sealed and Extension Traits
 
@@ -627,7 +672,7 @@ Define an extension trait only when method syntax reads clearly better than a fr
 
 ## Builders and Optional Configuration
 
-For a type with several optional settings or multiple construction paths, a builder keeps the constructor signature stable and readable (C-BUILDER). For a few fields with sensible defaults, `Default` plus struct update syntax is enough.
+For a type with several optional settings or multiple construction paths, a builder keeps the constructor signature stable and readable. For a few fields with sensible defaults, `Default` plus struct update syntax is enough.
 
 ```rust
 #[derive(Debug, Clone)]
@@ -714,14 +759,52 @@ Inside the crate the attribute has no effect. Public error enums are the most co
 
 ## Async Functions in Traits
 
-`async fn` in traits is stable since 1.75. Two limits shape designs: the returned future captures all in-scope lifetimes (borrowing patterns across the call may not be expressible), and a trait with `async fn` is not dyn-compatible without boxing. For `dyn` use, return `Pin<Box<dyn Future<Output = T> + Send + '_>>` explicitly or use the `async_trait` crate, which performs that boxing with a macro. Specify `Send` bounds on the future when tasks run on a multi-threaded runtime. Details of futures and cancellation are in [concurrency](concurrency.md#async-boundary).
+An async trait method returns a future whose concrete state can depend on Self and borrowed inputs. Static dispatch can retain that concrete type. A dynamically dispatched interface needs a representable erased return type, commonly a pinned boxed future. The box erases and stores the future; pinning supplies an address-stability contract. Those are different purposes.
+
+For a public interface whose futures must be Send, an explicit return-position impl Future bound makes that promise visible. This example also requires Sync for borrowed access to the source. The in-memory implementation clones its payload to produce independent output; a real I/O implementation would have its own waiting/error behavior.
+
+```rust
+use std::{future::Future, pin::Pin};
+
+pub trait ByteSource: Sync {
+    fn read(&self) -> impl Future<Output = Vec<u8>> + Send;
+}
+
+pub struct MemorySource(pub Vec<u8>);
+impl ByteSource for MemorySource {
+    fn read(&self) -> impl Future<Output = Vec<u8>> + Send {
+        async { self.0.clone() }
+    }
+}
+
+pub trait DynByteSource {
+    fn read(&self) -> Pin<Box<dyn Future<Output = Vec<u8>> + Send + '_>>;
+}
+
+impl<S: ByteSource> DynByteSource for S {
+    fn read(&self) -> Pin<Box<dyn Future<Output = Vec<u8>> + Send + '_>> {
+        Box::pin(ByteSource::read(self))
+    }
+}
+
+pub async fn read_static<S: ByteSource>(source: &S) -> Vec<u8> {
+    ByteSource::read(source).await
+}
+pub async fn read_dynamic(source: &(dyn DynByteSource + Sync)) -> Vec<u8> {
+    DynByteSource::read(source).await
+}
+```
+
+The static interface does not require a box for its returned future; its body can still allocate output. The dynamic interface permits heterogeneous implementations through one erased API and boxes each returned future in this pattern. That future borrows source until it finishes, so boxing has not made it static. An independently spawned operation needs a suitable owner for the source as well as the required Send bounds.
+
+A trait with an ordinary async fn or return-position impl Trait method is not automatically usable as dyn Trait. Use static dispatch when consumers know the type, and introduce an erased facade where runtime heterogeneity is needed. Choosing Send versus a thread-local future contract is a public API decision; do not add bounds just to silence one caller's diagnostic. See [task ownership](async-and-parallel-execution.md#borrowing-and-task-ownership) for the scheduling boundary.
 
 ## Common Mistakes
 
 - Storing `&'a str` in a long-lived struct to avoid a `String` allocation, then fighting lifetimes through the whole codebase. Own the data at the boundary; borrow inside functions.
 - `Rc<RefCell<T>>` as the default way to share state between components, instead of one owner and message passing or borrowed views.
 - Public struct fields that later need an invariant; start private with accessors when the type is in a public API.
-- A `bool` or `Option<bool>` parameter whose meaning is only visible at the definition; use a two-variant enum (C-CUSTOM-TYPE).
+- A `bool` or `Option<bool>` parameter whose meaning is only visible at the definition; use a two-variant enum.
 - `impl Into<String>` on a function that only reads the string; it forces callers with a `&str` to allocate.
 - Panicking in `Drop`; a panic while unwinding aborts the process.
 - Deriving `PartialOrd` on a type whose ordering is meaningless, then depending on it in sorts.
@@ -741,13 +824,8 @@ Inside the crate the attribute has no effect. Public error enums are the most co
 
 Per-release details live in [the versions index](../versions/index.md).
 
-## Review Checklist
+## Practical Boundaries
 
-- Each value has one obvious owner; borrows do not outlive the call unless a struct lifetime is deliberate.
-- Parameters are borrowed views (`&str`, `&[T]`, `&Path`) unless the function stores the value.
-- Every `clone()` on a non-`Copy`, non-refcounted value has a reason; none exist only to satisfy the borrow checker.
-- Invariants live in constructors of private-field types; downstream code takes the validated type.
-- `RefCell` borrows and lock guards are scoped tightly; no `let _ = guard`.
-- `Drop` implementations cannot fail or panic; fallible cleanup has an explicit method.
-- Traits meant for trait objects are dyn-compatible; traits users must not implement are sealed.
-- Public enums and structs that may grow carry `#[non_exhaustive]` from the first release.
+Borrowing keeps access tied to an owner; shared ownership makes a different lifetime contract. A clone can simplify that contract or avoid retaining unrelated data. Evaluate the actual type and access pattern before exchanging one for the other.
+
+Constructors and private fields can preserve invariants, while newtypes and typestate make them visible in APIs. Sealed traits and non_exhaustive types address specific extension policies rather than being mandatory on every public type. Resource guards deserve deliberate scopes; fallible cleanup needs an explicit result-returning operation because Drop cannot return an error.

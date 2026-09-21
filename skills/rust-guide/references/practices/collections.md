@@ -2,6 +2,7 @@
 
 ## Contents
 
+- [Semantics, Representation, and Cost](#semantics-representation-and-cost)
 - [Default Choice](#default-choice)
 - [When to Use Which Collection](#when-to-use-which-collection)
 - [Operation Costs](#operation-costs)
@@ -20,13 +21,19 @@
 - [Fixed-Length and Frozen Sequences](#fixed-length-and-frozen-sequences)
 - [Common Mistakes](#common-mistakes)
 - [Availability by Version](#availability-by-version)
-- [Review Checklist](#review-checklist)
+- [Practical Boundaries](#practical-boundaries)
 
-Examples are independent items that compile on stable Rust 1.80 or later unless a later version is stated; edition 2024 is assumed. Container choice is a semantics decision first (ordering, uniqueness, key constraints) and a performance decision second; a performance claim needs a benchmark on the real key distribution.
+Examples are independent items using stable APIs unless stated otherwise; see [compatibility](../../SKILL.md#compatibility).
+
+## Semantics, Representation, and Cost
+
+A collection combines behavior with a storage strategy. Vec stores elements contiguously, VecDeque supports efficient operations at both ends, hash collections use hashing and equality, and ordered trees use key ordering. Required order, uniqueness, ranges, and stable identity narrow the suitable representations before performance comparisons.
+
+Operation complexity describes scaling, not elapsed time. Key comparison or hashing, allocation, element size, locality, and input size can change the practical result. Iteration-heavy code may favor a different representation from lookup-heavy code. Capacity reuse reduces repeated growth but can retain a large allocation; connect collection operations to [memory and allocation](memory-and-allocation.md).
 
 ## Default Choice
 
-`std::collections` states: "Vec and HashMap should be your default choices." They cover most sequence and key-value needs. Every other standard collection exists for a specific access pattern, and reaching for it without that pattern usually costs speed and clarity.
+Use Vec for a growable sequence and HashMap for key lookup when no stronger ordering or access requirement applies. Sorted ranges, operations at both ends, and priority retrieval justify different representations. Start from the required operations; a default does not override their semantics.
 
 ## When to Use Which Collection
 
@@ -34,7 +41,7 @@ Examples are independent items that compile on stable Rust 1.80 or later unless 
 |---|---|---|
 | `Vec<T>` | Items collected for later processing, a sequence appended at or near the end, a stack, a resizable or heap-allocated array | nothing |
 | `VecDeque<T>` | A `Vec` with efficient insertion and removal at both ends, a queue, a double-ended queue | nothing |
-| `LinkedList<T>` | Unknown size with no tolerance for amortized reallocation, efficient splitting and appending of lists, and you are "absolutely certain you really, truly, want a doubly linked list" | nothing |
+| `LinkedList<T>` | Node-based list operations or concatenation that justify per-node allocation and pointer chasing | nothing; avoiding buffer growth does not establish bounded allocation latency |
 | `HashMap<K, V>` | Arbitrary keys mapped to values, a cache, a map with no extra functionality | `K: Eq + Hash` |
 | `BTreeMap<K, V>` | Map sorted by key, ranges of entries on demand, the smallest or largest entry, the nearest key below or above a value | `K: Ord` |
 | `HashSet<T>` / `BTreeSet<T>` | Remembering which keys were seen, membership without an associated value | same as the map |
@@ -44,7 +51,7 @@ A closed set of known keys is often better served by an `enum` with a `match` or
 
 ## Operation Costs
 
-From the std documentation. `n` is the collection size, `m` a second collection, `i` an index; `*` marks amortized cost, `~` expected cost.
+`n` is the collection size, `m` a second collection, `i` an index; `*` marks amortized cost, `~` expected cost. Map lookup/insertion/removal use keys rather than sequence indices. These bounds treat a key comparison or hash as a unit cost; long strings can make that assumption significant.
 
 | | `get(i)` | `insert(i)` | `remove(i)` | `append` | `split_off(i)` | `range` |
 |---|---|---|---|---|---|---|
@@ -54,11 +61,11 @@ From the std documentation. `n` is the collection size, `m` a second collection,
 | `HashMap` | O(1)~ | O(1)~* | O(1)~ | n/a | n/a | n/a |
 | `BTreeMap` | O(log n) | O(log n) | O(log n) | O(n+m) | n/a | O(log n) |
 
-Sets cost the same as the corresponding map. "Where ties occur, `Vec` is generally going to be faster than `VecDeque`, and `VecDeque` is generally going to be faster than `LinkedList`." Standard collections never shrink automatically, so removal is not amortized.
+Set operations have the corresponding map's complexity. For similar operation counts, contiguous storage often reduces allocation and pointer chasing, but input shape and access patterns determine elapsed time. Removing Vec elements retains its capacity; dropping list nodes releases their individual allocations. Distinguish element removal, backing-storage capacity, and memory returned to the operating system.
 
 ## Capacity Management
 
-Growth reallocates and copies. When the final size is known or bounded, allocate once; when a buffer is reused, keep its capacity.
+Growth beyond capacity can reallocate and move elements. A credible size estimate can avoid repeated growth; buffer reuse trades fewer allocations against retained memory.
 
 ```rust
 fn parse_numbers(lines: &[&str], expected: usize) -> Vec<u32> {
@@ -85,11 +92,11 @@ fn process_batches(batches: &[&[u8]]) -> usize {
 }
 ```
 
-- `Vec::new()` does not allocate; the first pushes grow through 4, 8, 16, ... elements.
-- `reserve(n)` before a burst of pushes; `reserve_exact` only when growth beyond `n` is impossible.
-- `capacity()` is exact and can be relied on; `shrink_to_fit` may leave a little excess.
-- `vec![0; n]` is the fastest way to obtain a zeroed buffer.
-- `HashMap::with_capacity(n)` and `String::with_capacity(n)` behave the same way.
+- `Vec::new()` does not allocate. Vec does not guarantee a specific growth factor or initial capacity; zero-sized elements require no element allocation.
+- `reserve(n)` asks for room for n additional elements beyond the current length. reserve_exact avoids deliberate speculative growth, but the allocator can still supply excess capacity.
+- `capacity()` reports how many elements fit without reallocation by push/insert. Read it after reserving instead of assuming it equals the request. shrink_to_fit may retain excess capacity.
+- `vec![0; n]` clearly requests an initialized zeroed buffer and can use efficient allocator paths. Its performance depends on element type, allocator, and target.
+- A HashMap capacity counts entries and includes its own table/load-factor strategy; String capacity counts bytes. Do not transfer Vec growth assumptions to either one.
 
 ## Entry API
 
@@ -159,7 +166,7 @@ fn new_id_map<V>() -> IdMap<V> {
 }
 ```
 
-Ecosystem hashers plug into the same parameter: `rustc_hash::FxHashMap` (fast, low quality, used inside the compiler), `ahash` (uses AES instructions where available), `fnv` (higher quality than Fx, a little slower), `nohash_hasher` (identity for already-random keys). The Performance Book records both speedups and slowdowns from hasher changes in real projects, so benchmark with the real key set before switching.
+Ecosystem hashers plug into the same parameter: `rustc_hash::FxHashMap` (fast, low quality, used inside the compiler), `ahash` (uses AES instructions where available), `fnv` (higher quality than Fx, a little slower), `nohash_hasher` (identity for already-random keys). Hasher changes can help or hurt depending on key distribution, hashing cost, and collision behavior. Compare the actual workload and retain protection appropriate for untrusted keys.
 
 Never persist or compare hashes across processes or Rust versions: `DefaultHasher` and `RandomState` are explicitly not stable, and `RandomState` differs per map instance.
 
@@ -215,7 +222,7 @@ impl Timeline {
 }
 ```
 
-Keys must implement `Ord` with a total order; a broken `Ord` produces a corrupt tree, which the Reference classifies as a logic error with unpredictable behavior rather than undefined behavior.
+Keys must implement `Ord` with a total order; a broken `Ord` produces a corrupt tree, a logic error whose consequences can include incorrect results or a panic; unsafe code cannot rely on trait implementations being logically correct for memory safety.
 
 ## Priority Queues
 
@@ -416,7 +423,7 @@ impl Tree {
 }
 ```
 
-Removal from an arena needs tombstones or generational indices (the `slotmap` crate pattern). Use `Rc<RefCell<Node>>` with `Weak` parent links only when nodes must be owned independently of one container; the `Arc` documentation describes exactly that shape: "strong `Arc` pointers from parent nodes to children, and `Weak` pointers from children back to their parents."
+Removal from an arena needs tombstones or generational indices so stale identifiers can be detected. Rc/Arc with Weak back-links suits nodes whose ownership is distributed: strong parent-to-child links can keep children alive without a strong cycle back to the parent. Choose the owning directions according to the graph's lifetime requirements.
 
 ## Static Lookup Tables
 
@@ -437,14 +444,14 @@ fn mime_type(extension: &str) -> Option<&'static str> {
 }
 ```
 
-`LazyLock` (1.80) replaces `lazy_static!` and `once_cell::sync::Lazy`. For a handful of entries, a `match` on string literals is smaller and faster than any map; for hundreds of compile-time-known keys, perfect-hash crates such as `phf` avoid runtime construction.
+`LazyLock` (1.80) replaces `lazy_static!` and `once_cell::sync::Lazy`. For a handful of entries, consider a match on string literals; measure size and lookup cost rather than promising it beats every map. For a large fixed key set, evaluate a static/perfect-hash representation and apply the library admission policy to new dependencies.
 
 ## Fixed-Length and Frozen Sequences
 
 - `[T; N]` when the length is a compile-time constant; it lives inline without allocation.
 - `Box<[T]>` for a heap sequence whose length is final: it drops the capacity word and signals that no pushes follow. `Vec::into_boxed_slice` reallocates only when `len != capacity`.
 - `Vec<T>` stores elements inline; `Vec<Box<T>>` only pays off when `T` is large and elements are reordered often, or when element addresses must stay stable across pushes.
-- `SmallVec<[T; N]>` and `ArrayVec<T, N>` (crates) keep up to `N` elements inline; they enlarge every struct that contains them, so measure before adopting.
+- smallvec can keep short sequences inline and spill to the heap; heapless offers fixed-capacity storage with explicit full handling. Inline capacity enlarges containing types. See [allocation strategy](memory-and-allocation.md) and [library selection](library-selection.md) before adopting one.
 
 ## Common Mistakes
 
@@ -474,13 +481,8 @@ fn mime_type(extension: &str) -> Option<&'static str> {
 
 Check the project's `rust-version` before using any of these; the per-release details live in [the versions index](../versions/index.md).
 
-## Review Checklist
+## Practical Boundaries
 
-- The chosen collection's guarantees match the requirement (order, uniqueness, ranges, priority) and nothing more.
-- Key types satisfy `Eq + Hash` or `Ord` with a consistent, total implementation.
-- Capacity is preallocated where the size is known, and reused buffers are cleared rather than reallocated.
-- Get-or-insert paths use the entry API.
-- Observable output does not depend on hash iteration order.
-- The hasher is the default unless keys are trusted and a benchmark exists.
-- Removal uses `retain`, `extract_if`, `drain`, or `swap_remove` instead of index loops.
-- Any performance motivation is backed by a measurement on representative data.
+Container guarantees such as sorted iteration, uniqueness, and stable identifiers belong to the API contract. A faster lookup does not compensate for losing required ordering or using inconsistent Eq/Hash/Ord implementations.
+
+Capacity reservation and reuse fit credible size estimates and repeated workloads; unusually large retained capacity can justify releasing a buffer. Entry, retain, drain, extract_if, and swap_remove express different mutation semantics, including whether order survives. Match those semantics before comparing timings or changing a hasher for trusted input.

@@ -16,36 +16,36 @@
 - [MSRV Policy](#msrv-policy)
 - [Public Dependencies and Cargo.lock](#public-dependencies-and-cargolock)
 - [Auto Traits Are Part of the API](#auto-traits-are-part-of-the-api)
-- [Release Checklist](#release-checklist)
+- [Release Compatibility](#release-compatibility)
 - [Common Mistakes](#common-mistakes)
 - [Availability by Version](#availability-by-version)
 
-Rust examples compile on stable Rust 1.81 or later with edition 2024 unless a version is stated; TOML examples are complete fragments of `Cargo.toml`. Internal type structure is in [ownership and type design](ownership-and-type-design.md); error types in [error handling](error-handling.md).
+Examples use stable APIs unless marked otherwise. Edition 2024 requires Rust 1.85; use edition 2021 and compatible APIs for older MSRVs. TOML snippets illustrate the indicated manifest sections. Internal type structure is in [ownership and type design](ownership-and-type-design.md); error types in [error handling](error-handling.md).
 
 ## Naming Conventions
 
-Follow the Rust API Guidelines and the standard library, so users can guess names.
+Follow standard-library naming patterns so a name communicates ownership, mutability, and conversion behavior.
 
 | Item | Convention | Examples |
 |---|---|---|
-| Types, traits, enum variants | `UpperCamelCase` (C-CASE) | `HashMap`, `IntoIterator`, `Ordering::Less` |
+| Types, traits, enum variants | `UpperCamelCase` | `HashMap`, `IntoIterator`, `Ordering::Less` |
 | Functions, methods, modules, locals | `snake_case` | `read_to_string`, `std::sync::mpsc` |
 | Constants and statics | `SCREAMING_SNAKE_CASE` | `MAX_LEN`, `EPSILON` |
 | Acronyms | Treated as one word | `Uuid`, `HttpClient`, `TcpStream`, not `UUID` or `HTTPClient` |
-| Free borrow-to-borrow conversion | `as_` (C-CONV) | `as_str`, `as_bytes`, `as_path` |
+| Free borrow-to-borrow conversion | `as_` | `as_str`, `as_bytes`, `as_path` |
 | Expensive or owning conversion | `to_` | `to_string`, `to_vec`, `to_lowercase` |
 | Consuming conversion | `into_` | `into_inner`, `into_boxed_slice`, `into_iter` |
-| Getter | field name, no `get_` (C-GETTER); `_mut` for the mutable pair | `len()`, `capacity()`, `first_mut()` |
-| Iterator producers | `iter`, `iter_mut`, `into_iter`, plus domain names returning iterators (C-ITER) | `chars()`, `lines()`, `keys()` |
-| Iterator types | Named after the producing method (C-ITER-TY) | `IntoIter`, `Chars`, `Keys` |
+| Getter | field name, no `get_`; `_mut` for the mutable pair | `len()`, `capacity()`, `first_mut()` |
+| Iterator producers | `iter`, `iter_mut`, `into_iter`, plus domain names returning iterators | `chars()`, `lines()`, `keys()` |
+| Iterator types | Named after the producing method | `IntoIter`, `Chars`, `Keys` |
 | Fallible constructor | `try_` prefix or `from_*` returning `Result` | `try_from`, `from_str` |
-| Feature names | No placeholder words (C-FEATURE) | `std`, `serde`, not `use-std`, `with-serde` |
-| Word order | Consistent verb-object-error order (C-WORD-ORDER) | `ParseIntError`, `TryFromIntError`, `RecvTimeoutError` |
+| Feature names | No placeholder words | `std`, `serde`, not `use-std`, `with-serde` |
+| Word order | Consistent verb-object-error order | `ParseIntError`, `TryFromIntError`, `RecvTimeoutError` |
 | Booleans | `is_`, `has_`, `can_`, `should_` for predicates | `is_empty`, `has_children` |
 
 ## Constructors, Getters, and Conversions
 
-Constructors are inherent associated functions (C-CTOR); `new` takes the required inputs, `with_*`/`from_*` name alternatives, `default()` comes from `Default`.
+Constructors are inherent associated functions; `new` takes the required inputs, `with_*`/`from_*` name alternatives, `default()` comes from `Default`.
 
 ```rust
 use std::path::{Path, PathBuf};
@@ -98,15 +98,15 @@ impl Workspace {
 }
 ```
 
-No out-parameters (C-NO-OUT): return a tuple or a struct instead of writing through `&mut` arguments. Functions with a clear receiver are methods (C-METHOD); functions that produce a value from nothing related to an instance are associated functions.
+For multiple return values, prefer a tuple or struct. Mutating caller-owned data is a different contract: an output buffer can support reuse, fixed-capacity storage, or allocation control. See [buffer reuse](memory-and-allocation.md#reuse-without-unbounded-retention) and [embedded buffers](embedded-and-no-std.md#keep-the-portable-core-honest). Functions with a clear receiver are methods; functions that produce a value from nothing related to an instance are associated functions.
 
 ## Traits Every Public Type Should Consider
 
-Users compose your type with the standard library and with other crates through traits; a missing `Debug` or `Clone` cannot be added from outside (orphan rule). Implement eagerly where the semantics fit (C-COMMON-TRAITS, C-DEBUG).
+Users compose your type with the standard library and with other crates through traits; a missing `Debug` or `Clone` cannot be added from outside (orphan rule). Implement eagerly where the semantics fit.
 
 | Trait | Implement when | Note |
 |---|---|---|
-| `Debug` | Always for public types | Derive; hand-write to hide secrets. Never empty output (C-DEBUG-NONEMPTY) |
+| `Debug` | Always for public types | Derive; hand-write to hide secrets. Never empty output |
 | `Clone` | The value can be duplicated meaningfully | Derive; skip for unique handles (sockets, guards) |
 | `Copy` | Small plain data (a few words) with `Clone` | Adding `Copy` later is compatible; removing it is breaking |
 | `PartialEq`, `Eq` | Values can be compared for equality | `Eq` only for total equality (not floats) |
@@ -118,7 +118,7 @@ Users compose your type with the standard library and with other crates through 
 | `From`/`TryFrom` | Lossless or checked conversions exist | Gives `Into`/`TryInto` for free |
 | `AsRef<T>`/`Borrow<T>` | Cheap view of an inner type | `Borrow` requires equal `Eq`/`Hash` behavior |
 | `Send`, `Sync` | Automatically, unless a field prevents it | Part of the API; see below |
-| `serde::Serialize`/`Deserialize` | Data types | Behind a `serde` feature (C-SERDE) |
+| `serde::Serialize`/`Deserialize` | Data types | Behind a `serde` feature |
 | `std::error::Error` | Error types | See [error handling](error-handling.md) |
 
 ```rust
@@ -178,15 +178,15 @@ impl FromStr for Percent {
 }
 ```
 
-Only smart pointers implement `Deref` (C-DEREF); operator overloads follow the arithmetic meaning users expect (C-OVERLOAD).
+Only smart pointers implement `Deref`; operator overloads follow the arithmetic meaning users expect.
 
 ## Conversion Traits
 
-Implement `From<A> for B` for infallible conversions and `TryFrom` for checked ones; never implement `Into` directly. Put the conversion on the more specific type (C-CONV-SPECIFIC): `impl From<Percent> for u8` lives with `Percent`, not with `u8`. `AsRef<str>`/`AsRef<Path>` in argument position accept many concrete types without allocation; `impl Into<String>` in argument position is for values the function stores.
+Implement `From<A> for B` for infallible, meaning-preserving conversions and `TryFrom` for checked ones. From supplies Into through a blanket implementation; generic callers can accept Into to support either implementation path. Keep the implementation with the owned domain type: `impl From<Percent> for u8` lives with `Percent`, not with `u8`. `AsRef<str>`/`AsRef<Path>` in argument position accepts borrowed views without requiring allocation; `impl Into<String>` is useful when the function needs an owned string. Prefer a named method when several conversions have different meanings.
 
 ## Collections and Iterators in APIs
 
-A collection type implements `FromIterator` and `Extend` (C-COLLECT), provides `iter()`/`iter_mut()`/`into_iter()` (C-ITER), and implements `IntoIterator` for `&T`, `&mut T`, and `T` so it works in `for` loops.
+A collection type implements `FromIterator` and `Extend`, provides `iter()`/`iter_mut()`/`into_iter()`, and implements `IntoIterator` for `&T`, `&mut T`, and `T` so it works in `for` loops.
 
 ```rust
 pub struct Playlist {
@@ -228,11 +228,11 @@ impl Extend<String> for Playlist {
 }
 ```
 
-Functions that produce sequences return `impl Iterator<Item = T>` when callers usually iterate, and `Vec<T>` when they usually index or keep the data. Accept `impl IntoIterator<Item = T>` for inputs so callers can pass arrays, vectors, or iterator chains. Expose intermediate results instead of recomputing (C-INTERMEDIATE): `parse()` that also validated should return the validated structure, not a `bool`.
+Functions that produce sequences return `impl Iterator<Item = T>` when callers usually iterate, and `Vec<T>` when they usually index or keep the data. Accept `impl IntoIterator<Item = T>` for inputs so callers can pass arrays, vectors, or iterator chains. Expose intermediate results instead of recomputing: `parse()` that also validated should return the validated structure, not a `bool`.
 
 ## Documentation
 
-Every public item gets a doc comment; `#![warn(missing_docs)]` in `lib.rs` enforces it. The crate root documents purpose, a quick-start example, and feature flags (C-CRATE-DOC). Item docs follow a fixed shape: one summary sentence, details, then `# Examples`, `# Errors`, `# Panics`, `# Safety` as applicable (C-EXAMPLE, C-FAILURE). Examples use `?` rather than `unwrap()` (C-QUESTION-MARK). Intra-doc links (`[`Type`]`, `[`module::function`]`) are checked by rustdoc (C-LINK). Hide implementation details that must be `pub` for macros with `#[doc(hidden)]` (C-HIDDEN).
+Every public item gets a doc comment; `#![warn(missing_docs)]` in `lib.rs` enforces it. The crate root documents purpose, a quick-start example, and feature flags. Item docs follow a fixed shape: one summary sentence, details, then `# Examples`, `# Errors`, `# Panics`, `# Safety` as applicable. Examples use `?` rather than `unwrap()`. Intra-doc links (`[`Type`]`, `[`module::function`]`) are checked by rustdoc. Hide implementation details that must be `pub` for macros with `#[doc(hidden)]`.
 
 Google's course adds the reader's perspective: write "what and why, not how and where"; a doc comment that restates the signature ("Returns the name") adds nothing. Library docs describe contracts; application docs describe operation.
 
@@ -258,7 +258,7 @@ all-features = true
 
 ## SemVer: What Breaks and What Does Not
 
-Classify each change before choosing the version bump. From the Cargo Book's SemVer compatibility chapter:
+Classify each change by its effect on existing consumers before choosing the version bump:
 
 | Change | Class |
 |---|---|
@@ -310,24 +310,24 @@ pub mod net {
 pub type TcpListener = net::Listener;
 ```
 
-`#[deprecated]` applies to functions, methods, types, fields, variants, constants, and modules; a re-export via `pub use` does not carry its own deprecation, so alias a type with `pub type` or wrap a function. Document removed items in the changelog (C-RELNOTES).
+`#[deprecated]` applies to functions, methods, types, fields, variants, constants, and modules; a re-export via `pub use` does not carry its own deprecation, so alias a type with `pub type` or wrap a function. Document removed items in the changelog.
 
 ## Cargo Features
 
-Features are additive: enabling any combination must compile and must not change existing behavior. Optional dependencies should be hidden behind `dep:` so their names do not become implicit features. Breaking behavior never goes into `default`.
+Design reusable features as additive capabilities because dependency feature requests can be unified. Avoid mutually exclusive features where possible; document and validate supported combinations when target/back-end constraints require them. Use dep: when a dependency name should not itself become a public feature. Treat changes to defaults as compatibility decisions.
 
 ```toml
 [features]
 default = ["std"]
-std = ["alloc", "dep:tokio"]
+std = ["alloc"]
+tokio-runtime = ["std", "dep:tokio"]
 alloc = []
-serde = ["dep:serde", "dep:serde_json"]
+serde = ["dep:serde"]
 # A capability, not a crate name: users enable `metrics`, not `prometheus-client`.
 metrics = ["dep:prometheus-client"]
 
 [dependencies]
 serde = { version = "1", optional = true, default-features = false, features = ["derive"] }
-serde_json = { version = "1", optional = true }
 tokio = { version = "1", optional = true, features = ["rt"] }
 prometheus-client = { version = "0.22", optional = true }
 ```
@@ -357,11 +357,11 @@ impl Limiter {
 }
 ```
 
-CI covers `--no-default-features`, `--all-features`, and each documented combination; unexpected feature interactions are the most common source of "works for me" bugs in libraries. Clippy `negative_feature_names` (cargo group) flags `no-std`-style names; name the positive capability.
+Check documented no-default, full, target-specific, and isolated-package combinations as applicable; one workspace-wide all-features build can hide missing feature declarations. Clippy `negative_feature_names` (cargo group) flags `no-std`-style names; name the positive capability.
 
 ## Supporting no_std
 
-Gate `std` behind a default feature, use `core` and `alloc` paths internally, and keep the public API identical where possible. `core::error::Error` (1.81) lets error types implement `Error` without `std`.
+For a library promising optional std, gate it behind a feature, use core/alloc as appropriate, and keep compatible APIs where practical. A core-only crate need not introduce a default std feature. See [embedded and no_std](embedded-and-no-std.md) for target, allocator, interrupt, and hardware boundaries. `core::error::Error` (1.81) lets error types implement `Error` without `std`.
 
 ```rust
 #![cfg_attr(not(feature = "std"), no_std)]
@@ -372,7 +372,7 @@ extern crate alloc;
 use core::fmt;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub struct Celsius(pub i32);
+pub struct Celsius(i32);
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct OutOfRange;
@@ -386,6 +386,8 @@ impl fmt::Display for OutOfRange {
 impl core::error::Error for OutOfRange {}
 
 impl Celsius {
+    pub const fn degrees(self) -> i32 { self.0 }
+
     pub const fn new(degrees: i32) -> Result<Self, OutOfRange> {
         if degrees < -273 { Err(OutOfRange) } else { Ok(Celsius(degrees)) }
     }
@@ -403,74 +405,26 @@ Build the `no_std` configuration in CI with a target that has no `std`, for exam
 
 ## Workspaces
 
-Share versions, metadata, dependencies, and lints from the root so members cannot drift.
+Use [workspaces and monorepos](workspaces-and-monorepos.md) for root/member configuration, shared or independent versioning, resolver/MSRV behavior, feature unification, publishing, and affected-package validation. Use [module and crate boundaries](modules-and-crate-boundaries.md) to decide which packages should exist.
 
-```toml
-# Cargo.toml at the workspace root
-[workspace]
-members = ["crates/*"]
-resolver = "3"          # MSRV-aware resolution; default for edition 2024 members, explicit for a virtual workspace
-
-[workspace.package]
-version = "0.5.0"
-edition = "2024"
-rust-version = "1.85"
-license = "MIT OR Apache-2.0"
-repository = "https://github.com/example/project"
-
-[workspace.dependencies]
-serde = { version = "1", default-features = false, features = ["derive"] }
-thiserror = "2"
-tokio = { version = "1", default-features = false }
-
-[workspace.lints.rust]
-unsafe_op_in_unsafe_fn = "warn"
-missing_docs = "warn"
-
-[workspace.lints.clippy]
-all = { level = "warn", priority = -1 }
-undocumented_unsafe_blocks = "warn"
-```
-
-```toml
-# crates/core/Cargo.toml
-[package]
-name = "project-core"
-version.workspace = true
-edition.workspace = true
-rust-version.workspace = true
-license.workspace = true
-repository.workspace = true
-
-[dependencies]
-serde = { workspace = true, optional = true }
-thiserror.workspace = true
-
-[features]
-serde = ["dep:serde"]
-
-[lints]
-workspace = true
-```
-
-A member cannot set `default-features = false` on a `workspace = true` dependency whose workspace entry keeps defaults (edition 2024 rejects it); disable defaults at the workspace level and let members add features. Small crates compile in parallel and can be reused, but every crate boundary blocks inlining unless LTO is on, and two major versions of one dependency in a tree produce incompatible types.
+A workspace coordinates packages; it does not require identical versions, features, or targets. Settings inherited with workspace = true are opt-in. Crate splitting has build and public-API costs, and a crate boundary does not universally prevent inlining without LTO.
 
 ## MSRV Policy
 
-- Declare `rust-version` in every published manifest. Cargo reports a clear error on older toolchains, `cargo add` selects compatible dependency versions, and `resolver = "3"` (1.84+) resolves within the MSRV.
+- Declare `rust-version` in every published manifest. Cargo reports a clear error on older toolchains, `cargo add` selects compatible dependency versions, and resolver 3 (Cargo 1.84+) prefers MSRV-compatible dependencies but can fall back to incompatible versions when requirements leave no compatible solution.
 - Publish the policy: which release you support and when you bump (for example "the latest stable minus two", or "supported for 6 months"). Cargo treats a bump as a minor change, but users with a lower toolchain still get stuck, so a stated policy prevents surprises.
 - Verify it: a CI job on the MSRV toolchain with `cargo check --locked --all-features` and `cargo test`, plus `msrv = "1.85"` in `clippy.toml` so Clippy does not suggest newer APIs.
-- Keep `Cargo.lock` compatible with the MSRV, or resolver 3 will hand the MSRV job older dependencies than the newest-stable job uses; test both.
+- Keep the lockfile format and selected dependencies usable by the MSRV. A locked build cannot silently replace dependencies with older compatible ones; separately assess the locked graph and fresh resolution.
 
 ## Public Dependencies and Cargo.lock
 
-- A type from another crate in your public signatures makes that crate a public dependency: its major version becomes part of your API (C-STABLE). Re-export it (`pub use serde;`) so users can name the same version, and bump your major when it bumps.
-- Do not expose `anyhow::Error`, `Box<dyn Error>`, or a dependency's error type from a library; wrap it.
+- Dependency types in public signatures create compatibility obligations. Re-export selected types when it helps callers name the intended version; do not automatically re-export entire dependency crates. Evaluate a dependency upgrade by its impact on the public contract.
+- Choose documented error variants or opaque accessors when callers need recovery. Dynamic errors and intentionally public dependency types can be valid, but convenience alone is not a public-API design. See [error handling](error-handling.md#design-the-failure-boundary).
 - `Cargo.lock`: `cargo new` tracks it for libraries and binaries alike. Commit it so CI, `git bisect`, and the MSRV job are reproducible. It does not affect users of a library (only `Cargo.toml` does), and `cargo install` ignores it unless `--locked` is passed. Use a scheduled CI job with `cargo update` to catch breakage from newer dependency versions.
 
 ## Auto Traits Are Part of the API
 
-`Send`, `Sync`, `Unpin`, and `UnwindSafe` are inferred from fields. Adding an `Rc`, a raw pointer, or a `RefCell` to a public type silently removes `Send`/`Sync`, which breaks users who spawn it on a thread. Pin the guarantee with a test.
+`Send`, `Sync`, `Unpin`, and `UnwindSafe` are inferred from fields. Changing fields can alter auto traits: Rc/raw pointers can remove Send and Sync, while `RefCell<T>` is not `Sync` but can be `Send` when `T: Send`. Losing a promised bound breaks consumers that rely on it. Pin the guarantee with a test.
 
 ```rust
 use std::sync::{Arc, Mutex};
@@ -491,21 +445,17 @@ mod tests {
 
 The same applies to `impl Trait` return types: the concrete type's auto traits leak to callers, so a change from `Vec::into_iter` to an `Rc`-based iterator is a breaking change even though the signature is unchanged.
 
-## Release Checklist
+## Release Compatibility
 
-1. `cargo doc --no-deps` with `RUSTDOCFLAGS="-D warnings"`; `cargo test --doc`.
-2. Feature matrix: `--no-default-features`, `--all-features`, documented combinations.
-3. MSRV job passes with `--locked`.
-4. `cargo package --list` shows only intended files; `cargo publish --dry-run`.
-5. Public API diff reviewed against the SemVer table (`cargo semver-checks` or `cargo public-api` from the ecosystem automate the comparison).
-6. Changelog lists every deprecation, removal, and behavior change with the version.
-7. `#[non_exhaustive]`, `#[deprecated]`, and re-exports in place for anything that may change.
+A library's contract includes documented behavior, public types and trait implementations, supported feature/target combinations, and its MSRV policy. Building the whole workspace on one recent compiler does not exercise all those promises. Documentation examples and isolated consumer builds can reveal different compatibility problems.
+
+Package contents matter independently of local compilation: `cargo package --list` shows the distribution contents, and `cargo publish --dry-run` exercises packaging without publishing. Private implementation changes, new variants, deprecations, re-exports, and dependency types crossing the API have different SemVer implications. Use the [SemVer rules](#semver-what-breaks-and-what-does-not) and choose non_exhaustive or opaque types according to the intended extension policy.
 
 ## Common Mistakes
 
 - `get_` prefixes on getters and `into_` methods that take `&self`; Clippy `wrong_self_convention` (style) checks the receiver against the prefix.
 - Missing `Debug` on a public type; users cannot add it (`missing_debug_implementations` rustc lint, allow by default, enforces it).
-- Exposing `Vec<T>` fields as `pub` and later needing an invariant; start with private fields and accessors (C-STRUCT-PRIVATE).
+- Exposing `Vec<T>` fields as `pub` and later needing an invariant; start with private fields and accessors.
 - Implementing `Into` instead of `From`, which loses the `From` impl.
 - A `default` feature that turns on heavy dependencies users cannot opt out of without `default-features = false` and a long list of re-enabled features.
 - Optional dependencies without `dep:`, exposing crate names as features that later cannot be removed.
