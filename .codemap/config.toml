@@ -1,160 +1,339 @@
-# codemap-config-version: 13
-# codemap-search repo-local config. Optional: with every key commented out (the state
-# below), this file reproduces the built-in behavior exactly. Uncomment and edit a line to
-# override its default. Resolution precedence is per key: repo > global > built-in default.
+# codemap-config-version: 22
+# 이 저장소의 codemap-search 설정입니다.
+# 최초 제외 목록은 공통 폴더·감지한 프로젝트 종류의 재귀 glob을 사용하며 나머지는 내장 기본값입니다.
+# 키별 우선순위는 저장소 > 전역 > 내장 기본값입니다. 상속하려면 키를 삭제하거나 주석 처리하세요.
+# 숫자 설정은 양의 정수이며 output.grep.max_columns만 0도 허용합니다.
+# 바이트 크기는 "50mb"처럼 b/kb/mb/gb 단위 문자열도 허용합니다. 대소문자를 구분하지 않으며 1024배 단위입니다.
+# 잘못된 값은 stderr 경고 후 낮은 우선순위 값으로 대체합니다. TOML 구문 오류는 해당 파일의 설정 전체를 무시합니다.
+# MCP는 시작 시 존재하는 설정 디렉터리를 감시해 약 1000ms 후 다시 읽습니다.
+# 설정 디렉터리가 없었거나 감시를 시작하지 못했다면 재시작하세요.
 
-# Where the tantivy index lives (relative to the repo root).
-# index_path = ".codemap/index"
+[output]
+# MCP 응답에서 탐지된 API 키·토큰·비밀번호·비밀키를 가립니다.
+# 검색 일치와 로컬 파일·인덱스는 원문을 유지합니다. false로 설정하면 마스킹을 끕니다.
+is_redact_enabled = true
 
-# `search` returns file details at or below this many matches, a codemap overview above.
-# result_threshold = 5
+# 선택적인 MCP 응답 본문 공통 한도입니다. 단위는 바이트입니다.
+# 같은 계층의 도구별 max_bytes가 우선하며, 생략하면 기존 기본값을 유지합니다.
+# 한도를 전혀 지정하지 않으면 검색은 1 MiB, read와 확장 grep은 5 MiB입니다.
+# 클라이언트의 문자·토큰 한도와 전처리 결과 한도는 별개입니다.
+# max_bytes = "1mb"
 
-# Files larger than this many bytes are skipped before parse/index (minified/generated blobs).
-# max_file_size = 1048576   # 1 MiB
+[output.client]
+# 선택적인 Claude Code 텍스트 결과 한도입니다. 단위는 문자 수이며 1~500000을 허용합니다.
+# 생략하면 재정의하지 않습니다. codemap-search의 도구 메타데이터에만 적용합니다.
+# 변경 후 MCP를 재연결해 tools/list를 다시 읽게 하세요. 아래 값은 비활성 예시입니다.
+claude_max_result_chars = 100000
 
-# Directory names to exclude, ADDED to the built-ins (node_modules, target, dist, build,
-# vendor, .git, …). Built-ins can't be removed — this augments, it does not replace.
-# excluded_directories = ["__pycache__", ".next", "coverage"]
+# 선택적인 Codex 도구별 출력 예산입니다. 단위는 토큰이며 양의 정수입니다. 생략하면 클라이언트 기본값을 유지합니다.
+# codemap-search codex-config로 출력한 조각을 Codex 설정에 병합해야 적용됩니다.
+# functions.exec의 묶음 출력 한도나 전역 기록 한도는 변경하지 않습니다.
+# 아래 값은 비활성 예시이며 서버가 클라이언트 설정 파일을 자동 수정하지 않습니다.
+codex_output_token_limit = 100000
 
-# Dedicated toggle for `.git/info/exclude` ONLY. Set false to let index/codemap/find/grep
-# see files hidden solely by `.git/info/exclude` (e.g. local personal excludes) while
-# `.gitignore`, the global gitignore, and `.codemapignore` stay honored.
-# use_git_exclude = true
+[output.overview]
+# 저장소 및 모노레포 프로젝트 루트 overview에 색인 파일 언어 통계를 포함합니다.
+# false이면 통계 섹션을 출력하지 않습니다.
+is_stats_enabled = true
 
-# Debounce window (milliseconds) for background index/codemap refreshes triggered by
-# search/overview: within this window repeated calls enqueue at most one background refresh,
-# and each call answers immediately from the committed snapshot. read/find/grep always read
-# live disk, so brief search staleness is corrected by the follow-up read. (default 5000)
-# index_staleness_ms = 5000
+[output.search]
+# 상위 파일 중 상세 내용을 표시할 수입니다. 나머지는 간략 목록으로 표시합니다.
+detail_file_limit = 24
 
-# Max file headers `search` emits in its codemap-overview branch (when matches exceed
-# result_threshold). Caps the context a broad query can spend. (default 50)
-# search_overview_file_limit = 50
+# 간략 결과 목록의 최대 파일 수입니다.
+overview_file_limit = 80
 
-# Filesystem watcher: when true (the default), file changes refresh the index in the
-# background on their own and search/overview never trigger a tree walk. Set false to
-# fall back to the request-triggered lazy refresh (debounced by index_staleness_ms).
-# watch = true
+# 일치한 심볼마다 표시할 최대 발췌 줄 수입니다.
+snippet_max_lines = 500
 
-# Debounce window (milliseconds) for watcher events: changes arriving within this window
-# are batched into one incremental refresh. (default 500)
-# watch_debounce_ms = 500
+# 상세 결과의 파일마다 표시할 최대 심볼 수입니다.
+symbol_limit = 100
 
-# Automatic recovery when the background indexer thread dies: the next search/overview
-# rebuilds the index engine, respawns the indexer, and re-attaches the watcher (capped
-# per server run so a deterministic crash cannot respawn-loop). Set false to serve
-# results frozen at the last commit until the server is restarted instead.
-# indexer_auto_restart = true
+# 일치한 리터럴의 최대 표시 길이입니다. 단위는 문자 수입니다.
+literal_max_chars = 1200
 
-# Allow `find` absolute-path patterns whose static prefix resolves OUTSIDE the workspace
-# root (Claude Code's Glob accepts any absolute base). Default false keeps the sandbox:
-# absolute/`..` patterns escaping the root are rejected. Set true only to opt into
-# searching arbitrary on-disk locations via `find`.
-# allow_absolute_path_outside_root = false
+# 파일마다 표시할 최대 일치 리터럴 수입니다.
+literal_limit = 60
 
-# `grep` content-mode column cap: a matched line longer than this many columns is replaced
-# with `[Omitted long matching line]` instead of being dumped in full (Claude Code passes
-# `--max-columns 500`). 0 disables the cap. (default 500)
-# grep_max_columns = 500
+# 파일마다 전체 발췌를 표시할 최대 심볼 수입니다. 나머지는 짧은 선언으로 표시합니다.
+anchor_snippet_limit = 20
 
-# `read` always-applied output ceiling (bytes): even with `offset`/`limit` set, a `read`
-# whose rendered output would exceed this throws rather than emitting an unbounded blob
-# (approximates Claude Code's ~25,000-token cap). Measured on the RENDERED output including
-# the `     N→` line-number prefixes (~7 bytes/line). Separate from the 256 KiB whole-file
-# cap that applies only when `limit` is omitted. (default 102400 ≈ 100 KiB)
-# read_output_byte_cap = 102400
+# 부분 출력 안내를 포함한 검색 응답 크기 제한입니다. 단위는 바이트입니다.
+# 선택적인 예외 한도입니다. 생략하면 output.max_bytes를 상속하고, 공통값도 없으면 1 MiB를 사용합니다.
+# max_bytes = "1mb"
 
-# `search` detail-view caps (the ≤ result_threshold branch that emits code snippets). These
-# bound the detail response so a query matching a few large files can't dump tens of
-# thousands of lines. Output-size only.
-# search_detail_snippet_max_lines = 80   # per-symbol snippet line cap; over-long bodies elide
-# search_detail_symbol_limit = 20        # max symbols rendered per file; rest summarized
-# search_detail_byte_cap = 32768         # total detail-view byte budget (32 KiB) before cutoff
-# search_literal_max_len = 200           # matched-literal truncation length (chars)
-# search_literal_limit = 10              # max matched literals rendered per file
+[output.read]
+# 줄 번호와 문맥을 포함한 read 및 함수 본문으로 확장된 grep의 출력 크기 제한입니다.
+# read 초과는 더 좁은 범위를 안내하는 오류를 반환하며, 확장된 grep은 본문 초과 또는 페이지 분할을 안내합니다.
+# 선택적인 예외 한도입니다. 생략하면 output.max_bytes를 상속하고, 공통값도 없으면 5 MiB를 사용합니다.
+# max_bytes = "5mb"
 
-# Caller/callee context for the `search` detail view. When the `caller_context` request
-# parameter is omitted, this key decides the default; an explicit parameter always wins.
-# The feature annotates each matched `fn` symbol's snippet with its depth-1 callers and
-# callees (name-match only, approximate). Default on; set false (or pass
-# caller_context=false per call) to disable.
-# caller_context_default = true
+[output.grep]
+# grep의 content 모드에서 일치 줄의 최대 열 수입니다. 0이면 제한을 끕니다.
+# 초과 줄은 `[Omitted long matching line]`으로 표시합니다.
+max_columns = 0
 
-# Caps for the caller/callee annotation (all output-size / cost bounds, tunable).
-# scan_cap = 500               # hit budget for the combined-regex walk, split across scanned names (floor 25/name)
-# caller_list_cap = 5          # max callers (or non-call references) rendered per symbol
-# callee_list_cap = 5          # max callees rendered per symbol
-# annotation_sub_budget = 8192 # annotation byte budget WITHIN search_detail_byte_cap (not added on top)
-# common_name_threshold = 2    # a name with ≥ this many fn defs gets its callers/callees labeled ambiguous
+# 선택적인 grep 응답 한도입니다. 단위는 바이트이며 같은 계층의 공통 output.max_bytes보다 우선합니다.
+# 확장한 함수 본문은 페이지를 나누고, 확장하지 않은 응답이 초과하면 범위 축소를 요청합니다.
+# 해당 계층에 grep·공통 한도가 없으면 확장 본문은 그 계층의 read 한도를 상속합니다.
+# max_bytes = "5mb"
 
-# navigation_store_references = false
+[output.context]
+# 호출자·호출 대상의 결과 표시 설정입니다.
 
-# navigation_callsite_budget = 1000
+# 검색에서 호출자·호출 대상 정보를 기본 표시합니다. 호출별 `caller_context` 인자가 우선합니다.
+is_enabled = true
 
-# Precise caller/callee attribution. When false, annotations use conservative name matching.
-# Set true to allow tree-sitter navigation data to mark unambiguous lines as precise.
-# navigation_context_default = false
+# 심볼마다 표시할 최대 호출자 또는 함수 호출 외의 참조 수입니다.
+caller_limit = 1000
 
-# Automatic repo config file creation and schema sync on `mcp` startup.
-# true: create missing `.codemap/config.toml` and append commented blocks for new settings.
-# false: never writes `.codemap/config.toml` automatically; existing config is still read.
-# Existing-file schema sync adds new settings as commented blocks, not active values.
-# Markdown 문서(`.md`, `.mdx`)를 색인 기반 탐색에 포함합니다.
-# false이면 search/overview/codemap에서 제외하지만 직접 read/parse/find/grep은 유지됩니다.
-# [caller_context]
+# 심볼마다 표시할 최대 호출 대상 수입니다.
+callee_limit = 1000
 
+# `output.search.max_bytes` 안에서 호출 관계의 출력 크기 제한입니다. 단위는 바이트입니다.
+# 원문 발췌가 우선이며 생략한 정보는 안내합니다.
+max_bytes = "128kb"
 
+# 같은 이름의 정의가 이 수 이상이면 추정 호출 관계에 모호함을 표시합니다.
+common_name_threshold = 2
 
+# 같은 이름의 정의가 이 수 이상이면 추정 호출자 목록 대신 grep을 안내합니다.
+# 호출 대상 목록에는 적용하지 않으며 확인된 대상은 계속 표시할 수 있습니다.
+caller_omit_def_threshold = 5
 
+[output.navigation]
+# 소스 구조에 따른 탐색과 호출자 검색 예산입니다.
 
+# 소스 구조·import·지역 변수 연결로 어떤 함수를 호출하는지 확인합니다.
+# 단일 대상을 확인하면 precise로 표시합니다. false이면 이름 기반 추정만 사용합니다.
+is_enabled = false
 
-# [analysis]
-# Rust 분석 대상 OS. 빈 값은 미지정이며 실행 컴퓨터의 OS를 추정하지 않습니다.
-# target_os = ""
+# 이름 기반 추정으로 전환하기 전에 확인할 최대 호출 위치 수입니다.
+callsite_budget = 1000
 
-# [event_navigation]
-# 이벤트 관계 색인은 기본으로 켜져 있습니다. API 규칙과 한계는 docs/configuration.ko.md를 참고하세요.
+# 호출자 탐색의 검색 건수 제한입니다. 이름별로 나누되 이름당 최소 25건을 허용합니다.
+scan_limit = 16000
+
+[output.macro_expansion]
+# C/C++/ASM 파일은 설치된 Clang/NASM을 자동으로 사용합니다. 실패하면 원문 선언과 사유를 표시합니다.
+# 이 섹션은 생략해도 됩니다. 외부 전처리기 실행을 끌 때만 is_enabled=false로 설정하세요.
+
+# 지원하는 C/C++/ASM 파일에 설치된 Clang/NASM을 사용합니다. 기본값은 true입니다.
+# false이면 외부 전처리를 끄며, 확장 실패 시에는 원문 선언과 미해결 사유를 유지합니다.
 # is_enabled = true
-# 이벤트 분석과 관련 탐색 결과를 기본으로 제공합니다.
-# 이벤트 분석을 끌 때만 is_enabled를 false로 설정하세요. 명시한 값은 유지됩니다.
+
+# 선택적인 compile_commands.json 파일·디렉터리 또는 compile_flags.txt 경로입니다.
+# 상대 경로는 작업공간 루트 기준입니다. 생략하면 소스의 부모에서 루트까지 탐색합니다.
+# compilation_database = "build/compile_commands.json"
+
+# Clang 실행 파일 이름 또는 경로입니다. 생략하면 PATH의 clang을 사용합니다.
+# clang_path = "clang"
+
+# NASM 실행 파일 이름 또는 경로입니다. 생략하면 PATH의 nasm을 사용합니다.
+# nasm_path = "nasm"
+
+# 빌드 설정 뒤에 추가할 Clang 인자입니다. 목록을 지정하면 상속한 목록을 대체합니다.
+# clang_flags = []
+
+# 빌드 설정 뒤에 추가할 NASM 인자입니다. 목록을 지정하면 상속한 목록을 대체합니다.
+# nasm_flags = []
+
+# 외부 프로세스 한 번의 시간 제한입니다. 단위는 밀리초이며 기본값은 5000입니다.
+# NASM 전처리와 확장 목록 생성은 각각 별도 프로세스로 실행됩니다.
+# timeout_ms = 5000
+
+# 전처리 결과 또는 NASM 확장 목록의 최대 크기입니다. 단위는 바이트이며 기본값은 8 MiB입니다.
+# 분석 중간 자료의 한도이므로 MCP 응답의 output.max_bytes를 상속하지 않습니다.
+# 전처리 설정을 변경하면 전체 색인 갱신을 요청합니다.
+# max_output_bytes = "8mb"
+
+[output.event_navigation]
+# 이벤트 관계 색인은 기본으로 켜져 있으며 관련 탐색 결과에 자동으로 표시됩니다.
+# 이벤트 분석을 끌 때만 is_enabled를 false로 설정하세요.
+
+# 이벤트 관계 색인과 관련 탐색 출력을 사용합니다. 기본값은 true입니다.
+# false이면 이벤트·소스 경로 분석을 끕니다. 요청별 include_events=false는 해당 출력만 생략합니다.
+# is_enabled = true
+
+# 내장 이벤트 API 규칙을 적용합니다. 기본값은 true이며 false여도 사용자 규칙은 사용할 수 있습니다.
 # use_builtin_rules = true
 
-# [language_support]
-# 셸 스크립트
+# 선택적인 사용자 이벤트 API 규칙입니다. 목록은 상속값을 대체하며 []는 목록을 비웁니다.
+# 정확한 API 선택자와 이벤트 인자·버스 정보가 필요합니다. 자세한 형식은 설정 문서를 참고하세요.
+# rules = []
+
+[output.redact]
+# MCP 출력의 추가 마스킹 규칙. 내장 규칙은 유지됩니다.
+
+# 선택 활성화할 PII 종류입니다. []이면 인증정보만 가립니다.
+# pii_entities = []
+
+# 추가로 가릴 민감 필드 이름입니다. 대소문자·구분자를 정규화한 뒤 정확히 일치해야 합니다.
+# 목록은 상속한 사용자 목록을 대체하며 내장 필드 규칙은 유지합니다.
+# sensitive_fields = []
+
+# 추가 정규식 규칙입니다. 각 항목에는 고유한 custom.* id와 pattern이 필요합니다.
+# 목록은 상속한 사용자 규칙을 대체하며 []로 비울 수 있습니다.
+# rules = []
+
+# rule_id와 value가 모두 일치하는 정확한 예외입니다. 경로 전체를 예외 처리하지 않습니다.
+# 목록은 상속한 예외를 대체하며 []로 비울 수 있습니다.
+# exceptions = []
+
+[output.context.exclude]
+# search의 호출 관계와 read/grep의 자동 심볼·관계 문맥에 테스트 영역을 포함합니다.
+# 이벤트·소스 경로 분석에도 적용합니다. read/grep 원문과 일반 search/overview 선언은 유지됩니다.
+should_include_test_code = false
+
+# 작업공간 기준 테스트 파일 경로·이름 glob입니다. 목록은 상속값을 대체하며 []로 판별을 끕니다.
+test_file_patterns = ["**/tests/**", "**/test/**", "**/__tests__/**", "test_*.py", "*_test.*", "*.test.*", "*_spec.*", "*.spec.*", "*Test.java", "*Tests.java", "*IT.java"]
+
+[output.context.exclude.test_attributes]
+# 언어별 목록은 상속한 기본값을 대체합니다. []는 해당 목록을 끄고 키·언어를 생략하면 상속합니다.
+# 이름은 #[...]·@를 뺀 glob입니다. cfg(test)는 all/any/not 조건 중 테스트 전용인 영역도 판별합니다.
+
+rust = ["test", "tokio::test", "async_std::test", "rstest", "rstest::rstest", "cfg(test)"]
+
+java = ["Test", "ParameterizedTest", "RepeatedTest", "TestFactory", "TestTemplate", "Nested", "BeforeEach", "AfterEach", "BeforeAll", "AfterAll"]
+
+kotlin = ["Test", "ParameterizedTest", "RepeatedTest", "BeforeTest", "AfterTest", "BeforeEach", "AfterEach"]
+
+csharp = ["Fact", "Theory", "Test", "TestCase", "TestCaseSource", "TestFixture", "SetUp", "TearDown", "OneTimeSetUp", "OneTimeTearDown"]
+
+swift = ["Test", "Suite"]
+
+php = ["Test"]
+
+[output.context.exclude.test_decorators]
+python = ["pytest.fixture", "pytest.mark.*", "unittest.skip", "unittest.skipIf", "unittest.skipUnless", "unittest.expectedFailure"]
+
+[output.context.exclude.test_calls]
+javascript = ["describe", "describe.*", "it", "it.*", "test", "test.*", "suite", "suite.*"]
+
+typescript = ["describe", "describe.*", "it", "it.*", "test", "test.*", "suite", "suite.*"]
+
+dart = ["test", "group", "testWidgets"]
+
+ruby = ["describe", "context", "it", "specify"]
+
+powershell = ["Describe", "Context", "It"]
+
+[index]
+# 색인 디렉터리입니다. 절대 경로나 작업공간 루트 기준 상대 경로를 사용합니다.
+# 기본값은 `.codemap/` 안에 저장합니다. 변경 후 서버를 재시작하세요.
+path = ".codemap/index"
+
+# 색인에 포함할 최대 파일 크기입니다. 단위는 바이트이며 초과 파일도 read/find/grep으로 직접 확인할 수 있습니다.
+# 값을 늘리면 더 큰 파일을 포함하며 CPU·메모리·디스크 사용량이 늘 수 있습니다.
+max_file_bytes = "1mb"
+
+# 함수 호출 외의 참조 위치를 저장합니다. 호출 대상 확인에 필수인 설정은 아닙니다.
+# 일부 구조화 형식은 참조를 항상 저장합니다.
+# 파싱 시 적용하므로 값 변경이나 재시작만으로 변경되지 않은 파일을 다시 파싱하지 않을 수 있습니다.
+store_references = false
+
+[index.exclude]
+# 색인·overview·search·호출자 탐색·find/grep이 공유하는 디렉터리 제외 규칙입니다.
+# 직접 read에는 적용하지 않으며 read는 파일시스템 접근 권한을 따릅니다.
+# "build"와 "**/build"는 모든 깊이, "./build"는 작업공간 루트만 제외합니다.
+# "apps/web/build", "apps/api/**/__pycache__"는 작업공간 기준 상대 경로·glob입니다.
+# 절대 경로와 ..은 허용하지 않습니다. []는 선택적 규칙 해제, 키 생략은 전역·기본값 상속입니다.
+# 무시 파일은 별도로 적용합니다. 최초 생성 시 "**/node_modules" 같은 재귀 glob을 중복 없이 추가합니다.
+# 버전 6 이전은 한 번 전환합니다. 버전 6부터 새 규칙이 필요하면 이 배열을 직접 관리하세요.
+# 수동 변경은 설정을 다시 읽은 뒤 전체 색인 갱신을 요청합니다.
+# find/grep의 include_ignored=true는 선택적 규칙을 우회합니다. 버전 관리 내부 폴더, .codemap, .codemap-index, 실제 색인 경로는 항상 제외합니다.
+excluded_directories = [
+    "**/.astro",
+    "**/.next",
+    "**/.nuxt",
+    "**/.output",
+    "**/.parcel-cache",
+    "**/.svelte-kit",
+    "**/.turbo",
+    "**/.yarn",
+    "**/build",
+    "**/coverage",
+    "**/dist",
+    "**/node_modules",
+    ".bzr",
+    ".codemap",
+    ".codemap-index",
+    ".git",
+    ".hg",
+    ".idea",
+    ".jj",
+    ".sl",
+    ".svn",
+    ".vs",
+    ".vscode",
+]
+
+# `.git/info/exclude`를 적용합니다. false이면 이 파일만으로 제외한 경로를 표시합니다.
+# `.gitignore`, 전역 Git 무시 규칙, `.codemapignore`는 계속 적용합니다.
+# 변경하면 설정 재로드 후 전체 색인 갱신을 요청합니다.
+use_git_exclude = true
+
+[index.refresh]
+# 파일 변경을 감시해 백그라운드에서 색인을 갱신합니다.
+# false이거나 감시를 쓸 수 없으면 search/overview가 `index.refresh.index_staleness_ms`에 따라 갱신을 요청합니다.
+# 변경 후 서버를 재시작하세요.
+watch = true
+
+# 파일 변경을 모아서 처리할 시간입니다. 단위는 밀리초입니다.
+# 길게 설정하면 갱신 횟수가 줄지만 반영이 늦어집니다. 변경 후 서버를 재시작하세요.
+watch_debounce_ms = 500
+
+# 요청 기반 갱신의 최소 간격입니다. 단위는 밀리초입니다.
+# 파일 감시가 꺼져 있거나 사용할 수 없을 때만 적용하며, 길게 설정하면 결과 반영이 늦어질 수 있습니다.
+index_staleness_ms = 5000
+
+# 백그라운드 색인이 중단되면 다음 search/overview에서 제한된 횟수로 복구를 시도합니다.
+# false이면 서버 재시작 전까지 결과가 고정됩니다. read/find/grep은 계속 실제 파일을 읽습니다.
+indexer_auto_restart = true
+
+[index.language_support]
+# 다음 설정은 색인·search·overview·codemap·파일 변경 갱신을 제어합니다.
+# 그룹이 꺼져 있어도 실시간 read/find/grep과 직접 parse는 사용할 수 있습니다.
+# 변경 시 설정을 다시 읽은 뒤 전체 색인 갱신을 요청합니다.
+
+# Markdown `.md`, `.mdx`를 포함합니다.
+is_document_support_enabled = true
+
 # `.sh`, `.bash`, `.zsh`를 포함합니다.
-# false여도 직접 read/parse/find/grep은 계속 허용합니다.
-# is_shell_support_enabled = false
-# 인프라 정의
-# HCL/Terraform(`.hcl`, `.tf`, `.tfvars`), Dockerfile, Nix(`.nix`)를 포함합니다.
-# false여도 직접 read/parse/find/grep은 계속 허용합니다.
-# is_infrastructure_support_enabled = false
-# 인터페이스 정의
-# Protocol Buffers(`.proto`)와 GraphQL(`.graphql`, `.gql`)을 포함합니다.
-# false여도 직접 read/parse/find/grep은 계속 허용합니다.
-# is_interface_support_enabled = false
-# 빌드 정의
-# Makefile과 `.mk`, CMakeLists.txt와 `.cmake`, BUILD·BUILD.bazel과 `.bzl`을 포함합니다.
-# false여도 직접 read/parse/find/grep은 계속 허용합니다.
-# is_build_support_enabled = false
-# is_document_support_enabled = false
+is_shell_support_enabled = false
 
-# [update]
-# config_auto_update = true
+# HCL/Terraform `.hcl`, `.tf`, `.tfvars`, Dockerfile, Nix `.nix`를 포함합니다.
+is_infrastructure_support_enabled = false
 
-[exclude]
+# Protocol Buffers `.proto`, GraphQL `.graphql`, `.gql`을 포함합니다.
+is_interface_support_enabled = false
 
-# 언어별 테스트 규칙: 목록을 바꾸면 사용자 설정으로 대체하고 []로 비활성화합니다.
-# test_calls = { javascript = ["describe", "describe.*", "it", "it.*", "test", "test.*", "suite", "suite.*"], typescript = ["describe", "describe.*", "it", "it.*", "test", "test.*", "suite", "suite.*"], dart = ["test", "group", "testWidgets"], ruby = ["describe", "context", "it", "specify"], powershell = ["Describe", "Context", "It"] }
+# Makefile, `.mk`, CMakeLists.txt, `.cmake`, BUILD, BUILD.bazel, `.bzl`을 포함합니다.
+is_build_support_enabled = false
 
-# 언어별 테스트 규칙: 목록을 바꾸면 사용자 설정으로 대체하고 []로 비활성화합니다.
-# test_decorators = { python = ["pytest.fixture", "pytest.mark.*", "unittest.skip", "unittest.skipIf", "unittest.skipUnless", "unittest.expectedFailure"] }
+[analysis]
+# 이 섹션 없이도 분석합니다. Rust 대상 OS를 생략하거나 빈 값으로 두면 미지정이며 호스트 OS를 사용하지 않습니다.
 
-# 언어별 테스트 규칙: 목록을 바꾸면 사용자 설정으로 대체하고 []로 비활성화합니다.
-# test_attributes = { rust = ["test", "tokio::test", "async_std::test", "rstest", "rstest::rstest", "cfg(test)"], java = ["Test", "ParameterizedTest", "RepeatedTest", "TestFactory", "TestTemplate", "Nested", "BeforeEach", "AfterEach", "BeforeAll", "AfterAll"], kotlin = ["Test", "ParameterizedTest", "RepeatedTest", "BeforeTest", "AfterTest", "BeforeEach", "AfterEach"], csharp = ["Fact", "Theory", "Test", "TestCase", "TestCaseSource", "TestFixture", "SetUp", "TearDown", "OneTimeSetUp", "OneTimeTearDown"], swift = ["Test", "Suite"], php = ["Test"] }
+# target_os = ""
 
-# 작업공간 기준 테스트 파일 glob입니다. /가 없으면 파일 이름과 비교하며 []로 경로 판별을 끕니다.
-# test_file_patterns = ["**/tests/**", "**/test/**", "**/__tests__/**", "test_*.py", "*_test.*", "*.test.*", "*_spec.*", "*.spec.*", "*Test.java", "*Tests.java", "*IT.java"]
+[filesystem_permissions]
+# find/grep/read 정책: "workspace"는 작업공간만, "allowed_roots"는 작업공간과 지정 루트,
+# "anywhere"는 프로세스가 접근 가능한 모든 경로입니다. 특정 외부 트리에는 allowed_roots를 사용하세요.
+find = "workspace"
 
-# 자동 심볼·호출 관계에 테스트 영역을 포함합니다. 직접 read/grep한 원문은 유지됩니다.
-# should_include_test_code = false
-excluded_directories = [".idea", ".vscode", ".vs", "node_modules", ".yarn", "target", "dist", "build", "vendor", ".git", ".svn", ".hg", ".bzr", ".jj", ".sl", ".codemap", ".codemap-index", "**/.astro", "**/.next", "**/.nuxt", "**/.output", "**/.parcel-cache", "**/.svelte-kit", "**/.turbo", "**/.yarn", "**/build", "**/coverage", "**/dist", "**/node_modules"]
+# grep의 파일시스템 접근 정책입니다. 허용 값의 의미는 위 설명과 같습니다.
+grep = "workspace"
+
+# read의 파일시스템 접근 정책입니다. 허용 값의 의미는 위 설명과 같습니다.
+read = "workspace"
+
+# "allowed_roots" 정책인 도구의 외부 루트입니다. 항목은 비어 있지 않은 문자열이어야 합니다.
+# 상대 경로는 작업공간 루트 기준이며 절대 경로도 허용합니다.
+# 존재하는 부분은 심볼릭 링크를 포함해 실제 경로로 해석하고 아직 없는 뒷부분은 유지합니다.
+allowed_roots = []
+
+[update]
+# MCP 시작 시 누락된 `.codemap/config.toml`을 만들고 새 설정은 주석으로 추가합니다.
+# 버전 6 이전의 제외 배열은 한 번 전환하며 버전 6부터는 직접 관리합니다.
+# false이면 전환을 포함한 자동 작성을 끄지만 설정 읽기와 감시는 계속합니다.
+config_auto_update = true
