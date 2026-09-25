@@ -79,8 +79,11 @@ index. Scope the changelog's history and recommendation inputs separately as sho
 verify the resulting changelog with distinct commits from both apps. For shared-library
 changes that affect a service, determine its history inclusion policy during setup.
 
-Require the entire repository/index to be clean first. release-it stages from the selected
-cwd, but Git commit consumes the whole index. Inspect hooks and workspace-version tooling
+For the packaged wrapper, require tracked files and the index to be clean repository-wide.
+Handle untracked files according to actual write paths and `addUntrackedFiles`, not merely
+whether they are inside the selected app; see [working state and staging scope](git-integration.md#working-state-and-staging-scope).
+release-it stages from the selected cwd, but Git commit consumes the whole index.
+Inspect hooks and workspace-version tooling
 for writes to sibling apps, shared lockfiles, or root manifests. With package.json versioning,
 release-it supplies `--workspaces=false`; the example also disables workspace dependency
 updates and version scripts. Confirm this behavior with the project's npm/pnpm versions.

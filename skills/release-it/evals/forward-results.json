@@ -1,0 +1,77 @@
+{
+  "checked_at": "2026-09-25",
+  "scope": "One independent fresh-context generated CLI/CI version-provider scenario; five execution checks. Real release-it API/CLI, file writes, local commits and tags; Git network and GitHub API replaced by local stubs.",
+  "environment": {
+    "node": "v24.14.0",
+    "release-it": "21.0.1"
+  },
+  "generated_artifact_sha256": {
+    ".release-it.json": "0833a204588047ab1065a5a39b215f140c22d33db10f529d80ea9b933b38a9da",
+    "scripts/product-version.mjs": "ec6427fdd9b987816ee2c6e28deb97b4df13d74e2b5fe3eb466dde80b27d0250"
+  },
+  "artifact_directory": "/tmp/release-it-skill-check-20260925-6npwcpul/forward",
+  "verification_command": "node verification/verify.mjs",
+  "evidence_file": "/tmp/release-it-skill-check-20260925-6npwcpul/forward/logs/evidence.json",
+  "checks": [
+    {
+      "name": "CLI dry-run",
+      "passed": true,
+      "expected_exit_code": 0,
+      "actual_exit_code": 0,
+      "tooling_manifest_unchanged": true,
+      "all_file_and_git_state_unchanged": true,
+      "github_release_stub_calls": 0,
+      "api_result": null
+    },
+    {
+      "name": "Actual release-it API",
+      "passed": true,
+      "expected_exit_code": 0,
+      "actual_exit_code": 0,
+      "tooling_manifest_unchanged": true,
+      "all_file_and_git_state_unchanged": false,
+      "github_release_stub_calls": 1,
+      "api_result": {
+        "name": "product-fixture",
+        "changelog": "* fix: prepare product release (75924dc)",
+        "latestVersion": "2.3.4",
+        "version": "2.3.5"
+      }
+    },
+    {
+      "name": "Actual release-it CLI --ci",
+      "passed": true,
+      "expected_exit_code": 0,
+      "actual_exit_code": 0,
+      "tooling_manifest_unchanged": true,
+      "all_file_and_git_state_unchanged": false,
+      "github_release_stub_calls": 1,
+      "api_result": null
+    },
+    {
+      "name": "Fixed target repeated run",
+      "passed": true,
+      "expected_exit_code": 1,
+      "actual_exit_code": 1,
+      "tooling_manifest_unchanged": true,
+      "all_file_and_git_state_unchanged": true,
+      "github_release_stub_calls": 0,
+      "api_result": null
+    },
+    {
+      "name": "Malformed manifest before writes",
+      "passed": true,
+      "expected_exit_code": 1,
+      "actual_exit_code": 1,
+      "tooling_manifest_unchanged": true,
+      "all_file_and_git_state_unchanged": true,
+      "github_release_stub_calls": 0,
+      "api_result": null
+    }
+  ],
+  "limits": [
+    "Not a full generated-output benchmark.",
+    "No real remote push, GitHub publication, authentication, or external notification.",
+    "Two-file mid-write failure recovery was not verified."
+  ]
+}

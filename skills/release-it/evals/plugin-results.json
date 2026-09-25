@@ -1,0 +1,74 @@
+{
+  "checked_at": "2026-09-25",
+  "scope": "Plugin code extracted from the Markdown reference and run with the real release-it API and stock prompt. Answers, core-order marker commands, and notification fetch are local stubs. No external notification, publication, or remote operation.",
+  "releaseItVersion": "21.0.1",
+  "referenceSha256": "a48c941fd3b0d128943c82b8d41803c1b59ce84a127a7811f72bdab294b8c2e7",
+  "results": [
+    {
+      "name": "version-provider",
+      "passed": true,
+      "version": "1.2.4",
+      "questions": 0,
+      "notifications": 0,
+      "isDryRun": false
+    },
+    {
+      "name": "version-provider-dry-run",
+      "passed": true,
+      "version": "1.2.4",
+      "questions": 0,
+      "notifications": 0,
+      "isDryRun": true
+    },
+    {
+      "name": "webhook-approve",
+      "passed": true,
+      "version": "1.2.4",
+      "questions": 1,
+      "notifications": 1,
+      "isDryRun": false
+    },
+    {
+      "name": "webhook-decline",
+      "passed": true,
+      "version": "1.2.4",
+      "questions": 1,
+      "notifications": 0,
+      "isDryRun": false
+    },
+    {
+      "name": "webhook-dry-run",
+      "passed": true,
+      "version": "1.2.4",
+      "questions": 0,
+      "notifications": 0,
+      "isDryRun": true
+    },
+    {
+      "name": "plugin-group-order",
+      "passed": true,
+      "order": [
+        "beforeBump:A",
+        "beforeBump:B",
+        "beforeBump:core",
+        "bump:A",
+        "bump:B",
+        "bump:core",
+        "beforeRelease:A",
+        "beforeRelease:B",
+        "beforeRelease:core",
+        "release:core",
+        "release:A",
+        "release:B",
+        "afterRelease:core",
+        "afterRelease:A",
+        "afterRelease:B"
+      ]
+    },
+    {
+      "name": "api-error-ownership",
+      "passed": true,
+      "errorMessages": 1
+    }
+  ]
+}

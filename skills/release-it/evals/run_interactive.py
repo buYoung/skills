@@ -88,6 +88,7 @@ def fixture(case, directory, dependencies):
         prefix = f"{name}-v" if case.get("mono") else "v"
         config = {
             "git": {"commit": True, "tag": True, "push": True, "requireBranch": "main",
+                    "addUntrackedFiles": case.get("add_untracked_files", False),
                     "requireUpstream": True, "tagName": prefix + "${version}",
                     "tagMatch": prefix + "[0-9]*", "commitsPath": ".",
                     "commitMessage": f"chore({name}): release ${{version}}"},
@@ -108,6 +109,13 @@ def fixture(case, directory, dependencies):
                 "  getIncrementedVersionCI() { return '9.0.0'; }\n}\n"
             )
             config["plugins"] = {"./override.mjs": {}, **config["plugins"]}
+        if case.get("preparation_error"):
+            (app / "failure.mjs").write_text(
+                "import { Plugin } from 'release-it';\n"
+                "export default class Failure extends Plugin {\n"
+                "  beforeRelease() { throw new Error('Fixture preparation failed.'); }\n}\n"
+            )
+            config["plugins"]["./failure.mjs"] = {}
         write_json(app / ".release-it.json", config)
 
     git(root, "init", "-b", "main")
@@ -127,6 +135,14 @@ def fixture(case, directory, dependencies):
     git(root, "update-ref", "refs/remotes/origin/main", "HEAD")
     git(root, "config", "branch.main.remote", "origin")
     git(root, "config", "branch.main.merge", "refs/heads/main")
+    if case.get("untracked_file"):
+        (root / case["untracked_file"]).write_text("unrelated initial content\n")
+    if case.get("staged_file"):
+        (root / case["staged_file"]).write_text("existing staged content\n")
+        git(root, "add", case["staged_file"])
+    if case.get("tracked_change"):
+        file = root / case["tracked_change"]
+        file.write_text(file.read_text() + "\n")
     return root
 
 
@@ -146,6 +162,9 @@ def emit(kind):
 if command == 'fetch':
     emit('fetch-stub')
     sys.exit(0)
+if command == 'show-ref' and '--tags' not in args and os.environ.get('RELEASE_EVAL_REF_FAILURE'):
+    print('fixture ref lookup failed', file=sys.stderr)
+    sys.exit(2)
 is_action = command == 'commit' or (command == 'tag' and '--annotate' in args) or command == 'push'
 if is_action:
     emit('action')
@@ -236,6 +255,7 @@ def run_case(case, output, dependencies):
     env.update(case.get("env", {}))
     head = git(root, "rev-parse", "HEAD")
     tags_before = set(git(root, "tag", "--list").splitlines())
+    before_status = git(root, "status", "--porcelain", "--untracked-files=no")
     path = f"apps/{case.get('app', 'api')}" if case.get("mono") else "."
     selected = root / path
     before_files = {str(p.relative_to(root)): p.read_bytes()
@@ -246,27 +266,31 @@ def run_case(case, output, dependencies):
     next_version = case.get("version", "4.5.7" if current == "4.5.6" else "1.2.4")
     responses = []
     stop = case.get("stop")
-    if not case.get("mode") and not case.get("arguments"):
+    if not case.get("mode") and not case.get("arguments") and not case.get("early_preflight"):
         if case.get("mono"):
             responses.append(("app", b"\x1b[B\r" if case.get("app") == "web" else b"\r"))
-        responses.append(("version", case.get("version_keys", b"\r")))
+        if not case.get("preflight_message"):
+            responses.append(("version", case.get("version_keys", b"\r")))
         if case.get("custom"):
             if case.get("invalid_custom"):
                 responses.append(("custom", b"not-semver\r"))
                 responses.append(("validation", b"\x15" + next_version.encode() + b"\r"))
             else:
                 responses.append(("custom", next_version.encode() + b"\r"))
-        responses.extend((stage, b"y\r") for stage in ("commit", "tag", "push"))
+        if not case.get("preflight_message"):
+            responses.extend((stage, b"\r" if case.get("enter_stage") in {stage, "all"} else b"y\r")
+                             for stage in ("commit", "tag", "push"))
         if stop:
             index = next(i for i, response in enumerate(responses) if response[0] == stop)
-            answer = b"\r" if case.get("default_decline") else b"n\r" if case.get("decline") else b"\x03"
+            answer = b"n\r" if case.get("decline") else b"\x03"
             responses = responses[:index] + [(stop, answer)]
-        if case.get("guard_mismatch"):
+        if case.get("guard_mismatch") or case.get("preparation_error"):
             responses = [("version", b"\r")]
     code, transcript = run_terminal(root, directory, env, event_file, responses,
                                     case.get("mode"), case.get("arguments", ()))
     events = [json.loads(line) for line in event_file.read_text().splitlines()] if event_file.exists() else []
-    stopped = bool(stop or case.get("mode") or case.get("arguments") or case.get("guard_mismatch"))
+    stopped = bool(stop or case.get("mode") or case.get("arguments") or case.get("guard_mismatch")
+                   or case.get("preparation_error") or case.get("preflight_message"))
     assert (code != 0) == stopped, f"Unexpected exit {code}: {transcript[-2000:]}"
     stages = [stage for stage, _ in responses]
     actual = [(event["kind"], event.get("stage", event.get("action"))) for event in events
@@ -277,16 +301,27 @@ def run_case(case, output, dependencies):
         if stage in {"commit", "tag", "push"} and stage != stop:
             expected.extend([("action", stage), ("action-complete", stage)])
     assert actual == expected, f"Question/action ordering differs: {actual} != {expected}"
-    should_bump = not case.get("mode") and not case.get("arguments") and not case.get("guard_mismatch") and stop not in {"app", "version", "custom"}
+    should_bump = (not case.get("mode") and not case.get("arguments") and not case.get("guard_mismatch")
+                   and not case.get("preflight_message") and stop not in {"app", "version", "custom"})
     expected_version = next_version if should_bump else current
     assert json.loads((selected / "package.json").read_text())["version"] == expected_version
-    should_commit = should_bump and stop != "commit"
+    should_commit = should_bump and stop != "commit" and not case.get("preparation_error")
     should_tag = should_commit and stop != "tag"
     assert (git(root, "rev-parse", "HEAD") != head) == should_commit
     tag = (f"{case.get('app', 'api')}-v" if case.get("mono") else "v") + next_version
     assert set(git(root, "tag", "--list").splitlines()) - tags_before == ({tag} if should_tag else set())
-    status = git(root, "status", "--porcelain")
-    assert bool(status) == (should_bump and not should_commit), f"Unexpected remaining changes: {status}"
+    status = git(root, "status", "--porcelain", "--untracked-files=no")
+    if should_bump and not should_commit:
+        assert status, "The example's preserve policy lost interrupted version changes"
+    else:
+        assert status == before_status, f"Unexpected tracked/index changes: {status}"
+    if case.get("untracked_file"):
+        file = case["untracked_file"]
+        assert (root / file).read_text() == "unrelated initial content\n"
+        assert not git(root, "ls-files", "--", file), f"Untracked file entered the index: {file}"
+    if case.get("staged_file"):
+        file = case["staged_file"]
+        assert git(root, "show", f":{file}") == "existing staged content"
     if should_bump:
         changelog = (selected / "CHANGELOG.md").read_text()
         assert next_version in changelog, "Selected version missing from changelog"
@@ -307,11 +342,27 @@ def run_case(case, output, dependencies):
         assert "interactive terminal is required" in transcript
         assert not events, "Release work started without a terminal"
     if case.get("guard_mismatch"):
-        assert "Resolved version differs from the displayed selection" in transcript
+        assert transcript.count("Resolved version differs from the displayed selection") == 1
+    if case.get("preparation_error"):
+        assert transcript.count("Fixture preparation failed.") == 1
+    if case.get("preflight_message"):
+        assert transcript.count(case["preflight_message"]) == 1
+        assert "Select version (current:" not in transcript
+    if case.get("enter_stage"):
+        assert "(Y/n)" in transcript, "Default approval was not displayed"
+    assert "fatal:" not in transcript, f"Unexpected Git stderr leaked: {transcript[-2000:]}"
+    if case.get("env", {}).get("RELEASE_EVAL_REF_FAILURE"):
+        assert "Could not fully inspect remaining state:" in transcript
+        assert "fixture ref lookup failed" in transcript
+        assert "(not present locally)" not in transcript
+    else:
+        assert "Could not fully inspect remaining state:" not in transcript
+        if stop in {"commit", "tag"}:
+            assert "(not present locally)" in transcript
     if stop:
         prompt_stage = "service app" if stop == "app" else "version" if stop == "custom" else stop
         message = f"Declined {stop}." if case.get("decline") else f"Cancelled at {prompt_stage}."
-        assert message in transcript, f"Missing stop message: {message}"
+        assert transcript.count(message) == 1, f"Expected one stop message: {message}"
         assert "ExitPromptError" not in transcript and "AbortPromptError" not in transcript
     if stages:
         first_questions = [key for key in ("app", "version", "commit", "tag", "push")
@@ -352,11 +403,27 @@ def main():
         {"name": "ci-env", "inherited": True, "env": {"CI": "true"}},
         {"name": "vendor-ci-env", "inherited": True, "env": {"GITHUB_ACTIONS": "true"}},
         {"name": "plugin-version-mismatch", "guard_mismatch": True},
+        {"name": "preparation-failure-reported-once", "preparation_error": True},
+        {"name": "ref-inspection-failure", "stop": "commit", "decline": True,
+         "env": {"RELEASE_EVAL_REF_FAILURE": "1"}},
+        {"name": "untracked-inside-update", "mono": True, "untracked_file": "apps/api/notes.txt"},
+        {"name": "untracked-outside-update", "mono": True, "untracked_file": "notes.txt"},
+        {"name": "untracked-outside-all", "mono": True, "add_untracked_files": True,
+         "untracked_file": "notes.txt"},
+        {"name": "untracked-inside-all-blocked", "mono": True, "add_untracked_files": True,
+         "untracked_file": "apps/api/notes.txt", "preflight_message": "Untracked files would enter the release commit"},
+        {"name": "untracked-version-input-blocked", "untracked_file": "package-lock.json",
+         "preflight_message": "Track the version input before releasing"},
+        {"name": "tracked-sibling-blocked", "mono": True, "tracked_change": "packages/ui/package.json",
+         "early_preflight": True, "preflight_message": "Tracked files and the index must be clean"},
+        {"name": "staged-new-outside-blocked", "mono": True, "staged_file": "notes.txt",
+         "early_preflight": True, "preflight_message": "Tracked files and the index must be clean"},
+        {"name": "untracked-preserved-on-cancel", "mono": True, "untracked_file": "notes.txt", "stop": "commit"},
     ]
     cases += [{"name": f"{action}-{stage}", "stop": stage, "decline": action == "decline"}
               for action in ("decline", "cancel") for stage in ("commit", "tag", "push")]
-    cases += [{"name": f"default-decline-{stage}", "stop": stage, "decline": True, "default_decline": True}
-              for stage in ("commit", "tag", "push")]
+    cases += [{"name": f"default-approve-{stage}", "enter_stage": stage}
+              for stage in ("commit", "tag", "push", "all")]
     cases += [{"name": f"non-tty-{mode}", "mode": mode} for mode in ("stdin", "stdout", "both")]
     cases += [{"name": f"reject-{flag}", "arguments": [f"--{flag}"]}
               for flag in ("ci", "only-version", "yes")]

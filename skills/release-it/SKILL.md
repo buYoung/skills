@@ -1,8 +1,8 @@
 ---
 name: release-it
 description: >-
-  release-it configuration, setup, and plugin development. Triggers on .release-it.* config files,
-  release-it CLI usage, version bumping, changelog generation, npm publishing, GitHub/GitLab releases,
+  release-it configuration, setup, troubleshooting, and plugin development. Triggers on .release-it.* config files,
+  release-it CLI or programmatic usage, version bumping, changelog generation, npm publishing, GitHub/GitLab releases,
   git tagging, hooks lifecycle, pre-release workflows, CI/CD pipelines, monorepo strategies,
   @inquirer/prompts interactive service-app releases, and custom plugin development.
 ---
@@ -14,9 +14,30 @@ It handles version bumping, Git committing/tagging/pushing, npm publishing, and 
 release creation -- all in a single configurable workflow. Language-agnostic with a powerful
 plugin system for extending behavior.
 
+## Choose the Applying Workflow
+
+Start with the requested operation and the project's existing release entry point. A config
+repair, CI job, publishing workflow, or plugin does not by itself require a new interactive
+wrapper. Preserve the chosen execution mode and enabled capabilities when fixing it.
+
+- **Configuration, CLI, or CI:** use [configuration.md](references/configuration.md) and
+  [cli-and-workflow.md](references/cli-and-workflow.md); load publishing references when applicable.
+- **Programmatic wrapper:** inspect the API, prompt/log ownership, and installed version using
+  [cli-and-workflow.md](references/cli-and-workflow.md). Use the interactive contract below when
+  generating the service-app command, not as an override for every API caller.
+- **Version source or custom plugin:** use [plugins.md](references/plugins.md) and
+  [custom-plugin-development.md](references/custom-plugin-development.md). Tooling manifests do
+  not determine the application's version source.
+- **Dirty state, cancellation, or recovery:** use [git-integration.md](references/git-integration.md)
+  to distinguish write paths, staging scope, the shared index, and recoverable state.
+
+The concrete adapter and source-level behavior in this skill are checked against release-it
+**21.0.1**. Match configuration schemas, runtime requirements, and plugin interfaces to the
+applying project's version; an example's dependency pin is not an instruction to upgrade it.
+
 ## Default Interactive Contract
 
-Generate `pnpm release` using the project entry script and `@inquirer/prompts` adapter in
+For a new interactive service-app release command, generate `pnpm release` using the project entry script and `@inquirer/prompts` adapter in
 [interactive-workflow.md](references/interactive-workflow.md). All release questions use
 Inquirer; release-it performs the version update and Git operations.
 
@@ -34,9 +55,12 @@ Pass the selected exact version and target configuration to release-it's API.
 
 Ask each Git confirmation at its release-it execution point and await that action before
 asking the next. A negative answer or cancellation stops that action and the entire remaining
-flow. Use Inquirer's native `y/n` confirmation with `default: false`, so Enter declines;
+flow. Use Inquirer's native `y/n` confirmation with `default: true` for commit, tag, and push,
+so Enter approves the displayed action, including push;
 Ctrl+C cancels the active question. Report the actual remaining files, index, commit, tag,
-and push status; do not promise automatic rollback. Check for an interactive terminal before any release work. Do not use
+and push status according to the chosen recovery policy. The packaged example preserves
+interrupted work; automatic restoration needs explicit scope and baseline handling.
+Check for an interactive terminal before any release work. Do not use
 `--ci`, `--only-version`, canned answers, or a direct push hook in this default path.
 
 CI automation, npm publishing, and hosted releases remain supported as explicitly requested
@@ -65,7 +89,7 @@ Read the reference file that matches your task:
 | [configuration.md](references/configuration.md) | Setting up or modifying `.release-it.*` config in any format, config extends/merging, CLI overrides |
 | [hooks-and-lifecycle.md](references/hooks-and-lifecycle.md) | Adding pre/post release commands, understanding execution order, template variables |
 | [cli-and-workflow.md](references/cli-and-workflow.md) | CLI flags, increment types, pre-release flow, dry-run, CI mode, programmatic API |
-| [git-integration.md](references/git-integration.md) | Tag naming/matching, changelog command, commit messages, branch restrictions, push config |
+| [git-integration.md](references/git-integration.md) | Working state, staging and recovery scope, tag naming/matching, branch restrictions, push config |
 | [npm-publishing.md](references/npm-publishing.md) | npm auth, scoped packages, dist-tags, OTP/2FA, OIDC Trusted Publishing, monorepo, private registry |
 | [github-gitlab-releases.md](references/github-gitlab-releases.md) | GitHub/GitLab release creation, tokens, assets, release notes, comments, draft/pre-release |
 | [plugins.md](references/plugins.md) | Setting up official/community plugins (conventional-changelog, bumper, keep-a-changelog, etc.) |
@@ -85,7 +109,8 @@ release-it supports 6 config file formats. Pick one:
 | TOML | `.release-it.toml` | Table-based config |
 | package.json | `"release-it": {}` property | Zero extra files |
 
-JSON schema: `"$schema": "https://unpkg.com/release-it@20/schema/release-it.json"`
+Example schema for the checked version: `"$schema": "https://unpkg.com/release-it@21.0.1/schema/release-it.json"`.
+Use the applying project's release-it version when generating its configuration.
 
 Only override options that differ from defaults. See [configuration.md](references/configuration.md) for all defaults and the `extends` mechanism.
 
@@ -112,7 +137,7 @@ Only override options that differ from defaults. See [configuration.md](referenc
 ## Key Concepts
 
 - **Increment types** (UX order, most-used first): `patch` → `minor` → `prepatch` (alpha) → `preminor` (beta) → `prerelease` (rc counter) → `major` → `premajor`. semver bumps plus pre-release variants, ordered by typical usage frequency
-- **Dry-run** (`--dry-run`): Shows what would execute without side effects. `$` = read-only (runs), `!` = write (skipped)
+- **Dry-run** (`--dry-run`): Skips writes routed through release-it's shell layer. `$` = read-only (runs), `!` = write (skipped). Plugins must guard direct filesystem/network effects themselves
 - **CI mode** (`--ci`): Non-interactive, auto-detected in CI environments. No prompts, uses spinners instead
 - **npm dist-tags**: `latest` (default), `next`, `beta`, `alpha` -- controls what `npm install` resolves to
 - **Plugin lifecycle**: `init` → `getName` → `getLatestVersion` → `beforeBump` → `bump` → `beforeRelease` → `release` → `afterRelease`

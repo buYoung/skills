@@ -10,10 +10,15 @@
 
 **Solutions**:
 1. Commit or stash changes before running release-it
-2. Disable the check: `--no-git.requireCleanWorkingDir`
-3. In config: `"git": { "requireCleanWorkingDir": false }`
+2. If the workflow intentionally permits existing changes, define its staging and recovery
+   policy before disabling the check with `--no-git.requireCleanWorkingDir` or
+   `"git": { "requireCleanWorkingDir": false }`. In 21.0.1 this also prevents registration
+   of local exit/SIGINT rollback handlers.
 
-This is common in monorepo setups where other packages modify files during release.
+For wrappers, inspect the actual preflight command. release-it's built-in tracked/index
+check ignores ordinary untracked files; a wrapper's `status --untracked-files=all` can be
+stricter. Match checks to writers, staging options, and the shared index instead of treating
+every untracked file as releasable work. See [Git state and recovery](git-integration.md#working-state-and-staging-scope).
 
 ---
 
@@ -272,7 +277,16 @@ Ensure the CI has push access:
 - **Declining commit still tags/pushes:** a false stock prompt result skips only the task.
   Throw the adapter's stop exception before calling the callback.
 - **Cancellation destroys the local commit/tag:** inspect release-it's exit rollback handlers.
-  The example prechecks the whole repository and disables that built-in rollback mechanism.
+  The example prechecks repository-wide tracked/index state and disables those local handlers.
+- **Version changes remain after No/Ctrl+C:** bump and staging precede the commit question.
+  Check the selected recovery policy; the example deliberately preserves state. A restoration
+  policy needs the original baseline, known outputs, and completed-action checks, not only HEAD.
+- **Cancellation/error is printed twice:** 21.0.1 logs an API error before rethrowing it.
+  Suppress only the wrapper's repeat of that error; keep diagnostics for preflight and recovery.
+- **Missing tag prints a Git fatal message:** explicitly capture stderr in synchronous
+  diagnostic commands and distinguish a missing ref from a failed lookup.
+- **Enter proceeds through push:** the command uses `default: true` for all Git confirmations.
+  `(Y/n)` accepts Enter; type `n` to decline or Ctrl+C to cancel. This is expected behavior.
 - **Push runs without its question:** remove direct push hooks from the default path, keep
   `git.push: true`, and inject the Inquirer adapter through the second API argument.
 - **Prompt interface changed:** inspect the installed version's `register`/`show` calls and

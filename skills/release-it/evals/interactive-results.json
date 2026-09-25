@@ -1,5 +1,5 @@
 {
-  "checked_at": "2026-09-08",
+  "checked_at": "2026-09-25",
   "environment": {
     "dependencies": {
       "release-it": "21.0.1",
@@ -11,18 +11,18 @@
       "node": "v24.14.0",
       "npm": "11.9.0",
       "pnpm": "10.11.0",
-      "git": "git version 2.55.0"
+      "git": "git version 2.50.1 (Apple Git-155)"
     },
     "example_sha256": {
-      "release.mjs": "e3ebd40c95fb6fe99448ec4f30c0186d83b7a0b9c5a53548a69a7e44f188953a",
-      "release-prompts.mjs": "4c5cdca23c337896414daf926b43d42372e160c86350a6a6f772637aefd66b08"
+      "release.mjs": "76122e77716edd6830497bba6a859f05c8b39d3758fb7603b4ec7992aa2139c9",
+      "release-prompts.mjs": "11b2bb23f572014ce51f9e7c3da1aa485efd98b8a30209557ab41e0c59c3fd9c"
     }
   },
   "summary": {
-    "passed": 32,
-    "total": 32
+    "passed": 43,
+    "total": 43
   },
-  "scope": "Exact packaged examples copied into disposable POSIX PTYs; actual local version/changelog/commit/tag, all fetch and push calls stubbed; no remote push or deployment.",
+  "scope": "Exact packaged examples copied into disposable POSIX PTYs; actual local version/changelog/commit/tag, all fetch and push calls stubbed; no remote push or deployment. Includes default Yes, staging-scope preflight, single error reporting, and ref-inspection failures.",
   "scenarios": [
     {
       "name": "single-success",
@@ -41,7 +41,7 @@
             "push",
             "--follow-tags"
           ],
-          "cwd": "/private/tmp/release-it-inquirer-check/single-success/project"
+          "cwd": "/private/tmp/release-it-skill-check-20260925-6npwcpul/full/single-success/project"
         }
       ],
       "version": "1.2.4",
@@ -64,7 +64,7 @@
             "push",
             "--follow-tags"
           ],
-          "cwd": "/private/tmp/release-it-inquirer-check/single-workspace-settings/project"
+          "cwd": "/private/tmp/release-it-skill-check-20260925-6npwcpul/full/single-workspace-settings/project"
         }
       ],
       "version": "1.2.4",
@@ -87,7 +87,7 @@
             "push",
             "--follow-tags"
           ],
-          "cwd": "/private/tmp/release-it-inquirer-check/single-minor/project"
+          "cwd": "/private/tmp/release-it-skill-check-20260925-6npwcpul/full/single-minor/project"
         }
       ],
       "version": "1.3.0",
@@ -110,7 +110,7 @@
             "push",
             "--follow-tags"
           ],
-          "cwd": "/private/tmp/release-it-inquirer-check/single-beta/project"
+          "cwd": "/private/tmp/release-it-skill-check-20260925-6npwcpul/full/single-beta/project"
         }
       ],
       "version": "1.3.0-beta.0",
@@ -134,7 +134,7 @@
             "push",
             "--follow-tags"
           ],
-          "cwd": "/private/tmp/release-it-inquirer-check/single-custom/project"
+          "cwd": "/private/tmp/release-it-skill-check-20260925-6npwcpul/full/single-custom/project"
         }
       ],
       "version": "2.3.4",
@@ -158,7 +158,7 @@
             "push",
             "--follow-tags"
           ],
-          "cwd": "/private/tmp/release-it-inquirer-check/single-custom-retry/project"
+          "cwd": "/private/tmp/release-it-skill-check-20260925-6npwcpul/full/single-custom-retry/project"
         }
       ],
       "version": "2.3.4",
@@ -193,7 +193,7 @@
             "push",
             "--follow-tags"
           ],
-          "cwd": "/private/tmp/release-it-inquirer-check/monorepo-api/project/apps/api"
+          "cwd": "/private/tmp/release-it-skill-check-20260925-6npwcpul/full/monorepo-api/project/apps/api"
         }
       ],
       "version": "1.2.4",
@@ -217,7 +217,7 @@
             "push",
             "--follow-tags"
           ],
-          "cwd": "/private/tmp/release-it-inquirer-check/monorepo-web/project/apps/web"
+          "cwd": "/private/tmp/release-it-skill-check-20260925-6npwcpul/full/monorepo-web/project/apps/web"
         }
       ],
       "version": "4.5.7",
@@ -241,7 +241,7 @@
             "push",
             "--follow-tags"
           ],
-          "cwd": "/private/tmp/release-it-inquirer-check/monorepo-one-app/project/apps/api"
+          "cwd": "/private/tmp/release-it-skill-check-20260925-6npwcpul/full/monorepo-one-app/project/apps/api"
         }
       ],
       "version": "1.2.4",
@@ -295,7 +295,7 @@
             "push",
             "--follow-tags"
           ],
-          "cwd": "/private/tmp/release-it-inquirer-check/inherited-modes/project"
+          "cwd": "/private/tmp/release-it-skill-check-20260925-6npwcpul/full/inherited-modes/project"
         }
       ],
       "version": "1.2.4",
@@ -318,7 +318,7 @@
             "push",
             "--follow-tags"
           ],
-          "cwd": "/private/tmp/release-it-inquirer-check/ci-env/project"
+          "cwd": "/private/tmp/release-it-skill-check-20260925-6npwcpul/full/ci-env/project"
         }
       ],
       "version": "1.2.4",
@@ -341,7 +341,7 @@
             "push",
             "--follow-tags"
           ],
-          "cwd": "/private/tmp/release-it-inquirer-check/vendor-ci-env/project"
+          "cwd": "/private/tmp/release-it-skill-check-20260925-6npwcpul/full/vendor-ci-env/project"
         }
       ],
       "version": "1.2.4",
@@ -355,6 +355,145 @@
       ],
       "push_calls": [],
       "version": "1.2.3",
+      "exit_code": 1
+    },
+    {
+      "name": "preparation-failure-reported-once",
+      "passed": true,
+      "questions": [
+        "version"
+      ],
+      "push_calls": [],
+      "version": "1.2.4",
+      "exit_code": 1
+    },
+    {
+      "name": "ref-inspection-failure",
+      "passed": true,
+      "questions": [
+        "version",
+        "commit"
+      ],
+      "push_calls": [],
+      "version": "1.2.4",
+      "exit_code": 1
+    },
+    {
+      "name": "untracked-inside-update",
+      "passed": true,
+      "questions": [
+        "app",
+        "version",
+        "commit",
+        "tag",
+        "push"
+      ],
+      "push_calls": [
+        {
+          "kind": "action",
+          "action": "push",
+          "args": [
+            "push",
+            "--follow-tags"
+          ],
+          "cwd": "/private/tmp/release-it-skill-check-20260925-6npwcpul/full/untracked-inside-update/project/apps/api"
+        }
+      ],
+      "version": "1.2.4",
+      "exit_code": 0
+    },
+    {
+      "name": "untracked-outside-update",
+      "passed": true,
+      "questions": [
+        "app",
+        "version",
+        "commit",
+        "tag",
+        "push"
+      ],
+      "push_calls": [
+        {
+          "kind": "action",
+          "action": "push",
+          "args": [
+            "push",
+            "--follow-tags"
+          ],
+          "cwd": "/private/tmp/release-it-skill-check-20260925-6npwcpul/full/untracked-outside-update/project/apps/api"
+        }
+      ],
+      "version": "1.2.4",
+      "exit_code": 0
+    },
+    {
+      "name": "untracked-outside-all",
+      "passed": true,
+      "questions": [
+        "app",
+        "version",
+        "commit",
+        "tag",
+        "push"
+      ],
+      "push_calls": [
+        {
+          "kind": "action",
+          "action": "push",
+          "args": [
+            "push",
+            "--follow-tags"
+          ],
+          "cwd": "/private/tmp/release-it-skill-check-20260925-6npwcpul/full/untracked-outside-all/project/apps/api"
+        }
+      ],
+      "version": "1.2.4",
+      "exit_code": 0
+    },
+    {
+      "name": "untracked-inside-all-blocked",
+      "passed": true,
+      "questions": [
+        "app"
+      ],
+      "push_calls": [],
+      "version": "1.2.3",
+      "exit_code": 1
+    },
+    {
+      "name": "untracked-version-input-blocked",
+      "passed": true,
+      "questions": [],
+      "push_calls": [],
+      "version": "1.2.3",
+      "exit_code": 1
+    },
+    {
+      "name": "tracked-sibling-blocked",
+      "passed": true,
+      "questions": [],
+      "push_calls": [],
+      "version": "1.2.3",
+      "exit_code": 1
+    },
+    {
+      "name": "staged-new-outside-blocked",
+      "passed": true,
+      "questions": [],
+      "push_calls": [],
+      "version": "1.2.3",
+      "exit_code": 1
+    },
+    {
+      "name": "untracked-preserved-on-cancel",
+      "passed": true,
+      "questions": [
+        "app",
+        "version",
+        "commit"
+      ],
+      "push_calls": [],
+      "version": "1.2.4",
       "exit_code": 1
     },
     {
@@ -430,30 +569,7 @@
       "exit_code": 1
     },
     {
-      "name": "default-decline-commit",
-      "passed": true,
-      "questions": [
-        "version",
-        "commit"
-      ],
-      "push_calls": [],
-      "version": "1.2.4",
-      "exit_code": 1
-    },
-    {
-      "name": "default-decline-tag",
-      "passed": true,
-      "questions": [
-        "version",
-        "commit",
-        "tag"
-      ],
-      "push_calls": [],
-      "version": "1.2.4",
-      "exit_code": 1
-    },
-    {
-      "name": "default-decline-push",
+      "name": "default-approve-commit",
       "passed": true,
       "questions": [
         "version",
@@ -461,9 +577,88 @@
         "tag",
         "push"
       ],
-      "push_calls": [],
+      "push_calls": [
+        {
+          "kind": "action",
+          "action": "push",
+          "args": [
+            "push",
+            "--follow-tags"
+          ],
+          "cwd": "/private/tmp/release-it-skill-check-20260925-6npwcpul/full/default-approve-commit/project"
+        }
+      ],
       "version": "1.2.4",
-      "exit_code": 1
+      "exit_code": 0
+    },
+    {
+      "name": "default-approve-tag",
+      "passed": true,
+      "questions": [
+        "version",
+        "commit",
+        "tag",
+        "push"
+      ],
+      "push_calls": [
+        {
+          "kind": "action",
+          "action": "push",
+          "args": [
+            "push",
+            "--follow-tags"
+          ],
+          "cwd": "/private/tmp/release-it-skill-check-20260925-6npwcpul/full/default-approve-tag/project"
+        }
+      ],
+      "version": "1.2.4",
+      "exit_code": 0
+    },
+    {
+      "name": "default-approve-push",
+      "passed": true,
+      "questions": [
+        "version",
+        "commit",
+        "tag",
+        "push"
+      ],
+      "push_calls": [
+        {
+          "kind": "action",
+          "action": "push",
+          "args": [
+            "push",
+            "--follow-tags"
+          ],
+          "cwd": "/private/tmp/release-it-skill-check-20260925-6npwcpul/full/default-approve-push/project"
+        }
+      ],
+      "version": "1.2.4",
+      "exit_code": 0
+    },
+    {
+      "name": "default-approve-all",
+      "passed": true,
+      "questions": [
+        "version",
+        "commit",
+        "tag",
+        "push"
+      ],
+      "push_calls": [
+        {
+          "kind": "action",
+          "action": "push",
+          "args": [
+            "push",
+            "--follow-tags"
+          ],
+          "cwd": "/private/tmp/release-it-skill-check-20260925-6npwcpul/full/default-approve-all/project"
+        }
+      ],
+      "version": "1.2.4",
+      "exit_code": 0
     },
     {
       "name": "non-tty-stdin",

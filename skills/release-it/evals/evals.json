@@ -12,7 +12,7 @@
         { "id": "require-branch-main", "text": "Config has git.requireBranch set to 'main'" },
         { "id": "conventional-changelog-plugin", "text": "Config includes @release-it/conventional-changelog plugin with preset and infile" },
         { "id": "github-actions-workflow", "text": "A GitHub Actions workflow YAML file exists with release-it --ci command" },
-        { "id": "workflow-has-tokens", "text": "GitHub Actions workflow references GITHUB_TOKEN and NPM_TOKEN" },
+        { "id": "workflow-has-tokens", "text": "GitHub Actions supplies the credentials required for the requested capabilities; NPM_TOKEN is not required when npm publishing is disabled or uses trusted publishing." },
         { "id": "workflow-fetch-depth", "text": "GitHub Actions checkout uses fetch-depth: 0" },
         { "id": "json-schema-present", "text": "Config includes $schema URL for IDE autocomplete" }
       ]
@@ -64,7 +64,7 @@
         },
         {
           "id": "real-api-adapter",
-          "text": "All release questions use Inquirer, with native y/n confirmations and default: false; release-it receives the selected version and a compatible register/show prompt adapter through its second API argument."
+          "text": "All release questions use Inquirer, with native y/n confirmations and default: true for commit, tag, and push; release-it receives the selected version and a compatible register/show prompt adapter through its second API argument."
         },
         {
           "id": "interleaved-actions",
@@ -72,11 +72,11 @@
         },
         {
           "id": "all-stops",
-          "text": "No, Enter's default decline, and Ctrl+C at each Git confirmation stop that task and all later steps; prompt ExitPromptError/AbortPromptError are handled as cancellation without swallowing other errors."
+          "text": "Explicit No and Ctrl+C at each Git confirmation stop that task and all later steps, while Enter approves it; prompt ExitPromptError/AbortPromptError are handled as cancellation without swallowing other errors."
         },
         {
           "id": "accurate-stop-state",
-          "text": "Reports remaining file/index/HEAD/tag/push state and accounts for release-it exit rollback rather than promising nonexistent state."
+          "text": "States the chosen recovery policy, reports actual file/index/HEAD/tag/push state, and does not promise complete restoration solely because HEAD is unchanged."
         },
         {
           "id": "no-direct-push",
@@ -123,7 +123,7 @@
     {
       "id": 5,
       "prompt": "서비스 앱의 pnpm release 대화형 진입 스크립트를 만들어줘. 모든 질문은 @inquirer/prompts를 쓰고 실제 작업은 release-it이 수행해야 해. 기존 설정은 ci:true, only-version:true, increment:minor, preRelease:beta이고 conventional-changelog는 major를 추천하는 상태야. 현재 버전 1.2.3에서 내가 선택한 patch 1.2.4가 적용되어야 하고, CI=true 또는 GITHUB_ACTIONS=true가 있어도 실제 터미널에서는 버전과 commit/tag/push 질문을 생략하면 안 돼. 터미널 없는 입력은 작업 전에 종료해줘. 각 단계 거절과 취소 동작을 검증할 수 있는 예제도 포함해줘.",
-      "expected_output": "Explicit version selection and safe mode precedence despite inherited options/recommendations/CI, early non-TTY stop, source-version compatibility notes, and isolated verification instructions with push recording only.",
+      "expected_output": "Explicit version selection and safe mode precedence despite inherited options/recommendations/CI, early non-TTY stop, source-version compatibility notes, and isolated verification instructions without production effects.",
       "files": [],
       "assertions": [
         {
@@ -152,8 +152,43 @@
         },
         {
           "id": "isolated-verification",
-          "text": "Verification covers no/cancel at commit/tag/push, CI env and redirected I/O in isolated terminals, with every push intercepted and no remote deployment."
+          "text": "Verification covers No/cancel and Enter approval at commit/tag/push, CI env and redirected I/O in isolated terminals. Pushes are recorded or sent only to a disposable local bare remote, and no production publication or deployment runs."
         }
+      ]
+    },
+    {
+      "id": 6,
+      "prompt": "release-it 21.0.1의 프로그램 방식 대화형 명령을 다른 버전 공급자에 맞춰줘. package.json은 Node 도구 설치용이고 버전 9.9.9야. 실제 제품 버전은 VERSION의 2.3.4이며 기존 커스텀 플러그인이 VERSION과 저장소 루트의 release-manifest.json을 갱신해. npm 배포는 없어. 기존 취소 정책은 변경을 남기고 상태를 보여주는 방식이야. 두 파일이 실제 릴리스 커밋에 포함되게 하고, 버전 선택과 최종 상태 보고도 제품 버전을 사용하게 해줘. Git 확인 기본값은 모두 Yes야.",
+      "expected_output": "Provider-aware adaptation that preserves the existing recovery policy, reads and reports the product version, prevents unrelated npm version writes, and traces both outputs into the commit.",
+      "files": [],
+      "assertions": [
+        { "id": "one-version-source", "text": "Current version, candidate generation, resolved-version checks, writes, and reporting consistently use VERSION, not the tooling package version." },
+        { "id": "provider-writes", "text": "Disables conflicting npm version writes and accounts for both VERSION and the shared release-manifest.json in staging without claiming cwd alone includes them." },
+        { "id": "preserve-policy", "text": "Preserves the requested remaining-state policy and distinguishes already completed commit/tag/push operations from interrupted preparation." },
+        { "id": "default-yes", "text": "All three Git confirmations default to true, while No or cancellation still stops the remaining flow." }
+      ]
+    },
+    {
+      "id": 7,
+      "prompt": "기존 CI는 release-it --ci를 실행하며 npm.publish:false, github.release:true야. requireCleanWorkingDir를 false로 바꿀 때의 영향을 설명하고 실패 후 남은 상태를 진단하는 방법을 개선해줘. 현재 CLI 실행 방식과 릴리스 대상을 유지해줘. 대화형 감싸기 스크립트로 전환할 필요는 없어.",
+      "expected_output": "A focused CLI/CI diagnosis preserving the existing entry point and release capabilities, with version-scoped local/remote recovery behavior and accurate state inspection.",
+      "files": [],
+      "assertions": [
+        { "id": "preserve-ci", "text": "Keeps the CLI/CI entry point and requested hosted release; does not add Inquirer scripts, force ci:false, or enable npm publishing." },
+        { "id": "recovery-boundary", "text": "Explains both the clean-check and local rollback-registration effect, distinguishes push-error remote cleanup, and does not equate local unchanged HEAD with no external effects." },
+        { "id": "inspect-state", "text": "Inspects tracked/index state, relevant version outputs, commits, tags, and remote action results without automatically discarding pre-existing work." }
+      ]
+    },
+    {
+      "id": 8,
+      "prompt": "release-it 21.0.1용 커스텀 플러그인을 작성해줘. manifest.json에서 제품 버전을 읽고 갱신하며 npm 플러그인은 비활성화해. 릴리스 단계에서 confirm 질문을 등록해 사용자 승인 시에만 알림 함수를 호출해. 질문 기본값은 true이고 알림 함수는 의존성으로 교체 가능해야 해. dry-run에서는 파일 쓰기와 알림 호출이 없어야 해. 외부 플러그인 A, B를 이 순서로 등록했을 때 실행 순서도 설명해줘.",
+      "expected_output": "A compatible version-provider plugin with named prompt definitions, guarded direct effects, and correct lifecycle group ordering, verified using a local notification stub.",
+      "files": [],
+      "assertions": [
+        { "id": "compatible-prompt", "text": "Registers a prompt-name map with a function-valued message and default:true, and invokes it through this.step using the matching key." },
+        { "id": "no-dry-run-effects", "text": "Dry-run leaves the manifest unchanged and does not call the notification function; this.step alone is not assumed to prevent direct effects." },
+        { "id": "plugin-order", "text": "Preserves A then B within the external group, placing that group before core plugins through beforeRelease and after core plugins for release/afterRelease." },
+        { "id": "provider-contract", "text": "Disables the npm plugin and connects the selected version to the actual manifest update, without sending a real external notification during verification." }
       ]
     }
   ]

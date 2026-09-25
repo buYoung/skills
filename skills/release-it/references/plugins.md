@@ -21,11 +21,41 @@ release-it uses a plugin architecture internally. Core plugins (`git`, `github`,
 
 ### Core plugin auto-enable rules
 
-- `git` — enabled if `.git` directory exists
+- `git` — enabled when Git recognizes the cwd as part of a repository and `git` is not `false` (including subdirectories and linked worktrees)
 - `github` — enabled if `github.release: true`
 - `gitlab` — enabled if `gitlab.release: true`
-- `npm` — enabled if `package.json` exists
+- `npm` — enabled if `package.json` is accessible in the cwd and `npm` is not `false`
 - `version` — always enabled
+
+An external plugin can also disable core plugins with `disablePlugin()`.
+
+## Version Source Contract
+
+Identify the product's version source independently of the files used to install release
+tooling. A repository can contain `package.json` while its release version belongs to a
+manifest, a plain version file, Git tags, or a custom plugin.
+
+Connect the same source through current-version reading, candidate calculation, resolved
+version checks, actual writes, state reporting, and any requested restoration. Record
+every output, including changelogs, lockfiles, generated files, and shared paths. The
+staging and recovery scope must cover those effects without claiming ownership of unrelated
+changes; see [git-integration.md](git-integration.md#working-state-and-staging-scope).
+
+Choose the writer that fits the project's format: the npm plugin, a configured bumper,
+or a custom plugin. Preserve version semantics such as pre-release identifiers and build
+metadata; the packaged semver menu is not a parser for every versioning scheme.
+External getter precedence does not automatically stop other plugins from writing.
+
+In 21.0.1, `npm.publish: false` disables publishing but retains npm version writes.
+`npm.ignoreVersion: true` changes getter selection, not npm's bump method. Use `npm: false`
+or an appropriate `disablePlugin()` when that plugin must not touch a tooling manifest;
+if npm publication is also required, design its version inputs and writes together.
+See the [npm source](https://github.com/release-it/release-it/blob/21.0.1/lib/plugin/npm/npm.js).
+
+For a generated interactive command, adapt all consumers listed in
+[interactive-workflow.md](interactive-workflow.md#copyable-project-example). A custom plugin
+must also respect dry-run and the actual prompt API in
+[custom-plugin-development.md](custom-plugin-development.md).
 
 ---
 

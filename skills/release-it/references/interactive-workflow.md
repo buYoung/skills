@@ -2,7 +2,9 @@
 
 ## Contract
 
-Use these question/action sequences for the default service-app release:
+Use this reference when generating an interactive service-app command. Existing CLI/CI,
+publishing, and other programmatic workflows retain their own contracts unless the request
+changes them. For this command, use these question/action sequences:
 
 - Single project: `pnpm release → version → commit? / commit → tag? / tag → push? / push`.
 - Monorepo: `pnpm release → one service app → version → commit? / commit → tag? / tag → push? / push`.
@@ -17,8 +19,11 @@ The version menu shows the current version and each concrete next version. A sug
 can be a label or initial selection, but still requires a submitted answer. Pass an exact
 semver selected by the user to release-it. Do not first ask all three Git confirmations:
 each confirmation belongs at its action's execution point.
-Use Inquirer's native `y/n` confirmation with `default: false`: Enter declines the action
-and stops the remaining flow. Ctrl+C cancels an active selection, input, or confirmation.
+Use Inquirer's native `y/n` confirmation with `default: true` for commit, tag, and push:
+`(Y/n)` means Enter approves the displayed action. This includes push and any automation
+triggered by it. An explicit No stops that action and the remaining flow; Ctrl+C cancels
+an active selection, input, or confirmation. Defaults and stop behavior are separate:
+changing a confirmation default must not turn No into "skip this action and continue".
 
 ## Copyable Project Example
 
@@ -30,9 +35,23 @@ Copy these complete files into the applying project's `scripts/` directory:
   stop exception, and a plugin that checks the chosen version before any bump.
 
 These are project-generation examples, not commands to release the skill repository.
-Their supported base is a service app whose `package.json` owns the version. For VERSION
-files or other version providers, adapt both the version reader and the guard to that same
-provider; do not show the root package version and bump another source.
+Their supported base is a pnpm-invoked service app whose `package.json` owns a semver
+version. This is a concrete example, not a requirement that every product use Node
+versioning. Adapt the connected consumers below when using a different provider, runner,
+or version format. See the [version source contract](plugins.md#version-source-contract).
+
+| Consumer | Adaptation |
+|---|---|
+| Target discovery | Resolve the applying project's release units; a tooling workspace need not describe every application |
+| `readCurrentVersion(directory)` | Read the selected product's actual source; both selection and state reporting use this function |
+| `checkVersionSource(options, directory)` | Validate the selected provider, required inputs, and tracked/generated-file policy; allow `npm: false` when a custom plugin owns writes |
+| `chooseVersion(currentVersion)` | Generate and validate candidates using the product's version format, including any build metadata policy |
+| Resolved-version guard | Compare release-it's current/next values with what was displayed and selected before writes |
+| Bump plugin and other writers | Update the same source and identify all additional outputs, including shared files outside the app |
+| Staging and recovery | Apply the [working-state and recovery policy](git-integration.md#working-state-and-staging-scope) to those outputs and the shared index |
+
+Changing only the reader is insufficient. The Node example's provider checks deliberately
+reject a different configuration until these connections have been adapted.
 
 Install the tested dependency set with the project's package manager (add `-w` for pnpm
 workspace-root tooling):
@@ -45,8 +64,11 @@ pnpm add -D -E @release-it/conventional-changelog@12.0.0 conventional-changelog-
 
 `semver` computes and validates menu values. Inquirer owns the questions; release-it and its
 changelog plugin own the writes. Declare `@inquirer/prompts` as a direct development dependency
-even though release-it also depends on it. State messages use `console.info` on stdout and
-`console.warn`/`console.error` on stderr. Add the entry command to the root `package.json`:
+even though release-it also depends on it. Wrapper-owned cancellation and state messages
+use `console.info`; inspection failures and other wrapper errors use stderr. The API logs
+its own errors before throwing, and the wrapper avoids reprinting them. Its logger controls
+the output stream, so capture both stdout and stderr when checking diagnostics.
+Add the entry command to the root `package.json`:
 
 ```json
 {
@@ -123,7 +145,10 @@ await release({
 }, { prompt });
 ```
 
-The complete script performs the clean-repository check before this call. It rejects CLI
+The complete script checks repository-wide tracked/index state before selection, validates
+the selected version inputs, and handles pre-existing untracked files according to the
+staging options before this call. Review other plugin outputs during setup; those checks
+are not automatic discovery of every writer. It rejects CLI
 arguments instead of forwarding `--ci`, `--only-version`, increments, or auto-answer flags.
 It explicitly disables CI detection even when `CI=true` or a vendor CI variable is present
 in a real terminal. Without TTY input **and** output, it exits before loading release config
@@ -186,12 +211,13 @@ is unverified until its interface and behavior are checked; do not change a proj
 
 ## Stopping and Remaining State
 
-release-it's stock Git plugin continues after a false confirmation result. Throwing stops
-the remaining lifecycle, but its default clean-directory mode also installs exit/SIGINT
-handlers that can delete the tag and reset the commit. The example checks the entire
-repository with `git status --porcelain --untracked-files=all` itself, then passes
-`git.requireCleanWorkingDir: false` to prevent those handlers. This deliberately preserves
-unfinished work for inspection instead of triggering destructive automatic rollback.
+release-it's stock Git plugin continues after a false confirmation result. The adapter
+throws to stop the remaining lifecycle. The example chooses to preserve interrupted work:
+it prechecks tracked/index state, then passes `git.requireCleanWorkingDir: false` to prevent
+the Git plugin's local exit/SIGINT rollback handlers. It does not automatically restore
+version files after No or Ctrl+C. This is one explicit policy; use the
+[recovery criteria](git-integration.md#recovery-policies) when a project requests restoration
+or retains built-in rollback, and update the expected-state checks to match that policy.
 
 | Stop at | Expected local state after normal preparation | Subsequent work |
 |---|---|---|
@@ -205,20 +231,27 @@ creating a new commit. The example reports on-disk version, `HEAD` before/after,
 status, exact local tag ref, and whether push was attempted/completed. It makes no automatic
 rollback claim. Never invoke `after:release` push hooks as a substitute for the push step.
 
-An execution error or signal outside a prompt is different from declining a confirmation.
-A failed push can partially affect the remote; 21.0.1 may also attempt `git push origin
---delete <tag>` in its own push-error path even with local exit rollback disabled. Report
-the remote state as unverified until inspected. Do not promise recovery of arbitrary hooks
-or remote systems, and do not automatically delete local work after a deliberate stop.
+This table applies to the Git-only example with reviewed preparation. Other enabled
+plugins may already have published or performed external work before a Git question.
+Execution failures, signals outside prompts, and failed pushes require separate state
+inspection; disabling local rollback does not disable push-error remote cleanup.
+See [lifecycle order](hooks-and-lifecycle.md#plugin-order-and-side-effects) and
+[programmatic error ownership](cli-and-workflow.md#errors-and-diagnostic-commands).
 
 ## Evaluation
 
 Use [evals.json](../evals/evals.json) for generated-output comparisons and the isolated
 PTY runner in [run_interactive.py](../evals/run_interactive.py) for executable behavior.
 Test first-question order, selected app/version propagation, confirmation/action interleaving,
-every no/cancel boundary, Enter's default decline, invalid custom-version retry, recommended
-increments, inherited CI/mode options, and non-TTY input/output. The runner requires an already
+every no/cancel boundary, Enter's default approval at all three Git steps, invalid custom-version
+retry, recommended increments, inherited CI/mode options, and non-TTY input/output. Also check
+untracked-file policy under both staging settings, preservation of unrelated files,
+single cancellation/error diagnostics, and expected versus failed ref lookups.
+The runner requires an already
 installed dependency directory and writes only temporary repositories. It replaces every
 `git push` with an argument-recording executable;
 it never calls a remote push or deployment. Inspect both the event log and final Git/file
 state; a source-text assertion or dry run alone does not demonstrate these behaviors.
+It responds to observed prompt markers, not a fixed period of silence. To verify actual
+ref transfer, use a separate disposable local bare remote and ensure every remote/push URL
+points there. A push recorder proves call ordering and arguments, not remote effects.

@@ -41,7 +41,7 @@ export class InquirerPrompt {
     this.tagName = context.tagName;
     const answer = await requireAnswer(confirm({
       message: definition.message(context),
-      default: false
+      default: true
     }), prompt);
     // Returning false would skip only this task, allowing subsequent Git steps.
     if (answer !== true) throw new ReleaseStopped(`Declined ${prompt}.`);

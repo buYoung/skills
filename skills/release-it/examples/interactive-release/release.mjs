@@ -22,9 +22,32 @@ const interactiveOptions = {
   preRelease: false
 };
 const readJSON = file => JSON.parse(readFileSync(file, 'utf8'));
-const git = (...args) => execFileSync('git', args, { cwd: root, encoding: 'utf8' }).trim();
+const git = (...args) => execFileSync('git', args, {
+  cwd: root, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe']
+}).trim();
 let headBefore;
 let targetDirectory;
+let hasReportedReleaseError = false;
+
+// Adapt these two functions together when another plugin owns the version.
+function readCurrentVersion(directory) {
+  return readJSON(path.join(directory, 'package.json')).version;
+}
+
+function checkVersionSource(options, directory) {
+  if (!options.npm || options.npm.ignoreVersion) {
+    throw new Error('This example reads package.json; adapt the version source and config checks together.');
+  }
+  for (const name of ['package.json', 'package-lock.json', 'npm-shrinkwrap.json']) {
+    const file = path.join(directory, name);
+    if (!existsSync(file)) continue;
+    try { git('ls-files', '--error-unmatch', '--', path.relative(root, file)); }
+    catch (error) {
+      if (error.status !== 1) throw error;
+      throw new Error(`Track the version input before releasing: ${path.relative(root, file)}`);
+    }
+  }
+}
 
 async function chooseTarget() {
   const rootPackage = readJSON(path.join(root, 'package.json'));
@@ -84,12 +107,18 @@ function reportState() {
     console.info(`HEAD before: ${headBefore}\nHEAD now: ${git('rev-parse', 'HEAD')}`);
     console.info(`Remaining index/worktree changes:\n${git('status', '--short') || '(clean)'}`);
     if (targetDirectory) {
-      console.info(`Version on disk: ${readJSON(path.join(targetDirectory, 'package.json')).version}`);
+      console.info(`Version on disk: ${readCurrentVersion(targetDirectory)}`);
     }
     if (prompt.tagName) {
       let tagRef;
-      try { tagRef = git('show-ref', '--verify', `refs/tags/${prompt.tagName}`); }
-      catch { tagRef = '(not present locally)'; }
+      const ref = `refs/tags/${prompt.tagName}`;
+      try {
+        git('show-ref', '--verify', '--quiet', '--', ref);
+        tagRef = git('show-ref', '--verify', '--', ref);
+      } catch (error) {
+        if (error.status !== 1) throw error;
+        tagRef = '(not present locally)';
+      }
       console.info(`Local tag ${prompt.tagName}: ${tagRef}`);
     }
     const pushState = prompt.completed.includes('push') ? 'push command completed' :
@@ -108,9 +137,9 @@ try {
     throw new Error('Run pnpm release without arguments; choose the version in the prompt.');
   }
   process.chdir(root);
-  // This check also catches untracked files, unlike release-it's git diff check.
-  if (git('status', '--porcelain', '--untracked-files=all')) {
-    throw new Error('The entire repository must be clean before starting a release.');
+  // Git commit consumes the whole index, including newly staged files elsewhere.
+  if (git('status', '--porcelain', '--untracked-files=no')) {
+    throw new Error('Tracked files and the index must be clean across the repository before releasing.');
   }
   headBefore = git('rev-parse', 'HEAD');
   const target = await chooseTarget();
@@ -126,31 +155,45 @@ try {
   if (!options.git || !options.git.commit || !options.git.tag || !options.git.push) {
     throw new Error('The interactive flow requires git commit, tag, and push to be enabled.');
   }
-  if (!options.npm || options.npm.ignoreVersion || options.npm.publish !== false ||
-      options.github?.release || options.gitlab?.release) {
-    throw new Error('This example requires package.json versioning and no publishing or hosted release.');
+  if ((options.npm && options.npm.publish !== false) || options.github?.release || options.gitlab?.release) {
+    throw new Error('This example requires publishing and hosted releases to be disabled.');
   }
-  const currentVersion = readJSON(path.join(targetDirectory, 'package.json')).version;
-  if (!semver.valid(currentVersion)) throw new Error('The selected app needs a valid package.json version.');
+  checkVersionSource(options, targetDirectory);
+  // With --update, unrelated untracked files stay outside the index. With --all,
+  // require pre-existing untracked files in the staging scope to be handled first.
+  if (options.git.addUntrackedFiles &&
+      git('ls-files', '--others', '--exclude-standard', '--', relativeTarget || '.')) {
+    throw new Error('Untracked files would enter the release commit; handle them before releasing.');
+  }
+  const currentVersion = readCurrentVersion(targetDirectory);
+  if (!semver.valid(currentVersion)) throw new Error('The selected version source needs a valid semver.');
   const selectedVersion = await chooseVersion(currentVersion);
-  await release({
-    ...options,
-    config: false,
-    extends: false,
-    ...interactiveOptions,
-    increment: selectedVersion,
-    // Keep all other target options. The clean check above replaces the built-in
-    // check so release-it does not attach destructive exit/SIGINT rollback handlers.
-    git: { ...options.git, requireCleanWorkingDir: false },
-    plugins: {
-      [guardPath]: { currentVersion, selectedVersion },
-      ...options.plugins
-    }
-  }, { prompt });
+  try {
+    await release({
+      ...options,
+      config: false,
+      extends: false,
+      ...interactiveOptions,
+      increment: selectedVersion,
+      // This example preserves interrupted work for inspection. Disabling this
+      // option prevents local exit/SIGINT rollback, not push-error remote cleanup.
+      git: { ...options.git, requireCleanWorkingDir: false },
+      plugins: {
+        [guardPath]: { currentVersion, selectedVersion },
+        ...options.plugins
+      }
+    }, { prompt });
+  } catch (error) {
+    // release-it 21.0.1 logs API errors before rethrowing them.
+    hasReportedReleaseError = true;
+    throw error;
+  }
   console.info(`Released ${target.name} ${selectedVersion}.`);
 } catch (error) {
-  if (error instanceof ReleaseStopped) console.warn(error.message);
-  else console.error(error.message);
+  if (!hasReportedReleaseError) {
+    if (error instanceof ReleaseStopped) console.info(error.message);
+    else console.error(error.message);
+  }
   process.exitCode = 1;
 } finally {
   process.chdir(root);

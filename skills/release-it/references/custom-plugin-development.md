@@ -4,6 +4,10 @@
 
 A release-it plugin is a class extending the `Plugin` base class. Create a plugin when hooks alone are insufficient — e.g. you need to provide version information, integrate with external APIs, or replace core behavior.
 
+The interfaces below are source-checked for **21.0.1**. Match the applying project's
+installed API and runtime before declaring a wider compatibility range. A custom version
+provider must follow the [version source contract](plugins.md#version-source-contract).
+
 ### Minimal example
 
 ```js
@@ -11,12 +15,20 @@ import { Plugin } from 'release-it';
 import fs from 'node:fs';
 
 class MyVersionPlugin extends Plugin {
+  static disablePlugin() {
+    return 'npm'; // This example owns VERSION instead of package.json.
+  }
+
   getLatestVersion() {
     return fs.readFileSync('./VERSION', 'utf8').trim();
   }
 
   bump(version) {
     this.version = version;
+    if (this.config.isDryRun) {
+      this.log.info(`Would update VERSION to ${version}`);
+      return;
+    }
     fs.writeFileSync('./VERSION', version);
   }
 }
@@ -34,15 +46,16 @@ export default MyVersionPlugin;
   "type": "module",
   "keywords": ["release-it", "release-it-plugin"],
   "peerDependencies": {
-    "release-it": ">=17.0.0"
+    "release-it": "21.0.1"
   },
   "devDependencies": {
-    "release-it": "^20.0.0"
+    "release-it": "21.0.1"
   }
 }
 ```
 
-Use `release-it` as `peerDependency` (and `devDependency` for testing).
+Use `release-it` as `peerDependency` (and `devDependency` for testing). The example pins
+the checked version; widen the peer range only after verifying the interfaces your plugin uses.
 
 ### Using the plugin
 
@@ -85,7 +98,7 @@ class Plugin {
   // Helper methods
   setContext(context) {}      // → void
   getContext(path) {}         // → Object
-  registerPrompts(...prompts) {} // → void
+  registerPrompts(definitions) {} // → void; map keyed by prompt name
   step(options) {}            // → Promise
   exec(command, options) {}   // → Promise
   debug(msg) {}               // → void
@@ -154,6 +167,10 @@ Update version in files. The `version` parameter is the new version string.
 
 ```js
 async bump(version) {
+  if (this.config.isDryRun) {
+    this.log.info(`Would update manifest.json to ${version}`);
+    return;
+  }
   const manifest = JSON.parse(fs.readFileSync('./manifest.json', 'utf8'));
   manifest.version = version;
   fs.writeFileSync('./manifest.json', JSON.stringify(manifest, null, 2));
@@ -170,6 +187,10 @@ Main release logic. Use `this.step()` to create interactive prompts or CI spinne
 
 ```js
 async release() {
+  if (this.config.isDryRun) {
+    this.log.info('Would deploy and send the configured notification');
+    return false;
+  }
   await this.step({
     enabled: true,
     task: () => this.exec('npm run deploy'),
@@ -301,19 +322,38 @@ await this.step({
 
 In CI mode: shows spinner. In interactive mode: shows prompt — if user says "No", `task` is not executed.
 
-### this.registerPrompts(...prompts)
+### this.registerPrompts(definitions)
 
-Register Inquirer.js prompts:
+Register a map keyed by the names passed to `this.step({ prompt })`. In 21.0.1,
+`message` is called with the execution context; use a function, not a string:
 
 ```js
 init() {
   this.registerPrompts({
-    type: 'confirm',
-    name: 'deploy-confirm',
-    message: 'Deploy to production?'
+    'deploy-confirm': {
+      type: 'confirm',
+      message: () => 'Deploy to production?',
+      default: true
+    }
   });
 }
 ```
+
+The stock prompt supports confirm/input/list definitions. A caller's injected prompt
+adapter must support the namespace and definition as well: the packaged interactive
+adapter accepts only Git commit/tag/push and intentionally rejects this deploy question.
+Extend that adapter only for the capabilities requested by the applying workflow.
+Sources: [Plugin](https://github.com/release-it/release-it/blob/21.0.1/lib/plugin/Plugin.js)
+and [Prompt](https://github.com/release-it/release-it/blob/21.0.1/lib/prompt.js).
+
+### Dry-run and Direct Effects
+
+Lifecycle methods still run in dry-run mode. `this.exec()` routes through release-it's
+shell layer, which skips commands classified as writes. Direct filesystem writes,
+independent child processes, and `fetch()` calls need an explicit `this.config.isDryRun`
+guard. `this.step()` by itself is not a dry-run guard for an arbitrary task callback.
+Report the intended effect when skipping it, and verify that files and external sinks
+remain unchanged in a dry-run check.
 
 ### this.debug(msg)
 
@@ -356,17 +396,17 @@ Given external plugins A and B:
 { "plugins": { "PluginA": {}, "PluginB": {} } }
 ```
 
-**Forward order** (init through beforeRelease):
-`PluginA` → `PluginB` → `npm` → `git` → `github` → `gitlab` → `version`
-
-**Reverse order** (release and afterRelease):
-`version` → `gitlab` → `github` → `git` → `npm` → `PluginB` → `PluginA`
-
-External plugins run before core plugins for getters (so they can override name, version, changelog) and after for release/afterRelease (so they run after core work is done).
+External plugins run before core plugins through `beforeRelease`, and after core plugins
+for `release`/`afterRelease`. The order within each group stays unchanged, so A still
+precedes B. See the exact [21.0.1 lifecycle order](hooks-and-lifecycle.md#plugin-order-and-side-effects)
+before placing publication, staging, or recovery logic. Getter precedence does not disable
+another plugin's bump writes.
 
 ## Complete Plugin Example
 
-A plugin that reads version from a `VERSION` file, posts a webhook after release:
+A plugin that owns a `VERSION` file, disables npm versioning/publishing, and offers a
+webhook notification after core release actions. Use it with the stock prompt or an
+adapter that supports its question; the Git-only service-app adapter does not:
 
 ```js
 import { Plugin } from 'release-it';
@@ -378,14 +418,20 @@ export default class WebhookPlugin extends Plugin {
   }
 
   static disablePlugin() {
-    return null;  // Don't disable any core plugins
+    return 'npm';
+  }
+
+  getName() {
+    return this.options.name || 'project';
   }
 
   init() {
     this.registerPrompts({
-      type: 'confirm',
-      name: 'webhook',
-      message: 'Send release notification?'
+      webhook: {
+        type: 'confirm',
+        message: () => 'Send release notification?',
+        default: true
+      }
     });
   }
 
@@ -396,10 +442,18 @@ export default class WebhookPlugin extends Plugin {
   }
 
   bump(version) {
+    if (this.config.isDryRun) {
+      this.log.info(`Would update VERSION to ${version}`);
+      return;
+    }
     fs.writeFileSync('./VERSION', version);
   }
 
   async release() {
+    if (this.config.isDryRun) {
+      this.log.info('Would send release notification');
+      return false;
+    }
     await this.step({
       enabled: true,
       task: async () => {
@@ -432,6 +486,7 @@ Usage:
 {
   "plugins": {
     "./plugins/webhook.js": {
+      "name": "my-product",
       "webhookUrl": "https://hooks.slack.com/services/xxx"
     }
   }

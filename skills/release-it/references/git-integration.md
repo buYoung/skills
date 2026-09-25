@@ -231,7 +231,10 @@ Array and wildcards supported:
 
 ### requireCleanWorkingDir
 
-Must have clean working directory (default: `true`). Set to `false` to allow uncommitted changes:
+Requires clean tracked files and index (default: `true`). In release-it 21.0.1 the built-in
+check is `git diff --quiet HEAD`; it does not reject ordinary untracked files. Setting it
+to `false` also prevents the Git plugin from registering its local exit/SIGINT rollback
+handlers. It does not disable every recovery path; see [Recovery Policies](#recovery-policies).
 
 ```json
 {
@@ -241,7 +244,78 @@ Must have clean working directory (default: `true`). Set to `false` to allow unc
 }
 ```
 
-Useful in monorepo setups where other packages' `package.json` files are modified during the release process.
+Use this override only with an understood initial-state and recovery policy. Allowing dirty
+state can include existing staged changes in the release commit or expose them to a custom
+cleanup operation. Do not prescribe this option for every CLI, CI, or API workflow.
+
+### Working State and Staging Scope
+
+Determine these scopes independently before changing a wrapper's preflight:
+
+| Scope | What determines it |
+|---|---|
+| Version input | The selected version provider, which may differ from the tooling manifest |
+| Writes | Version/changelog plugins, build hooks, lockfile updates, generated files, shared outputs |
+| Directory staging | Git plugin cwd and `stageDir({ baseDir })`; default baseDir is `.` |
+| Commit inputs | The repository-wide index, plus any explicitly customized commit arguments |
+| Recoverable changes | Files whose baseline and ownership are known for this execution |
+
+`stageDir()` uses `git add <baseDir> --update` by default, or `--all` with
+`addUntrackedFiles: true`. This does not remove existing index entries, nor prevent a hook
+or plugin from explicitly staging another file. A newly staged file is already an index
+change and is caught by `git status --porcelain --untracked-files=no`.
+
+For a wrapper that requires clean initial tracked state, run that check repository-wide.
+Then decide how to handle pre-existing untracked files based on the actual staging and
+write scopes. Unrelated untracked files need not block `--update`; untracked files a
+writer might overwrite, or `--all` might include, need explicit handling. A file outside
+the selected app may still be a shared output. Directory membership alone is not a
+complete policy, and ignored files are not a guarantee against a plugin overwriting them.
+
+Check required version inputs and intended outputs as well: an updated but untracked
+file may be omitted from the commit unless a plugin stages it. Inspect the final changeset
+and index instead of inferring the committed files from a clean preflight.
+
+The packaged Node example rejects repository-wide tracked/index changes, requires existing
+version manifests/lockfiles to be tracked, and rejects pre-existing untracked files in the
+selected staging directory when `addUntrackedFiles` is enabled. Other unrelated untracked
+files are preserved. Adapt this policy for other writers; it cannot discover arbitrary
+hook/plugin side effects.
+
+### Recovery Policies
+
+Choose recovery behavior for the workflow instead of treating every interruption as one
+transaction. In 21.0.1, `bump` precedes `Git.beforeRelease()`, which enables local rollback
+only when both `git.commit` and `git.requireCleanWorkingDir` are enabled, then stages files.
+The commit confirmation comes later. A failure during bump can therefore occur before
+those handlers are installed.
+
+| Policy | Conditions and limits |
+|---|---|
+| Keep built-in local rollback | Understand its process-wide exit/SIGINT handlers: it can delete the created local tag and reset the release commit; an API rejection alone does not run an exit handler |
+| Preserve interrupted state | Disable those handlers with `requireCleanWorkingDir: false`, enforce the chosen preflight separately, and report the files/index/commit/tag that remain; this is the packaged example's policy |
+| Restore owned local changes | Capture the relevant baseline before writes, identify every owned output, and restore only where provenance and completed actions permit it; report skipped or failed restoration |
+
+For a custom restoration policy, unchanged `HEAD` is a guard against discarding a created
+commit, not proof that all effects are reversible. Existing staged/unstaged work must not
+be replaced with HEAD, untracked generated files need separate ownership handling, and
+shared outputs may lie outside the selected directory. `git restore --staged --worktree`
+is useful only when its source is the intended baseline and its path list is justified;
+it is not a cleanup command for arbitrary generated files. Check Git compatibility if
+introducing it into a project that previously used older Git.
+
+Also account for completed external actions. With npm publishing enabled, 21.0.1 can
+publish before Git commit; a local file restore cannot undo that publication. See
+[lifecycle order](hooks-and-lifecycle.md#plugin-order-and-side-effects). Preserve commits
+and tags after a deliberate stop when that is the workflow's contract. Prompt No, prompt
+Ctrl+C, process signals outside prompts, execution failures, and partial pushes require
+their actual state to be inspected, not the same assumed cleanup.
+
+Disabling local exit rollback does not disable the push-error path: 21.0.1 may attempt
+`git push origin --delete <tag>` after a failed push. Report remote state as unknown until
+inspected, including when local state appears unchanged.
+
+Source: [21.0.1 Git implementation](https://github.com/release-it/release-it/blob/21.0.1/lib/plugin/git/Git.js).
 
 ### requireUpstream
 
@@ -283,7 +357,8 @@ Only check for commits in a specific directory (useful in monorepos):
 
 ## Untracked Files
 
-By default, untracked files are not added to the release commit. Override:
+By default, directory staging does not add untracked files. Already staged files and
+explicit plugin/hook staging are separate. To include untracked files in `stageDir()`:
 
 ```json
 {

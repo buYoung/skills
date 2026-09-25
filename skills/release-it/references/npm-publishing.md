@@ -10,6 +10,12 @@ With a `package.json` in the current directory, release-it:
 Disable publishing only: `npm.publish: false`
 Ignore package.json entirely: `"npm": false` or `--no-npm`
 
+`npm.ignoreVersion: true` only changes the current-version getter; it does not disable
+npm's bump writes in 21.0.1. When another plugin owns the version, connect its reader,
+writes, and publishing inputs using the [version source contract](plugins.md#version-source-contract).
+Publication can precede the Git commit in the [core lifecycle](hooks-and-lifecycle.md#plugin-order-and-side-effects),
+so unchanged HEAD is not proof that no external release occurred.
+
 ## Authentication
 
 ### Local development
@@ -216,7 +222,8 @@ into the service-app flow. npm publishing is not enabled there by default.
 
 ### Single package in monorepo
 
-release-it handles one package at a time. Use `git.commitsPath` to scope commits:
+For a single-package release, `git.commitsPath` scopes the Git plugin's commit-count check.
+It does not scope staging, the shared index, or a separate changelog plugin:
 
 ```json
 {

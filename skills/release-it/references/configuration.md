@@ -2,7 +2,8 @@
 
 ## Initial Setup Considerations
 
-Before writing a config file, analyze the project first. See [initial-setup.md](initial-setup.md) for the full setup flow (Analyze → Propose → Confirm).
+Before writing a config file, identify the requested workflow and existing configuration.
+See [initial-setup.md](initial-setup.md) for context and decisions that may need resolution.
 
 Key rules for new configs:
 - **Always include `$schema`** in JSON configs for IDE autocomplete and validation
@@ -14,18 +15,20 @@ Key rules for new configs:
 
 | Project Type | Key Options |
 |-------------|-------------|
-| npm package (public) | `github.release: true`, `npm.publish: true`, changelog plugin |
+| npm package (public) | Enable `npm.publish` for requested package publishing; hosted releases and changelog generation are separate choices |
 | Private/internal service app | Inquirer entry script; `npm.publish: false`, hosted releases disabled, changelog plugin |
 | Application (no publish) | [Interactive contract](interactive-workflow.md); keep Git actions enabled |
-| Non-Node project | `npm: false`, `@release-it/bumper` for version file |
+| Separate version provider | Select the actual version reader/writer; use `npm: false` when the npm plugin would modify an unrelated tooling manifest |
 | Monorepo service apps (default) | [One selected app](monorepo.md), app cwd/version/changelog/tag namespace |
 | Synchronized npm packages (explicit alternative) | See [npm-publishing.md](npm-publishing.md); not the service-app flow |
 
 ---
 
-The interactive wrapper overrides mode/version controls and replaces the built-in clean
-check with a whole-repository preflight to preserve deliberate-stop state. Read its
-[compatibility and cancellation notes](interactive-workflow.md) before reusing those overrides.
+The packaged interactive wrapper overrides mode/version controls, checks tracked/index
+state repository-wide, and preserves interrupted local work. These are that example's
+policies, not required overrides for CLI/CI or every API caller. Read the
+[working-state and recovery criteria](git-integration.md#working-state-and-staging-scope)
+and [adapter compatibility notes](interactive-workflow.md) before reusing them.
 
 ## Config File Formats
 
@@ -35,7 +38,7 @@ release-it looks for config files in the project root in this order:
 
 ```json
 {
-  "$schema": "https://unpkg.com/release-it@20/schema/release-it.json",
+  "$schema": "https://unpkg.com/release-it@21.0.1/schema/release-it.json",
   "git": {
     "commitMessage": "chore: release v${version}"
   },
@@ -170,13 +173,13 @@ release-it --no-plugins.@release-it/keep-a-changelog.strictLatest
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
 | `git.changelog` | string | `git log --pretty=format:"* %s (%h)" ${from}...${to}` | Changelog generation command |
-| `git.requireCleanWorkingDir` | boolean | `true` | Require clean working directory |
+| `git.requireCleanWorkingDir` | boolean | `true` | Check tracked/index state; also controls local exit/SIGINT rollback registration when committing in 21.0.1 |
 | `git.requireBranch` | string/array/false | `false` | Restrict releases to specific branches (supports wildcards) |
 | `git.requireUpstream` | boolean | `true` | Require upstream remote exists |
 | `git.requireCommits` | boolean | `false` | Fail if no commits since latest tag |
 | `git.requireCommitsFail` | boolean | `true` | Continue if no commits but exit code 0 |
 | `git.commitsPath` | string | `""` | Directory to check for commits |
-| `git.addUntrackedFiles` | boolean | `false` | Add untracked files to release commit |
+| `git.addUntrackedFiles` | boolean | `false` | Use `--all` instead of `--update` in directory staging |
 | `git.commit` | boolean | `true` | Execute commit step |
 | `git.commitMessage` | string | `"Release ${version}"` | Commit message template |
 | `git.commitArgs` | array | `[]` | Extra args for `git commit` |
@@ -201,7 +204,7 @@ release-it --no-plugins.@release-it/keep-a-changelog.strictLatest
 | `npm.publishPackageManager` | string | `"npm"` | Use `pnpm` or `bun` instead |
 | `npm.tag` | string/null | `null` | npm dist-tag (auto-derived for pre-releases) |
 | `npm.otp` | string/null | `null` | One-time password for 2FA |
-| `npm.ignoreVersion` | boolean | `false` | Ignore `package.json` version, use git tag |
+| `npm.ignoreVersion` | boolean | `false` | Skip npm's current-version getter so another provider can supply it; does not disable npm's bump writes |
 | `npm.allowSameVersion` | boolean | `false` | Allow same version as current |
 | `npm.versionArgs` | array | `[]` | Extra args for `npm version` |
 | `npm.skipChecks` | boolean | `false` | Skip registry/auth checks |

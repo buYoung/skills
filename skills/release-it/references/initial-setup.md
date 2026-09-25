@@ -1,13 +1,18 @@
 # Initial Setup Guide
 
-Analyze the project and resolve decisions needed for its release configuration, then generate the entry script, Inquirer adapter, and target config from [interactive-workflow.md](interactive-workflow.md). Setup questions are separate from runtime questions: the first runtime question is version selection for a single project, or selection of one service app for a monorepo. Do not add a runtime start confirmation.
+Identify whether the request concerns CLI/CI configuration, a programmatic caller, an
+interactive service-app command, or a plugin. Analyze the existing entry point, version
+source, enabled actions, and release-it version before generating the needed artifacts.
+For an interactive service-app command, use [interactive-workflow.md](interactive-workflow.md).
+Its first runtime question is version selection for a single project, or selection of one
+service app for a monorepo; setup decisions do not add a runtime start confirmation.
 
-## Flow: Analyze → Propose → Confirm
+## Flow: Analyze → Resolve Missing Decisions → Generate
 
 ```
 1. Analyze project files silently
-2. Propose inferred config choices to user
-3. Ask about decisions that require user input
+2. Preserve explicit requirements and relevant existing choices
+3. Ask only about unresolved decisions that affect the requested behavior
 4. Generate tailored config + supporting files
 ```
 
@@ -20,6 +25,8 @@ Read these files/directories to infer project context. Each file provides specif
 | Source | What to Read | What It Tells You |
 |--------|-------------|-------------------|
 | `package.json` | `name`, `private`, `scripts`, `workspaces`, `publishConfig` | Scoped package? npm publish needed? Existing build/test/lint? Monorepo? |
+| Application manifests, version files, tags, configured plugins | Actual current-version source, format, readers and writers | Product versioning may be independent of the Node tooling manifest |
+| Installed release-it and plugin manifests | Versions, `engines`, interfaces used by wrappers | Which source behavior and examples apply |
 | `git remote -v` or `.git/config` | Remote URL | GitHub vs GitLab vs Bitbucket → which release platform |
 | `.release-it.*` or `package.json["release-it"]` | Existing config | Already set up — switch to modification mode, not initial setup |
 | `CHANGELOG.md` or `HISTORY.md` | File existence and format | Existing changelog convention → suggest matching plugin |
@@ -36,10 +43,10 @@ From the analysis, you can immediately determine these config values:
 | Signal | Inference | Config |
 |--------|-----------|--------|
 | `private: true` in package.json | No npm publish | `npm.publish: false` |
-| No `package.json` at all | Non-Node project | `npm: false`, use `@release-it/bumper` plugin |
+| Version is owned outside `package.json` | Separate version provider | Match that provider; disable npm versioning if it would write an unrelated tooling manifest |
 | Remote is `github.com` | GitHub platform is available | Enable `github.release` only if requested |
 | Remote is `gitlab.com` or self-hosted GitLab | GitLab platform is available | Enable `gitlab.release` only if requested |
-| `workspaces` field exists | Monorepo | Identify service apps; generate a one-app target manifest |
+| `workspaces` field exists | Multiple possible release units | Resolve one-app, one-package, or synchronized release scope from the request |
 | Scoped name (`@scope/pkg`) + not private | Scoped public package | Remind: `publishConfig.access: "public"` needed |
 | `scripts.test` exists | Has test suite | Suggest `hooks.before:init: "npm test"` |
 | `scripts.lint` exists | Has linter | Suggest `hooks.before:init` includes lint |
@@ -50,7 +57,10 @@ From the analysis, you can immediately determine these config values:
 
 ### If an existing release-it config is found
 
-Read the existing config and preserve relevant target settings while adding the requested interactive entry point. Check mode flags, version providers, hooks, and plugin actions against the interactive contract. Resolve conflicting requested publishing or bulk-workspace behavior during setup; do not silently enable those operations or add a runtime confirmation gate.
+Read the existing config and entry point. Change only the requested behavior, preserving
+relevant version providers, mode flags, hooks, and enabled actions. Add an interactive entry
+point only when that workflow is being set up. Resolve incompatible requirements during
+setup instead of forcing a CLI/CI or publishing workflow through the Git-only adapter.
 
 ---
 
@@ -61,7 +71,7 @@ Present the analysis results to the user. Group by confidence:
 **Determined from project** (explain reasoning):
 - "Your project uses GitHub; the base flow ends with Git push. Hosted release creation is optional."
 - "package.json has `private: true`, so I'll skip npm publishing"
-- "You have `scripts.test` and `scripts.lint`, so I'll add pre-release checks"
+- "Existing test/lint scripts are available if release-time checks are part of this request"
 
 **Needs your decision** (present with recommendations):
 - Questions from Step 3 below
@@ -71,8 +81,8 @@ Use a format like:
 Based on your project analysis:
 - Platform: GitHub → Git remote identified; hosted release only if requested
 - npm publish: No (private: true)
-- Pre-release hooks: npm run lint + npm test (found in scripts)
-- Build hook: npm run build (found in scripts)
+- Available checks: npm run lint + npm test
+- Available preparation: npm run build; inspect its writes before adding a release hook
 
 I need a few decisions from you to finalize the config:
 1. ...
@@ -83,13 +93,14 @@ I need a few decisions from you to finalize the config:
 
 ## Step 3: Ask the User
 
-These decisions cannot be inferred — ask the user. Provide a recommended default for each.
+Reuse explicit requirements and compatible existing settings. Ask only when a missing
+decision materially changes behavior; use the listed defaults for ordinary unspecified choices.
 
-### Required Questions
+### Decisions to Resolve
 
 | Question | Options | Recommended Default | Why Ask |
 |----------|---------|---------------------|---------|
-| Config format | JSON / TS / YAML / TOML / package.json | JSON (with `$schema`) | JSON is most common, $schema gives IDE autocomplete |
+| Config format | JSON / TS / YAML / TOML / package.json | Existing format, otherwise JSON with `$schema` | Avoid converting a config as part of an unrelated change |
 | Changelog strategy | conventional-changelog / keep-a-changelog / git-cliff / none | conventional-changelog | Generates history; its recommended bump never replaces the runtime version choice |
 | Release branch restriction | `main` only / `main` + `release/*` / none | `main` only | Prevents accidental releases from feature branches |
 
@@ -101,15 +112,20 @@ These decisions cannot be inferred — ask the user. Provide a recommended defau
 | Any project | Need pre-release workflow (alpha/beta/rc)? | No (can be added later via CLI flags) |
 | CI automation requested | Which trigger and explicit version input should it use? | Separate CI command |
 | Monorepo service boundary unclear | Which directories are deployable service apps? | One verified service app per release |
+| Cancellation/recovery behavior is being changed | Preserve state, retain built-in recovery, or restore owned changes? | Preserve the existing policy; use [Git recovery criteria](git-integration.md#recovery-policies) |
+| Hooks or plugins write beyond the selected target | Which shared outputs belong to this release? | Record the actual write and staging scope before changing checks |
 | Has build script | Attach build artifacts to release? | No (user usually knows if they want this) |
 
 ### What NOT to Ask
 
-These have clear best practices — just apply them:
+For the interactive service-app workflow, the following defaults are already defined:
 - `$schema` URL → always include in JSON format
 - `git.commitMessage` → use `"chore: release v${version}"` (Conventional Commits)
-- Require a clean repository/index; the interactive wrapper performs that check itself
-  and overrides `git.requireCleanWorkingDir` to prevent exit rollback after a deliberate stop
+- Require clean tracked files and index repository-wide. Derive untracked-file handling
+  from the actual writers and staging options; see [git-integration.md](git-integration.md)
+- Confirm commit, tag, and push with `default: true`; Enter approves each displayed action
+- The packaged wrapper preserves interrupted state and disables built-in local exit
+  rollback. Apply a different recovery policy only with its required baseline and ownership checks
 - `git.requireUpstream` → `true` (safe default)
 - Keep built-in `git.commit`, `git.tag`, and `git.push` enabled; inspect tag transfer scope in [git-integration.md](git-integration.md)
 - `GITHUB_TOKEN` / `GITLAB_TOKEN` → standard env var name
@@ -120,14 +136,14 @@ These have clear best practices — just apply them:
 
 Based on analysis + user answers, generate these files:
 
-### Always generate
+### Generate for the Selected Workflow
 
 1. **Release config file** (user's chosen format, default `.release-it.json`)
    - Always include `$schema` if JSON format
    - Only override options that differ from defaults
    - Include plugin config if changelog strategy was chosen
 
-2. **package.json scripts** (add or suggest)
+2. **Entry command** — preserve or adapt the project's runner. For the interactive example:
    ```json
    {
      "scripts": {
@@ -136,7 +152,10 @@ Based on analysis + user answers, generate these files:
    }
    ```
 
-Copy `scripts/release.mjs` and `scripts/release-prompts.mjs` from [interactive-workflow.md](interactive-workflow.md). For a monorepo, also generate `.release-targets.json` and one config per service app using [monorepo.md](monorepo.md).
+For an interactive service-app request, copy and adapt the example modules from
+[interactive-workflow.md](interactive-workflow.md). For its monorepo mode, also generate
+`.release-targets.json` and app configs using [monorepo.md](monorepo.md). A CLI/CI config edit
+or custom plugin request does not require those wrapper files.
 
 ### Conditionally generate
 
@@ -153,7 +172,8 @@ Copy `scripts/release.mjs` and `scripts/release-prompts.mjs` from [interactive-w
 
 ### Suggest installing
 
-5. **Dependencies** — remind user to install:
+5. **Dependencies** — match the chosen workflow, package manager, and runtime. The checked
+   interactive example uses this set; retain compatible installed versions for existing work:
    ```bash
    pnpm add -D -E release-it@21.0.1 @inquirer/prompts@8.5.2 semver@7.8.5
    # If changelog plugin selected:
@@ -170,7 +190,8 @@ The default service-app flow ends after Git push with `npm.publish: false`,
 `github.release: false`, and `gitlab.release: false`. Remote host and package visibility
 are context, not instructions to publish. Preserve publishing and CI capabilities when
 explicitly requested and use their dedicated references and commands. For non-Node
-version sources, adapt the interactive version reader and pre-bump guard together.
+version sources, follow the [version source contract](plugins.md#version-source-contract)
+and adapt every consumer listed in the interactive reference.
 
 ### Changelog Strategy
 
@@ -198,7 +219,7 @@ Use bulk or synchronized package release strategies only when explicitly request
 
 ```json
 {
-  "$schema": "https://unpkg.com/release-it@20/schema/release-it.json",
+  "$schema": "https://unpkg.com/release-it@21.0.1/schema/release-it.json",
   "git": {
     "commitMessage": "chore: release v${version}",
     "requireBranch": "main"
@@ -224,11 +245,11 @@ Use the complete base config and Inquirer entry scripts in
 [interactive-workflow.md](interactive-workflow.md). For service apps in a workspace,
 apply the target-specific overrides in [monorepo.md](monorepo.md).
 
-### Non-Node Version Provider (adapt the interactive reader and guard)
+### Non-Node Version Provider (adapt all version consumers)
 
 ```json
 {
-  "$schema": "https://unpkg.com/release-it@20/schema/release-it.json",
+  "$schema": "https://unpkg.com/release-it@21.0.1/schema/release-it.json",
   "npm": false,
   "git": {
     "commitMessage": "chore: release v${version}",
