@@ -16,6 +16,8 @@ Review or fact-check the document set against its selected prebuilt, [design-dir
 
 Read [design-rule-contract.md](design-rule-contract.md) for the common rule-quality contract. Check whether readers can understand why a material rule applies, locate supported implementation or approved assets, recognize exceptions and failure symptoms, and determine how to verify it. Report missing connections or authority conflicts without inventing replacements. Check that reusable mechanics are applied through their supported contract, usage examples match actual declarations and consumers, and recurring corrections have comparable follow-up evidence rather than unsupported improvement claims.
 
+- Can an implementer reading only this document determine when not to use the pattern? Each major pattern connects its purpose, application and non-application conditions, and a supported alternative or explicitly unresolved decision; non-application is not automatically a prohibition.
+- Importance and exposure follow the task and consequences, not optional status, default or fixed values, or an assumed low frequency alone. Information importance and presentation prominence are distinguishable decisions.
 - `index.md` identifies scope, audience, document map, authoritative sources, and precedence.
 - One approved design direction can be explained in one or two sentences, and its authority is distinguishable from inference or an unapproved preference.
 - Foundations, tokens, components or assets, and contextual adaptations support the same upper-level direction without forcing identical form across different contexts.
@@ -34,6 +36,7 @@ Read [design-rule-contract.md](design-rule-contract.md) for the common rule-qual
 - Relevant internal axes such as precision, expressiveness, density, geometry, platform convention, depth, or motion have a clear position even when the document describes them in reader-friendly language.
 - At least two contrasting representative situations support the direction; one favorable example alone is insufficient.
 - The representative situations cover the material risk in the set, such as density, scale, interaction state, function-versus-brand balance, or platform and storefront differences.
+- Rules extended to other contexts compare available applicable and non-applicable situations and explain the deciding difference. Component state checks are not presented as sufficient evidence of pattern selection; missing comparisons leave a bounded, explicit validation gap under the existing operation gate.
 - A failed representative result was corrected at the owning level—direction, shared rule, component or asset rule, or contextual adaptation—instead of being patched as an isolated exception.
 - Rejected direction hypotheses are absent from the canonical set unless the user explicitly requested a separate decision history.
 
@@ -41,6 +44,9 @@ For an existing focused revision, verify that the changed decision propagates th
 
 ## Conditional checks
 
+- For `default`, read [component-design-contract.md](component-design-contract.md). Material basic controls and composites have individually findable contracts, even when they share a file or use platform controls. Readers can determine supported appearance, sizing, composition, states, and usage without confusing business values with design dimensions.
+- Component details distinguish explicit decisions, inherited rules with named sources and local consequences, necessary unknowns, and non-applicable items. A generic platform-default statement or source link has not replaced design choices still left to the implementer.
+- In a new or substantially rewritten `default` set, governance explains how new components and UI compositions reuse the existing design and provide a concrete preview to the user. Document-only work defines this workflow; an authorized production workflow owns creation and presentation. Verify any claimed preview and its fidelity without demanding a new mockup during read-only review or an unrelated focused revision.
 - `default` has no `platforms/` file unless at least one platform is explicitly in scope, and each file covers only that platform.
 - `app-store-page` has no `stores/` file unless at least one storefront is in scope for the existing set.
 - Every storefront represented by the set resolves to exactly one file after confirmed alias deduplication. Existing files outside the current review focus remain valid members of the set.
@@ -53,4 +59,4 @@ Report missing or stale platform and storefront files as findings. Do not create
 
 ## Quality bar
 
-A reader can start at `index.md`, explain the approved direction, locate any governed concept, identify its authority and current decision, distinguish what must remain stable from what may adapt, and determine whether a platform or store overrides it without encountering duplicate or unsupported rules. The documented representative evidence is sufficient to judge whether a new result still belongs to the system.
+A reader can start at `index.md`, explain the approved direction, locate any governed concept, identify its authority and current decision, choose or avoid a pattern, distinguish what must remain stable from what may adapt, and determine whether a platform or store overrides it without encountering duplicate or unsupported rules. For product UI, component contracts support reproduction of the design and governance makes the new-UI preview workflow discoverable. The documented representative evidence states which application boundaries and states were actually checked and is sufficient for the claimed scope.

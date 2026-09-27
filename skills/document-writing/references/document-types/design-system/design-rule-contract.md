@@ -6,6 +6,8 @@ Use this contract when authoring or reviewing substantive reusable rules in eith
 
 Connect a material rule's applicable context, intent and rationale, observable outcome, permitted variation or exceptions, and authority. Use prose, examples, or a compact table as useful; do not require a fixed record shape or fill every field for every minor rule.
 
+For each major reusable pattern, derive its purpose, application conditions, non-application conditions, and the supported alternative composition together. Explain which task, information need, or contextual constraint changes the choice. Non-application can be a valid situation served by another composition; it is not automatically prohibited use or a failed implementation. If the boundary or alternative is not established, identify that uncertainty instead of inventing a universal rule. An unused pattern in one screen does not by itself establish a non-application condition.
+
 Distinguish approved decisions, observed implementation facts, interpretations, and unresolved questions. Record exact values and identifiers only when supplied or verified. A shipped implementation establishes what exists, not automatically what is approved. An example's appearance or another brand's choices must not become a universal requirement.
 
 ## Connect supported implementation and assets
@@ -25,6 +27,8 @@ Verify usage examples against the source's language, invocation form, parameters
 ## Explain task and information placement
 
 In composition and interaction patterns, connect the user's task to the information or action needed first, the reason for its placement, and the conditions that permit a different composition. For example, comparison needs discoverable correspondence between alternatives; manipulation needs a legible relationship between inputs and results. Ground the actual arrangement in this system's evidence rather than prescribing universal screen templates.
+
+Judge task importance and presentation prominence separately. Optional status, a default or fixed value, or an assumed low usage frequency cannot alone justify classifying information or an action as secondary, advanced, hidden, or low priority. Explain when the user needs it, how it affects the decision or outcome, what omission or reduced visibility would cost, and how the chosen presentation keeps it discoverable. A fixed value may still be essential to interpreting a result; optional input may be central to a particular task. Preserve measured usage evidence when available without replacing task reasoning with frequency alone. These judgments do not redefine the workflow's invariant, variable, conditional, prohibited, and verification classes.
 
 When readers need both a quick scan and detailed evidence, explain how the two paths connect. Keep material conditions, units, and uncertainty visible during summarization. Shared brand principles can support different information priorities and compositions for different tasks.
 

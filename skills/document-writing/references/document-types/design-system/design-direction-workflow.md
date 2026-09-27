@@ -145,7 +145,11 @@ For work requiring direction validation under the decision table, do not finaliz
 - Light and dark environments
 - A common platform and a materially different platform or storefront
 
-Use existing representative results or authoritative validation records when available. If fewer than two contrasting results are available, propose the situations and ask the user either to provide existing results or authorize separate production. Production belongs to the appropriate capability and remains a separate deliverable; resume document finalization only after its results can be inspected.
+Distinguish state and appearance checks from applicability checks. The former asks whether a chosen component or pattern behaves and looks appropriate across its relevant states; the latter asks whether that pattern should be chosen for the task at all. When extending a rule to other screens or asset contexts, compare situations where it applies and where a supported alternative is appropriate, using available existing results or authoritative records. Identify the changed task or constraint that explains the different choice. Two states of the same component do not establish that selection boundary merely by passing their state checks.
+
+If an applicable or non-applicable comparison is unavailable, record the checked scope and the unverified boundary without manufacturing a case or claiming broader validation. This does not impose two newly produced examples for every pattern or an additional whole-set stop. Preserve the direction-validation requirement below; a focused change to a value or state that leaves pattern selection unchanged still needs only its affected representative checks.
+
+For the direction validation required by the decision table, use existing representative results or authoritative validation records when available. If fewer than two contrasting direction results are available, propose the situations and ask the user either to provide existing results or authorize separate production. Production belongs to the appropriate capability and remains a separate deliverable; resume document finalization only after its results can be inspected.
 
 Check common visual language, appropriate contextual variation, accessibility, information delivery, scale, density, function-versus-brand balance, and platform or storefront constraints.
 

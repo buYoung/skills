@@ -85,6 +85,8 @@ For `app-store-page`, follow [storefront-research.md](references/document-types/
 
 When a request combines a document with actual UI, image, or video production, keep the document portion under this skill and route the production portion to the appropriate capability as a separate deliverable. Do not let either portion suppress or silently replace the other. In the completion report, label document outputs and production outputs separately and attribute each to its owning workflow; do not imply that document authoring itself produced a binary asset.
 
+For product UI, the selected prebuilt defines component-level design contracts and the workflow to include in the document for presenting new UI previews. Document-only work records that workflow; an authorized mixed request also delivers the actual preview through its production capability.
+
 Before reporting a new saved set as complete, follow the structural verification instructions in [design-system-authoring.md](references/document-types/design-system/design-system-authoring.md#structural-verification). A structural pass does not establish direction approval or semantic quality.
 
 ### 5. Apply the FDD gate
@@ -152,6 +154,7 @@ Before delivery, confirm:
 - The result still matches the selected document type.
 - For a multi-file Design System Document, every substantive supplied decision is in the owning prebuilt file, every required owner is linked from `index.md`, and the actual changed paths match the files the completion will claim.
 - For a Design System Document, the operation-specific decision table was followed, the approved direction and decision classes are clear, and representative verification covers the scope required by that operation.
+- For a Design System Document, major patterns explain when to use or avoid them and why; product UI components have findable visual, sizing, and composition contracts, including inherited rules and necessary unknowns. New-UI preview requirements and any claimed preview delivery follow the selected prebuilt and the actual request scope.
 - No Design System Document file was created or modified in a branch where the decision table requires a stop; partial work is reported as partial.
 - No supplied or verified value has been replaced by convention, and no unsupported value, policy, platform behavior, or storefront requirement has been added.
 - Any unresolved choice that requires the user is asked once as a direct question in the user-facing response, not left only as an internal decision note.

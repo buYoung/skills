@@ -50,7 +50,7 @@ Own screen selection, sequence, narrative flow, fidelity to actual UI or gamepla
 
 Own visual hierarchy, safe areas, and copy embedded in or directly paired with visual assets. It does not own general storefront listing titles, descriptions, tags, or search metadata.
 
-Connect message priority and placement to the viewer’s task, what they need to understand first, and why the composition serves that need. Describe supported contextual variants and routes to detail without dropping conditions, units, or uncertainty.
+Connect message priority and placement to the viewer's task, what they need to understand first, and why the composition serves that need. For each major composition pattern, record application and non-application conditions, the supported alternative, and available contrasting evidence under the common rule contract. An asset's optional or required status alone does not determine message importance or prominence. Describe supported contextual variants and routes to detail without dropping conditions, units, or uncertainty.
 
 ### `localization.md`
 

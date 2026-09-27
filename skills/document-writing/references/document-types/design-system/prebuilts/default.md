@@ -28,9 +28,13 @@ The displayed root is replaced by the resolved output root and serves as a respo
 
 Apply [design-rule-contract.md](../design-rule-contract.md) within these owners; it adds no mandatory files or component sections.
 
+Read [component-design-contract.md](../component-design-contract.md) for component inventory, visual and spatial specifications, inherited appearance, and the consumer workflow for presenting new UI previews. Preserve the current operation's scope when applying it.
+
 ### `index.md`
 
 Define the system's purpose, scope, readers, approved design direction in one or two sentences, direction authority, relevant axes, validation status, document map, authoritative sources, and precedence for resolving conflicts. Identify the canonical owner of each major decision area. Do not include rejected direction hypotheses.
+
+For new UI or redesign work, route readers to the governance owner's preview workflow as well as the relevant component and pattern owners.
 
 ### `foundations.md`
 
@@ -46,7 +50,7 @@ Link verified token source locations and supported mappings to component consume
 
 Own reusable interaction and composition patterns that span components, including their intent, participating elements, states, behavior, responsive adaptation, relevant accessibility consequences, and how invariant direction principles permit contextual variation.
 
-Connect each material pattern to the user's task, first-needed information or action, placement rationale, and context-dependent alternatives. Explain the connection between quick scanning and detailed evidence when both are needed, preserving conditions, units, and uncertainty.
+Connect each material pattern's purpose, application and non-application conditions, and supported alternative composition to the user's task and placement rationale. Justify importance and exposure under the common rule contract, and link available applicability comparisons separately from state checks. Explain the connection between quick scanning and detailed evidence when both are needed, preserving conditions, units, and uncertainty.
 
 ### `content.md`
 
@@ -62,9 +66,11 @@ Own contribution, review, direction approval, representative validation, directi
 
 Record approved correction rationale and affected verification results here, linking to the rule owners. Distinguish document judgments from implementation defects, automatic-check gaps, and execution-tool issues; a one-off preference is not a canonical rule. Connect comparable follow-up results, recurrence, and the next evidence needed using the common rule contract; retain failures and limit effect claims to observed work.
 
+For a new or substantially rewritten set, document the [new-UI preview workflow](../component-design-contract.md#present-design-previews-for-new-ui): reuse applicable existing design, create and show a concrete preview for new components or UI compositions, explain departures, and handle feedback under existing decision authority. Link actual preview evidence when available; authoring this rule does not itself produce a preview or authorize implementation.
+
 ### `components/index.md`
 
-Map the known component inventory, canonical names, status, owner when known, and links to component files. Mark unresolved inventory decisions without generating empty component documents.
+Map the known component inventory, canonical names, status, owner when known, and links to component files or individually addressable sections. Distinguish material basic controls from composites and screen patterns, identify platform, library, or product ownership, and connect constituent owners. A broad form or dialog entry alone does not account for its material controls. Mark unresolved inventory decisions without generating empty component documents.
 
 ### `components/<component-name>.md`
 
@@ -84,7 +90,7 @@ Use this order so component contracts remain comparable:
 12. Motion
 13. Usage and prohibited usage
 
-Omit a non-applicable section instead of filling it ceremonially. Mark a necessary unresolved decision where readers need to see the gap.
+Use the component design contract to make these sections substantive: explain the visible parts, sizing and layout behavior, state differences, selection boundaries, and supported alternatives. Distinguish explicit decisions, inherited rules and their local consequences, necessary unknowns, and genuinely non-applicable items. Omit a non-applicable section instead of filling it ceremonially; unknown or inherited information is not a reason to silently omit a needed contract.
 
 State how the component preserves invariant direction principles, which variants or states are variable, which adaptations are conditional, what use is prohibited, and which observable cases verify the result. Do not force every component to use identical shape, density, or expression when its function requires a documented variation.
 
