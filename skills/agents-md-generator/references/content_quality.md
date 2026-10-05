@@ -89,6 +89,8 @@ Compress in this order:
 3. Combine related descriptions within the appropriate owner or flow without erasing their separate conditions.
 4. Tighten sentence structure while retaining necessary entry points, alternatives, guards, recovery conditions, cleanup, and compatibility obligations.
 
+Use [plain_language.md](plain_language.md) while tightening prose. Concision means removing unnecessary wording, not removing the actor, compressing conditions into slash-separated fragments, or assuming the reader knows local shorthand. Split an overloaded sentence when that clarifies a contract; reclaim space from repetition or generic advice elsewhere.
+
 Keep the decision-relevant fields of a behavior together during compression. Before shortening a protected condition, remove generic naming/role inventories, broad logging advice, and repeated resource or owner descriptions that do not change how work is done. The template's categories are discovery prompts, not a list of bullets to fill at the expense of verified contracts.
 
 For example, "the loader retries" loses important meaning if retries occur only for one failure class. Preserve the triggering condition even if surrounding explanation is shortened. Do not replace specific APIs with vague terms such as "the helper" solely to fit an initial section allocation.
@@ -105,5 +107,6 @@ Run this comparison after final compression, since information can disappear aft
 - Reverse-check every final claim about recovery, migration, restoration, reuse, guards, or resource ownership against its implementing helper: does the sentence retain the applicable trigger, non-applicable/delegation path, lifetime, result, and cleanup or recipient boundary? If the record also lacks these fields, reopen the helper instead of treating record/output agreement as success.
 - Corrected facts reflect current code. Unverified old claims are not retained for apparent completeness, and new unsupported claims are not added to replace them.
 - The document preserves section responsibilities, total character limit, management rules, and custom-section bytes. Exceeding an initial section allocation alone is not a failure.
+- Generated prose passes the reader-task check in [plain_language.md](plain_language.md): its labels locate the right guidance, its sentences make actors and conditions clear, and its contract or example supports the next contribution step. Apply this check after compression without rewriting preserved custom content.
 
 An unexplained loss or distortion of an important fact fails verification even when headings, length, and freshness checks pass. Revise the candidate before writing. In the user-facing summary, report meaningful corrections and exclusions with their reasons; do not dump the entire working record or replace the existing dropped-managed-wording report required by update mode.
