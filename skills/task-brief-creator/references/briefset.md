@@ -18,6 +18,7 @@ If not, stay in single-brief mode.
 
 Strong selection signals:
 
+- Multiple independent work units contribute to one shared completion outcome; the parent records their parallel start and the set-level completion check.
 - A predecessor's output is a precondition for a successor.
 - The user asks for phases, waves, sequential PRs, independently runnable PRs, or explicit parallel work.
 - Parallel-execution capability needs to be tracked explicitly.
@@ -68,6 +69,19 @@ If the user explicitly requests briefset mode but none of the criteria above app
 Ask only if the request also establishes a user-owned delivery boundary that is not visible in the code or input.
 A one-child briefset is always a collapse target.
 
+### Parallel work is the default within a briefset
+
+Place each active child in the earliest wave its real preconditions allow.
+Children whose start conditions are already satisfied run together unless a verified write conflict or task-specific delivery constraint prevents overlap.
+Child numbers, document order, work type, and the author's preferred review sequence do not create dependencies.
+
+- Add a dependency only when the successor consumes an output that the predecessor must still produce or verify. An already-available contract belongs in the successor's current state and start condition, not in a new predecessor child.
+- Shared files require an access check, not automatic serialization. Use a verified, non-overlapping ownership partition and join check when the edits can safely coexist. Do not claim parallel safety without that evidence.
+- When a producer output, indivisible shared edit, or explicit delivery constraint requires a later wave, name that concrete reason in the existing dependency or conflict fields. Keep unrelated children in their earliest wave.
+- If every child truly must wait, retain the necessary sequence and its proof. Never invent parallelism or split an atomic change merely to make the set appear parallel.
+
+Express the result through `Execution Order`, `Dependencies`, `Parallelization`, and `Conflict Hotspots`. Do not add agent assignments, worktree instructions, scheduling-tool choices, or authoring-process notes to explain the plan.
+
 ---
 
 ## Naming Convention
@@ -78,8 +92,8 @@ docs/briefs/YYYY-MM-DD-<type>-<set-slug>-NN-<child-slug>.md          # children
 ```
 
 - `<set-slug>` — kebab-case, ≤15 chars, names the umbrella initiative.
-- `NN` — zero-padded execution-order index (`01`, `02`, …).
-  The number hints the intended starting wave but is not authoritative; the parent's `Execution Order` section is.
+- `NN` — zero-padded child identifier (`01`, `02`, …).
+  The number does not prescribe sequence or a starting wave; the parent's `Execution Order` section does.
 - `<child-slug>` — kebab-case, ≤15 chars, names the child subtask.
 - The combined child slug `<set-slug>-NN-<child-slug>` must remain ≤40 chars so the existing `validate_brief.py` slug check passes.
 
@@ -106,32 +120,34 @@ Do not overwrite existing files.
 ## Parent Brief Template
 
 The parent **manages execution** — it is not itself a work instruction.
-Implementation lives in the children.
+Implementation lives in the children. Apply [plain-language.md](plain-language.md) to parent field values as well as child prose.
 
 ```markdown
 # Brief Set: <title>
 
 ## Purpose
-- <why this brief set exists — one or two bullets, no implementation detail>
+- <shared observable outcome — no authoring or decomposition history>
 
 ## Child Briefs
-- [ ] `docs/briefs/2026-04-30-feat-checkout-i18n-01-message-keys.md` — <child title>; exists because <reason>
-- [ ] `docs/briefs/2026-04-30-feat-checkout-i18n-02-cart-copy.md` — <child title>; exists because <reason>
+- [ ] `docs/briefs/2026-04-30-feat-checkout-i18n-01-message-keys.md` — <bounded child outcome>
+- [ ] `docs/briefs/2026-04-30-feat-checkout-i18n-02-help-copy.md` — <bounded child outcome>
+- [ ] `docs/briefs/2026-04-30-fix-checkout-i18n-03-validation-copy.md` — <bounded child outcome>
 
 ## Execution Order
 - Wave 1 — `docs/briefs/2026-04-30-feat-checkout-i18n-01-message-keys.md`: Start: <precondition>; Deliverable: <child output>; Location: `<repo-relative handoff path>` (proposed); Done: <child completion signal>; Handoff: <recipient and what it receives>.
-- Wave 2 — `docs/briefs/2026-04-30-fix-checkout-i18n-03-validation-copy.md`: Start: <predecessor deliverable is available>; Deliverable: <child output>; Location: `<repo-relative handoff path>` (proposed); Done: <child completion signal>; Handoff: <join or global verification and what it receives>.
+- Wave 1 — `docs/briefs/2026-04-30-feat-checkout-i18n-02-help-copy.md`: Start: <already-satisfied independent precondition>; Deliverable: <child output>; Location: `<repo-relative child output path>` (proposed); Done: <child completion signal>; Handoff: <join or global verification and what it receives>.
+- Wave 2 — `docs/briefs/2026-04-30-fix-checkout-i18n-03-validation-copy.md`: Start: <predecessor deliverable is available>; Deliverable: <child output>; Location: `<repo-relative child output path>` (proposed); Done: <child completion signal>; Handoff: <join or global verification and what it receives>.
 
 ## Dependencies
 - Predecessor: `docs/briefs/2026-04-30-feat-checkout-i18n-01-message-keys.md`; Deliverable path: `<repo-relative handoff path>` (proposed); Format: <minimum fields or state shape>; Successor: `docs/briefs/2026-04-30-fix-checkout-i18n-03-validation-copy.md`; Starts when: <consumption precondition>; Verify: `<exact command or bounded inspection>`; Inputs: <concrete input path, fixture, range, or target>; Expected: <observable exit code, output token, state, or threshold>.
 
 ## Parallelization
-- Can run together: `docs/briefs/<child-a>.md` and `docs/briefs/<child-b>.md` — <independence evidence>. Join when: <both deliverables and required checks are available>.
-- Must not overlap: `docs/briefs/<child-c>.md` and `docs/briefs/<child-d>.md` — serialize <owner/order or merge rule> because <shared-state reason>. Join when: <serialized edits are integrated and verified>.
+- Can run together: `docs/briefs/2026-04-30-feat-checkout-i18n-01-message-keys.md` and `docs/briefs/2026-04-30-feat-checkout-i18n-02-help-copy.md` — <independence evidence>. Join when: <both deliverables and required checks are available>.
+- Must not overlap: `docs/briefs/2026-04-30-feat-checkout-i18n-01-message-keys.md` and `docs/briefs/2026-04-30-fix-checkout-i18n-03-validation-copy.md` — serialize <owner/order or merge rule> because <shared-state reason>. Join when: <serialized edits are integrated and verified>.
 
 ## Conflict Hotspots
-- `<path>` — Children: `docs/briefs/<child-c>.md`, `docs/briefs/<child-d>.md`; Access: serialized; Owner: `docs/briefs/<child-c>.md`; Rule: <write order or merge rule>.
-- `<path>` — Children: `docs/briefs/<child-a>.md`, `docs/briefs/<child-b>.md`; Access: parallel-safe; Rule: <non-overlapping ownership partition and join rule>.
+- `<path>` — Children: `docs/briefs/2026-04-30-feat-checkout-i18n-01-message-keys.md`, `docs/briefs/2026-04-30-fix-checkout-i18n-03-validation-copy.md`; Access: serialized; Owner: `docs/briefs/2026-04-30-feat-checkout-i18n-01-message-keys.md`; Rule: <write order or merge rule>.
+- `<path>` — Children: `docs/briefs/2026-04-30-feat-checkout-i18n-01-message-keys.md`, `docs/briefs/2026-04-30-feat-checkout-i18n-02-help-copy.md`; Access: parallel-safe; Rule: <non-overlapping ownership partition and join rule>.
 
 ## Shared Constraints
 - <constraint shared by all child briefs, or "None — <reason>">
@@ -146,15 +162,14 @@ Implementation lives in the children.
 
 ### Section guidance
 
-- **Purpose** — why the umbrella exists.
-  Not what each child does.
+- **Purpose** — the shared outcome the set must achieve. Keep decomposition analysis in the authoring process, not in this section.
 - **Child Briefs** — checklist (`- [ ]`).
   The **only** place status lives.
   Every child is one top-level checklist bullet; nested child paths do not count.
   Tick the box when the child is complete.
-  The *exists because* clause is a discipline check: if a child cannot articulate why it exists, fold it back into a sibling.
+  Check each child's distinct completion boundary before saving; if it has none, fold it into a sibling. The saved bullet states its outcome without an *exists because* explanation.
 - **Execution Order** — wave-based ordering and the authoritative source for each child's start, deliverable, deliverable location, done signal, and handoff.
-  Group siblings that can run together; separate dependent work into a later wave.
+  Group ready siblings in the earliest safe wave; move only genuinely dependent or conflicting work, or user-required delivery order, to a later wave. A later child waits for its named prerequisite, not every unrelated child in earlier waves.
   `Done` names an observable child completion signal, not merely "work complete" or "checks pass" without identifying which result is read.
   Use the shown field labels and casing exactly. Put every entry in one top-level bullet, with no prose before or between entries; do not put unquoted semicolons in `Start`, `Deliverable`, or `Done` values because semicolons separate fields.
 - **Dependencies** — one fixed predecessor → addressable deliverable → successor edge per bullet.
@@ -166,7 +181,7 @@ Implementation lives in the children.
   Reference only children of this set; never reference another briefset (no recursion).
 - **Parallelization** — distinct from `Dependencies`.
   A child can be dependency-free and still be unsafe to parallelize because it edits a shared file.
-  Use each child's finalized full `docs/briefs/...md` path, describe exactly one pair per bullet, call out both can-parallel and must-not-parallel cases, and name `Join when` for each pair.
+  Use each child's finalized full `docs/briefs/...md` path, describe exactly one pair per bullet, and name `Join when` for each pair. Declare ready independent pairs as `Can run together`; add `Must not overlap` only for an actual dependency, unsafe write overlap, or user-required delivery order. Do not invent a serialized pair to fill the template.
   Never place three children in one pair declaration and never declare the same pair both ways.
   A direct or indirect predecessor/successor pair cannot be `Can run together`. A serialized pair belongs in different execution waves.
   Short labels or basenames do not establish child membership.
@@ -281,7 +296,7 @@ The author locks decomposition, child types, execution order, dependencies, para
 Put only user-owned decisions into the four-column table (`순번`, `내용`, `수정 추천안`, `근거`) in this order:
 
 1. **User-owned topology constraints** — ask only when independently owned delivery units, release boundaries, or scope ownership would change the child list.
-   Each child still carries an *exists because* clause.
+   Check internally that each child has a distinct completion boundary; its saved checklist bullet needs only the bounded outcome.
    If the candidate child list shows ≥ 2 bloat signals from `bloat-decomposition.md`, apply BDR before tabling decomposition decisions.
    Apply K1 (atomic change unit) **before** generating cuts — K1 short-circuits, so atomic candidates never split.
    Then run S1–S5 on the surviving candidates and apply K2 (shared failure-path cohesion) to prune the resulting cuts.
@@ -335,7 +350,7 @@ Run the self-check from `SKILL.md` Stage 5.6 on the **parent** and on **every ch
 Briefset mode adds one parent-specific coverage rule:
 
 - **Parent decomposition coverage:** every input-implied execution context maps to a child brief.
-  If the input describes 4 work units and the parent lists 3 children, the missing unit must either become a 4th child or be explicitly justified as folded into an existing child (with the *exists because* clause updated).
+  If the input describes 4 work units and the parent lists 3 children, the missing unit must either become a 4th child or be explicitly justified as folded into an existing child (with the absorbing child's outcome updated).
   A folded unit's distinct concerns — acceptance criteria, edge cases, constraints, side-effect checkpoints — must reappear in the absorbing child's matching sections; folding is where requirement depth is most often silently lost, so verify the migration here.
   Each child also survives a BDR pass from `bloat-decomposition.md` — each child either has fewer than two bloat signals or records why K1/K2 or the two-pass decomposition limit keeps it together; no atomic-change-unit (K1) is split.
   Re-decompose only an unexamined candidate with no keep-together exception and remaining decomposition budget. A retained large child must still have an executable route.
@@ -343,6 +358,7 @@ Briefset mode adds one parent-specific coverage rule:
   Children may add local checks, but the parent must carry the cross-child compatibility rule so parallel work cannot silently break it.
 - **Handoff address parity:** every dependency edge has one repo-relative deliverable path and minimum format; the exact path appears in the predecessor's output/no-change handoff and the successor's first-stage start condition.
   A child name, result label, branch nickname, or prose such as "when the verified result is available" is not an address.
+- **Parallel default:** independent children occupy their earliest eligible wave; every later start is justified by a concrete precondition, verified conflict, or task-specific delivery constraint. The saved set explains the operational reason without agent or tooling narration.
 - **Coordination consistency:** each parallelization and hotspot item describes one child pair; no pair is both parallel and serialized; no direct or indirect dependency pair is parallel, and serialized pairs occupy different waves; a `parallel-safe` hotspot names the ownership partition and join rule.
 - **No-change safety:** already-satisfied candidates were removed or collapsed before save, while every surviving child's Stage 1 says how to prove no edits are needed, where that evidence goes, and who performs bounded correction/re-verification if the proof fails.
   A no-change branch must still tell successors whether to continue, skip, or replan.
@@ -368,7 +384,7 @@ The Stage 6 banner uses the briefset formats in `references/cold-pickup.md` (`pa
 
 ### Stage 6 — Review + Iterate
 
-Report the parent path, the child paths, the structural validator outcome (parent + per-child), and a separate content outcome covering the Stage 5.6 self-check (parent + per-child) and the Stage 5.7 cold-pickup line — `not run (opt-in)` by default — collapsing per-document verdicts to `K/N children verified` where appropriate.
+Report the parent path, the child paths, the structural validator outcome (parent + per-child), and a separate content outcome covering the Stage 5.6 self-check (parent + per-child) and, only when requested, the actual Stage 5.7 result. Collapse per-document verdicts to `K/N children verified` where appropriate; do not add authoring-process or optional-check narration.
 
 If the parent or any child contains structured non-blocking `Open Questions`, present a combined decision table immediately after the save report:
 

@@ -29,11 +29,11 @@ There is no situation in which they invert.
 
 The rules below operate on **register only**.
 They never reduce bullet count, never merge two distinct concerns into one bullet, and never drop facts.
-If applying a rule would change *what is said*, skip the rule for that bullet.
+If applying a rule would change *what is said*, skip the rule for that bullet. Apply `plain-language.md` first: the reader must still recover the actor, action, condition, and result. Keep articles or connective words when their removal creates ambiguity; register never outranks usability.
 
 Drop:
 
-- Articles: `a`, `an`, `the`.
+- Articles: `a`, `an`, `the`, only when the referent remains clear.
 - Filler: `just`, `really`, `basically`, `actually`, `simply`, `literally`, `obviously`.
 - Pleasantries: `please`, `kindly`. Preserve epistemic qualifiers such as `probably`, `may`, `appears`, and `unconfirmed` when they express uncertainty; never turn an inference into a confirmed fact.
 - Throat-clearing intros: `In order to …`, `It is worth noting that …`, `One thing to consider is …`.
@@ -45,7 +45,7 @@ Compress (register-only — never collapse meaning):
 - **Adjectival pile-ups → one adjective**, but only when the extras are synonymous.
   `large extensive comprehensive refactor` → `big refactor`.
   **Not** `large urgent customer-facing refactor` → `big refactor` (urgency and surface area are distinct facts).
-- **Long synonyms → short synonyms.** `extensive` → `big`, `utilize` → `use`, `subsequently` → `then`, `prior to` → `before`.
+- **Formal words → familiar, precise synonyms.** `utilize` → `use`, `subsequently` → `then`, `prior to` → `before`. Keep a precise technical term when the shorter word changes its meaning.
 
 **Forbidden (these are content compression, not register compression):**
 
@@ -59,7 +59,7 @@ Compress (register-only — never collapse meaning):
 Allow:
 
 - Sentence fragments.
-  `New ref each render. useMemo wrap.`
+  `Prop gets new reference each render. Memoize prop value with useMemo.`
 - Pattern: `[thing] [action] [reason]. [next step].`
 - Arrows for chained causality if the chain is short and the referents are obvious: `inline obj prop → new ref → re-render`.
 

@@ -169,8 +169,8 @@ and compares purpose, scope, entry points, constraints, and acceptance
 thresholds against the input and the answered Stage 4 rows, then checks
 caveman parity.
 Stage 5.7 cold-pickup does not run by default — the Stage 6 banner reports
-structural validation, then content validation (self-check plus caveman
-parity), then `cold-pickup not run (opt-in)` with the `run cold-pickup` hint.
+structural validation and the content and intent self-check (including
+caveman parity), with no unrequested optional-check line or invitation.
 The user can request the independent sub-agent read at any point in Stage 6.
 
 ## Picked Up Cold — Coding Agent's First Actions

@@ -197,9 +197,8 @@ not run):
 
 > 저장 완료 — `docs/briefs/2026-05-04-refactor-useauth-hook.md`
 > (`refactor`: Tidy `useAuth` hook internals while freezing public
-> surface; 구조 검증 통과; 내용 검증 통과 — 내용/의도 자체 검증 통과;
-> cold-pickup 미실행 (옵트인)).
-> 파일 열어보고 고칠 부분 있으면 알려줘. 독립 검증이 필요하면 `콜드픽업 실행`이라고 말해줘.
+> surface; 구조 검증 통과; 내용 검증 통과 — 내용/의도 자체 검증 통과).
+> 파일 열어보고 고칠 부분 있으면 알려줘.
 
 ---
 

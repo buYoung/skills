@@ -29,7 +29,7 @@ Its job is to let a coding agent recover the first stage, intended order, stage 
 Every section must answer *"what does the coding agent do next?"* — if a section reads like meeting minutes, negotiation history, or context prose, rewrite it until it routes to files, decisions, or verifiable outcomes.
 A plan that makes a coding agent reconstruct the execution sequence or re-interview the requester is a **failed plan**, regardless of polish.
 
-**"Executable, not discursive" is a *prose style* rule, not a *content reduction* rule.** It tells you how each bullet should read — direct, action-routing, no rationale prose.
+**"Executable, not discursive" is a *prose style* rule, not a *content reduction* rule.** It tells you how each bullet should read — direct actions and necessary facts; a brief reason stays when it prevents misuse or changes execution.
 It does not tell you to *drop* distinct concerns, *merge* unrelated bullets, or *summarize* the input down to its highlights.
 A brief that omits a concern from the input is also a failed brief, because the downstream agent will silently miss it.
 Tight prose, full enumeration: short bullets are fine and encouraged, but every distinct concern from the input and the codebase review must land somewhere in the brief.
@@ -67,7 +67,7 @@ Load references only when their decision point arrives:
 4. Read [references/briefset.md](references/briefset.md) during Stage 1 when multiple execution contexts are plausible.
 5. Read [references/bloat-decomposition.md](references/bloat-decomposition.md) only after a candidate child brief is independently executable but still looks oversized or mixed.
 6. Read [references/stage-4-interview.md](references/stage-4-interview.md) before the Stage 4 ownership pass, including requirements clarification and recommendations.
-7. Read [references/template.md](references/template.md) while composing the saved Markdown.
+7. Read [references/plain-language.md](references/plain-language.md) and [references/template.md](references/template.md) while composing or revising the saved Markdown.
 8. Read [references/cold-pickup.md](references/cold-pickup.md) only when the user explicitly requests cold-pickup verification (Stage 5.7); it never loads by default.
 
 Do not re-open every reference by habit.
@@ -111,9 +111,9 @@ The saved brief is written in caveman **full** mode — fragments, dropped artic
 Other intensity levels (`lite`, `ultra`, `wenyan-*`) are out of scope; do not switch.
 
 **Caveman compresses *register*, not *content*.** The pre-conversion content inventory and the caveman plan must carry **the same facts, bullets, section depth, execution stages, required fields, and nested checklist depth**.
-Shorter sentences, dropped articles, and short synonyms are the only changes.
+Sentence fragments, omitted articles, and familiar synonyms change phrasing only; restore normal prose whenever brevity obscures meaning.
 If conversion merges distinct inventory items, removes a condition, or drops a stage, restore those items; do not justify lost content as a register change.
-There is no token-count target; the goal is a primitive-sounding register over a fully enumerated work instruction, not a smaller document.
+There is no token-count target; the goal is a concise, readable register over a fully enumerated work instruction, not a smaller document. Readability takes priority over dropping articles or using fragments.
 
 **Two hard rules — both absolute:**
 
@@ -265,7 +265,7 @@ Do not use file count, line count, input length, or several related edit points 
 Those are supporting evidence only.
 
 If briefset signals are strong, select briefset mode and state evidence before Stage 2.
-If candidate contexts are fully independent — no ordering, dependencies, or shared conflict hotspots — select separate single-plan invocations instead; empty coordination parent adds overhead.
+If the candidate contexts have unrelated outcomes and no shared acceptance boundary, select separate single-plan invocations. Independent children serving one coordinated outcome may share a briefset and start in the same wave; do not invent dependencies to justify the parent.
 If evidence unclear, default to single-plan mode.
 Ask only when topology depends on user-owned delivery boundary, release unit, or scope choice; do not ask user to choose document shape when code and input settle it.
 Several stages inside one cohesive execution context do not justify briefset mode; consult `references/bloat-decomposition.md` before splitting oversized candidate.
@@ -482,6 +482,8 @@ The brief is a work instruction, not a summary.
 Caveman compresses *how* the brief reads, never *what* it contains — so this self-check is identical to the normal-mode skill's check, plus one caveman-only parity item.
 Run this checklist:
 
+- [ ] **Reader-centred writing:** apply the reader check in `references/plain-language.md` to the saved artifact. The required information is easy to locate, the action and conditions are clear, and the next step is usable; authoring tools and workflow narration do not appear in the plan.
+
 - [ ] **Intent fidelity:** read the saved file as a stranger would and compare it with the original input and the answered Stage 4 decisions.
   The work purpose is the same; the scope is neither materially wider nor narrower; the first stage and entry points point where the input points; every user constraint, exclusion, and acceptance threshold survives; the brief assumes no work the input did not intend.
   A user-locked Stage 4 decision counts as intent even when it differs from the raw input.
@@ -532,7 +534,7 @@ Stage 5.7 supplies that stranger — a fresh read-only sub-agent that first reco
 
 **Stage 5.7 never runs by default.** It has no signal gates and no automatic triggers; briefset mode, Stage 4 decision rows, non-empty `Open Questions`, work type, and the caveman register do not start it.
 It runs only when the user explicitly asks — for example `run cold-pickup`, `--cold-pickup`, `콜드픽업 실행` — either together with the initial input or later in Stage 6 against the current on-disk file.
-Do not spawn a sub-agent for verification without such a request, and do not offer more than the one-line banner hint in Stage 6.
+Do not spawn a sub-agent for verification without such a request. Report Stage 5.7 only when requested; omit unsolicited optional-check invitations from Stage 6.
 
 **When requested, read `references/cold-pickup.md` and follow it.** In short:
 
@@ -556,17 +558,17 @@ Hand off to the user for review.
 
 1. Report the path and one-line summary, then distinguish **structural validation** from **content validation**.
    Structural validation is the Stage 5 validator result.
-   Content validation is the Stage 5.6 content and intent self-check (including caveman parity), followed by the Stage 5.7 cold-pickup line — `not run (opt-in)` by default, or its actual result when the user requested it.
+   Content validation is the Stage 5.6 content and intent self-check (including caveman parity), and the actual Stage 5.7 result only when the user requested it. Do not imply that the self-check is an independent reader evaluation.
    Report unavailable, incomplete, restored, and exhausted outcomes explicitly; a missing required result is never a pass. Every reported check must belong to the final saved artifact state.
    Use the user's chat language; the banner is normal prose, never caveman.
 
    **English (validator + self-check passed, cold-pickup not requested):**
-   > Saved — `docs/briefs/2026-04-23-feat-dark-mode-settings.md` (`feat`: Dark mode toggle in Settings; structural validation passed; content validation passed — content and intent self-check passed, caveman parity OK; cold-pickup not run (opt-in)).
-   > Open it and let me know if anything needs editing. Say `run cold-pickup` if you want an independent read of the saved brief.
+   > Saved — `docs/briefs/2026-04-23-feat-dark-mode-settings.md` (`feat`: Dark mode toggle in Settings; structural validation passed; content validation passed — content and intent self-check passed, caveman parity OK).
+   > Open it and let me know if anything needs editing.
 
    **Korean (validator + self-check passed, cold-pickup not requested):**
-   > 저장 완료 — `docs/briefs/2026-04-23-feat-dark-mode-settings.md` (`feat`: Dark mode toggle in Settings; 구조 검증 통과; 내용 검증 통과 — 내용/의도 자체 검증 통과, 문체 변환 동등성 확인; cold-pickup 미실행 (옵트인)).
-   > 파일 열어보고 고칠 부분 있으면 알려줘. 독립 검증이 필요하면 `콜드픽업 실행`이라고 말해줘.
+   > 저장 완료 — `docs/briefs/2026-04-23-feat-dark-mode-settings.md` (`feat`: Dark mode toggle in Settings; 구조 검증 통과; 내용 검증 통과 — 내용/의도 자체 검증 통과, 문체 변환 동등성 확인).
+   > 파일 열어보고 고칠 부분 있으면 알려줘.
 
    **English (user requested cold-pickup, clean):**
    > Saved — `docs/briefs/2026-04-23-feat-dark-mode-settings.md` (`feat`: Dark mode toggle in Settings; structural validation passed; content validation passed — content and intent self-check passed, caveman parity OK; cold-pickup: clean (no intent deviations, no ask-backs, no missing concerns, no over-terse bullets)).
@@ -689,7 +691,7 @@ See `references/briefset.md` for what the parent validator checks and what stays
 
 ## Guardrails
 
-- **Executable, not discursive.** Apply the intro's prose-style rule to every section — rewrite discussion-summary, negotiation-log, or rationale prose until it directs concrete action; *why we are thinking about this* prose belongs in the PR description, not the brief.
+- **Executable, not discursive.** Apply the intro's prose-style rule to every section — rewrite discussion-summary, negotiation-log, or rationale prose until it directs concrete action; retain only the brief rationale the reader needs to execute safely; author deliberations do not belong in the brief.
 - **Never fabricate file paths or PR numbers.** `Related Files / Entry Points` is mandatory because it is the downstream agent's starting route.
   If the codebase review does not surface at least one concrete file, directory, route, command, module, related brief, or confirmed proposed path, ask the user to provide or confirm the entry point before saving the brief.
   At least one top-level entry must carry that path in inline code; plain-text path, PR-only bullet, or symbol-only bullet is not structurally checkable.
@@ -704,7 +706,7 @@ See `references/briefset.md` for what the parent validator checks and what stays
   Do not rely on "avoid regressions" or "keep compatibility" as a substitute.
 - **One plan per invocation, unless input has multiple execution contexts.** When it does, select briefset from documented signals and explain evidence; ask only when topology depends on user-owned delivery or scope boundary.
   Do not stuff unrelated execution contexts into one plan or nest briefsets.
-  When the contexts share no dependency, no ordering, and no conflict hotspot, recommend separate single-brief invocations instead of a briefset (see Stage 1).
+  When contexts have unrelated outcomes and no shared acceptance boundary, recommend separate single-plan invocations (see Stage 1). Within a briefset, use parallel waves by default and add ordering only for actual preconditions, verified conflicts, or user-required delivery order.
 - **Decision table does not bypass the ambiguity gate.** Halt-eligible inputs still halt at Stage 1.
   Do not try to reconstruct missing PROBLEM / GOAL / SCOPE / TARGET through a large decision table — the gate exists precisely to prevent that failure mode.
   See `references/stage-4-interview.md` for the table rules and termination conditions.
@@ -757,7 +759,7 @@ Evaluated after Stage 5.6 (and Stage 5.7 when the user requested it) has run, im
 
 - [ ] Stage 5.6 ran against the file as saved on disk, within two passes; a gap left after the budget is reported as incomplete, never as passed.
 - [ ] No verification sub-agent was spawned without an explicit user request for cold-pickup.
-- [ ] When the user requested cold-pickup, Stage 5.7 ran once per artifact as the reference describes, or the banner names the documented `unavailable` reason; when they did not, the banner says `cold-pickup not run (opt-in)`.
+- [ ] When the user requested cold-pickup, Stage 5.7 ran once per artifact as the reference describes, or the banner names the documented `unavailable` reason; when they did not, the banner reports the checks actually run without an optional-check line.
 - [ ] Over-terse bullets flagged by a requested cold-pickup were restored to normal prose under Auto-Clarity, never argued as disagreement.
 - [ ] Stage 6 banner reflects what actually ran — no check is reported from an earlier artifact state.
 - [ ] Any edit after Stage 5.6, Stage 5.7, or Stage 6 re-ran the structural validator and then Stage 5.6 before the banner was reported.
