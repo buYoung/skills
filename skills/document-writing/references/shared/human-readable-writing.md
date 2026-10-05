@@ -1,42 +1,46 @@
 # Human-readable writing
 
-Use this reference for substantial creation, rewriting, and review. Readability is not decoration; it is whether the intended reader can find the point, build the right mental model, and take the intended action without rereading.
+Use this reference for substantial creation, rewriting, and review. Judge the final text by whether its intended reader receives, finds, understands, and can use the information needed for the document's purpose.
 
-## Evaluation dimensions
+## Basis and scope
 
-### Immediate orientation
+The [ISO 24495-1:2023 overview](https://www.iso.org/standard/78907.html) covers plain-language principles for primarily text-based documents across written languages, including technical writing. The [International Plain Language Federation's public summary](https://www.iplfederation.org/iso-standard/) identifies four reader outcomes: relevance, findability, understandability, and usability.
+
+The practices below are this skill's application of those public principles, not a reproduction of the full standard or a conformity or certification assessment. Use them within the selected document type's structure and requested operation. Keep this review framework internal unless requested as a deliverable. Plain-language review complements the type's technical and accessibility checks.
+
+## Reader outcomes
+
+### Relevant: provide what this reader needs
 
 - State the document's purpose and reader outcome near the beginning.
 - Put the conclusion, recommendation, governing rule, or promised result before supporting detail when the document type allows it.
-- Make scope and audience visible before nuance.
+- Make audience, applicability, and material limits visible before nuance. Choose detail for the reader's starting knowledge and situation; an expert document need not use a beginner's vocabulary.
+- Include necessary facts, conditions, and uncertainty even when readers may not know to ask for them. Remove repeated conclusions, throat-clearing, and optional template filler while retaining required coverage, evidence, limitations, and safety conditions.
 
-### Scanability
+### Findable: make the applicable answer easy to locate
 
-- Use descriptive headings that reveal the argument or workflow.
-- Keep one main idea per paragraph.
-- Prefer short lists or tables for repeated fields and exact comparisons.
+- Use descriptive headings, labels, and link text that match the reader's task or lookup terms. Preserve required headings and stable lookup keys; add orientation within their established sections when needed.
+- Order content by the reader's use, not the author's discovery process. Put prerequisites before dependent steps and evidence before interpretations that rely on it, while preserving meaningful chronology and the selected type's structure.
+- Keep conditions, exceptions, and material limitations beside the claim, rule, or step they change. When detail belongs elsewhere, provide enough local context to avoid a misleading summary and a specific link to its authoritative owner.
+- Use prose for connected explanation, numbered lists for an actual sequence, bullets for parallel items, and tables for genuinely comparable fields. Give links labels that reveal their destination rather than an unexplained "see above" or "see below".
 - Do not fragment simple prose into excessive headings or bullets.
 
-### Information order
+### Understandable: make the intended meaning explicit
 
-- Order content by the reader's task, not by the author's discovery process.
-- Explain prerequisites before dependent steps.
-- Place evidence before interpretations that rely on it.
-- Keep exceptions near the rule or step they modify.
-
-### Concreteness
-
-- Replace vague abstractions with examples, values, observable results, or counterexamples when useful.
-- For action documents, show what success looks like.
-- Define unfamiliar terms once and use the same term consistently afterward.
+- Prefer familiar words and direct verbs to vague abstractions and stacked nouns. Name the actor when supported and relevant; retain passive wording when the actor is unknown or the affected item is the useful focus. Do not invent responsibility to make a sentence active.
+- Keep one main idea per paragraph. Split overloaded sentences when doing so clarifies the relationships, retaining the scope of conditions, negation, alternatives, and exceptions. Replace ambiguous pronouns with the relevant noun when readers could infer the wrong referent.
+- Explain unfamiliar terms at their first useful appearance and use the same term consistently afterward. Retain necessary technical terms rather than replacing them with imprecise everyday synonyms.
 - Match prose to the user's primary language. In Korean prose, when an unfamiliar concept has an established Korean term, introduce it once as `한국어 용어(English term)` and use the Korean term consistently afterward.
 - Keep identity- or machine-significant text in its canonical form: product and feature names, code, commands, paths, identifiers, protocol/API/format tokens, schema fields, literal values, exact logs and quotations, and required template contracts. Do not translate or normalize them.
+- Preserve obligations, permissions, recommendations, units, time boundaries, populations, and uncertainty. Plain wording must not turn permission into obligation or an observation into a causal claim.
 
-### Economy
+### Usable: support the document's intended outcome
 
-- Remove repeated conclusions, throat-clearing, and template filler.
-- Omit optional sections that provide no reader value.
-- Keep necessary nuance, limitations, and safety conditions even when they make the document longer.
+- At an action or decision point, connect the applicable condition to the supported action, choice, or consequence. Include a responsible role, timing, expected result, or recovery path only when supported and relevant; do not invent missing elements to complete a formula.
+- For action documents, show what success looks like using supplied or verified observable results. Keep documented failure, stop, or escalation conditions beside the affected step.
+- Use supported examples, values, or counterexamples when they resolve a real ambiguity. An example illustrates a governing rule; it does not silently broaden permission or define a new default.
+- A summary, heading, table, or extracted step that stands alone must retain the material qualification that controls its meaning. A distant limitations section cannot repair a misleading local claim.
+- Match use to the type: a reference supports exact lookup, a report supports interpretation within evidence limits, and a record supports faithful reconstruction. State an unresolved point's effect under the type's rules; do not manufacture a next action or approval request to make every ending actionable.
 
 ## Evidence-preserving editing examples
 
@@ -68,15 +72,13 @@ These are illustrative inputs, not claims about a real system. Use the [drafting
 
 ## Human review rubric
 
-Rate each dimension as strong, acceptable, or weak:
+Use these qualitative questions within the selected type's review for the permitted scope:
 
-1. A reader can identify the purpose and main point from the opening.
-2. A reader can scan headings and predict where information lives.
-3. Paragraphs and bullets carry one clear responsibility.
-4. The order matches how the reader understands or acts.
-5. Examples, expected results, and exceptions are concrete.
-6. Terminology is consistent and unexplained jargon is limited.
-7. The document avoids repetition and empty structure.
-8. The ending leaves the reader with the intended understanding, action, decision, or next step.
+| Outcome | Question to answer from the actual final text |
+| --- | --- |
+| Relevant | Does the text provide the necessary answer and its applicability, including material information the reader may not know to ask for? |
+| Findable | Can the reader use headings, lookup keys, and links to locate the answer and its governing conditions? |
+| Understandable | Can the reader interpret terms, actors, relationships, uncertainty, and normative meaning without guessing? |
+| Usable | Can the reader reach the intended understanding, action, decision, or reconstruction without overlooking a prerequisite, exception, or limit? |
 
-Treat these as qualitative criteria. Do not turn subjective prose quality into arbitrary mechanical assertions.
+Identify the passage or missing information behind a weak assessment and trace it through the [drafting and revision sequence](drafting-and-revision.md#review-content-in-both-directions). Use relevant reader feedback when available, and distinguish observed reader use from an author's assessment. Claim only evaluation actually performed. Fixed word counts, sentence-length limits, and readability scores alone do not establish these outcomes; judge expression in the reader's language and context.

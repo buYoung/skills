@@ -41,10 +41,12 @@ Reuse is not permission to skip freshness or applicability checks. Keep a source
 
 Inspect the actual draft against its inputs, not merely the intended outline. Follow the type-specific review procedure when one exists and use these two directions within it:
 
-- Reader to text: can the intended reader locate and understand the answers needed to understand, act, decide, comply, recover, or reconstruct? Check prerequisites, explanation order, evidence, and useful observable results.
+- Reader to text: can the intended reader find, understand, and use the answers needed to understand, act, decide, comply, recover, or reconstruct? Apply the [four reader outcomes](human-readable-writing.md#reader-outcomes) to prerequisites, applicability, explanation order, evidence, and useful observable results.
 - Requirements and evidence to text: did the material requested content and supported facts, decisions, conditions, exceptions, and uncertainty survive without omission or changed meaning? Are additions supported or clearly qualified? In an existing document, compare the result with the original and authorized changes.
 
 Answering every self-generated question does not establish completeness; the questions themselves may omit a required contract item or an inconvenient source fact. Repair content gaps, contradictions, unsupported certainty, and misplaced material before investing in sentence polish. Do not answer unresolved substantive choices just to complete the outline.
+
+Within this review, trace a representative reader question or task from its likely entry point through the actual text, using only the reader's established knowledge and information in the document. A reference reader may enter at one lookup item; check that its governing conditions are visible there or readily reachable through a specific link to their owner. For a focused revision, check only the affected path and governing context. Use this as an internal author assessment, distinct from observed reader feedback; it does not require a new feedback round or deliverable.
 
 When reporting findings or seeking feedback, identify the passage, the relevant reader question or requirement, and the reason it is deficient. Ask a specific review question only when feedback is needed; do not require an additional feedback round for every document.
 
@@ -52,7 +54,7 @@ When reporting findings or seeking feedback, identify the passage, the relevant 
 
 Once the content is sound for the permitted scope, apply [human-readable-writing.md](human-readable-writing.md) to wording, transitions, repetition, terminology, and grammar. Its examples illustrate improvements constrained by the supplied evidence.
 
-After editing, compare affected wording with its evidence or governing definition. A shorter sentence may unintentionally broaden the audience, remove an exception, promote observation to causation, or change permission into obligation. If meaning, certainty, conditions, or normative strength changed, return to content review for the affected passages and dependent references. Repeat structural checks when the selected type requires them after structural edits; do not restart unrelated whole-document work.
+After editing, compare affected wording with its evidence or governing definition, including summaries, table cells, and headings that carry a claim on their own. When splitting a sentence or moving a qualification, check that conditions, negation, and exceptions still govern the same statement. A shorter sentence may unintentionally broaden the audience, remove an exception, promote observation to causation, or change permission into obligation. If meaning, certainty, conditions, or normative strength changed, return to content review for the affected passages and dependent references. Repeat structural checks when the selected type requires them after structural edits; do not restart unrelated whole-document work.
 
 ## Respect the requested operation
 

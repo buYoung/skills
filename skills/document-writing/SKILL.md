@@ -125,13 +125,13 @@ After routing:
 4. Load another type's references only for a separately requested deliverable or a justified reroute, not merely for inspiration.
 5. If clear evidence shows the route is wrong, discard the previous type contract, return here, and route again.
 
-For all substantial creation, rewrite, or review work, read [human-readable-writing.md](references/shared/human-readable-writing.md). Read [source-grounding.md](references/shared/source-grounding.md) only when factual claims require sources or verification. Read [existing-document-edits.md](references/shared/existing-document-edits.md) only when modifying or reviewing an existing document.
+For all substantial creation, rewrite, or review work, read [human-readable-writing.md](references/shared/human-readable-writing.md). Apply its four reader outcomes—relevant, findable, understandable, and usable information—within the selected type and requested operation. Read [source-grounding.md](references/shared/source-grounding.md) only when factual claims require sources or verification. Read [existing-document-edits.md](references/shared/existing-document-edits.md) only when modifying or reviewing an existing document.
 
 For substantial authoring or review, read [drafting-and-revision.md](references/shared/drafting-and-revision.md) to connect preparation, content review, prose editing, and completion. For focused updates, normalization, or fact-checking, apply only its relevant steps to the requested scope; a mechanical correction does not require the full workflow. Read the selected type's review or validation reference for its applicable quality and completion criteria, without loading unrelated references. Type-specific structures, operation boundaries, and validation sequences take precedence over this shared method.
 
 ### 8. Gather context before drafting
 
-Establish the audience, intended outcome, authoritative inputs, constraints, and output destination. Infer what is safely recoverable from supplied material or the repository. Ask only when an unresolved choice would materially change the document's scope, behavior, or tradeoffs.
+Establish the audience, the reader's starting situation and knowledge, the intended outcome, authoritative inputs, constraints, and output destination. Infer what is safely recoverable from supplied material or the repository. Ask only when an unresolved choice would materially change the document's scope, behavior, or tradeoffs.
 
 Before drafting, identify the requested coverage, applicable type-specific completion conditions, and how material unknowns must be handled. Accept notes, fragments, questions, and supplied conversation records as starting material. When a new draft or substantial rewrite needs an outline, optionally organize reader questions and existing evidence using the shared drafting reference; reuse an established outline or decision note when it already serves that purpose.
 
@@ -141,7 +141,7 @@ Do not invent missing decisions or facts. Mark unresolved content explicitly whe
 
 Follow the selected references. Use their structure as a reader-centered default, not as filler. Generic document types may omit sections that do not help the reader. FDD follows its stricter profile and validator contract.
 
-Review content before polishing prose: check both whether readers can find the answers they need and whether material requirements and source facts survived accurately. Resolve content issues within the operation's scope, then edit wording. If editing changes meaning, certainty, conditions, or obligations, recheck the affected passages and their dependencies. Review and fact-check report findings rather than applying corrections. Keep any type-specific structural and semantic checks in their required order.
+Review content before polishing prose: check both whether readers can find, understand, and use the answers they need and whether material requirements and source facts survived accurately. Resolve content issues within the operation's scope, then edit wording. If editing changes meaning, certainty, conditions, or obligations, recheck the affected passages and their dependencies. Review and fact-check report findings rather than applying corrections. Keep any type-specific structural and semantic checks in their required order.
 
 Before delivery, confirm:
 
@@ -150,6 +150,7 @@ Before delivery, confirm:
 - Each paragraph has one main idea.
 - Facts, interpretation, decisions, and recommendations are distinguishable.
 - Examples and expected results are concrete where useful.
+- Independently readable summaries, headings, tables, and steps retain the material conditions, exceptions, and uncertainty that govern their claims or instructions.
 - No empty, duplicated, or ceremonial sections remain.
 - The result still matches the selected document type.
 - For a multi-file Design System Document, every substantive supplied decision is in the owning prebuilt file, every required owner is linked from `index.md`, and the actual changed paths match the files the completion will claim.
