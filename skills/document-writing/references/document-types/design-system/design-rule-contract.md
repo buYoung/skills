@@ -47,7 +47,3 @@ For recurring feedback, connect the symptom and occurrence context to the exact 
 Compare recurrence only across genuinely comparable work and keep the observation period and denominator when provided. Do not invent counts, a review cadence, or a decrease in failures. If the problem persists, distinguish unclear guidance, a missing reference/load, a reusable primitive that cannot express the rule, and a mechanical-check gap before choosing the remedy. A single model-specific failure needs repeated evidence before becoming a shared design rule. Record the next check and unresolved cause without treating a hypothesis as approved.
 
 These records belong to the existing governance or delivery owner. They may describe an authorized separate production comparison, but do not make new rendering, automation, broad reapproval, or a fixed record template mandatory for ordinary document work.
-
-## Reference scope
-
-[How our agents build on-brand pages with design.md](https://vercel.com/blog/how-our-agents-build-on-brand-pages-with-design-md) is the methodological reference: connect reader-centered judgment, bounded reusable mechanics, and evidence from recurring corrections. Apply these practices within the existing repository document owners. The article's public distribution model, Vercel brand choices, implementation stack, and evaluation tooling are not requirements of this skill. Reading Vercel's rule file is not an authoring prerequisite.

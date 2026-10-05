@@ -1,34 +1,20 @@
 # Software project documentation
 
-## Purpose and boundary
+Use this type for a software project's entry document or normal usage manual. A standalone API contract, isolated task guide, incident runbook, or design-system index keeps its own document type even when named `README.md` or `usage.md`.
 
-Help the intended reader decide whether a software project fits, reach a working first use, and find the detail needed for later tasks. This type covers a project or package's user-facing entry and usage surface, including plugins, libraries, command-line tools, and applications.
+## Select the profile and destination
 
-Select by the artifact's role and actual package, not its filename alone. A `usage.md` that only lists API fields may be a reference or specification; a `README.md` that indexes a design system belongs to that document set. A guide about writing READMEs remains an action guide. Do not replace FDD, design-system, policy, or runbook contracts because their files use these names.
-
-## Select a writing profile
-
-| Profile | Reader outcome | Load |
+| Profile | Primary reader outcome | Composition owner |
 | --- | --- | --- |
-| README | Understand what this project is, judge applicability, install or access it, and succeed with one representative first use | [readme-profile.md](readme-profile.md) |
-| Usage | Locate and complete a specific task, configure behavior, interpret results, and understand relevant limits | [usage-profile.md](usage-profile.md) |
+| README | Judge project fit, obtain the software, and reach a first useful result | [readme-profile.md](readme-profile.md) |
+| Usage | Find a task, perform it from its starting conditions, and interpret the result | [usage-profile.md](usage-profile.md) |
 
-Choose one profile per requested deliverable. A README can contain a short usage example without becoming two documents; a usage guide can include the local explanation and reference needed to complete its tasks. Distinguish those sections by purpose instead of blending a long conceptual discussion into steps.
+Select a primary profile by purpose, not filename. A short example in a README does not make it a second deliverable. For a requested single-file manual that genuinely combines both roles, load both profiles for their respective sections and keep one document contract.
 
-If a requested single file genuinely serves both entry and detailed-use roles, retain one software project document contract and load both profiles for the relevant sections. Do not split it into unrequested files.
+The main skill owns operation permissions and collision rules. Produce only requested deliverables; inspecting an existing companion does not add it to the writable scope. Resolve paths from the user's destination, then the existing target, then `README.md` or `usage.md` at the actual project or package root. Use an established documentation directory when the inputs identify it as the destination; preserve existing casing.
 
-Use the requested or established path and casing. `usage.md` is a writing profile, not a mandatory filename or destination. Do not create a companion file, contribution guide, license file, generated API reference, or documentation site unless requested. Existing related documents may be read to check links and consistency without gaining write permission.
+## Load the relevant instructions
 
-Resolve a destination in this order: the user's path, the existing target's location, then the actual project or package root with `README.md` or `usage.md` for the selected profile. Use an established documentation directory when the supplied context identifies it as the destination. A repository-wide introduction and a package README in a monorepo may have different owners and installation scopes.
-
-## Load next
-
-- For create, rewrite, update, or normalize: read the selected profile and [software-project-authoring.md](software-project-authoring.md).
-- For review or fact-check: read the selected profile and [software-project-review.md](software-project-review.md). Inspect and report; do not apply fixes or create files.
-- Read the shared [source-grounding.md](../../shared/source-grounding.md) for project facts. Before completing authoring, read [software-project-review.md](software-project-review.md) and use its relevant checks within the authorized scope. Shared plain-language and existing-edit references retain their roles; this type adds project-specific criteria rather than replacing them.
-
-## Basis and interpretation
-
-[GitHub's README guidance](https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-readmes) describes README as a common first encounter with a project, covering purpose, usefulness, getting started, help, and maintainers. It recommends keeping longer documentation elsewhere and using relative links for repository files.
-
-[Diátaxis](https://diataxis.fr/start-here/) distinguishes learning, task completion, exact lookup, and explanation. This skill applies that distinction within software documentation: a README offers a bounded entry journey; usage sections separate task directions from option lookup and background. Neither source requires this skill's two profiles, a universal section list, or a file named `usage.md`.
+- Create, rewrite, update, or normalize: read [software-project-authoring.md](software-project-authoring.md), then the selected profile. Follow the main skill's shared writing, grounding, and existing-edit references.
+- Review or fact-check: read the selected profile and [software-project-review.md](software-project-review.md). The review reference points to the common evidence and consistency contracts; report findings within the requested operation.
+- Before completing authoring, apply the review reference to the affected reader path. A focused change does not require rebuilding unrelated sections.

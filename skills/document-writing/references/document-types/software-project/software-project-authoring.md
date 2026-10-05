@@ -1,44 +1,42 @@
 # Authoring software project documentation
 
-## Establish the real project and reader
+This reference owns project context, evidence, example construction, and README/usage consistency. The profiles own content selection and depth; the shared writing reference owns prose style.
 
-Identify the requested package or project unit, reader role, document operation, paths, and applicable release or working-tree state. In a monorepo, distinguish repository-wide navigation, the installable package, and the consumer's working directory. Repository visitors, installed-product users, integrators, and contributors may need different entry paths. Use the requested audience; do not make a plugin user's first task build the plugin from source unless that is the actual distribution path.
+## Establish the package context
 
-Treat these as independent facts, not mutually exclusive project categories:
+Identify the project or installable package, target release or checkout, reader role, and execution location. In a monorepo, repository navigation, an individual package, and the consumer's working directory can differ. Choose the installation/access route supported for that reader; source builds are appropriate when required or when contributors are the audience.
 
-- Product form: plugin, library, CLI, application, or a combination.
-- Execution or installation context: host application, language runtime, operating system, service, and required permissions.
-- Distribution: registry, marketplace, binary release, source checkout, hosted access, or supported alternatives.
-- Project operation: open-source contribution, private development, support channels, and maintenance status, where established.
+Product form, host/runtime, distribution channel, and open-source operation are independent traits. Combine the applicable rows below; a CLI library or open-source plugin does not need another template.
 
-An open-source plugin can need both host-specific installation and contribution links. A library can also expose a CLI. Include only the dimensions that change this reader's decisions or actions.
+| Established trait | README emphasis | Usage emphasis |
+| --- | --- | --- |
+| Plugin | Supported host, install/enable location, first invocation | Host state, exact actions, configuration location and activation/reload behavior |
+| Library | Install identifier, public import, minimal integration | Initialization, input and return handling, useful integration scenarios |
+| CLI | Obtain the executable, first goal-oriented command | Working directory, input/output, flags, exit and repeat-run behavior |
+| Application or service | Actual access and first user action | User workflows, relevant setup, stored or exchanged data |
+| Open-source operation | Existing license, support and contribution owners | Developer or extension workflows only when those readers are in scope |
 
-## Ground instructions in available evidence
+Use only established behavior. A hosted application may require access rather than installation. A public repository does not establish a license or maintenance commitment.
 
-Read the existing targets and relevant source material before drafting. Inspect the smallest useful set of manifests, command or API implementations, configuration schemas, packaging and release settings, licenses, and existing documentation. Verify external host or distribution rules from the provider's official documentation when they affect the instructions.
+## Ground evidence and examples
 
-For material claims, keep a working association between the documented fact and its source or verification limit; this is not a required extra artifact. Check, as applicable:
+Use the shared [source-grounding.md](../../shared/source-grounding.md) hierarchy and inspect the relevant sources for the documented version:
 
-| Claim | Evidence to inspect |
+| Fact | Useful source |
 | --- | --- |
-| Install identifier, artifact, channel, or hosted entry | Package or plugin manifest, publication/release configuration, supplied release, actual distribution page |
-| Runtime or host compatibility | Declared requirements and supported compatibility evidence; a build target alone does not prove a tested minimum |
-| Commands, imports, options, defaults, and configuration | Implemented entry points, parser/schema, exported API, current authoritative docs |
-| Expected output and state changes | Implementation, supplied examples or fixtures, or an actual permitted run |
-| License, help, contribution, and project links | Existing license and project-owned files or authoritative destinations |
+| Installable identity and distribution | Manifest, release/publication settings, supplied artifact or distribution evidence |
+| Host/runtime compatibility | Declared constraints and support evidence; distinguish declarations from tested combinations |
+| Executable/import/action names and accepted input | Public exports, command parser, registered actions and maintained examples |
+| Configuration behavior | Definitions and consumers: default, precedence, scope and application timing |
+| Result, limitation or side effect | Implementation, supplied observation, fixture or permitted execution |
+| License and project destinations | Actual license and existing documentation or authoritative project destinations |
 
-Keep consumer installation separate from developer setup, and released behavior separate from unreleased source. When sources disagree, establish which state the requested document describes and retain material differences. Do not silently select a version, support policy, license, URL, default, menu label, or output to complete a familiar template. A public repository alone does not establish its license or contribution process.
+Registry name, executable name, and import name can differ. A local manifest does not prove publication; a source-checkout feature does not prove release availability. Resolve conflicting evidence for the target state rather than copying obsolete prose for consistency. Recover missing material facts or disclose the affected path as unresolved; omit unsupported optional claims.
 
-A package's registry identifier, CLI executable, and library import can differ; verify each identifier used in an example. A local manifest alone does not establish that the package is published. For configuration claims, inspect the relevant definitions and consumers rather than assuming precedence, persistence, or reload behavior.
+Construct an example as one coherent path: starting environment and required setup, explained input, supported invocation, then observable result and relevant limits. Keep copyable input separate from output. Explain reader-supplied placeholders before use; they are different from missing author evidence. Include stable output only when supported, and identify variable fields or illustrative descriptions. Source inspection and an executed example are different evidence levels; run an example only within the task's environment and authorization.
 
-Use source-confirmed instructions without claiming they were executed. Run examples only when the available environment and permission scope support it; authoring does not itself authorize external installation, account changes, or destructive operations. If a material prerequisite or command remains unknown, ask when it blocks a usable path; otherwise state the local limit or omit the unsupported optional claim. Do not report a blocked first-use or requested task path as working. Explain legitimate reader-supplied placeholders, and distinguish them from missing author evidence.
+## Keep shared facts in one owner
 
-## Draft for the selected profile
+When both README and usage exist, trace the short first-use path into its detailed task. Compare the same package/version, installation route, setup, invocation, defaults, result and limitations. Correct the requested artifact from controlling evidence; report a conflicting companion outside writable scope.
 
-Use conventional Markdown headings, short paragraphs, lists, and language-tagged code fences. Explain required substitutions before examples. State execution location, environment, and inputs when they affect behavior. Separate copyable input from output and unexplained shell prompts. Show a supported observable result; distinguish exact output from an illustrative description. Keep relevant side effects and limits beside the affected task.
-
-Apply the profile as a menu of reader needs, not a template to fill. Use tables only for genuinely comparable options or variants. Badges, screenshots, logos, a manual contents list, FAQs, and ornamental callouts are optional and need a reader benefit and real targets. Do not add empty sections or manufacture material to supply them.
-
-When both documents exist, check the same package identity, prerequisites, install channel, command/API, defaults, example inputs, and success criterion across the README's short path and usage detail. Keep necessary qualifications locally visible and link to the deeper owner. If only one file is writable, fix that file within scope and report a remaining inconsistency in the other instead of silently editing it.
-
-For focused updates, inspect affected examples and links; preserve unrelated content, exact text, and established section anchors where possible. For normalization, report material moves without changing supported behavior. Review the draft against [software-project-review.md](software-project-review.md) before delivery.
+Keep detailed rules and option definitions at their established owner. Retain the conditions needed to interpret a summary locally, then link directly to the relevant task or setting. Link only to existing or requested-and-produced destinations; check relative paths, casing and affected anchors from the containing file.

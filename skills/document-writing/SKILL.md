@@ -7,6 +7,8 @@ description: Create, update, rewrite, review, fact-check, or normalize durable h
 
 Create documents that help a specific reader understand, act, decide, comply, recover, or reconstruct what happened. The skill routes first and writes second: a polished document built from the wrong document contract is still wrong.
 
+Document structure, writing style, and review methods are defined in this package. Use `SKILL.md` and its package-local references as the complete working instructions; do not fetch external writing guides or methodological articles to apply the skill. Research needed to verify facts about the requested document's subject follows the source-grounding workflow.
+
 ## Scope
 
 This skill supports eleven target document types:
@@ -62,7 +64,7 @@ If an explicit label conflicts with the requested outcome and the choice materia
 | Design System Document | Use a durable source for product UI foundations, tokens, components, and patterns, or for any digital storefront's visual asset rules | The user wants UI code, a mockup, generated images or assets, or a system or architecture design | [design-system-overview.md](references/document-types/design-system/design-system-overview.md) |
 | Software project documentation | Assess an actual software project, install or access it, achieve first use, or find its recurring tasks and configuration | The filename merely wraps another document contract, or the artifact is a standalone API specification, single-task guide, or design decision source | [software-project-overview.md](references/document-types/software-project/software-project-overview.md) |
 
-For software project documentation, select the README or usage profile from the artifact's purpose and actual package context. A project entry document can combine orientation and a short first-use path; a usage document can combine task instructions and supporting option lookup. `README.md` and `usage.md` are clues, not automatic type selectors: a design-system index named `README.md` retains its set's contract, and a guide about writing READMEs remains an action guide. Create only requested files; one profile does not authorize a companion document.
+For software project documentation, the overview owns README/usage profile selection, combined roles, and package-level destinations. Filenames alone do not change the document contract: a design-system index named `README.md` retains its set's contract, and a guide about writing READMEs remains an action guide.
 
 ### 4. Apply the Design System Document gate and select prebuilts per output set
 
@@ -158,7 +160,7 @@ Before delivery, confirm:
 - Independently readable summaries, headings, tables, and steps retain the material conditions, exceptions, and uncertainty that govern their claims or instructions.
 - No empty, duplicated, or ceremonial sections remain.
 - The result still matches the selected document type.
-- For software project documentation, installation and examples match the actual package, distribution, and version context; README first-use steps retain the prerequisites, defaults, results, and limits of available detailed usage. Report any conflicting companion outside the writable scope.
+- For software project documentation, apply its [reader-path review](references/document-types/software-project/software-project-review.md) and common evidence and consistency contracts to the requested scope.
 - For a multi-file Design System Document, every substantive supplied decision is in the owning prebuilt file, every required owner is linked from `index.md`, and the actual changed paths match the files the completion will claim.
 - For a Design System Document, the operation-specific decision table was followed, the approved direction and decision classes are clear, and representative verification covers the scope required by that operation.
 - For a Design System Document, major patterns explain when to use or avoid them and why; product UI components have findable visual, sizing, and composition contracts, including inherited rules and necessary unknowns. New-UI preview requirements and any claimed preview delivery follow the selected prebuilt and the actual request scope.

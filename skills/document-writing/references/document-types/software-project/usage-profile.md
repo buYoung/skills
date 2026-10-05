@@ -1,35 +1,27 @@
 # Usage writing profile
 
-## Reader journey
+Organize a usage document around jobs the reader performs. Readers may enter at a task heading without reading the README, so each task must expose its own starting context. Apply the [common authoring contract](software-project-authoring.md) for project facts and examples; this profile owns task selection, detail and lookup organization.
 
-A usage document serves readers who need to do a particular job with the project. They may enter directly at a task heading rather than read from the top. Make task selection, relevant setup, detailed actions, configuration, results, and limitations easy to find without requiring the author's context.
+## Build the task map
 
-State the covered package or product, reader, and supported environment when needed. Link the established installation entry if it exists; retain local prerequisites that materially control a task. Do not assume every reader has completed the README's example.
+Derive coverage from the user's request and supported public workflows. Put the normal task first, then meaningful variations that change input, configuration, integration or output. Group by reader goals rather than internal classes or individual flags. Preserve requested coverage; do not replace a broad manual with one easy example or add unrelated tasks to a focused update.
 
-## Organize around real work
+For each substantial task, connect:
 
-Choose headings from supported reader goals, such as exporting a report or embedding a parser, rather than making every implementation class or flag a task. Order tasks by reader needs and dependencies. A task index or contents list helps only when the document's size warrants it.
+1. The goal and when the task applies.
+2. Starting state, required input, setup and execution location.
+3. Actions in dependency order, using the actual command, API or host interface.
+4. The result, its location or return handling, and the condition that distinguishes success.
+5. Material variations, limits, side effects and documented local failure handling.
 
-For each substantial task, provide the applicable parts of this contract:
+Combine trivial elements naturally instead of repeating five subheadings. Use one complete normal example, then show the meaningful change for a variant with enough local context to interpret it. Do not present mutually exclusive environment paths in one copyable block.
 
-1. Goal and applicability: what the reader achieves and which environment or mode supports it.
-2. Starting conditions: prerequisites, inputs, permissions, and execution location.
-3. Actions: exact supported commands, API calls, configuration changes, or UI labels in dependency order.
-4. Result: output or observable state, including where a created artifact appears and what success means.
-5. Conditions and limits: relevant defaults, side effects, unsupported cases, and documented recovery or next step.
+## Explain configuration as behavior
 
-Combine trivial parts naturally rather than forcing five labels onto every task. Keep a materially different environment's instructions distinct; do not place mutually exclusive steps in one copyable command block.
+Keep lookup information separate from the task sequence. For settings in scope, explain the exact name, accepted value and unit, default, affected behavior, and supported interactions. Describe precedence or reload/persistence only when established; distinguish a sample value from a default or requirement. Comparable fields can use a compact table, while interactions usually need prose or an example.
 
-Use complete, supported examples when they resolve a common task. Identify input fixtures or substitutions, explain the result, and label illustrative output. Avoid toy snippets that omit essential initialization or silently rely on a previous task's state.
+Connect a setting to the task it changes. A list of keys is insufficient when the reader cannot tell where to set one or when it takes effect. If an exhaustive reference already owns the definitions, keep task-relevant interpretation here and link to it rather than maintaining a second catalog.
 
-## Separate lookup from procedure
+## Keep the task path readable
 
-Place detailed configuration or option lookup in a clearly labeled section or link its existing owner. For covered options, include supported syntax, types, defaults, allowed values, precedence, and relevant interactions when those affect use. Do not invent any field to complete a table, or duplicate an exhaustive generated API reference unnecessarily.
-
-Keep short explanations beside the task when they support an immediate choice. Link deeper conceptual material when available; the distinction does not require separate files or a full documentation site.
-
-Include common local failures and documented remedies where they help a task. If branching diagnosis and incident recovery become the document's primary purpose, route that requested artifact to a troubleshooting runbook. Do not expand ordinary usage authoring into an unrequested runbook.
-
-## Completion question
-
-Can a reader find their covered task, identify its starting conditions, execute the documented actions, and interpret its result and relevant limits? If a README exists, its quick-start example must remain a valid short instance of the same behavior. Reading a companion document to check this does not authorize changing it.
+Link the existing installation owner while retaining additional task-local requirements. Place a common failure at the step it affects when that helps the reader choose a supported correction. If branching diagnosis becomes the primary artifact, apply the runbook boundary defined in the overview. Keep deeper explanation and developer procedures outside the normal task sequence unless they are required for this reader's goal.
