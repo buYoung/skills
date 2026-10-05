@@ -1,6 +1,6 @@
 ---
 name: document-writing
-description: Create, update, rewrite, review, fact-check, or normalize durable human-readable documents. Use for explanatory overviews, action guides, references or specifications, proposals, analysis reports, policies, troubleshooting runbooks, records or meeting notes, Feature Design Docs (FDDs), and Design System Documents for product UI or any digital storefront's visual assets, including the document portion of mixed document-and-production requests. Route by the requested artifact and load only its references. Do not use for implementation plans, task briefs, tickets, system or architecture design docs, source changes, pure UI or asset production, or short chat-only answers.
+description: Create, update, rewrite, review, fact-check, or normalize durable human-readable documents. Use for software project READMEs and usage documentation, explanatory overviews, action guides, references or specifications, proposals, analysis reports, policies, troubleshooting runbooks, records or meeting notes, Feature Design Docs (FDDs), and Design System Documents for product UI or any digital storefront's visual assets, including the document portion of mixed document-and-production requests. Route by the requested artifact and load only its references. Do not use for implementation plans, task briefs, tickets, system or architecture design docs, source changes, pure UI or asset production, or short chat-only answers.
 ---
 
 # Document Writing
@@ -9,7 +9,7 @@ Create documents that help a specific reader understand, act, decide, comply, re
 
 ## Scope
 
-This skill supports ten target document types:
+This skill supports eleven target document types:
 
 1. Explanatory overview
 2. Action guide
@@ -21,6 +21,7 @@ This skill supports ten target document types:
 8. Record or meeting notes
 9. Feature Design Doc (FDD)
 10. Design System Document
+11. Software project documentation (README and usage profiles)
 
 The document type describes the artifact being created or assessed. Words appearing only as the subject do not select a type. For example, "write a guide to authoring FDDs" targets a guide, while "write an FDD for saved filters" targets an FDD.
 
@@ -59,6 +60,9 @@ If an explicit label conflicts with the requested outcome and the choice materia
 | Record or meeting notes | Reconstruct past events, statements, agreements, and chronology | The document interprets evidence as a report or defines current product design | [record-minutes-overview.md](references/document-types/record-minutes/record-minutes-overview.md) |
 | Feature Design Doc | Use one product feature's behavior, flows, policies, scope, and alternatives as a design decision source for implementation | The artifact is a feature introduction, guide, interface specification, performance report, or build-approval proposal | [feature-design-doc-overview.md](references/document-types/feature-design-doc/feature-design-doc-overview.md) |
 | Design System Document | Use a durable source for product UI foundations, tokens, components, and patterns, or for any digital storefront's visual asset rules | The user wants UI code, a mockup, generated images or assets, or a system or architecture design | [design-system-overview.md](references/document-types/design-system/design-system-overview.md) |
+| Software project documentation | Assess an actual software project, install or access it, achieve first use, or find its recurring tasks and configuration | The filename merely wraps another document contract, or the artifact is a standalone API specification, single-task guide, or design decision source | [software-project-overview.md](references/document-types/software-project/software-project-overview.md) |
+
+For software project documentation, select the README or usage profile from the artifact's purpose and actual package context. A project entry document can combine orientation and a short first-use path; a usage document can combine task instructions and supporting option lookup. `README.md` and `usage.md` are clues, not automatic type selectors: a design-system index named `README.md` retains its set's contract, and a guide about writing READMEs remains an action guide. Create only requested files; one profile does not authorize a companion document.
 
 ### 4. Apply the Design System Document gate and select prebuilts per output set
 
@@ -112,6 +116,7 @@ When no explicit target type settles the choice, use the reader's final action:
 - Recover from failure: troubleshooting runbook
 - Reconstruct the past: record or meeting notes
 - Govern reusable product UI or digital storefront visual asset decisions: Design System Document
+- Evaluate and begin using a software project, or find tasks in its usage manual: software project documentation
 
 Recommendations do not automatically make a report a proposal. Steps do not automatically make a policy a guide. Choose the type that controls why the document exists.
 
@@ -153,6 +158,7 @@ Before delivery, confirm:
 - Independently readable summaries, headings, tables, and steps retain the material conditions, exceptions, and uncertainty that govern their claims or instructions.
 - No empty, duplicated, or ceremonial sections remain.
 - The result still matches the selected document type.
+- For software project documentation, installation and examples match the actual package, distribution, and version context; README first-use steps retain the prerequisites, defaults, results, and limits of available detailed usage. Report any conflicting companion outside the writable scope.
 - For a multi-file Design System Document, every substantive supplied decision is in the owning prebuilt file, every required owner is linked from `index.md`, and the actual changed paths match the files the completion will claim.
 - For a Design System Document, the operation-specific decision table was followed, the approved direction and decision classes are clear, and representative verification covers the scope required by that operation.
 - For a Design System Document, major patterns explain when to use or avoid them and why; product UI components have findable visual, sizing, and composition contracts, including inherited rules and necessary unknowns. New-UI preview requirements and any claimed preview delivery follow the selected prebuilt and the actual request scope.
