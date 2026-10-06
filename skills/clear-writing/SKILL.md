@@ -1,6 +1,6 @@
 ---
 name: clear-writing
-description: Write, rewrite, or review reader-facing text so its intended readers can easily find what they need, understand it, and use it, following the principles and guidelines of ISO 24495-1:2023 (Plain language, Part 1). Use this skill whenever the user mentions ISO 24495, plain language, 쉬운 언어, 쉬운 글, 쉬운 우리말, or reader-centered writing; whenever they ask to make a text easier to read, clearer, or easier to act on (for example "쉽게 써줘", "명확하게 고쳐줘", "읽기 쉽게 고쳐줘", "make this clearer for customers"); and whenever they ask to write or revise functional text that tells readers what applies to them or what to do, such as 안내문, 공지, 고객 안내, notices, guides, letters, emails, forms, policies, FAQs, web pages, or error messages, even if the standard is not named. Also use it to check whether a text works as plain language without rewriting it. Not for literary or creative writing, literal translation, Easy Language or easy-read versions for readers with reading difficulties, or certifying ISO conformance.
+description: Apply ISO 24495-1 to create text that helps readers easily find, understand, and use the information they need. Use this skill only to write, revise, or review practical documents that convey information, explain procedures, or support decision-making, and provide only the requested output.
 ---
 
 # Clear Writing
