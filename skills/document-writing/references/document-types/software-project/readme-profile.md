@@ -17,7 +17,7 @@ These are responsibilities, not mandatory titles or sections. Combine small sect
 
 ## Select the first-use path
 
-Prefer the documented default route for the intended reader. If supported routes have different prerequisites, label the choice before its commands instead of mixing them into one sequence. A repository-wide README may direct readers to separate packages; a package README must make that package's installation and first use clear.
+Prefer the documented default route for the intended reader. If supported routes have different prerequisites, label the choice before its commands instead of mixing them into one sequence. A repository-wide README may direct readers to separate packages following the [common consistency contract](software-project-authoring.md#keep-shared-facts-in-one-owner); a package README must make that package's installation and first use clear.
 
 Choose a small real outcome that demonstrates the stated value, such as processing one input or invoking one useful host action. Installation or `--help` alone does not demonstrate a promised processing feature. A temporary output or minimal sample is useful when it makes the result observable without unrelated setup. Apply the project-specific emphasis and evidence rules in the [common authoring contract](software-project-authoring.md).
 

@@ -16,6 +16,8 @@ For each substantial task, connect:
 
 Combine trivial elements naturally instead of repeating five subheadings. Use one complete normal example, then show the meaningful change for a variant with enough local context to interpret it. Do not present mutually exclusive environment paths in one copyable block.
 
+When a task changes state or execution route, connect the next dependent action to the prerequisites that still hold and the values that must be obtained or replaced. A service restart may require updating a client address; switching from an installed command to source execution may also change the input path. Use the current value from the documented source rather than silently reusing earlier setup.
+
 ## Explain configuration as behavior
 
 Keep lookup information separate from the task sequence. For settings in scope, explain the exact name, accepted value and unit, default, affected behavior, and supported interactions. Describe precedence or reload/persistence only when established; distinguish a sample value from a default or requirement. Comparable fields can use a compact table, while interactions usually need prose or an example.

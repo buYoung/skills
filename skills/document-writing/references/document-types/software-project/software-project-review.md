@@ -4,12 +4,13 @@ Apply the shared [four reader outcomes](../../shared/human-readable-writing.md#h
 
 ## Inspect the document as used
 
-Enter a README through its opening and follow the applicable first-use path. Enter usage through a representative task heading and follow its stated conditions to the result. Use the profile's coverage and depth decisions; do not rely on private drafting notes.
+Enter a README through its opening and follow the applicable first-use path. Enter usage through a representative task heading and follow its stated conditions to the result. Use the profile's coverage and depth decisions. Follow materially different reader starting conditions within the requested scope, including necessary linked instructions and the next dependent action after a state change. Do not supply missing context from private drafting notes or implementation knowledge; use those sources to verify claims, not to complete the reader's instructions.
 
 | Symptom | Investigate |
 | --- | --- |
-| Setup is plausible, but the first command cannot run | A mismatched distribution/executable/import, missing initialization, wrong directory or different release |
+| Setup is plausible, but the first action cannot be performed | A mismatched distribution/executable/import, unavailable input or artifact, missing initialization or interface entry, wrong directory or different release |
 | A short example works only after reading the entire manual | A necessary prerequisite or controlling condition omitted from its local context |
+| An early step works, but a later action uses stale setup | A changed address, input path or host/runtime state not connected to dependent actions |
 | Every option is listed, but a reader cannot complete a task | Missing goal-oriented sequence or no connection from settings to behavior |
 | Several examples show the same thing | Whether variants actually change the user's decision or result; consolidate duplicated cases |
 | README and usage disagree | Their target state and authoritative fact owner before deciding which passage is wrong |
