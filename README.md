@@ -22,6 +22,8 @@ Some skills require external tools to be installed:
 | task-brief-creator | None |
 | task-brief-creator-caveman | None |
 | document-writing | Python 3.9+ for package/FDD validation; Node.js 20+ for eval result validators; web access or user-supplied first-party sources for current storefront research |
+| skill-creator | Independent agents for candidate refinement; Python 3 and PyYAML for validation; Claude CLI for description optimization |
+| iso-24495-plain-language | None |
 
 ## 🚀 Available Skills
 
@@ -43,6 +45,7 @@ Only skills that have been personally tested and approved by the user are listed
 | [react-guide](skills/react-guide/) | React 18/19 guidance for explanation, design, implementation, and diagnosis across CSR, SSR/streaming/hydration, structure, Hooks/Effects, state/data, async UI, accessibility, performance, migrations, compatibility, and React Compiler behavior. |
 | [vite-guide](skills/vite-guide/) | Vite 7/8 guidance for explanation, design, implementation, and diagnosis across client and SSR runtime integration, env/assets, separate client/server builds, manifests, Rollup/Rolldown, plugins, deployment recovery, performance, and Vite 6→7→8 migrations. |
 | [task-brief-creator-caveman](skills/task-brief-creator-caveman/) | Caveman-output variant of `task-brief-creator`. It preserves the same nine-section execution contract, facts, bullets, stages, field order, handoffs, replan boundaries, and checklist depth while shortening only saved-plan prose values. Chat, decision tables, reports, and `Open Questions` stay in normal prose, and Auto-Clarity restores normal prose whenever compression would obscure execution. |
+| [skill-creator](skills/skill-creator/) | Creates, improves, and evaluates reusable skills. Refines a complete draft once through five independent candidates, integrates changes against shared requirements and consistency criteria, then continues the existing evaluation and feedback workflow. |
 
 ## 🧪 Skills Waiting for Review
 
@@ -53,6 +56,7 @@ These skills are currently under evaluation and will be promoted to **Available 
 | [biz-opportunity-scout](skills/biz-opportunity-scout/) | Identify and validate profitable business opportunities by analyzing TAM/SAM/SOM, unit economics, competitive landscape, and PMF indicators with HTML report generation |
 | [iterative-self-review](skills/iterative-self-review/) | Iterative answer refinement loop. The main agent drafts a response and a sub-agent performs blind verification (only `user input + current answer`, no hints or history), reports back to the main agent only, and the loop terminates on a combination of positive (clean pass, severity floor), convergence (oscillation, stable findings, no-op, diminishing returns), defensive (regression), user-clarification, and hard-cap triggers. Evidence-mandatory findings, no numeric confidence scores. |
 | [rust-guide](skills/rust-guide/) | Explains Rust characteristics and practical patterns through mechanisms, recommended usage, conditions, examples, and exceptions. Covers ownership, allocation, errors, async and parallel execution, code organization, Cargo workspaces, curated libraries, WebAssembly, embedded/no_std, SIMD, performance, unsafe/FFI, diagnostics, and compatibility. |
+| [iso-24495-plain-language](skills/iso-24495-plain-language/) | Writes, rewrites, and reviews reader-facing text using ISO 24495-1 principles. Selects relevant content, improves structure and wording, and delivers finished text without drafting notes while preserving necessary meaning and exact references. |
 
 ## 🔒 Private Skills
 
@@ -145,16 +149,16 @@ Use natural-language intent; the skill selects one of ten document types and loa
 - "Research the current visual asset requirements for the storefronts in scope and document each one separately."
 - "$document-writing review docs/operations/access-policy.md"
 
-### skill-creator (Claude Built-in)
+### skill-creator
 
-Claude Code has a built-in `/skill-creator` slash command that guides you through creating new skills. No additional installation is required.
+Install this repository's `skill-creator` through the `document-skills` plugin or copy the skill package to your agent's skills directory. It supports new skill creation, existing-skill improvement, execution evaluation, and description optimization.
 
-#### Usage
-```
-/skill-creator
-```
+After a complete draft, five independent candidates revise the same input once. The main agent compares and integrates the results before continuing the existing evaluation and feedback workflow. Request a different candidate count or skip that pass when appropriate; later feedback edits do not automatically restart it.
 
-Claude will interactively collect the necessary information (purpose, scope, domain, triggers, input/output) and generate a complete skill package with `SKILL.md`, optional bundled resources, and README integration.
+#### Examples
+
+- "Use skill-creator to create a skill for our release checklist."
+- "Use skill-creator to improve this skill. Stop after integrating the candidate proposals."
 
 ## 📄 What is SKILL.md?
 
@@ -165,6 +169,7 @@ Claude will interactively collect the necessary information (purpose, scope, dom
 - [system-prompt-creator](skills/system-prompt-creator/): The [Data Format Selection Guide](skills/system-prompt-creator/references/data_format_selection.md) was developed referencing the analysis table from [Improving Agents](https://www.improvingagents.com).
 - [task-brief-creator](skills/task-brief-creator/): The branch-walking decision-tree interview pattern incorporates the [grill-me](https://github.com/mattpocock/skills/tree/main/skills/grill-me) skill from [mattpocock/skills](https://github.com/mattpocock/skills).
 - [task-brief-creator-caveman](skills/task-brief-creator-caveman/): The caveman full-mode prose-compression rules (article/filler removal, fragment-friendly patterns, Auto-Clarity carve-outs) were adapted from the [caveman](https://github.com/juliusbrussee/caveman) skill by [juliusbrussee](https://github.com/juliusbrussee).
+- [skill-creator](skills/skill-creator/): Adapted from Anthropic's [skill-creator](https://github.com/anthropics/skills/tree/main/skills/skill-creator), with an independent post-draft refinement and integration workflow. The upstream Apache-2.0 license is retained in the package.
 
 ## 🤝 Contributing
 
@@ -174,6 +179,6 @@ This project is open source. Bug reports, feature suggestions, and PRs are alway
 
 MIT License — see [`LICENSE`](./LICENSE).
 
-This repository incorporates material from third-party MIT-licensed projects.
+This repository incorporates material from third-party MIT- and Apache-2.0-licensed projects.
 See [`THIRD_PARTY_NOTICES.md`](./THIRD_PARTY_NOTICES.md) for upstream
 attributions and license texts.
