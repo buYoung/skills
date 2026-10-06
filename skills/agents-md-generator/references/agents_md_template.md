@@ -119,13 +119,13 @@ Each bullet should answer "if I need to change this behavior, where do I start a
 For Stable bullets, use this sentence frame unless a repository-specific phrasing is clearer:
 
 ```markdown
-- **[Boundary name]**: Start in `[primary owner]` when changing [specific behavior]. It owns [decision/state/output] and must preserve [contract or side effect]; verify through [concrete check surface].
+- **[Boundary name]**: Start in `[primary owner]` when changing [specific behavior]. [Owner] controls [decision/state/output]. Keep [contract or side effect, with its applicable condition]. Check [concrete verification surface].
 ```
 
 For Active bullets that belong under a Stable boundary, use a parent-linked delta frame:
 
 ```markdown
-- **[Active route name]**: Within **[Stable boundary name]**, start in `[focused owner]` when changing [recent/change-specific behavior]. Keep only the delta: [new start point, compatibility risk, migration detail, or specific verification surface not already covered by the parent].
+- **[Active route name]**: Within **[Stable boundary name]**, start in `[focused owner]` when changing [recent/change-specific behavior]. [State the delta-specific condition and action, such as a compatibility risk or migration detail]. Check [specific verification surface when it adds to the parent boundary].
 ```
 
 Do not open a bullet with a long list of files; name the owner or entry point first, then mention only the supporting anchors needed to explain the contract.
@@ -193,13 +193,13 @@ Before writing an Active route, reject or rewrite it unless the delta is concret
 ```markdown
 ### Stable Ownership Boundaries
 
-- **Editor command boundary**: Start in `EditorCommandService` when changing command execution or validation. It owns behavior delegated by `EditorAction` registrations and must preserve the action contract consumed by the editor shell; verify through the editor command integration path.
-- **Settings state boundary**: Start in `SettingsStore` when changing persisted settings or defaults. It owns settings reads/writes and must preserve the config shape consumed by UI panels and startup loading; verify through the settings load/save path.
-- **API response boundary**: Start at the HTTP handler and `ErrorMapper` when changing public response or error output. They own the external response surface and must preserve documented success/error shapes for consumers; verify through the representative API response path. Detailed error-flattening and schema-format rules belong in Section 4 (Conventions).
+- **Editor command boundary**: Start in `EditorCommandService` when changing command execution or validation. `EditorCommandService` controls behavior delegated by `EditorAction` registrations. Keep the action contract consumed by the editor shell. Check the editor command integration path.
+- **Settings state boundary**: Start in `SettingsStore` when changing persisted settings or defaults. `SettingsStore` owns settings reads and writes. Keep the config shape consumed by UI panels and startup loading. Check the settings load/save path.
+- **API response boundary**: Start at the HTTP handler and `ErrorMapper` when changing public responses or error output. The handler and mapper own the external response surface. Keep documented success and error shapes for consumers. Check the representative API response path. Detailed error-flattening and schema-format rules belong in Section 4 (Conventions).
 
 ### Active Change Routes
 
-- **Settings migration route**: Within **Settings state boundary**, start in the migration helper when changing compatibility handling for renamed or missing config keys. Preserve only the migration-specific fallback behavior; verify through the migration path rather than restating the general settings load/save contract.
+- **Settings migration route**: Within **Settings state boundary**, start in the migration helper when changing compatibility handling for renamed or missing config keys. Keep the migration-specific fallback behavior and check the migration path. Do not repeat the general settings load/save contract.
 - **Report export route**: Across the report rendering and external upload boundaries, start in the route-specific report request factory when recent changes require generated filenames and upload payloads to stay in sync. Verify through the affected download plus upload output because neither parent boundary proves the cross-boundary route alone.
 ```
 
@@ -360,9 +360,10 @@ See the working agreements specification referenced from SKILL.md.
 - **Language**: English by default (for the content of the `AGENTS.md` file); if the user explicitly requests another language for the generated document, follow that request
 - **Max Length**: Dynamic based on repository LOC (see LOC measurement specification referenced from SKILL.md)
 - **Format**: Valid Markdown
-- **Tone**: Concise, neutral
-- **Headings**: Short and descriptive
-- **Content Style**: Bullet points with enough detail to be actionable; each item should convey the rule and how to follow it
+- **Tone**: Direct, concise, neutral, and respectful
+- **Headings**: Keep standard section names and numbers unchanged. Use specific bullet labels and permitted subheadings that predict their content
+- **Content Style**: Apply [plain_language.md](plain_language.md). Lead with the reader's action or rule, name actors where needed, and keep conditions next to their outcomes. Use connected sentences rather than dense clause chains or unexplained shorthand; preserve verified meaning and exact technical identifiers
+- **Review**: After compression, check that the intended reader can find, understand, and apply the managed guidance. Keep this editorial review outside the generated document and preserve custom sections and preambles under the update contract
 
 ## Anti-Patterns (Excluded Content)
 

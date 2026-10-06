@@ -12,7 +12,7 @@ Cold-pickup runs only on an unambiguous request from the user:
 - Any other phrase that clearly asks for an independent read or verification of the saved brief by a fresh agent — when in doubt, confirm with one short question in the user's chat language before spawning anything.
 
 The request may arrive with the initial input (run after the validation run completes) or during Stage 6 (run against the current on-disk file).
-Without a request nothing runs; an opt-out phrase such as `skip cold-pickup` changes nothing and needs no reply beyond the default banner line.
+Without a request nothing runs; an opt-out phrase such as `skip cold-pickup` changes nothing and needs no extra banner line.
 A request does not carry over: after the pass and its patches, the next independent read requires a new request.
 
 ## Scope of One Request
@@ -144,7 +144,7 @@ Never override a locked Stage 4 decision, and never silently rewrite `Open Quest
 
 ## Banner Phrasing (Stage 6)
 
-- Not requested (default) — `cold-pickup not run (opt-in)`, followed by a one-line hint in the user's chat language that `run cold-pickup` gives an independent read of the saved brief.
+- Not requested (default) — omit the cold-pickup line and invitation. Report the structural result and the author self-check as such; never relabel the self-check as independent verification.
 - Requested, clean — `cold-pickup: clean (no intent deviations, no ask-backs, no missing concerns)`.
 - Requested, findings — `cold-pickup flagged <N> item(s): <K> patched in place, <M> left as disagreement/user decision`, followed by one bullet per finding with its id, its `kind` or classification, and what was done.
 - Requested, unavailable — `cold-pickup unavailable (<actual reason>)`; the Stage 5.6 result stands on its own and is never relabeled as an independent read.

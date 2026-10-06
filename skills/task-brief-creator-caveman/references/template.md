@@ -12,6 +12,8 @@ The **chat interaction language follows the user's input** — Korean input gets
 Per-section "Good" / "Bad" examples below describe the *technical contract* (specificity, measurability, concreteness) — those are what survive caveman conversion.
 The "Caveman OK" line under each example shows the same contract emitted in caveman full mode.
 
+Apply [plain-language.md](plain-language.md) while filling the template. Keep the schema unchanged; make each field lead with the action, fact, or outcome its reader needs. Preserve conditions and evidence beside the statement they qualify.
+
 ---
 
 ## Raw Template (emit required sections, filled)

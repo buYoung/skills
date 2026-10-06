@@ -50,18 +50,20 @@ Use the correct heading number for the document type:
 
 Use the base bullet set for single repositories, monorepo root documents, and packages whose root document is absent. Add the monorepo-only package-local verification bullet **only** when generating a monorepo root document. Do not include monorepo-specific wording in single-repository `AGENTS.md` files.
 
+Apply [plain_language.md](plain_language.md) to the generated wording. Keep every applicable rule, condition, and obligation; the writing review does not introduce new agreements. Replace the type-check placeholder with the confirmed command, or omit that bullet when no type checker is configured. Do not emit the placeholder or discovery instructions in the generated document.
+
 ### Base Bullet Set (Single Repo and Monorepo Root)
 
 ```markdown
-- Respond in user's preferred language; if unspecified, infer from codebase (keep tech terms in English, never translate code blocks)
-- Ask the user before introducing tests, lint, or formatter setups; add them only on explicit request
-- Build context by reviewing related usages, flows, patterns, and likely impact before editing
-- Fix the underlying cause, not only the visible symptom; inspect affected flows and apply the narrowest complete change that resolves the root issue
-- Check side effects across callers, shared abstractions, and behavior/API boundaries; report relevant impact and compatibility risks
-- Ask actively when user decisions are needed for scope, behavior, or tradeoffs
-- Run type-check after code changes (include the discovered command, e.g., `tsc --noEmit`, `cargo check`, `go vet`, `javac`, `gradle compileKotlin`); omit this bullet if no type checker is configured
-- New functions: single-purpose, colocated with related code
-- External dependencies: only when necessary, explain why
+- Respond in the user's preferred language. If none is specified, infer it from the codebase. Keep technical terms in English and never translate code blocks.
+- Ask the user before introducing tests, lint, or formatter setups. Add them only on explicit request.
+- Before editing, review related usages, flows, patterns, and likely impact.
+- Fix the underlying cause, not only the visible symptom. Inspect affected flows and apply the narrowest complete change that resolves the root issue.
+- Check side effects across callers, shared abstractions, and behavior/API boundaries. Report relevant impact and compatibility risks.
+- Ask the user when decisions are needed for scope, behavior, or tradeoffs.
+- After code changes, run `<discovered type-check command>` to verify type safety.
+- Give each new function one purpose and place it beside related code.
+- Add external dependencies only when necessary. Explain why each added dependency is needed.
 ```
 
 ### Monorepo Root Addition
@@ -69,5 +71,5 @@ Use the base bullet set for single repositories, monorepo root documents, and pa
 Add this bullet to the root `AGENTS.md` only when the repository is confirmed as a monorepo with 2+ packages:
 
 ```markdown
-- Put package-only tests/type-check/verification guidance in the package-level AGENTS.md, not the root document
+- Put package-only test, type-check, and verification guidance in the package-level `AGENTS.md`. Keep that guidance out of the root document.
 ```

@@ -5,6 +5,8 @@ This file holds the canonical executable implementation work-plan template that 
 The emitted **output artifact is in English** (section headers and body content).
 The **chat interaction language follows the user's input** — Korean input gets a Korean reply, English input gets an English reply — but that is the chat layer, not the saved document.
 
+Apply [plain-language.md](plain-language.md) while filling the template. Keep the schema unchanged; make each field lead with the action, fact, or outcome its reader needs. Preserve conditions and evidence beside the statement they qualify.
+
 ---
 
 ## Raw Template (emit required sections, filled)

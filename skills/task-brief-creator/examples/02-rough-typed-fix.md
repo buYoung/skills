@@ -152,7 +152,7 @@ that `Reproduction` still gates Stage 1 and that the input's scope and
 acceptance threshold survived into the brief.
 The work type does not start Stage 5.7 — cold-pickup is opt-in, so the
 Stage 6 banner reports structural validation, then content validation,
-then `cold-pickup not run (opt-in)` with the `run cold-pickup` hint.
+with no unrequested optional-check line or invitation.
 The user can request the independent sub-agent read at any point in Stage 6.
 
 ## Picked Up Cold — Coding Agent's First Actions

@@ -1,8 +1,8 @@
 # Third-Party Notices
 
 This repository incorporates material from the open-source projects listed
-below. Their original copyright notices and license texts are reproduced
-here in compliance with their respective license terms.
+below. Their original copyright notices and license texts are preserved
+below or in the linked package files.
 
 The primary license for this repository is described in [`LICENSE`](./LICENSE).
 The notices below apply only to the specific portions of this repository
@@ -87,3 +87,14 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
+
+---
+
+## 3. skill-creator (from `anthropics/skills`)
+
+- **Upstream project:** [`anthropics/skills`](https://github.com/anthropics/skills)
+- **Specific component:** [`skills/skill-creator`](https://github.com/anthropics/skills/tree/main/skills/skill-creator)
+- **License:** Apache-2.0
+- **License text:** [`skills/skill-creator/LICENSE.txt`](./skills/skill-creator/LICENSE.txt), preserved from the upstream package
+- **Used in:** [`skills/skill-creator/`](./skills/skill-creator/)
+- **Local changes:** Adds one independent-candidate refinement pass after a complete draft, shared integration criteria, and routing back to the existing evaluation workflow.

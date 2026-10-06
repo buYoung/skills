@@ -151,6 +151,7 @@ Before selecting rows for deep tracing, account for every old managed Stable bou
 - Do not write timeline summaries such as "earlier focus" or "current focus" into `AGENTS.md`; report them to the user only when useful. A history-derived boundary can be documented only after current code or documented contracts confirm it.
 - Rebuild `Working Agreements` from the current canonical rule set in `working_agreements.md`, plus discovered repository-specific response language and type-check details
 - Do not reuse a standard section body from the old `AGENTS.md` after a subjective "already good" judgment
+- Draft fresh managed bodies with [plain_language.md](plain_language.md). Keep the canonical headings and apply its reader-task review to generated prose only; a style improvement never authorizes rewriting custom sections or the preserved preamble.
 
 Parser outputs:
 
@@ -203,6 +204,8 @@ Before writing, verify that managed sections were regenerated and custom section
 After final compression, compare the assembled document against the working fact record in [content_quality.md](content_quality.md). Unexplained loss or distortion of an important verified fact fails verification. Report meaningful corrections/exclusions and reasons alongside the existing dropped-wording report. Keep the overall character limit, but allow section allocations to be redistributed; do not omit necessary conditions merely to meet an initial ratio. If important facts still cannot fit, complete a reviewable candidate and ask about scope or total limit before writing.
 
 Point each recorded behavior to its final sentence and verify its decision-relevant fields together. Then reverse-check final claims about guards, recovery, migration, restoration, reuse, and resource ownership against the implementing helpers so an incomplete fact record cannot certify an equally incomplete summary. This audit does not change custom-section preservation or add a new generated section.
+
+Review the compressed managed prose with the reader-task check in [plain_language.md](plain_language.md). Confirm that the contributor can find a relevant item, identify the acting owner and its conditions, and use its contract or example. Fix unclear wording without changing verified meaning, custom-section bytes, canonical headings, or the character budget.
 
 - An unmarked document has explicit adoption approval for the concrete preview. Invalid markers have not been silently repaired.
 - The output has exactly one valid preamble marker with the output document type. Preamble changes are limited to the approved marker operation; the marker counts toward the existing budget.

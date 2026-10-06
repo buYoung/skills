@@ -11,7 +11,7 @@
 	"plugins": [
 		{
 			"name": "document-skills",
-			"description": "Collection of document and configuration skills including human-readable and design-system documentation, dynamic storefront research, AGENTS.md generation, JetBrains VM options guidance, system prompt generation, Typst document creation, and structured task-brief composition",
+			"description": "Collection of document and configuration skills including human-readable and design-system documentation, ISO 24495-1 plain-language writing, skill creation and evaluation, dynamic storefront research, AGENTS.md generation, JetBrains VM options guidance, system prompt generation, Typst document creation, and structured task-brief composition",
 			"source": "./",
 			"strict": false,
 			"skills": [
@@ -21,7 +21,9 @@
 				"./skills/typst-creator",
 				"./skills/task-brief-creator",
 				"./skills/task-brief-creator-caveman",
-				"./skills/document-writing"
+				"./skills/document-writing",
+				"./skills/skill-creator",
+				"./skills/clear-writing"
 			]
 		},
 		{

@@ -143,9 +143,9 @@ docs/briefs/2026-04-30-briefset-checkout-i18n.md
   the same pass.
 
 ## Child Briefs
-- [ ] `docs/briefs/2026-04-30-refactor-checkout-i18n-01-message-keys.md` — Normalize checkout message-key namespacing; exists because hardcoded strings and inconsistent key naming block downstream copy work.
-- [ ] `docs/briefs/2026-04-30-feat-checkout-i18n-02-cart-copy.md` — Apply PM-supplied cart copy; exists because marketing-owned content change is independent of code refactor.
-- [ ] `docs/briefs/2026-04-30-fix-checkout-i18n-03-validation-copy.md` — Translate Zod-driven validation error strings; exists because wrong-language error breaks the no-English goal and depends on stable message keys from 01.
+- [ ] `docs/briefs/2026-04-30-refactor-checkout-i18n-01-message-keys.md` — Normalize checkout message-key namespacing.
+- [ ] `docs/briefs/2026-04-30-feat-checkout-i18n-02-cart-copy.md` — Apply PM-supplied cart copy.
+- [ ] `docs/briefs/2026-04-30-fix-checkout-i18n-03-validation-copy.md` — Translate Zod-driven validation error strings.
 
 ## Execution Order
 - Wave 1 — `docs/briefs/2026-04-30-refactor-checkout-i18n-01-message-keys.md`: Start: current keys and rendered-copy contract are confirmed; Deliverable: normalized namespace manifest with preserved values and proof; Location: `docs/briefs/handoffs/checkout-i18n/message-keys.md` (proposed); Done: child 01 stage checks and Acceptance Criteria pass; Handoff: children 02 and 03 read the same manifest before editing.
@@ -507,8 +507,8 @@ the per-child validation.
 
 **Stage 5.7 note** — briefset mode does not start cold-pickup by itself.
 The Stage 5.6 self-check runs on the parent and on each child, and the
-Stage 6 banner reports `cold-pickup not run (opt-in)` with the
-`run cold-pickup` hint.
+Stage 6 banner reports the structural result and the self-check outcome
+without an unrequested optional-check line or invitation.
 If the user requests it, the parent and each of the three children get
 one fresh read-only sub-agent and one pass each (four spawns, no loop);
 with five or more children the agent would state the spawn count and

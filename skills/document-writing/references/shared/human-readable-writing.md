@@ -4,9 +4,9 @@ Use this reference for substantial creation, rewriting, and review. Judge the fi
 
 ## Basis and scope
 
-The [ISO 24495-1:2023 overview](https://www.iso.org/standard/78907.html) covers plain-language principles for primarily text-based documents across written languages, including technical writing. The [International Plain Language Federation's public summary](https://www.iplfederation.org/iso-standard/) identifies four reader outcomes: relevance, findability, understandability, and usability.
+This reference applies the four reader principles of ISO 24495-1:2023: provide relevant information, make it findable, make its meaning understandable, and make it usable for the intended outcome. The writing practices and review questions needed to apply them are included below.
 
-The practices below are this skill's application of those public principles, not a reproduction of the full standard or a conformity or certification assessment. Use them within the selected document type's structure and requested operation. Keep this review framework internal unless requested as a deliverable. Plain-language review complements the type's technical and accessibility checks.
+These practices apply the principles within the selected document type's structure and requested operation; they are not a reproduction of the full standard or a conformity or certification assessment. Keep this review framework internal unless requested as a deliverable. Plain-language review complements the type's technical and accessibility checks.
 
 ## Reader outcomes
 
