@@ -23,7 +23,7 @@ Some skills require external tools to be installed:
 | task-brief-creator-caveman | None |
 | document-writing | Python 3.9+ for package/FDD validation; Node.js 20+ for eval result validators; web access or user-supplied first-party sources for current storefront research |
 | skill-creator | Independent agents for candidate refinement; Python 3 and PyYAML for validation; Claude CLI for description optimization |
-| iso-24495-plain-language | None |
+| clear-writing | None |
 
 ## 🚀 Available Skills
 
@@ -56,7 +56,7 @@ These skills are currently under evaluation and will be promoted to **Available 
 | [biz-opportunity-scout](skills/biz-opportunity-scout/) | Identify and validate profitable business opportunities by analyzing TAM/SAM/SOM, unit economics, competitive landscape, and PMF indicators with HTML report generation |
 | [iterative-self-review](skills/iterative-self-review/) | Iterative answer refinement loop. The main agent drafts a response and a sub-agent performs blind verification (only `user input + current answer`, no hints or history), reports back to the main agent only, and the loop terminates on a combination of positive (clean pass, severity floor), convergence (oscillation, stable findings, no-op, diminishing returns), defensive (regression), user-clarification, and hard-cap triggers. Evidence-mandatory findings, no numeric confidence scores. |
 | [rust-guide](skills/rust-guide/) | Explains Rust characteristics and practical patterns through mechanisms, recommended usage, conditions, examples, and exceptions. Covers ownership, allocation, errors, async and parallel execution, code organization, Cargo workspaces, curated libraries, WebAssembly, embedded/no_std, SIMD, performance, unsafe/FFI, diagnostics, and compatibility. |
-| [iso-24495-plain-language](skills/iso-24495-plain-language/) | Writes, rewrites, and reviews reader-facing text using ISO 24495-1 principles. Selects relevant content, improves structure and wording, and delivers finished text without drafting notes while preserving necessary meaning and exact references. |
+| [clear-writing](skills/clear-writing/) | Writes, rewrites, and reviews reader-facing text using ISO 24495-1 principles. Selects relevant content, improves structure and wording, and delivers finished text without drafting notes while preserving necessary meaning and exact references. |
 
 ## 🔒 Private Skills
 
