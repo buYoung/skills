@@ -1,0 +1,34 @@
+{
+  "cases": [
+    {
+      "name": "workspace follows the actual session cwd",
+      "tool": "acme_workspace_info",
+      "args": {},
+      "expect": {
+        "isError": false,
+        "textIncludes": ["{{name}}", "{{cwd}}"],
+        "details": { "name": "{{name}}", "path": "{{cwd}}" },
+        "maxTextBytes": 4096
+      }
+    },
+    {
+      "name": "compact flag preserves structured details",
+      "tool": "acme_workspace_info",
+      "args": {},
+      "flags": { "acme-compact": true },
+      "expect": {
+        "isError": false,
+        "textIncludes": ["{{name}}"],
+        "textExcludes": ["{{cwd}}"],
+        "details": { "name": "{{name}}", "path": "{{cwd}}" },
+        "maxTextBytes": 4096
+      }
+    },
+    {
+      "name": "non-object arguments fail schema validation",
+      "tool": "acme_workspace_info",
+      "args": [],
+      "expect": { "isError": true }
+    }
+  ]
+}
