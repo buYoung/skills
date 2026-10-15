@@ -1,0 +1,27 @@
+{
+  "resources": {
+    "extensions": ["extensions/index.ts"],
+    "skills": ["skills/acme-orient/SKILL.md"],
+    "prompts": ["prompts/acme-focus.md"],
+    "themes": ["themes/acme-midnight.json"]
+  },
+  "names": {
+    "tools": ["acme_workspace_info"],
+    "commands": ["acme-info"],
+    "flags": ["acme-compact"],
+    "skills": ["acme-orient"],
+    "prompts": ["acme-focus"],
+    "themes": ["acme-midnight"]
+  },
+  "requiredFiles": [
+    "package.json",
+    "README.md",
+    "extensions/index.ts",
+    "lib/workspace.ts",
+    "skills/acme-orient/SKILL.md",
+    "skills/acme-orient/references/output.md",
+    "prompts/acme-focus.md",
+    "themes/acme-midnight.json"
+  ],
+  "forbiddenFiles": [".env", "auth.json"]
+}

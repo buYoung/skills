@@ -1,0 +1,20 @@
+{
+  "resources": {
+    "extensions": ["extensions/index.ts"],
+    "skills": [],
+    "prompts": [],
+    "themes": []
+  },
+  "names": {
+    "tools": ["acme_workspace_info"],
+    "commands": ["acme-info"],
+    "flags": ["acme-compact"],
+    "skills": [],
+    "prompts": [],
+    "themes": []
+  },
+  "requiredFiles": [
+    "extensions/index.ts",
+    "lib/workspace.ts"
+  ]
+}

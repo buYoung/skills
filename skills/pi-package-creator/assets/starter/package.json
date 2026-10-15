@@ -1,0 +1,37 @@
+{
+  "name": "@example/pi-workspace-kit",
+  "version": "0.1.0",
+  "description": "A Pi package demonstrating workspace tools, skills, prompts, and a theme",
+  "type": "module",
+  "keywords": [
+    "pi-package"
+  ],
+  "engines": {
+    "node": ">=22.19.0"
+  },
+  "files": [
+    "extensions",
+    "lib",
+    "skills",
+    "prompts",
+    "themes"
+  ],
+  "pi": {
+    "extensions": [
+      "./extensions/index.ts"
+    ],
+    "skills": [
+      "./skills"
+    ],
+    "prompts": [
+      "./prompts"
+    ],
+    "themes": [
+      "./themes"
+    ]
+  },
+  "peerDependencies": {
+    "@earendil-works/pi-coding-agent": "*",
+    "typebox": "*"
+  }
+}
