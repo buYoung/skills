@@ -23,6 +23,6 @@ Choose a small real outcome that demonstrates the stated value, such as processi
 
 ## Decide what stays local
 
-Keep every prerequisite needed for the shown first result in the short path. Move exhaustive options, advanced workflows, long conceptual explanations and contributor procedures to their existing owner, with specific links. If no detailed document exists and only README is requested, include the necessary entry detail locally.
+Keep every prerequisite needed for the shown first result in the short path. Move exhaustive options, advanced workflows, long conceptual explanations and contributor procedures to their existing owner, with specific links. If no detailed document exists and only README is requested, include the necessary entry detail locally. This includes any supplied or verified failure condition that blocks the shown first result, placed beside the step it affects; do not add troubleshooting the sources do not support.
 
 Avoid repeating a full command or configuration catalog under features, quick start and usage. Reuse one representative example and explain where additional supported tasks live. Write connected prose for purpose and fit, numbered steps for a genuine sequence, and code blocks for actual input or supported output.

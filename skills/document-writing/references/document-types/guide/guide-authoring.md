@@ -17,7 +17,7 @@ Identify the target outcome, starting state, reader permissions, environment, re
 ## Command and UI guidance
 
 - Preserve exact commands, paths, identifiers, labels, and values.
-- Treat a prose action as a requirement, not as an exact command. Do not present derived command syntax as source-confirmed unless the command and target environment are supplied or verified. When the user prohibits unverified commands, keep an unverified action in prose and omit derived syntax.
+- Treat a prose action as a requirement, not as an exact command. Do not present derived command syntax as source-confirmed unless the command and target environment are supplied or verified. When the user prohibits unverified commands, keep an unverified action in prose and omit derived syntax, but still name the supplied target, such as a file or service, and the observable state that confirms the result.
 - Explain placeholders before the command that uses them.
 - Separate commands that run in different directories or environments.
 - Warn before destructive, irreversible, or service-disrupting actions.

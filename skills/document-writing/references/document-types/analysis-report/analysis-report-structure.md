@@ -14,6 +14,10 @@
 
 ## Responsibility boundaries
 
+### Executive summary
+
+Answer the analytical question first. Include the scope and period and any limitation that could change the conclusion, because many readers stop after the summary and would otherwise overgeneralize. Leave supporting detail to Findings and Limitations.
+
 ### Findings
 
 State what the evidence shows. Organize by the analytical question, not by source order.

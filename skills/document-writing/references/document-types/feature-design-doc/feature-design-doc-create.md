@@ -56,6 +56,8 @@ Use the full profile by default. Use compact only when all of these are true:
 - No external standard or compliance involvement
 - One primary user flow
 
+A compact FDD uses the same template. Sections 1. Document Intent, 5. User Model & Core Concepts, and 6. Relationship to Existing Features become optional, and Cross-cutting Concerns may use one line per concern; every other numbered section required in the full profile remains required. If you omit Document Intent, state the decision authority and verification scope in the opening. If you omit section 5 or 6, still define the terms readers need and state the feature's relationship to existing features (reused, extended, replaced, or unaffected) where readers first need them, such as Feature Definition or Design; otherwise implementers cannot tell where the feature meets existing behavior.
+
 ## 5. Resolve and verify
 
 Batch all remaining [NEEDS INPUT: ...] markers for the user. When no live user exists, retain the markers and identify the draft as incomplete.

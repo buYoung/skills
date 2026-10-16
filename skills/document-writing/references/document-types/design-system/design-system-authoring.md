@@ -34,7 +34,7 @@ Treat a validator failure as an incomplete result and fix the affected owner or 
 ## Canonical ownership
 
 - Use one term for one concept throughout the set.
-- Define a decision once in the file responsible for it; other files link to that definition and state only their local consequence.
+- Define a decision once in the file responsible for it; other files link to that definition and state only their local consequence, including the condition under which it applies there, so a reader of that file alone does not apply it in the wrong context. Storefront-specific values remain in their store owner as described below.
 - Make `index.md` identify the document map, authoritative inputs, and precedence for resolving conflicting sources.
 - Keep common rules platform- or store-neutral. Put only genuine differences in conditional files. Common storefront files may define asset roles and upper-level principles and link to store owners, but must not copy a store's official URL, size, count, device condition, safe area, placement, or sequence rule.
 - State which rules are invariant, variable, conditional, prohibited, or used for verification. Do not use “consistent” as a substitute for an observable contract.

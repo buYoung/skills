@@ -31,6 +31,10 @@ Record what was actually agreed, by whom, and any effective condition. Do not in
 
 Preserve the agreed action even when its owner or due date is unknown. Include only known values and mark missing ownership or timing explicitly rather than inventing it or omitting the action.
 
+### Open questions and follow-up
+
+For each open question, record what remains unresolved. Add who is to resolve it and which decision or action waits on it only when the source supports them; mark a missing owner as unresolved rather than inventing one.
+
 ## Ordering
 
 Use chronology when sequence matters. Use topic grouping when discussion order would obscure meaning, while preserving timestamps or attribution needed for traceability.

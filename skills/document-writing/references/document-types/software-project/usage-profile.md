@@ -10,11 +10,12 @@ For each substantial task, connect:
 
 1. The goal and when the task applies.
 2. Starting state, required input, setup and execution location.
-3. Actions in dependency order, using the actual command, API or host interface.
-4. The result, its location or return handling, and the condition that distinguishes success.
-5. Material variations, limits, side effects and documented local failure handling.
+3. Limits and side effects the reader must know before acting, such as overwritten data or a changed shared state, placed before the actions they affect.
+4. Actions in dependency order, using the actual command, API or host interface.
+5. The result, its location or return handling, and the condition that distinguishes success.
+6. Material variations and documented local failure handling.
 
-Combine trivial elements naturally instead of repeating five subheadings. Use one complete normal example, then show the meaningful change for a variant with enough local context to interpret it. Do not present mutually exclusive environment paths in one copyable block.
+Combine trivial elements naturally instead of giving each element its own subheading. Use one complete normal example, then show the meaningful change for a variant with enough local context to interpret it. Do not present mutually exclusive environment paths in one copyable block.
 
 When a task changes state or execution route, connect the next dependent action to the prerequisites that still hold and the values that must be obtained or replaced. A service restart may require updating a client address; switching from an installed command to source execution may also change the input path. Use the current value from the documented source rather than silently reusing earlier setup.
 

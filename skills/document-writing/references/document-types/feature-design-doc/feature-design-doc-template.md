@@ -18,17 +18,12 @@ not:
 
 # [Feature Name] Feature Design Doc
 
-Authoring guidance: use the [internal decision note and ownership rules](feature-design-doc-section-responsibilities.md#internal-decision-note-before-drafting) before filling this template. Prompts and examples do not supply product decisions. Keep unsupported choices explicit and authoritative rule definitions at their owner; concise linked summaries and contextual effects are allowed elsewhere. These authoring instructions are not additional output sections.
+Authoring guidance: use the [internal decision note and ownership rules](feature-design-doc-section-responsibilities.md#internal-decision-note-before-drafting) before filling this template. Prompts and examples do not supply product decisions. Keep unsupported choices explicit and authoritative rule definitions at their owner; concise linked summaries and contextual effects are allowed elsewhere. Write as many list items as the inputs support; a `- ...` placeholder is not a count to fill. These authoring instructions are not additional output sections.
 
 ## 1. Document Intent
 
-This document is the source of design decisions, not implementation actions.
-
-It defines product behavior, domain concepts, policy decisions, platform constraints,
-cross-cutting concerns, and alternatives considered.
-
-Implementation plans, task ordering, file paths, function names, and PR breakdowns
-are produced separately.
+The frontmatter `purpose` and `not` fields already state that this document is a
+design decision source rather than an implementation plan; do not repeat that here.
 
 State whether the design is a draft or an authoritative decision source, identify
 the supplied decision authority, and describe what was actually verified. For
@@ -64,17 +59,15 @@ Define the feature in one sentence.
 > These statements explain what kind of feature this is.
 
 - ...
-- ...
-- ...
 
 ### This feature is not
 
 > Use this section only for category-level misunderstandings.
 > Do not put version-specific exclusions here. Put those in Scope.
 > Do not put deliberately rejected goals here. Put those in Non-Goals.
+> Omit this subsection when no such misunderstanding is likely; do not invent
+> contrasts to fill it.
 
-- ...
-- ...
 - ...
 
 ---
@@ -92,13 +85,9 @@ Define the feature in one sentence.
 ### Goals
 
 - ...
-- ...
-- ...
 
 ### Non-Goals
 
-- ...
-- ...
 - ...
 
 ---
@@ -112,13 +101,12 @@ Describe how users understand this feature.
 Users think of this feature as:
 
 - ...
-- ...
-- ...
+
+List what users should not need to understand only when readers might otherwise
+expect to learn an internal detail; omit the list otherwise.
 
 Users should not need to understand:
 
-- ...
-- ...
 - ...
 
 ### Core Concepts
@@ -151,7 +139,7 @@ Guidance:
 
 Describe user-visible flows, not implementation steps.
 
-Use supported actions and outcomes from the decision note. Refer to the owning policy or result definition for branch rules; an unprovided secondary or failure flow remains unresolved rather than being invented.
+Use supported actions and outcomes from the decision note. Where a branch depends on a policy or result definition, state its triggering condition briefly and link to that owner for the full rule; an unprovided secondary or failure flow remains unresolved rather than being invented.
 
 ### 7.1 Main Flow
 
@@ -186,14 +174,16 @@ Avoid file paths, function names, and PR ordering unless they are essential to t
 
 Describe how the system behaves.
 
-Check each behavior against the decision note, including implied state changes and claims that something remains unchanged. Describe local effects while preserving or clearly referencing the owning policy's applicability conditions; a broader concept definition does not broaden that policy. Mark material unsupported behavior within the requested scope with [NEEDS INPUT: ...].
+Check each behavior against the decision note, including implied state changes and claims that something remains unchanged. Describe local effects with a brief statement of the owning policy's applicability conditions and a link to it; a broader concept definition does not broaden that policy. Mark material unsupported behavior within the requested scope with [NEEDS INPUT: ...].
+
+Name the acting party, such as the user, the client, or the server, when the inputs identify it. If a material actor is not identified, mark it with [NEEDS INPUT: ...] rather than hiding the gap in passive wording.
 
 Examples:
 
-- What is captured?
-- What is restored?
-- What is matched?
-- What is persisted?
+- What is captured, and by which party?
+- What is restored, and when?
+- What is matched, and by which party?
+- What is persisted, and by which party?
 - What is shown to the user?
 
 ### 8.2 Conceptual Data Model
@@ -212,7 +202,7 @@ Describe entities and important fields conceptually.
 
 Describe expected failure categories and how the system should respond.
 
-Include only supported categories and responses, preserving or clearly referencing the owning policy's conditions for each response. The examples below prompt source checks, not mandatory design choices. Keep material missing failure policies within the requested scope open and refer to their owner instead of choosing a conventional fallback.
+Include only supported categories and responses, stating briefly the owning policy's conditions for each response and linking to it. The examples below prompt source checks, not mandatory design choices. Keep material missing failure policies within the requested scope open and refer to their owner instead of choosing a conventional fallback.
 
 Examples:
 
@@ -347,13 +337,9 @@ Why not chosen:
 ### In Scope for [Version]
 
 - ...
-- ...
-- ...
 
 ### Out of Scope for [Version]
 
-- ...
-- ...
 - ...
 
 ---
@@ -365,13 +351,11 @@ Why not chosen:
 Known risks that are accepted or need mitigation.
 
 - ...
-- ...
 
 ### Open Questions
 
 Questions that are intentionally left unresolved in this design.
 
-- ...
 - ...
 
 ---
@@ -407,6 +391,9 @@ Describe platform-specific capabilities, constraints, and differences.
 > Use this section for externally visible result states.
 > Internal implementation state machines belong in the Implementation Plan
 > unless they are part of the product design.
+>
+> For each state, state briefly the condition that selects it and link to the
+> owning policy; the policy's full rule stays in Policy Decisions.
 
 | State | Meaning | User-visible? |
 | ----- | ------- | ------------- |
@@ -424,8 +411,6 @@ Describe platform-specific capabilities, constraints, and differences.
 > Do not duplicate every Out of Scope item here.
 > Only list items that are plausible future product directions.
 
-- ...
-- ...
 - ...
 
 ---

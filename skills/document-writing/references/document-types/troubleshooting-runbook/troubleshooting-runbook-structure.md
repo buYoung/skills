@@ -8,9 +8,9 @@
 4. Safety checks and prerequisites
 5. Quick triage
 6. Diagnostic decision branches
-7. Recovery actions
+7. Recovery actions, each with its risk and rollback preparation stated first
 8. Verification
-9. Rollback
+9. Rollback when verification fails
 10. Escalation criteria and required evidence
 11. Follow-up or prevention references
 
@@ -26,4 +26,4 @@ Each diagnostic branch should state:
 
 ## Recovery contract
 
-Each material recovery action should state risk, expected change, verification, and rollback where practical.
+Each material recovery action should state risk, expected change, verification, and rollback where practical. State the risk and any rollback preparation, such as a backup or a record of the current state, before the action; an operator under pressure acts on the first instruction they reach. The Rollback section holds the procedure to follow when verification fails.
