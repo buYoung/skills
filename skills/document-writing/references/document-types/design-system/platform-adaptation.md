@@ -23,6 +23,8 @@ Create `platforms/<platform-name>.md` only for an explicitly supported platform 
 - Accessibility APIs, semantics, and user settings
 - Motion capabilities and reduced-motion behavior
 
+Ground platform constraints on the governed elements, such as required sizes, color or theme requirements, file and naming conventions, and native-control rules, in current first-party platform documentation or primary standards. First check whether the environment can open current web sources. When it can, verify each material constraint in the opened source and record its URL and check date beside the constraint or in a source table. When it cannot, use supplied documentation or repository evidence, mark the platform guidance as unverified, and record the capability limitation; do not use the file-reading or writing date as a check date. Repository assets show how the product currently behaves, not what the platform requires, so do not present one as the other.
+
 Do not add a `platforms/` document when no platform is specified.
 
 Treat collective labels such as mobile, desktop, or console as scope labels, not automatic filenames. Resolve the concrete platforms from supplied material or ask once when their differences matter. Put one direct, user-answerable either/or question in the user-facing response; recording only a decision-needed note inside `index.md` does not satisfy this clarification. Create `platforms/mobile.md` or another collective file only when the user explicitly defines that collective platform as one canonical target.

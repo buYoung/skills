@@ -8,7 +8,7 @@ Connect a material rule's applicable context, intent and rationale, observable o
 
 For each major reusable pattern, derive its purpose, application conditions, non-application conditions, and the supported alternative composition together. Explain which task, information need, or contextual constraint changes the choice. Non-application can be a valid situation served by another composition; it is not automatically prohibited use or a failed implementation. If the boundary or alternative is not established, identify that uncertainty instead of inventing a universal rule. An unused pattern in one screen does not by itself establish a non-application condition.
 
-Distinguish approved decisions, observed implementation facts, interpretations, and unresolved questions. Record exact implementation values and identifiers only when supplied or verified; record design values only when supplied, verified, approved, or delegated. A shipped implementation establishes what exists, not automatically what is approved. An example's appearance or another brand's choices must not become a universal requirement.
+Distinguish approved decisions, observed implementation facts, interpretations, and unresolved questions. Record exact implementation values and identifiers only when supplied or verified; record design values only when supplied, verified, approved, or delegated, or as a labeled provisional default with a verifiable source. A shipped implementation establishes what exists, not automatically what is approved. An example's appearance or another brand's choices must not become a universal requirement.
 
 ## Connect supported implementation and assets
 

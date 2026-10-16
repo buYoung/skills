@@ -34,6 +34,8 @@ Read [component-design-contract.md](../component-design-contract.md) for compone
 
 Define the system's purpose, scope, readers, approved design direction in one or two sentences, direction authority, relevant axes, validation status, document map, authoritative sources, and precedence for resolving conflicts. Identify the canonical owner of each major decision area. Do not include rejected direction hypotheses.
 
+When the set governs more than one product, list each product with what it does and the meaning its product-specific elements should convey, from a verifiable source such as the product's own documentation. Readers applying a product-specific rule should not have to inspect each product's repository to learn what the product is for.
+
 For new UI or redesign work, route readers to the governance owner's preview workflow as well as the relevant component and pattern owners.
 
 ### `foundations.md`
@@ -42,9 +44,9 @@ Own the upper-level visual principles and invariant decisions for color, typogra
 
 ### `tokens.md`
 
-Own approved token values and meanings, token hierarchy, naming, semantic mappings, aliases, themes or modes, and deprecation rules. Distinguish source tokens, semantic aliases, and component bindings when those layers are supported by the evidence. Do not use tokens to invent or stand in for an unapproved direction, and do not record token names or values without a supplied, verified, or approved source; propose missing ones through [Propose the base system](../design-direction-workflow.md#propose-the-base-system).
+Own approved token values and meanings, token hierarchy, naming, semantic mappings, aliases, themes or modes, and deprecation rules. Distinguish source tokens, semantic aliases, and component bindings when those layers are supported by the evidence. Do not use tokens to invent or stand in for an unapproved direction, and do not record token names or values without a source that [Propose the base system](../design-direction-workflow.md#propose-the-base-system) accepts; propose missing ones through that procedure.
 
-Present tokens as a lookup table so a reader can find one token and its status in a single row. Use the applicable columns: name, value for each supported mode or theme, meaning or usage, layer (source, semantic, or component) when the system distinguishes layers, and status (supplied, verified, approved, delegated, or awaiting approval). Keep a row for a necessary token whose value is unresolved instead of omitting it, and do not add columns the system does not use. In a focused update, keep the existing table form.
+Present tokens as a lookup table so a reader can find one token and its status in a single row. Use the applicable columns: name, value for each supported mode or theme, meaning or usage, layer (source, semantic, or component) when the system distinguishes layers, status (supplied, verified, approved, delegated, provisional, or awaiting approval), and the source of a provisional value. Keep a row for a necessary token whose value is unresolved instead of omitting it, and do not add columns the system does not use. In a focused update, keep the existing table form.
 
 Link verified token source locations and supported mappings to component consumers; mark implementation conflicts or gaps without inventing a distribution mechanism.
 
