@@ -64,8 +64,8 @@ Readers get what they need. This principle covers what to settle before drafting
 ### 5.1.6 Select content that readers need
 
 - **Standard**: Keep readers' needs first even when the author's needs require some content. Identify the questions readers need answered; select content that fits their characteristics, purpose, and context and the document type; leave out what they do not need (required supplementary information goes separately, see 5.2.5); consider the author's purposes too. Select content ethically: accurate, not false or misleading, and without hiding or omitting what readers need to know.
-- **Apply**: Make a list of reader questions and answer each one the reader needs. Cut organizational history, self-praise, and internal process unless the reader needs them. Never cut a condition, cost, deadline, risk, exception, or right that affects the reader. Resolve essential missing facts through Step 1; omit unknown details only when the remaining text still serves the reader's purpose accurately.
-- **Check**: Is anything the reader needs missing or hard to see? Is anything present that this reader does not need? Could any sentence mislead?
+- **Apply**: Make a list of reader questions and answer each one the reader needs. Cut organizational history, self-praise, and internal process unless the reader needs them. Leave out stock openings and closings that delay or pad the message ("이 안내문은 ~을 돕기 위해 작성되었습니다", "We hope this information was helpful"). Keep a greeting or sign-off that the document type expects, such as those of a letter. Never cut a condition, cost, deadline, risk, exception, or right that affects the reader. Resolve essential missing facts through Step 1; omit unknown details only when the remaining text still serves the reader's purpose accurately.
+- **Check**: Is anything the reader needs missing or hard to see? Is anything present that this reader does not need, including an opening or closing that only pads the message? Could any sentence mislead?
 
 ## Principle 2: Findable
 
@@ -80,20 +80,20 @@ Readers can easily find what they need. They should be able to tell quickly what
 ### 5.2.3 Use information design techniques that enable readers to find information
 
 - **Standard**: Use inclusive information design. Show relations between elements visually: make important elements prominent, place elements that belong together close to each other, and make elements with the same function look alike. (The preview ends partway through this clause; further techniques are not summarized here.)
-- **Apply**: Use what the destination supports: numbered lists for steps, bullet lists for parallel items, tables for values and comparisons, emphasis on the one or two items that must not be missed, and space between groups. Keep formatting consistent so readers learn the pattern. Do not emphasize so much that nothing stands out.
-- **Check**: Can the reader find a specific item (a date, a fee, a phone number) in a few seconds?
+- **Apply**: Use what the destination supports: numbered lists for steps, bullet lists for parallel items, tables for values and comparisons, emphasis on the one or two items that must not be missed, and space between groups. Keep formatting consistent so readers learn the pattern, and write the items of one list in the same grammatical form (all noun phrases or all sentences). Use formatting only where it shows structure or priority. Keep explanation in which each point leads to the next in sentences, because splitting it into bullets drops the words that connect the points. Do not emphasize so much that nothing stands out; for example, do not give every list item a bold lead-in. A bold label helps when it names something readers scan for, such as a defined term or an option to compare, not when it previews what the item already says. Leave out decorative emoji and symbols that carry no information unless the user asks for them or the channel's conventions expect them.
+- **Check**: Can the reader find a specific item (a date, a fee, a phone number) in a few seconds? Does each list, bold phrase, and symbol mark structure or priority, or is it decoration?
 
 ### 5.2.4 Use headings to help readers predict what comes next
 
 - **Standard**: (Title confirmed.) The Principle 2 overview (5.2.1) notes that headings are one of many techniques that help readers predict what comes next, especially in documents longer than a few paragraphs.
-- **Apply**: Write headings from the reader's side: questions they ask ("How do I apply?") or statements of the point ("Apply by 30 June"). Avoid vague labels ("General", "Other information"). A short text may need no headings.
+- **Apply**: Write headings from the reader's side: questions they ask ("How do I apply?") or statements of the point ("Apply by 30 June"). Avoid vague labels ("General", "Other information") and stock section names ("개요", "Conclusion") where a heading could state the point instead, unless the document type or the organization's template requires them. A short text may need no headings.
 - **Check**: Reading only the headings, does the reader get the outline and know where to look?
 
 ### 5.2.5 Keep supplementary information separate
 
 - **Standard**: (Title confirmed.) Clause 5.1.6 refers here for required supplementary information.
-- **Apply**: Put background, legal references, detailed eligibility rules, and rare cases after the main content, in a labeled section, an appendix, or a link, so they remain available without blocking the main message.
-- **Check**: Does required but secondary content interrupt the path to the main action?
+- **Apply**: Put background, legal references, detailed eligibility rules, and rare cases after the main content, in a labeled section, an appendix, or a link, so they remain available without blocking the main message. Treat warnings, deadlines, fees, and conditions that readers need before they act as main content: keep each with the step or decision it affects (a warning goes before its step; see 5.2.2), not in a closing notes section. Use a closing notes section only for information most readers can safely skip.
+- **Check**: Does required but secondary content interrupt the path to the main action? Is anything readers need before acting left in a closing notes section?
 
 ## Principle 3: Understandable
 
@@ -102,44 +102,44 @@ Readers can easily understand what they find.
 ### 5.3.2 Choose familiar words
 
 - **Standard**: (Title confirmed.)
-- **Apply**: Choose familiar, precise words for these readers. Replace unfamiliar jargon, officialese, and internal names with clearer equivalents where meaning is preserved. Keep needed technical or legal terms consistent; explain them at first use when readers need that explanation. Expand or avoid unfamiliar abbreviations, while retaining familiar ones when they are clearer. Apply the exact-string boundary in Step 4 when referring to existing labels, commands, or other text readers must match or enter.
-- **Check**: Would the primary reader stop at a word or have to look it up? Does an explanation help these readers, or repeat what they already know? Can they still match any referenced wording to the actual interface or artifact?
+- **Apply**: Choose familiar, precise words for these readers. Replace unfamiliar jargon, officialese, and internal names with clearer equivalents where meaning is preserved. Keep needed technical or legal terms consistent; explain them at first use when readers need that explanation. Expand or avoid unfamiliar abbreviations, while retaining familiar ones when they are clearer. Prefer a plain, specific verb to an inflated or empty one that says the same thing ("use" rather than "utilize"; for Korean light verbs, see Language adaptation in `SKILL.md`), but judge each case: a word that is often overused can still be the precise one. Write numbers, dates, times, amounts, and units in one consistent format these readers recognize. Apply the exact-string boundary in Step 4 when referring to existing labels, commands, or other text readers must match or enter.
+- **Check**: Would the primary reader stop at a word or have to look it up? Does an explanation help these readers, or repeat what they already know? Can they still match any referenced wording to the actual interface or artifact? Are numbers, dates, and units written the same way throughout?
 
 ### 5.3.3 Write clear sentences
 
 - **Standard**: (Title confirmed.)
-- **Apply**: Make the actor and the action clear: who does what. Put the subject and the main verb close together, and let the main point appear early. Prefer verbs over abstract nouns. Address the reader directly when it fits. State things positively when a negative adds nothing, and avoid double negatives. Keep a condition next to the action it limits.
-- **Check**: Could the sentence be read two ways? Is it clear who must act?
+- **Apply**: Make the actor and the action clear: who does what. Put the subject and the main verb close together, and let the main point appear early. Prefer verbs over abstract nouns. Address the reader directly when it fits. State things positively when a negative adds nothing, and avoid double negatives. Keep a condition next to the action it limits. Cut wrappers that announce a point instead of making it ("It is important to...", "아래 내용을 참고하시기 바랍니다") and state the content or action itself. Keep words that carry obligation, permission, or possibility ("must", "may", "can", or "~할 수 있습니다" when it grants an option): dropping or rewording them, for example turning "you may apply" into "apply" or "must" into "should", can change what readers are required or allowed to do.
+- **Check**: Could the sentence be read two ways? Is it clear who must act? Does every word of obligation, permission, or possibility still mean what was intended?
 
 ### 5.3.4 Write concise sentences
 
 - **Standard**: (Title confirmed.)
-- **Apply**: One main idea per sentence is a good default. Remove filler, redundant pairs, and throat-clearing openers. Split long chains of conditions into a list. Concise means no wasted words, not a word count; some readers need an explanation that takes more words.
+- **Apply**: One main idea per sentence is a good default. Remove filler, redundant pairs, and wrappers (see 5.3.3). Split long chains of conditions into a list. Concise means no wasted words, not a word count; some readers need an explanation that takes more words.
 - **Check**: Can any words go without loss of meaning? Does any sentence carry more than one main idea?
 
 ### 5.3.5 Write clear and concise paragraphs
 
 - **Standard**: (Title confirmed.)
-- **Apply**: Give each paragraph one topic and state it in the first sentence. Keep paragraphs short enough to scan on the destination screen or page.
-- **Check**: Could the reader summarize each paragraph from its first sentence?
+- **Apply**: Give each paragraph one topic and state it in the first sentence. Keep paragraphs short enough to scan on the destination screen or page, but keep related sentences together so readers see how they connect, rather than giving each sentence its own paragraph. Do not end a paragraph by restating what it just said; the repeat adds length, not information. A summary at the top of a long document is not restatement, and short separate lines can suit a text message.
+- **Check**: Could the reader summarize each paragraph from its first sentence? Does any paragraph end by repeating itself? Are related sentences split into separate one-sentence paragraphs?
 
 ### 5.3.6 Consider including images and multimedia
 
 - **Standard**: (Title confirmed.) The standard's definition of "image" (3.6) covers visual representations such as charts, diagrams, flowcharts, icons, maps, photographs, and tables.
-- **Apply**: In text output, use tables and worked examples (for example, a calculated fee for a typical case) where they explain better than prose. When the requested deliverable includes an image or diagram, include the finished visual in a format the destination supports. In review mode, suggest a visual when it would solve a specific reader problem. Any visual should repeat or clarify the text, not carry essential information alone.
-- **Check**: Is there a comparison, process, or calculation that a table or example would make easier?
+- **Apply**: In text output, use tables and worked examples (for example, a calculated fee for a typical case) where they explain better than prose. Place a table next to the text it supports, and label each column so readers can tell what it holds, including the unit where the values have one. When the requested deliverable includes an image or diagram, include the finished visual in a format the destination supports. In review mode, suggest a visual when it would solve a specific reader problem. Any visual should repeat or clarify the text, not carry essential information alone.
+- **Check**: Is there a comparison, process, or calculation that a table or example would make easier? Does each table sit next to the text it supports, with labeled columns and units where the values have them?
 
 ### 5.3.7 Project a respectful tone
 
 - **Standard**: (Title confirmed.)
-- **Apply**: Write as one capable adult to another. Avoid blaming ("you failed to"), threats, sarcasm, and condescension. Explain the reason for a requirement. Use inclusive, non-stereotyping language. Choose the formality level the readers expect in that language and situation.
-- **Check**: Would a reader in a stressful situation feel respected and helped, not scolded?
+- **Apply**: Write as one capable adult to another. Avoid blaming ("you failed to"), threats, sarcasm, and condescension. Leave out performative warmth and flattery ("We are thrilled to..."): overstated feeling reads as insincere and delays the point. A brief, sincere apology or reassurance that fits the reader's situation is not performative. Explain the reason for a requirement. Use inclusive, non-stereotyping language. Choose the formality level the readers expect in that language and situation.
+- **Check**: Would a reader in a stressful situation feel respected and helped, not scolded or flattered?
 
 ### 5.3.8 Ensure that the document is cohesive
 
 - **Standard**: (Title confirmed.)
-- **Apply**: Use one term for one thing throughout. Make every reference ("this", "the above", "해당") point to something obvious. Use transitions that show how parts relate (because, so, after that, except). Keep headings, lists, and formatting consistent so the whole reads as one document.
-- **Check**: Does each part connect to the one before it? Does any term change mid-document?
+- **Apply**: Use one term for one thing throughout, and do not vary it for style: readers may take a new word for a new thing. Make every reference ("this", "the above", "해당") point to something obvious. Use transitions that show how parts relate (because, so, after that, except), and leave out transitions added from habit where there is no relation to show ("furthermore", "additionally"; for Korean, see Language adaptation in `SKILL.md`). Keep headings, lists, and formatting consistent so the whole reads as one document.
+- **Check**: Does each part connect to the one before it, and does each transition show a real relation? Does any term change mid-document?
 
 ## Principle 4: Usable
 
