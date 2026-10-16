@@ -25,9 +25,9 @@ Read [design-rule-contract.md](design-rule-contract.md) for the common rule-qual
 - Each decision has one canonical owner and one stable name.
 - Cross-references resolve and do not restate contradictory copies.
 - Common files contain common rules; platform and store differences remain conditional.
-- No fact, such as an implementation value, brand decision, platform behavior, or external requirement, was invented. Every design value recorded as canonical has a supplied, verified, approved, or delegated source, or is labeled provisional with a verifiable source beside it; values supported only by judgment are not recorded before approval.
-- Base-system decisions within the requested coverage are present, provisional with a source, or explicitly awaiting approval with the work they block stated, and delegated decisions are recorded in the governance owner.
-- Platform constraints cite current first-party documentation or primary standards with a check date, or are marked unverified; current repository assets are not presented as platform requirements.
+- No fact, such as an implementation value, brand decision, platform behavior, or external requirement, was invented. Every design value recorded as canonical has a supplied, verified, approved, or delegated source, or is labeled provisional with a verifiable source of an accepted kind beside it; values supported only by judgment are not recorded before approval, and a request to create or document the system was not treated as delegation.
+- Base-system decisions within the requested coverage are present, provisional with a source, or explicitly awaiting approval. A needed value is not left empty when a sourced candidate exists. The governance owner states once what cannot be finalized and how drafts may proceed, other owners do not contradict it, and delegated decisions are recorded there.
+- Exact platform requirements readers must match cite current first-party documentation or primary standards with a check date, or are marked unverified; current repository assets are not presented as platform requirements.
 - Missing necessary decisions are explicit, while empty ceremonial sections and placeholder item files are absent.
 - Existing exact values, code blocks, identifiers, links, and user-owned content remain intact unless change was requested.
 - Material qualitative feedback has been translated into observable visual causes and confirmed reusable rules rather than copied as a surface treatment or preserved as an unexplained reaction.

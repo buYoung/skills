@@ -64,7 +64,7 @@ Own contrast, legibility, text dependence, captions, motion alternatives, meanin
 
 ### `delivery-and-versioning.md`
 
-Own source files, export formats, filenames, locale and store variants, representative validation records, direction approval and change review, release association, archival, and deprecation. Record only the approved direction and validation outcome, not rejected hypotheses. Do not invent tooling, owners, statuses, or formats. Record delegated shared visual decisions with their scope and authority, and pending representative validation with the situations still to check.
+Own source files, export formats, filenames, locale and store variants, representative validation records, direction approval and change review, release association, archival, and deprecation. Record only the approved direction and validation outcome, not rejected hypotheses. Do not invent tooling, owners, statuses, or formats. Record delegated shared visual decisions with their scope and authority, pending representative validation with the situations still to check, and, for each provisional or awaiting decision, what cannot be finalized and how drafts may proceed.
 
 When the user also requests an actual image or video, this file records the approved delivery contract while the production workflow creates the binary asset. The document set links to the resulting asset when available, but its completion report lists the document set and production asset as separate deliverables.
 

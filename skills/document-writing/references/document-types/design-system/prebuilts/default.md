@@ -34,13 +34,13 @@ Read [component-design-contract.md](../component-design-contract.md) for compone
 
 Define the system's purpose, scope, readers, approved design direction in one or two sentences, direction authority, relevant axes, validation status, document map, authoritative sources, and precedence for resolving conflicts. Identify the canonical owner of each major decision area. Do not include rejected direction hypotheses.
 
-When the set governs more than one product, list each product with what it does and the meaning its product-specific elements should convey, from a verifiable source such as the product's own documentation. Readers applying a product-specific rule should not have to inspect each product's repository to learn what the product is for.
+When the set governs more than one product, list each product with what it does, from a verifiable source such as the product's own documentation, and the meaning its product-specific visual elements, such as a logo symbol, should convey, from the user's statements or that source. Readers applying a product-specific rule should not have to inspect each product's repository to learn what the product is for.
 
 For new UI or redesign work, route readers to the governance owner's preview workflow as well as the relevant component and pattern owners.
 
 ### `foundations.md`
 
-Own the upper-level visual principles and invariant decisions for color, typography, spacing, sizing, layout, shape, depth, icons and imagery, and motion. Identify which decisions may vary, the conditions that permit variation, prohibited expression, and observable verification criteria. Include only approved, supplied, or verified decisions; make absent necessary decisions explicit.
+Own the upper-level visual principles and invariant decisions for color, typography, spacing, sizing, layout, shape, depth, icons and imagery, and motion. Identify which decisions may vary, the conditions that permit variation, prohibited expression, and observable verification criteria. Include only supplied, verified, approved, or delegated decisions and provisional defaults accepted by [Propose the base system](../design-direction-workflow.md#propose-the-base-system); record other necessary decisions as awaiting approval or unresolved.
 
 ### `tokens.md`
 
@@ -66,7 +66,7 @@ Own cross-system accessibility requirements, including perception, keyboard and 
 
 ### `governance.md`
 
-Own contribution, review, direction approval, representative validation, direction-change triggers, decision authority, status, release, adoption, compatibility, and deprecation processes. Record the approved direction and validation result without preserving rejected hypotheses unless the user requests a separate history. Do not assign owners or lifecycle states that were not supplied. Record delegated base-system decisions with their scope and authority, and pending representative validation with the situations still to check.
+Own contribution, review, direction approval, representative validation, direction-change triggers, decision authority, status, release, adoption, compatibility, and deprecation processes. Record the approved direction and validation result without preserving rejected hypotheses unless the user requests a separate history. Do not assign owners or lifecycle states that were not supplied. Record delegated base-system decisions with their scope and authority, pending representative validation with the situations still to check, and, for each provisional or awaiting decision, what cannot be finalized and how drafts may proceed.
 
 Record approved correction rationale and affected verification results here, linking to the rule owners. Distinguish document judgments from implementation defects, automatic-check gaps, and execution-tool issues; a one-off preference is not a canonical rule. Connect comparable follow-up results, recurrence, and the next evidence needed using the common rule contract; retain failures and limit effect claims to observed work.
 
@@ -78,7 +78,7 @@ Map the known component inventory, canonical names, status, owner when known, an
 
 ### `components/<component-name>.md`
 
-Use this order so component contracts remain comparable:
+Use this order so component contracts remain comparable. Write the section names in the document's language; the order, not English wording, keeps contracts comparable:
 
 1. Purpose
 2. Anatomy
