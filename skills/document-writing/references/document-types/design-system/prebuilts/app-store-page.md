@@ -20,7 +20,7 @@ docs/design-system-visual-assets/
     └── <store-name>.md
 ```
 
-The displayed root is replaced by the resolved output root and serves as a responsibility map, not a requirement to create empty files. Replacing the root does not replace `index.md` with `README.md` or flatten the set into one file. Always create `index.md` for a new saved set. Create another common file only when it owns at least one supplied or verified decision, or a necessary unresolved decision readers must track. `stores/` remains conditional; every explicitly in-scope storefront owns one `stores/<store-name>.md`; never create literal placeholder files.
+The displayed root is replaced by the resolved output root and serves as a responsibility map, not a requirement to create empty files. Replacing the root does not replace `index.md` with `README.md` or flatten the set into one file. Always create `index.md` for a new saved set. Create another common file only when it owns at least one supplied, verified, or approved decision, including one the user delegated, or a necessary unresolved decision readers must track. `stores/` remains conditional; every explicitly in-scope storefront owns one `stores/<store-name>.md`; never create literal placeholder files.
 
 ## File responsibilities
 
@@ -32,7 +32,7 @@ Define the target product, audiences, supported storefronts, approved design dir
 
 ### `visual-language.md`
 
-Own upper-level visual principles and invariant decisions for color, typography, backgrounds, illustration, device frames, product-to-listing continuity, motion character, and other supplied brand continuity rules. Identify permitted variation, conditional adaptation, prohibited expression, and observable verification criteria. Do not derive visual choices or approval from store examples alone.
+Own upper-level visual principles and invariant decisions for color, typography, backgrounds, illustration, device frames, product-to-listing continuity, motion character, and other supplied brand continuity rules. Identify permitted variation, conditional adaptation, prohibited expression, and observable verification criteria. Do not derive visual choices or approval from store examples alone. Shared visual decisions the requested coverage needs but the inputs lack follow [Propose the base system](../design-direction-workflow.md#propose-the-base-system); storefront requirements never do.
 
 ### `asset-system.md`
 
@@ -45,6 +45,8 @@ When a template governs placement, this owner must provide a source-to-applicati
 ### `screenshots-and-previews.md`
 
 Own screen selection, sequence, narrative flow, fidelity to actual UI or gameplay, caption rules, and the relationship between static screenshots, previews, and trailers.
+
+When a sequence is decided, record it as a table of position, message, and source screen or scene so a reader producing one asset can find its slot. Storefront-specific counts, dimensions, and ordering rules stay in the storefront owner.
 
 ### `composition-and-copy.md`
 
@@ -62,7 +64,7 @@ Own contrast, legibility, text dependence, captions, motion alternatives, meanin
 
 ### `delivery-and-versioning.md`
 
-Own source files, export formats, filenames, locale and store variants, representative validation records, direction approval and change review, release association, archival, and deprecation. Record only the approved direction and validation outcome, not rejected hypotheses. Do not invent tooling, owners, statuses, or formats.
+Own source files, export formats, filenames, locale and store variants, representative validation records, direction approval and change review, release association, archival, and deprecation. Record only the approved direction and validation outcome, not rejected hypotheses. Do not invent tooling, owners, statuses, or formats. Record delegated shared visual decisions with their scope and authority, and pending representative validation with the situations still to check.
 
 When the user also requests an actual image or video, this file records the approved delivery contract while the production workflow creates the binary asset. The document set links to the resulting asset when available, but its completion report lists the document set and production asset as separate deliverables.
 

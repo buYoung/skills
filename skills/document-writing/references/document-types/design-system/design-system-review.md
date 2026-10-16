@@ -25,7 +25,8 @@ Read [design-rule-contract.md](design-rule-contract.md) for the common rule-qual
 - Each decision has one canonical owner and one stable name.
 - Cross-references resolve and do not restate contradictory copies.
 - Common files contain common rules; platform and store differences remain conditional.
-- No token, value, size, policy, brand decision, behavior, or external requirement was invented.
+- No fact, such as an implementation value, brand decision, platform behavior, or external requirement, was invented. Every design value recorded as canonical has a supplied, verified, approved, or delegated source, and values awaiting approval are not presented as canonical.
+- Base-system decisions within the requested coverage are present or explicitly awaiting approval, and delegated decisions are recorded in the governance owner.
 - Missing necessary decisions are explicit, while empty ceremonial sections and placeholder item files are absent.
 - Existing exact values, code blocks, identifiers, links, and user-owned content remain intact unless change was requested.
 - Material qualitative feedback has been translated into observable visual causes and confirmed reusable rules rather than copied as a surface treatment or preserved as an unexplained reaction.
@@ -34,7 +35,7 @@ Read [design-rule-contract.md](design-rule-contract.md) for the common rule-qual
 
 - The documented direction reflects the stated product, users, task, brand authority, and functional constraints.
 - Relevant internal axes such as precision, expressiveness, density, geometry, platform convention, depth, or motion have a clear position even when the document describes them in reader-friendly language.
-- At least two contrasting representative situations support the direction; one favorable example alone is insufficient.
+- At least two contrasting representative situations support the direction, or the set records its validation as pending with the situations to check and does not present itself as validated; one favorable example alone is insufficient.
 - The representative situations cover the material risk in the set, such as density, scale, interaction state, function-versus-brand balance, or platform and storefront differences.
 - Rules extended to other contexts compare available applicable and non-applicable situations and explain the deciding difference. Component state checks are not presented as sufficient evidence of pattern selection; missing comparisons leave a bounded, explicit validation gap under the existing operation gate.
 - A failed representative result was corrected at the owning level—direction, shared rule, component or asset rule, or contextual adaptation—instead of being patched as an isolated exception.

@@ -10,12 +10,12 @@ Classify each output set before drafting:
 | --- | --- | --- |
 | Direction exploration | No approved direction or authoritative record establishes one | Gather evidence and propose directions; do not write the document set |
 | Direction comparison | Two or three materially different directions are ready, but none is approved | Recommend one direction and ask the user to approve or correct it |
-| Selected-direction refinement | A direction is approved, but its rules or representative validation are incomplete | Resolve only the remaining contradiction or validation gap |
+| Selected-direction refinement | A direction is approved, but its rules, base-system decisions, or representative validation are incomplete | Resolve the remaining contradiction, propose missing base-system decisions, and record or request validation |
 | Design-system documentation | The direction is approved and supported by representative validation | Author or finalize the document set |
 | Existing-system review | An existing set is being reviewed or fact-checked | Stay read-only and report direction or validation gaps as findings |
 | Existing-system revision | An approved existing set is being changed | Trace the affected decision flow and reopen exploration only if the change alters the direction |
 
-An explicit approval recorded in an authoritative existing source counts as approval. A visually consistent collection without an approval record does not. For a narrow existing change, do not repeat broad exploration when the approved direction and affected decision chain are clear.
+Approval comes from an explicit record in an authoritative existing source, from the requesting user's explicit decision in the conversation, or from the user's explicit delegation of the choice. A direction the user states as their decision counts, such as "make it a calm, precise work tool where the one primary action stands out." A preference the user marks as tentative, unresolved conflicting goals, or a direction still awaiting another named authority does not. Generic qualities that fit almost any product, such as clarity, consistency, or accessibility, do not establish a direction. A visually consistent collection without an approval record does not count. For a narrow existing change, do not repeat broad exploration when the approved direction and affected decision chain are clear.
 
 When two output sets govern the same product and brand, they may share one approved upper-level direction when authoritative evidence supports that relationship. Their contextual rules and representative validation remain separate.
 
@@ -29,11 +29,11 @@ This table is the canonical operation gate. After gathering available evidence, 
 | Destination collision, invalid multi-file root, or unresolved scope blocks the whole set | Ask only the earliest blocking question. Do not write files or ask later direction or validation questions. |
 | Focused existing revision preserves the approved direction and its affected decision chain is known | Reuse the established approval. Trace the authority through owning rules, aliases or bindings, and final consumers; update only affected owners and verify affected representative states. Do not require unrelated exploration or two new whole-system examples. Report historical evidence gaps and the actual verification scope without claiming the entire set was validated. |
 | Authoring lacks approval for the requested direction | Follow the direction proposal and feedback sections below. Ask the user to approve or correct the recommendation; write no document set while approval is missing. |
-| Other authoring has an approved direction but lacks two contrasting representative results or authoritative validation records | Follow the representative validation section below. Ask for existing results or authorization for a separate production deliverable; write no provisional set. |
+| Other authoring has an approved direction but lacks two contrasting representative results or authoritative validation records | Follow the representative validation section below. Write the supported owners, record validation as pending in `index.md` and the governance owner with the situations to check, and ask for existing results or authorization for a separate production deliverable. Report the set as not yet validated. |
 | Direction and representative validation are established, but one conditional branch remains unresolved | Apply the partial-authoring rule below: write confirmed common and conditional owners first, record the pending branch, omit its file, then ask one direct question. Report partial completion. |
 | Direction, representative validation, and required scope are established | Author the supported owners and verify the resolved output contract before reporting completion. |
 
-An existing approval for the requested direction is sufficient; do not ask for it again or reuse an old direction's approval for a replacement. A revision that changes the direction does not qualify for the focused-revision row. An unanswered decision is never approval. The remaining sections explain how to carry out these actions and do not override this ordering.
+An existing approval for the requested direction is sufficient; do not ask for it again or reuse an old direction's approval for a replacement. A revision that changes the direction does not qualify for the focused-revision row. An unanswered decision is never approval. Rows that write owners still apply the partial-authoring rule to an unresolved conditional branch and [Propose the base system](#propose-the-base-system) to base-system decisions the requested coverage needs but the inputs lack. The remaining sections explain how to carry out these actions and do not override this ordering.
 
 ## Gather evidence before asking
 
@@ -89,15 +89,29 @@ When no direction is approved, derive two or three materially distinct hypothese
 - The relationship between brand expression and platform convention
 - Benefits, risks, and suitable contexts
 
-Recommend one hypothesis and explain why it best fits the product, users, and constraints. Present the hypotheses in the conversation only. Do not create or modify Design System Document files until the user explicitly approves a direction.
+Recommend one hypothesis and explain why it best fits the product, users, and constraints. Present the hypotheses in the conversation only. Do not create or modify Design System Document files until a direction has approval as defined in [Classify the current maturity](#classify-the-current-maturity).
 
 Make hypotheses distinct through relative tendencies, priority, placement, and user-visible consequences. Before approval, do not turn those tendencies into a prescribed palette, named color family, grid, motif, texture, token, component, or asset rule unless an authoritative supplied source already establishes it. For example, “expression is concentrated at meaningful transitions” is an appropriate hypothesis; a jewel-tone palette, asymmetric grid, or textured object language is a new design decision and must wait for approval or supporting evidence.
 
-If no live user can approve a direction, state that the work is incomplete and name the unresolved decision. Do not write a provisional document set or silently select the recommendation.
+If the user explicitly delegates the direction choice, select the recommendation, state it and its main alternative in the response, and record the delegation in the governance owner (`governance.md` or `delivery-and-versioning.md`). If no live user can approve a direction, state that the work is incomplete and name the unresolved decision. Do not write a document set before the direction has approval, and do not silently select the recommendation.
 
-Once direction and representative validation are approved, a local uncertainty does not block unrelated confirmed owners. Write the common contract and every confirmed conditional adaptation, record the unresolved branch in `index.md`, omit that branch's conditional file, and ask one question about that branch. This applies when, for example, web is confirmed but “mobile” has not yet been resolved to iOS, Android, or an internal platform name.
+Once the direction is approved, a local uncertainty does not block unrelated confirmed owners. Write the common contract and every confirmed conditional adaptation, record the unresolved branch in `index.md`, omit that branch's conditional file, and ask one question about that branch. This applies when, for example, web is confirmed but “mobile” has not yet been resolved to iOS, Android, or an internal platform name.
 
 Treat this as a partial-authoring rule, not a clarification stop: confirmed common and platform files must exist before the response asks about the unresolved branch. A response-only clarification is correct only when the unresolved decision blocks the whole set rather than one conditional owner.
+
+## Propose the base system
+
+An approved direction does not supply the concrete decisions that make a system usable. When the requested coverage includes base-system owners, such as a request for foundations, tokens, or components or for a complete design system, and the inputs neither supply nor verify the decisions those owners need, design them instead of leaving every owner unresolved.
+
+Base-system decisions include token layers and naming; color roles and values; typography, spacing, sizing, radius, elevation, and motion scales; the accessibility level the system targets; and the component inventory with each component's base anatomy, sizes, and states. For `app-store-page`, they include shared visual-language and composition choices such as caption typography, background treatment, or device framing. Facts are not base-system decisions: existing implementation values, brand assets and decisions owned by a brand authority, platform behavior, and storefront requirements still need a supplied or verified source.
+
+1. Derive one concrete, internally consistent proposal from the approved direction and its axes, representative evidence, accessibility requirements, and the product's tasks. Size it to the product's needs; do not add tiers, states, or tokens merely to complete a pattern.
+2. Unless the user has delegated these decisions, present the proposal in the response and ask the user to approve or correct it together with any other open question. Write the owners that are already established, mark each affected decision in its owner as awaiting approval, and keep the proposed values out of the canonical files until approval, because readers treat recorded values as approved. Report the set as partial.
+3. When the user explicitly delegates the decisions, for example by asking you to choose the base values, treat the delegation as approval. Write the proposal into the canonical owners and record in the governance owner (`governance.md` or `delivery-and-versioning.md`) which decisions were delegated, by whom when known, and that they remain open to revision.
+4. After approval, record the approved values in their canonical owners and update the governance record.
+5. If the user prohibits estimating or proposing values, record the decisions as unresolved instead of proposing them.
+
+When no live user can approve, keep the proposal in the response and the decisions marked unresolved in the files.
 
 ## Translate qualitative feedback
 
@@ -149,7 +163,7 @@ Distinguish state and appearance checks from applicability checks. The former as
 
 If an applicable or non-applicable comparison is unavailable, record the checked scope and the unverified boundary without manufacturing a case or claiming broader validation. This does not impose two newly produced examples for every pattern or an additional whole-set stop. Preserve the direction-validation requirement below; a focused change to a value or state that leaves pattern selection unchanged still needs only its affected representative checks.
 
-For the direction validation required by the decision table, use existing representative results or authoritative validation records when available. If fewer than two contrasting direction results are available, propose the situations and ask the user either to provide existing results or authorize separate production. Production belongs to the appropriate capability and remains a separate deliverable; resume document finalization only after its results can be inspected.
+For the direction validation required by the decision table, use existing representative results or authoritative validation records when available. If fewer than two contrasting direction results are available, propose the situations and ask the user either to provide existing results or authorize separate production. Production belongs to the appropriate capability and remains a separate deliverable. Meanwhile, write the supported owners, record validation as pending in `index.md` and the governance owner with the situations to check, and report the set as not yet validated. Update the validation status only after the results can be inspected.
 
 Check common visual language, appropriate contextual variation, accessibility, information delivery, scale, density, function-versus-brand balance, and platform or storefront constraints.
 
