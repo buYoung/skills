@@ -506,7 +506,7 @@
       "expected_output": "One platform-neutral UI document set with task-specific comparison and manipulation patterns grounded in the supplied authority.",
       "files": [],
       "expectations": [
-        "The default set uses the supplied approved direction and H4 record without asking for new approval or inventing platform scope.",
+        "The default set uses the supplied approved direction and H4 record without asking to re-approve the supplied direction or inventing platform scope.",
         "patterns.md explains comparison correspondence across candidates and the priority of cost, currency and eligibility, with a route to detailed calculation evidence.",
         "patterns.md explains the manipulation relationship among current input, estimated pre-apply cost, explicit apply action and resulting state, rather than imposing the comparison layout on it.",
         "Both patterns explain placement rationale, contextual variation and observable checks under shared principles rather than prescribing universal screen templates.",

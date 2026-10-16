@@ -57,9 +57,9 @@ If the user explicitly asks for a chat-only draft, return the coordinated Markdo
 
 - Treat each output set as one coordinated document set with `index.md` as its map, not as unrelated Markdown files.
 - Give each concept one stable name and one canonical owning file. Cross-reference that owner instead of copying the decision.
-- Record only an approved direction, its rationale, and its representative validation; rejected hypotheses stay out of the canonical set unless the user requests a separate decision history.
+- Record only an approved direction, its rationale, and its representative validation or pending validation status; rejected hypotheses stay out of the canonical set unless the user requests a separate decision history.
 - Classify direction-bearing decisions as invariant, variable, conditional, prohibited, or verification decisions. Preserve common rules separately from platform- or store-specific differences.
 - Follow the [authoring decision order](design-direction-workflow.md#authoring-decision-order) for approval, representative validation, focused revisions, and partial completion. Do not infer approval from visual similarity alone.
 - For every in-scope storefront, create or update one storefront file only during create, update, rewrite, or normalize, after either current first-party research or the explicit capability-limited fallback. Review and fact-check report missing, stale, or conflicting storefront information without changing files.
-- Do not invent tokens, values, sizes, policies, brand decisions, platform behavior, or marketplace requirements.
+- Do not invent facts: existing implementation values, brand decisions owned by a brand authority, platform behavior, and marketplace requirements need a supplied or verified source. Design values such as tokens, scales, and sizes enter the canonical files only when supplied, verified, approved, or delegated, or as a labeled provisional default with a verifiable source; propose missing ones through [Propose the base system](design-direction-workflow.md#propose-the-base-system).
 - Mark a necessary but unresolved decision explicitly. Do not create empty ceremonial sections or placeholder platform, store, or item files.

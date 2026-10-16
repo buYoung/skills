@@ -22,7 +22,7 @@ docs/design-system/
     └── <platform-name>.md
 ```
 
-The displayed root is replaced by the resolved output root and serves as a responsibility map, not a requirement to create empty files. Always create `index.md` for a new saved set. Create another common file only when it owns at least one supplied or verified decision, or a necessary unresolved decision readers must track. `platforms/` and component files remain conditional; never create literal placeholder files.
+The displayed root is replaced by the resolved output root and serves as a responsibility map, not a requirement to create empty files. Always create `index.md` for a new saved set. Create another common file only when it owns at least one supplied, verified, or approved decision, including one the user delegated, or a necessary unresolved decision readers must track. `platforms/` and component files remain conditional; never create literal placeholder files.
 
 ## File responsibilities
 
@@ -34,15 +34,19 @@ Read [component-design-contract.md](../component-design-contract.md) for compone
 
 Define the system's purpose, scope, readers, approved design direction in one or two sentences, direction authority, relevant axes, validation status, document map, authoritative sources, and precedence for resolving conflicts. Identify the canonical owner of each major decision area. Do not include rejected direction hypotheses.
 
+When the set governs more than one product, list each product with what it does, from a verifiable source such as the product's own documentation, and the meaning its product-specific visual elements, such as a logo symbol, should convey, from the user's statements or that source. Readers applying a product-specific rule should not have to inspect each product's repository to learn what the product is for.
+
 For new UI or redesign work, route readers to the governance owner's preview workflow as well as the relevant component and pattern owners.
 
 ### `foundations.md`
 
-Own the upper-level visual principles and invariant decisions for color, typography, spacing, sizing, layout, shape, depth, icons and imagery, and motion. Identify which decisions may vary, the conditions that permit variation, prohibited expression, and observable verification criteria. Include only approved, supplied, or verified decisions; make absent necessary decisions explicit.
+Own the upper-level visual principles and invariant decisions for color, typography, spacing, sizing, layout, shape, depth, icons and imagery, and motion. Identify which decisions may vary, the conditions that permit variation, prohibited expression, and observable verification criteria. Include only supplied, verified, approved, or delegated decisions and provisional defaults accepted by [Propose the base system](../design-direction-workflow.md#propose-the-base-system); record other necessary decisions as awaiting approval or unresolved.
 
 ### `tokens.md`
 
-Own approved token values and meanings, token hierarchy, naming, semantic mappings, aliases, themes or modes, and deprecation rules. Distinguish source tokens, semantic aliases, and component bindings when those layers are supported by the evidence. Do not use tokens to invent or stand in for an unapproved direction, and do not invent token names or values.
+Own approved token values and meanings, token hierarchy, naming, semantic mappings, aliases, themes or modes, and deprecation rules. Distinguish source tokens, semantic aliases, and component bindings when those layers are supported by the evidence. Do not use tokens to invent or stand in for an unapproved direction, and do not record token names or values without a source that [Propose the base system](../design-direction-workflow.md#propose-the-base-system) accepts; propose missing ones through that procedure.
+
+Present tokens as a lookup table so a reader can find one token and its status in a single row. Use the applicable columns: name, value for each supported mode or theme, meaning or usage, layer (source, semantic, or component) when the system distinguishes layers, status (supplied, verified, approved, delegated, provisional, or awaiting approval), and the source of a provisional value. Keep a row for a necessary token whose value is unresolved instead of omitting it, and do not add columns the system does not use. In a focused update, keep the existing table form.
 
 Link verified token source locations and supported mappings to component consumers; mark implementation conflicts or gaps without inventing a distribution mechanism.
 
@@ -58,11 +62,11 @@ Own interface voice, terminology, labels, instructions, validation and error lan
 
 ### `accessibility.md`
 
-Own cross-system accessibility requirements, including perception, keyboard and alternative input, semantics, focus, contrast, scaling, reduced motion, and testing expectations supported by the inputs. Explain where accessibility constrains or corrects the approved direction. Component-specific consequences remain in the component file and cross-reference this contract.
+Own cross-system accessibility requirements, including perception, keyboard and alternative input, semantics, focus, contrast, scaling, reduced motion, and testing expectations supported by the inputs, verified primary standards, or approved decisions. Explain where accessibility constrains or corrects the approved direction. Component-specific consequences remain in the component file and cross-reference this contract.
 
 ### `governance.md`
 
-Own contribution, review, direction approval, representative validation, direction-change triggers, decision authority, status, release, adoption, compatibility, and deprecation processes. Record the approved direction and validation result without preserving rejected hypotheses unless the user requests a separate history. Do not assign owners or lifecycle states that were not supplied.
+Own contribution, review, direction approval, representative validation, direction-change triggers, decision authority, status, release, adoption, compatibility, and deprecation processes. Record the approved direction and validation result without preserving rejected hypotheses unless the user requests a separate history. Do not assign owners or lifecycle states that were not supplied. Record delegated base-system decisions with their scope and authority, pending representative validation with the situations still to check, and, for each provisional or awaiting decision, what cannot be finalized and how drafts may proceed.
 
 Record approved correction rationale and affected verification results here, linking to the rule owners. Distinguish document judgments from implementation defects, automatic-check gaps, and execution-tool issues; a one-off preference is not a canonical rule. Connect comparable follow-up results, recurrence, and the next evidence needed using the common rule contract; retain failures and limit effect claims to observed work.
 
@@ -74,7 +78,7 @@ Map the known component inventory, canonical names, status, owner when known, an
 
 ### `components/<component-name>.md`
 
-Use this order so component contracts remain comparable:
+Use this order so component contracts remain comparable. Write the section names in the document's language; the order, not English wording, keeps contracts comparable:
 
 1. Purpose
 2. Anatomy

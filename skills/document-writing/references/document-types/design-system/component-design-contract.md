@@ -23,7 +23,9 @@ Use the selected prebuilt's component section order, with prose or tables as app
 
 For material information, distinguish an explicit system decision, an inherited rule with an identified source and local consequence, a necessary unresolved decision, and a genuinely non-applicable item. Unknown or inherited information is not the same as non-applicable information. Omit irrelevant headings without using that permission to omit needed design decisions. Business-value ranges, event flows, and source links support a contract but do not replace its visual and spatial rules.
 
-State verified dimensions with their actual units and semantics: a preferred width is not a fixed width, character columns are not pixels, and a scale-aware source value is not a measured physical size. Do not invent size tiers, token values, exact geometry, or unsupported states to fill the table. If the implementation supports one size, explain that size behavior and its adaptations rather than fabricating small, medium, and large variants.
+When a component has several states or variants bound to tokens, give a table of each state or variant against its token bindings, so a reader implementing one state finds all of its bindings in one row. Keep a row for a necessary binding that is unresolved.
+
+State verified dimensions with their actual units and semantics: a preferred width is not a fixed width, character columns are not pixels, and a scale-aware source value is not a measured physical size. Do not record size tiers, token values, exact geometry, or states without a source that [Propose the base system](design-direction-workflow.md#propose-the-base-system) accepts; propose missing ones through that procedure, and never add them merely to fill a table. If the implementation supports one size, explain that size behavior and its adaptations rather than fabricating small, medium, and large variants.
 
 ## Explain inherited appearance
 

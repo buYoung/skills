@@ -138,7 +138,7 @@ For substantial authoring or review, read [drafting-and-revision.md](references/
 
 ### 8. Gather context before drafting
 
-Establish the audience, the reader's starting situation and knowledge, the intended outcome, authoritative inputs, constraints, and output destination. Infer what is safely recoverable from supplied material or the repository. Ask only when an unresolved choice would materially change the document's scope, behavior, or tradeoffs.
+Establish the audience, the reader's starting situation and knowledge, the intended outcome, authoritative inputs, constraints, and output destination. Infer what is safely recoverable from supplied material or the repository. Ask only when an unresolved choice would materially change the document's scope, behavior, or tradeoffs. This includes the primary reader: when the request, supplied material, existing document, and selected type do not establish who will read the document, what they already know, or the situation in which they will use it, and plausible answers would change its type, depth, or structure, ask before drafting. Combine this with any other unresolved choice and offer two or three likely readers drawn from the context. Where the selected type's workflow defines its own questions, follow it instead of adding a reader question. When no live user can answer, write for the most likely reader the context supports and report that assumption.
 
 Before drafting, identify the requested coverage, applicable type-specific completion conditions, and how material unknowns must be handled. Accept notes, fragments, questions, and supplied conversation records as starting material. When a new draft or substantial rewrite needs an outline, optionally organize reader questions and existing evidence using the shared drafting reference; reuse an established outline or decision note when it already serves that purpose.
 
@@ -162,10 +162,10 @@ Before delivery, confirm:
 - The result still matches the selected document type.
 - For software project documentation, apply its [reader-path review](references/document-types/software-project/software-project-review.md) and common evidence and consistency contracts to the requested scope.
 - For a multi-file Design System Document, every substantive supplied decision is in the owning prebuilt file, every required owner is linked from `index.md`, and the actual changed paths match the files the completion will claim.
-- For a Design System Document, the operation-specific decision table was followed, the approved direction and decision classes are clear, and representative verification covers the scope required by that operation.
+- For a Design System Document, the operation-specific decision table was followed, the approved direction and decision classes are clear, and representative verification covers the scope required by that operation or is recorded as pending.
 - For a Design System Document, major patterns explain when to use or avoid them and why; product UI components have findable visual, sizing, and composition contracts, including inherited rules and necessary unknowns. New-UI preview requirements and any claimed preview delivery follow the selected prebuilt and the actual request scope.
 - No Design System Document file was created or modified in a branch where the decision table requires a stop; partial work is reported as partial.
-- No supplied or verified value has been replaced by convention, and no unsupported value, policy, platform behavior, or storefront requirement has been added.
+- No supplied or verified value has been replaced by convention; no fact, such as a policy, platform behavior, or storefront requirement, has been added without a source; and no design value has been recorded as canonical without supply, verification, user approval, explicit delegation, or a labeled provisional status with a verifiable source.
 - Any unresolved choice that requires the user is asked once as a direct question in the user-facing response, not left only as an internal decision note.
 
 ## File output and collision rules
@@ -190,4 +190,4 @@ Use the completion conditions established before drafting. Necessary uncertainty
 
 Before reporting completion, compare the resolved output contract and promised paths with the actual final artifact tree. Fix missing owners, links, or files first; if they cannot be produced, report the work as incomplete instead of claiming completion. Report the selected document type, the artifact produced or reviewed, validation performed, and any limitation that remains unverified. Never claim an unrun check passed.
 
-For a Design System Document, also report the maturity state, the authority for the approved direction, the representative situations actually checked, and any unresolved decision. Distinguish completion of a focused revision from whole-set validation; apply the decision table's completion limits to new, direction-changing, and partial work.
+For a Design System Document, also report the maturity state; the authority for the approved direction; which decisions were delegated, recorded as provisional defaults, or left awaiting approval; the representative situations actually checked or still pending; and any unresolved decision. Distinguish completion of a focused revision from whole-set validation; apply the decision table's completion limits to new, direction-changing, and partial work.

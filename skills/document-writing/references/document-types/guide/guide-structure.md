@@ -14,10 +14,11 @@
 
 Each meaningful step should contain:
 
+- Warning or precondition: only when the step has a real hazard or a condition that decides whether to perform it; place it before the action, because readers often act as soon as they reach it
 - Action: exactly what the reader does
 - Location or input: where and with what value
 - Expected result: what observable state confirms success
-- Conditional note: only when the step has a real branch or hazard
+- Branch: only when the result determines a different next step
 
 Do not force this formatting on trivial steps.
 

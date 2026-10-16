@@ -13,7 +13,7 @@ Identify the decision-maker, decision deadline, problem, desired outcome, constr
 5. Compare options using consistent criteria.
 6. Explain the recommendation from evidence and tradeoffs.
 7. State costs, risks, dependencies, and reversibility.
-8. End with one compact approval or commitment statement. Repeat only the terms the decision-maker must approve, not the evidence or rationale already established above.
+8. End with one compact approval or commitment statement. Repeat only the terms the decision-maker must approve, such as the selected option, its scope or budget, and any condition that must be met before execution, not the evidence or rationale already established above.
 
 ## Evidence discipline
 
