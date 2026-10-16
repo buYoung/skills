@@ -66,16 +66,16 @@ After the answers, proceed. Do not start a second round of questions unless an a
 - Lead with what most readers need most, usually the main message or the action required.
 - Order the rest by the reader's logic: steps in time order; warnings about what not to do before the steps they protect; information most readers need before information only some need; new information built on what readers already know.
 - Use headings that let readers predict what follows. A heading that states the point or asks the reader's question ("언제까지 신청해야 하나요?", "What happens if I miss the deadline?") does more than a bare label ("신청 기간", "Deadline").
-- Make the structure visible with what the destination supports: numbered steps, short lists, tables for comparisons and values, emphasis for the one or two things that must not be missed, space between groups. Format elements with the same function the same way.
-- Move background, legal detail, and edge cases after the main content or into a clearly labeled section.
+- Make the structure visible with what the destination supports: numbered steps, short lists, tables for comparisons and values, emphasis for the one or two things that must not be missed, space between groups. Format elements with the same function the same way, including the grammatical form of items in one list. Use formatting only where it shows structure or priority: keep connected explanation in sentences, do not give every list item a bold lead-in unless readers scan for those labels, and leave out decorative emoji unless the user asks for them or the channel's conventions expect them.
+- Move background, legal detail, and edge cases after the main content or into a clearly labeled section. Warnings, deadlines, and conditions that readers need before they act stay with the step or decision they affect, not in a closing notes section.
 - Scale structure to length. A two-sentence text message needs no headings; a multi-page guide needs headings and often a short summary at the top.
 
 ## Step 4: Wording (Principle 3)
 
-- Choose words and expressions that are familiar, precise, and natural for these readers. Replace unfamiliar jargon with a clearer equivalent when it preserves the intended meaning. Use necessary technical or legal terms consistently, and explain them at first use when these readers need help with them. Expand or avoid unfamiliar abbreviations; retain familiar ones when they are clearer.
+- Choose words and expressions that are familiar, precise, and natural for these readers, including a plain verb over an inflated one that says the same thing. Replace unfamiliar jargon with a clearer equivalent when it preserves the intended meaning. Use necessary technical or legal terms consistently, and explain them at first use when these readers need help with them. Expand or avoid unfamiliar abbreviations; retain familiar ones when they are clearer.
 - When readers must match, copy, search for, or enter an existing string (such as a button label, path, command, identifier, or error message), reproduce it exactly. Improve the surrounding explanation as needed. This protection does not freeze labels or messages that the user asks you to author or revise.
 - Make each sentence show who does what. Prefer a concrete actor and a verb over abstract nouns. Address readers directly when it fits the document and the language.
-- Keep the main point of each sentence easy to spot rather than buried behind long preambles or stacked conditions. Split sentences that carry several ideas, and cut words that add nothing.
+- Keep the main point of each sentence easy to spot rather than buried behind long preambles or stacked conditions. Split sentences that carry several ideas, and cut words that add nothing, such as a wrapper that announces a point instead of making it ("Please note that..."). Keep words that carry obligation, permission, or possibility ("must", "may", "can", or "~할 수 있습니다" when it grants an option), because dropping or rewording them can change what readers are required or allowed to do.
 - Give each paragraph one topic and state it early.
 - Keep a respectful tone: no blaming, threatening, or talking down. Treat readers as capable adults and use inclusive language.
 - Make the text cohesive: consistent terms, references whose target is obvious, transitions that show how parts connect, and consistent formatting.
@@ -85,7 +85,17 @@ ISO 24495-1 favors reader success over mechanical measures such as readability f
 
 ### Language adaptation
 
-Apply each guideline through the natural patterns of the target language instead of importing English habits. For example, a Korean sentence often gets clearer when a chain of Sino-Korean nouns ("서류 제출 시 본인 확인 절차 진행 후 처리") becomes verbs ("서류를 내시면 본인인지 확인한 뒤 처리합니다"), when translationese such as "~에 의해" or "~되어지다" goes, and when the subject and predicate sit close together. In English, the usual moves are active voice where the actor matters, "you" for the reader, and everyday words over formal ones. These are examples of local practice, not ISO rules.
+Apply each guideline through the natural patterns of the target language instead of importing English habits. The examples below are local practice, not ISO rules.
+
+A Korean sentence often gets clearer when:
+
+- a chain of Sino-Korean nouns becomes verbs ("서류 제출 시 본인 확인 절차 진행 후 처리" → "서류를 내시면 본인인지 확인한 뒤 처리합니다").
+- a light verb such as "진행하다" or "실시하다" gives way to the verb it hides, at the same level of politeness ("신청 절차를 진행해 주시기 바랍니다" → "신청해 주시기 바랍니다").
+- translationese goes: "~에 의해", "~되어지다", a plural "~들" that adds nothing, and "또한" or "아울러" opening sentence after sentence.
+- the subject and predicate sit close together.
+- the actor is named only where leaving it out makes it unclear who acts, such as whether the reader or the organization sends a form. Korean normally drops subjects, so adding them everywhere reads as translated.
+
+In English, the usual moves are active voice where the actor matters, "you" for the reader, and everyday words over formal ones.
 
 ## Step 5: Evaluate as you go (Principle 4)
 
@@ -93,8 +103,9 @@ The standard says following Principles 1 to 3 makes a usable text likely, but on
 
 1. Re-read the draft as the primary reader in their situation, for example skimming on a phone if that is how they will read it.
 2. For each reader question from Step 2, check that the reader can find the answer quickly, understand it on the first read, and act on it without having to contact anyone.
-3. In a rewrite, compare the full source with the draft. Preserve the meaning and accuracy of information readers need and content the author must include. Check that omissions remove only irrelevant or redundant material, and that required exact strings still match. Change wording, order, and structure whenever that serves the reader.
-4. Fix what fails, then check again.
+3. Remove wording and formatting that do not help these readers find, understand, or use the information, judged by Steps 2 to 4 and their exceptions.
+4. In a rewrite, compare the full source with the draft. Preserve the meaning and accuracy of information readers need and content the author must include. Check that omissions remove only irrelevant or redundant material, and that required exact strings still match. Change wording, order, and structure whenever that serves the reader.
+5. Fix what fails, then check again.
 
 Do not claim that a text "conforms to" or is "certified under" ISO 24495-1. Part 1 offers guidance, and the IPLF states that it is not for certification. Your own check covers only 5.4.2; confirming that readers can use the document also takes evaluation with readers (5.4.3) and of their continued use (5.4.4), which you cannot do here. If the user asks about compliance or testing, explain this and suggest reader-testing methods from `references/guidelines.md`.
 
