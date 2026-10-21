@@ -1,4 +1,4 @@
-// Embedded contracts from Pi commit b06c1f2cf1dea6af8748ddeee18c23587d2cb7c6: theme-schema.ts, theme-tokens.ts,
+// Embedded contracts rechecked at Pi commit cae9fd28a2d3d515c83ea495093e3768cc8efab6: theme-schema.ts, theme-tokens.ts,
 // theme.ts resolveVarRefs(), and packages/tui/src/colors.ts.
 // This module reads no files, imports no dependencies, and performs no I/O.
 

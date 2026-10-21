@@ -118,7 +118,7 @@ Focus on entry points and execution flow.
 Additional context: concurrency
 ```
 
-Keeping the empty quoted argument is a fix made after the `v1.2.0` tag. Check this behavior on the actual target instead of assuming that every `1.2.0` build includes it.
+Empty quoted arguments are preserved in `v1.3.0` and the reference revision. The older `v1.2.0` release drops them; check the actual target when supporting that release.
 
 ### Frontmatter
 

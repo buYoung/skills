@@ -175,7 +175,7 @@ The `ms` dependency only illustrates the shape; do not add it unless the code us
 
 Keep host packages out of runtime `dependencies` and out of a compiled extension bundle. When physical copies exist, native ESM imports can bypass Pi's module mapping and produce duplicate classes and registries. Pi reports this configuration as a warning, not as a universal startup rejection. The warning also recognizes the legacy `@mariozechner/*` host names and `@sinclair/typebox`.
 
-Import only package roots and the public subpaths that the target version supports. At this revision, Pi maps selected entry points, including `@earendil-works/pi-ai/compat`, `@earendil-works/pi-ai/oauth`, `@earendil-works/pi-ai/providers/all`, `typebox/compile`, and `typebox/value`. A mapped root does not make arbitrary subpaths such as `@earendil-works/pi-ai/dist/...` available.
+Import only package roots and the public subpaths that the target version supports. At this revision, Pi maps selected entry points, including `@earendil-works/pi-ai/compat`, `@earendil-works/pi-ai/models`, `@earendil-works/pi-ai/oauth`, `@earendil-works/pi-ai/providers/all`, `typebox/compile`, and `typebox/value`. A mapped root does not make arbitrary subpaths such as `@earendil-works/pi-ai/dist/...` available.
 
 Do not rely on another installed package's undeclared dependencies or on shared module globals. npm installs share a scope's `node_modules` tree, but that is not a contract for sharing singletons. Use `pi.events` to communicate between extensions.
 

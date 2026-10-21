@@ -176,6 +176,7 @@ Check string and object entries, a user `[]`, and any project override the packa
 | Resource appears after `pi config` | Missing or empty manifest type plus a conventional directory |
 | Compiled extension has duplicate classes or state | Bundled host API or physical host runtime dependency |
 | Local checkout works; git install fails | Development-only runtime imports, missing generated files, install-time build |
+| A codemode script waits or fails before starting | Process-wide worker capacity, canceled workers still exiting, and a nested session waiting for a slot; see [tool composition](extensions.md#tool-composition-and-mutable-state) |
 | `/skill:name` exists but the model does not discover it | `disable-model-invocation`, missing read/bash capability, conflicting name |
 | Theme seems missing | Theme schema or color diagnostics and name collisions; selection errors can hide the original problem |
 | Reload works but startup fails | Reload tolerates extension diagnostics that CLI startup rejects |

@@ -1,6 +1,6 @@
 # Evidence and compatibility boundaries
 
-Read this to find the Pi revision these contracts describe, the known difference between that revision and the `1.2.0` release, the common assumptions the contracts correct, and the limits of what the bundled checks prove. The [revision history](#revision-history-for-maintainers) at the end records how the bundle was checked; you do not need it to build a package.
+Read this to find the Pi revision these contracts describe, the differences from the `1.3.0` release, the common assumptions the contracts correct, and the limits of what the bundled checks prove. The [revision history](#revision-history-for-maintainers) at the end records how the bundle was checked; you do not need it to build a package.
 
 ## Supported Pi revision
 
@@ -8,23 +8,36 @@ These values were checked directly against the repository:
 
 ```text
 repository: earendil-works/pi
-commit: b06c1f2cf1dea6af8748ddeee18c23587d2cb7c6
-commit date: 2026-10-14
+commit: cae9fd28a2d3d515c83ea495093e3768cc8efab6
+commit date: 2026-10-21
 package: @earendil-works/pi-coding-agent
-package.json version: 1.2.0
-relationship to release: 46 commits after v1.2.0
+package.json version: 1.3.0
+relationship to release: 74 commits after v1.3.0
 Node engine: >=22.19.0
 ```
 
-Every contract in this skill was taken from the source at this commit. Use this revision when a generated package's README states the supported Pi version or commit.
+The bundle's source contracts were rechecked against this commit, including unchanged contracts carried forward from the earlier baseline. Use this revision when a generated package's README states the supported Pi version or commit; list release compatibility separately when it was actually checked.
 
-### Observed difference from the `1.2.0` release
+### Boundaries around the `1.3.0` release
 
-The commit still reports version `1.2.0`, so a matching version string does not prove that post-tag behavior is present. The installed `1.2.0` release parses the prompt arguments `"x" "" tail` as `["x", "tail"]`, while the reference commit keeps the empty argument. This is why the prompt reference states a commit boundary.
+A matching `1.3.0` version string does not prove that post-tag behavior is present. Tag ancestry establishes these boundaries:
+
+| Behavior | In `v1.3.0`? | Relevant change |
+|---|---|---|
+| Preserve empty quoted prompt arguments | Yes | `9fe3f3716`; the older `v1.2.0` release drops them |
+| Close a custom overlay's own handle rather than the topmost overlay | Yes | `a4f67eb65` |
+| Map the public `@earendil-works/pi-ai/models` entry point for extensions | No | `22dc6c26f` |
+| Stack concurrent editor-slot extension dialogs | No | `38847563f` |
+| Queue codemode scripts at the process-wide worker limit | No | `885a564b3` |
+| Use request `telemetry` spans instead of `telemetryContext` | No | `2ec55d808` |
+| Carry client identity through Pi AI and apply it in API adapters | No | `adc5fa9f8`, `04a93bad8` |
+| Read and edit `mcp.json` with a leading UTF-8 BOM | No | `bdd9f0399` |
+
+The current starter also passes on installed Pi `1.3.0`, but it does not exercise every post-tag feature in this table. That result is starter compatibility, not proof that the release implements the whole reference revision.
 
 ### Provenance
 
-The user-supplied analysis `pi-packages-analysis.md` (dated 2026-10-15) and its linked references were written against the same commit. They are provenance, not a runtime dependency, and the source at the commit decides any disagreement.
+The original user-supplied analysis `pi-packages-analysis.md` (dated 2026-10-15) and its linked references target `b06c1f2cf1dea6af8748ddeee18c23587d2cb7c6`. The 2026-10-21 update compares the following 91 commits directly with that baseline. The analysis is historical provenance, not a runtime dependency or evidence for later changes; the current source decides any disagreement.
 
 The contracts were derived from the package manifest, discovery, and CLI implementation; the extension types, loader, and runner; agent tool execution; the skill and prompt loaders; theme schema, tokens, and color resolution; provider contracts; and MCP configuration at that commit. These names record how the contracts were established; they are not additional reading tasks.
 
@@ -137,3 +150,44 @@ A 2026-10-15 review compared the bundle with the source at commit `b06c1f2cf1dea
 - The output helper keeps a byte-bounded prefix for an oversized first line and accepts `"tail"` for logs. The package validator reports the implicit package-directory extension and rejects reserved theme names. The tool runner reports a case process that stays alive after shutdown as a lingering-handle failure while keeping its observations.
 
 With installed Pi `1.2.0` and Node `v24.14.0`, the starter still passed the package validator with `--runtime --pack`, the extracted-artifact rerun, and its tool cases, and the earlier broken copies were still rejected. Two separate cases, a package whose only extension is a root `index.ts` and a theme named `system`, now each fail with dedicated messages, and an unreleased `session_start` timer fails in about 3 seconds instead of at the 20-second deadline. The helper passed many-line head and tail, single Unicode line head and tail, small-output, thrown-error, and cancellation cases, and it type-checked against the commit's source types with TypeScript 5.8.3. Interactive CLI behavior, live MCP waiting, and provider registration failures were verified by reading the source only.
+
+### Latest-source compatibility update (2026-10-21)
+
+A fresh clone of `earendil-works/pi` at `cae9fd28a2d3d515c83ea495093e3768cc8efab6` was compared with the previous baseline. The package manager, manifest/filtering code, extension types and runner, resource loader, skill and prompt parsers, theme schema/tokens/color resolver, and the SDK exports used by the bundled checks were unchanged. Their contracts were retained rather than replaced with conflicting high-level documentation.
+
+The changed contracts were traced through their consumers:
+
+- `core/extensions/loader.ts` and `core/extensions/virtual-modules.ts`: Node aliases and bundled mappings for the public `/models` entry point.
+- Pi AI's `packages/ai/src/types.ts`, `packages/ai/src/models.ts`, `packages/ai/src/utils/identity.ts`, `packages/ai/src/api/`, and `packages/ai/src/telemetry.ts`, together with coding-agent `core/sdk.ts`, `core/client-identity.ts`, and `core/model-runtime.ts`: identity precedence, header suppression, telemetry spans, and the later application of API identity defaults.
+- `modes/interactive/interactive-mode.ts`: editor-slot dialog stacking and completion of the correct custom overlay.
+- `extensions/codemode/execute.ts`: shared capacity, FIFO admission, cancellation, and deadlines that include the wait.
+- `extensions/mcp/config.ts`: BOM handling on both read and edit.
+
+Source paths above are under `packages/coding-agent/src/` unless explicitly qualified. These are maintenance evidence, not additional reading requirements for package authors.
+
+**Runtime preparation:** Node `v24.14.0`; `npm ci --ignore-scripts`; the required SDK workspaces built from the cloned source. The initial offline AI build stopped because generated model JSON was absent. Running the repository's `npm run hydrate:model-data` resolved that prerequisite, after which the AI, agent, and unbundled coding-agent builds passed. The source checkout had no tracked or untracked changes afterward; generated model data and build output are ignored. The installed release was checked separately, not substituted for the source build.
+
+**Checks actually run:**
+
+| Check | Result |
+|---|---|
+| Starter `validate-package.mjs --expect ... --runtime --pack`, using the source SDK and then installed `1.3.0` | Both passed: 77 passing assertions, no failed assertions |
+| Runtime validation of each actual extracted npm artifact | Both passed: 55 passing assertions, no failed assertions |
+| Existing `starter-cases.json`, on the starter and each extracted artifact, against both SDKs | All four runs passed all 3 cases: session cwd, compact flag/details, and non-object input rejection |
+| Existing Pi AI identity and telemetry regressions | 3 files, 35 tests passed |
+| Existing coding-agent SDK identity, codemode admission, dialog/overlay, MCP, prompt, and `/models` mapping regressions | 7 files, 179 tests passed |
+| Pi's skill parser on this skill | One skill loaded, no diagnostics |
+| Package-local Markdown file links and script syntax | No missing linked files; all 4 `.mjs` files passed `node --check` |
+| Patch whitespace | `git diff --check` passed |
+
+The upstream regression commands, from the respective package directories, were:
+
+```bash
+# packages/ai
+npm exec -- vitest run test/identity.test.ts test/telemetry-options.test.ts test/telemetry.test.ts
+
+# packages/coding-agent
+npm exec -- vitest run test/sdk-client-identity.test.ts test/codemode-worker-admission.test.ts test/interactive-mode-extension-dialogs.test.ts test/interactive-mode-status.test.ts test/mcp-extension.test.ts test/prompt-templates.test.ts test/suite/regressions/11156-pi-ai-models-virtual-module.test.ts
+```
+
+The validator deliberately leaves semantic import/bundle inspection as `skipped`; its archive report also requests a separate extracted-artifact run, which was completed here. No new evaluation cases were added. The older deliberately broken package fixtures were not rerun in this update. Upstream UI tests use controlled components and do not establish physical terminal rendering. Live provider authentication, remote MCP services, registry publication, git-managed updates/removal, cross-platform behavior, and model-based skill effectiveness were not verified by this update.

@@ -16,7 +16,7 @@ Read only the sections for features the package needs. For providers and MCP, co
 
 Handlers run one after another in registration and load order, with no automatic timeout. When a handler throws, Pi usually reports the error and runs the remaining handlers. `tool_call` and `user_bash` are deliberate exceptions: a thrown error blocks the tool call or shell command, because continuing could run an operation the handler meant to stop.
 
-Use the exact event names the target supports. Some request and event surfaces changed after `v1.2.0`, so do not infer an event's payload from its name alone.
+Use the exact event names the target supports. The reference revision includes changes after `v1.3.0`; a matching package version does not establish every request, event, or UI behavior below.
 
 ## Choose an event
 
@@ -74,7 +74,7 @@ Use the exact event names the target supports. Some request and event surfaces c
 | Handler | Exact contract |
 |---|---|
 | `before_provider_request` | Return the replacement payload itself, not `{ payload: replacement }`. Return `undefined` to keep the payload. |
-| `before_provider_headers` | Mutate `event.headers` in place; return values are ignored. Assign `null` to delete a header. |
+| `before_provider_headers` | Mutate `event.headers` in place; return values are ignored. Assign `null` to suppress a header. API-level identity defaults are applied later, so deleting a key alone does not suppress those defaults. |
 | `after_provider_response` | Observe `event.status` and `event.headers`. This hook cannot replace the body. |
 | `project_trust` | Return `{ trusted: "yes" \| "no" \| "undecided", remember? }`. A handler that does not participate still returns `trusted: "undecided"`, not `undefined`. |
 | `message_end` | Return `{ message }` to replace the final message, keeping its original role. |
@@ -244,6 +244,8 @@ For simple UI, prefer:
 - `ctx.ui.setStatus("acme-status", text)`; pass `undefined` to clear.
 - `ctx.ui.setWidget("acme-widget", lines)`; pass `undefined` to clear.
 
+In the reference revision, editor-slot dialogs (`select`, `confirm`, `input`, `editor`, and non-overlay `custom`) form a stack: the newest dialog is visible, and closing it reveals the previous one. A confirmation opened from inside a custom component can therefore return to that component. Keep each dialog's completion and cancellation scoped to its own interaction; do not assume a new dialog resolved the older Promise.
+
 A minimal terminal dialog inside a command handler:
 
 ```ts
@@ -267,6 +269,6 @@ const accepted = await ctx.ui.custom<boolean>((_tui, _theme, _keys, done) => ({
 - The custom factory returns a component with `render(width): string[]` and `invalidate()`. Input handling, mouse handling, and `dispose()` are optional.
 - Every rendered line must fit its visible width. Use `truncateToWidth`, `visibleWidth`, or `wrapTextWithAnsi` from `pi-tui`.
 - After changing component state, invalidate its cache and call `tui.requestRender()`.
-- Finish with `done(value)`; hiding an overlay does not resolve `custom()`.
+- Finish with `done(value)`. Pi closes that custom overlay's own handle, even if another overlay is above it. Do not call the handle's `hide()` to finish a `custom()` interaction: it removes the overlay without resolving the Promise. Use `setHidden()` only for temporary visibility changes.
 - Dispose timers and listeners.
 - When wrapping input components, forward focus so that cursor placement and IME input stay correct.

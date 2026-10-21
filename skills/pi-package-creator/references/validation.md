@@ -222,12 +222,13 @@ Use the isolated CLI setup in [operations](operations.md). Select the rows for r
 |---|---|---|
 | Fresh startup | Launch `pi -e "$package_dir"` in the isolated environment | No load, flag, or tool conflict; every intended resource is present |
 | Direct command | Run its slash command with ordinary, missing, and invalid arguments | Correct result or diagnostic; no unwanted model turn; only documented state changes |
-| Prompt | Invoke it with omitted values, quoted spaces, `""`, and extra arguments | Expansion matches the substitution grammar in [resources](resources.md); allow for the documented post-tag difference in empty-argument handling |
+| Prompt | Invoke it with omitted values, quoted spaces, `""`, and extra arguments | Expansion matches the substitution grammar in [resources](resources.md), including preserved empty quoted arguments on `v1.3.0` and the reference revision |
 | Skill | Invoke `/skill:<name>` and follow a relative supporting reference | Intended body, base directory, and arguments; the reference stays readable in the extracted artifact |
 | Theme | Select its exact name in `/settings` | No fallback or diagnostic; inspect text, code, diff, selection, and tool and error backgrounds |
 | Reload | Invoke the feature, run `/reload`, invoke it again | One registration, watch, or process; the updated resource; no use of the old context; the reloading handler returns immediately |
 | Session state | Change state, then switch, fork, or resume the session as supported | State restored from the correct branch; no cache leaking from the old session |
 | Mode guards | Run the feature in each advertised `tui`, `rpc`, `json`, or `print` mode | UI calls only where supported; a valid output protocol and correct `ctx.mode` behavior |
+| Concurrent dialogs or overlays | When the feature opens them, close or cancel dialogs in its supported order; require a post-`v1.3.0` target when relying on editor-slot stacking | With stacking support, the previous editor-slot dialog returns; `done()` closes only its own custom overlay; each interaction settles once |
 | Filters | Toggle a resource off and on in disposable `pi config` settings | Exactly that selection changes; unused conventional resources never appear |
 | Project delta | Exercise the documented `autoload: false` selection changes | The last matching delta wins; untouched personal resources stay unchanged |
 
@@ -243,6 +244,7 @@ Apply these checks only when the package includes the feature. [Integrations](in
 
 - Exercise a small streamed success, a server error, malformed data, cancellation mid-stream, and the optional-callback path with no callback supplied.
 - Assert the request URL, headers, and body; the order of stream events; the final stop reason; usage and cost values where provided; and correct termination on error and abort.
+- For a custom adapter or model-service wrapper, check forwarding of `identity` and `telemetry`, per-request identity overrides, disabled attribution, and explicit header suppression. Inspect final wire headers, not only `before_provider_headers`.
 - Check the exact authentication result shape and its expiry and refresh behavior separately.
 - A successful resource load proves registration only, not authentication or streaming.
 

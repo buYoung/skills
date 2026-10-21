@@ -78,6 +78,7 @@ import { openAICompletionsApi } from "@earendil-works/pi-ai/compat";
 - `compat` is one specific public compatibility entry point, not permission to import arbitrary host subpaths.
 - The extension loader maps `compat` as a transitional entry point; its source describes it as kept "until compat is removed". Keep these imports in one module so that a later migration stays local.
 - API factories such as `openAICompletionsApi` are not TypeScript exports of the `@earendil-works/pi-ai` core root.
+- `@earendil-works/pi-ai/models` is also a public entry point, mapped by both the Node loader and bundled virtual modules at the reference revision. These loader mappings were added after `v1.3.0`; do not assume that release can load this import from an extension. It exports model-service APIs such as `createModels`, not the legacy global catalog helpers. Inside a session, prefer `ctx.modelRegistry` when the operation should use that session's configured providers and credentials; creating a separate service does not inherit them.
 - Declare the `@earendil-works/pi-ai` peer. The bundled runtime-load check exposes an import that is unavailable on the installed target; report an incompatibility if it cannot load.
 
 ```ts
@@ -125,6 +126,18 @@ The complete-provider and `ProviderConfig` contracts differ:
 - Use Pi's login and credential storage. Do not put access tokens, refresh tokens, or authorization headers in package files, session messages, or ordinary logs.
 - Provider-scoped environment variables and request headers must survive request conversion.
 
+### Preserve request identity and telemetry
+
+The reference revision moves client identity into Pi AI's public API:
+
+- `ProviderRequestOptions.identity` is a `ClientIdentity` with optional `userAgent`, `attribution`, and `version`. `userAgent` accepts `"detailed"`, `"short"`, or `{ custom: string }`. `attribution: null` explicitly disables inherited attribution.
+- `createModels({ identity })` sets request defaults. `withClientIdentity(models, identity)` wraps an existing model service; per-request identity fields override the wrapper, which overrides the service defaults. `mergeClientIdentity` merges fields and skips `undefined`.
+- Plain Pi AI defaults to a detailed `User-Agent` and no attribution. Agent loops add Pi attribution by default; the coding-agent request path instead derives it from its install-telemetry setting. Do not hard-code Pi attribution into a package's adapter.
+- When delegating to a built-in API, forward `options.identity`. When implementing HTTP directly, `getIdentityHeaders(model, options?.identity)` supplies defaults below model, provider, and request headers. Honor explicit overrides and `null` suppression rather than re-adding removed headers. `before_provider_headers` runs before those API-level defaults, so its observers need not see every final wire header.
+- Request instrumentation uses `options.telemetry` (a span), not the removed `telemetryContext` option. Preserve it when forwarding options. Pi AI's `createModels` streaming path records request and usage observations; do not start duplicate request instrumentation around the same delegated call.
+
+These fields affect real request behavior. A provider load is not proof that an adapter forwards them; inspect the final request and instrumentation in an applicable local check.
+
 ### Implement a custom wire protocol
 
 Reuse a built-in API implementation whenever possible. A custom `streamSimple(model, context, options?)` must return an `AssistantMessageEventStream` **immediately**, not a Promise, and do its asynchronous request work behind that stream.
@@ -138,7 +151,7 @@ Implement this sequence:
 
 1. Create an assistant message with role, API, provider, model, timestamp, empty content, zeroed usage and cost, and `stopReason: "pending"`.
 2. Prepare the request. Await `options?.onPayload?.(payload, model)`, and use its return value as the replacement when it is not `undefined`.
-3. Send the request with the supplied signal, headers, environment, and request options. Call `await options?.onResponse?.({ status, headers }, model)` as soon as the response arrives, before consuming its body.
+3. Send the request with the supplied signal, headers, environment, identity, telemetry span, and request options. Call `await options?.onResponse?.({ status, headers }, model)` as soon as the response arrives, before consuming its body.
 4. Emit `start` before any content event.
 5. For each parsed provider event, await `options?.onProviderStreamEvent?.(providerEvent, model)` before normalizing it. Treat that input as read-only data owned by the adapter.
 6. Update content blocks before emitting balanced start, delta, and end events for text, thinking, and tool calls. `partial` references shared evolving state. Parse tool-call arguments by `toolcall_end`.
@@ -211,7 +224,7 @@ This requires a real shipped `server/index.js` and an available Node executable.
 ### Session declarations and authentication
 
 - A registered server is a session declaration, not a write to `mcp.json`. Register it again on every extension load.
-- A server with the same name in file-based configuration takes precedence over the extension registration.
+- A server with the same name in file-based configuration takes precedence over the extension registration. The `mcp.json` reader and editor accept a leading UTF-8 BOM at this revision; extension registrations themselves are objects, not JSON text.
 - Optional OAuth settings include `clientId`, `clientSecret`, `callbackPort`, `callbackUrl`, `scope`, `clientName`, `clientRegistration: "dcr" | "cimd"`, and `authServerMetadataUrl`. Follow the actual server's flow and the configuration the user provides; registration alone does not check authentication.
 
 ### Connectors only: `mcp_servers_change`

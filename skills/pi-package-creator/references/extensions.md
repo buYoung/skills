@@ -186,6 +186,8 @@ For a tool that reaches MCP tools, declare `reachesTools(input)` on its definiti
 
 `ctx.executeTool()` alone does not wait for registration. Use the current `ctx.tools` catalog to discover callable tools instead of assuming that every loaded name is available in the current exposure.
 
+In the post-`v1.3.0` reference revision, packages embedding SDK sessions with the built-in `codemode` share worker capacity across all sessions in that process: two workers by default, configurable with a positive integer `PI_CODEMODE_MAX_WORKERS`. At capacity, scripts queue in arrival order for at most 60 seconds or their shorter `timeout_ms`; that wait counts toward the script deadline. The `v1.3.0` release rejects at capacity instead of queuing. A canceled worker retains its slot until it exits. Do not hold every slot while awaiting another in-process session that itself needs codemode. A queued timeout fails without running the script; it does not prove that the requested operation executed.
+
 Set `executionMode: "sequential"` on a tool whose shared mutable state cannot tolerate parallel calls. For file mutations, wrap the whole read/modify/write transaction, not only the final write, in the public `withFileMutationQueue(absolutePath, async () => ...)` helper.
 
 `registerTool()` refreshes runtime tools after initialization; there is no public `pi.refreshTools()` method. Do not register repeated copies of a tool on every session event when a single factory registration works.
