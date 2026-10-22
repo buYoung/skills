@@ -35,7 +35,7 @@ Select the checks before running them:
 | Prompts | Discovery and the argument forms the prompt supports | Theme or extension tests |
 | Themes | Theme JSON and colors, selection and rendering | Tool tests or provider access |
 | Stateful or long-lived behavior | Restoration and cleanup across supported lifecycle transitions | Inventing persistence, watchers, or subprocesses for a stateless package |
-| Provider or MCP integration | Its configured authentication, connection, call, error, and cancellation behavior | A live integration check for a package without such an integration |
+| Provider, classifier, or MCP integration | Its configured authentication, connection, call, error, and cancellation behavior | A live integration check for a package without such an integration |
 | Local delivery | Actual load from the local directory and the applicable behavior | npm metadata, a gallery listing, or an npm tarball |
 | npm delivery or a requested tarball | npm metadata, actual archive contents, checks on the extracted copy | Registry publication, unless requested |
 | Git delivery | A clean checkout of the intended ref with production dependencies | An npm tarball when that is not the delivery format |
@@ -222,13 +222,14 @@ Use the isolated CLI setup in [operations](operations.md). Select the rows for r
 |---|---|---|
 | Fresh startup | Launch `pi -e "$package_dir"` in the isolated environment | No load, flag, or tool conflict; every intended resource is present |
 | Direct command | Run its slash command with ordinary, missing, and invalid arguments | Correct result or diagnostic; no unwanted model turn; only documented state changes |
-| Prompt | Invoke it with omitted values, quoted spaces, `""`, and extra arguments | Expansion matches the substitution grammar in [resources](resources.md), including preserved empty quoted arguments on `v1.3.0` and the reference revision |
+| Prompt | Invoke it with omitted values, quoted spaces, `""`, and extra arguments | Expansion matches the substitution grammar in [resources](resources.md), including preserved empty quoted arguments on `v1.3.0` and `v1.4.0` |
 | Skill | Invoke `/skill:<name>` and follow a relative supporting reference | Intended body, base directory, and arguments; the reference stays readable in the extracted artifact |
 | Theme | Select its exact name in `/settings` | No fallback or diagnostic; inspect text, code, diff, selection, and tool and error backgrounds |
 | Reload | Invoke the feature, run `/reload`, invoke it again | One registration, watch, or process; the updated resource; no use of the old context; the reloading handler returns immediately |
 | Session state | Change state, then switch, fork, or resume the session as supported | State restored from the correct branch; no cache leaking from the old session |
+| Tool activation | For a package with tools, resume an older session and navigate `/tree`; include removed and newly registered tools | In `v1.4.0`, branch removals remain inactive; eligible unmentioned extension tools activate; explicit tool selection and pending registrations remain respected |
 | Mode guards | Run the feature in each advertised `tui`, `rpc`, `json`, or `print` mode | UI calls only where supported; a valid output protocol and correct `ctx.mode` behavior |
-| Concurrent dialogs or overlays | When the feature opens them, close or cancel dialogs in its supported order; require a post-`v1.3.0` target when relying on editor-slot stacking | With stacking support, the previous editor-slot dialog returns; `done()` closes only its own custom overlay; each interaction settles once |
+| Concurrent dialogs or overlays | When the feature opens them, close or cancel dialogs in its supported order; require `v1.4.0` when relying on editor-slot stacking | With stacking support, the previous editor-slot dialog returns; `done()` closes only its own custom overlay; each interaction settles once |
 | Filters | Toggle a resource off and on in disposable `pi config` settings | Exactly that selection changes; unused conventional resources never appear |
 | Project delta | Exercise the documented `autoload: false` selection changes | The last matching delta wins; untouched personal resources stay unchanged |
 
@@ -240,11 +241,12 @@ For long-lived handles, record the active watchers and subprocesses before start
 
 Apply these checks only when the package includes the feature. [Integrations](integrations.md) has the complete contracts; no other documentation is part of this workflow.
 
-**Provider:** start with a local controlled HTTP endpoint or a dedicated test account for the service.
+**Provider or classifier integration:** start with a local controlled HTTP endpoint or a dedicated test account for the service.
 
 - Exercise a small streamed success, a server error, malformed data, cancellation mid-stream, and the optional-callback path with no callback supplied.
 - Assert the request URL, headers, and body; the order of stream events; the final stop reason; usage and cost values where provided; and correct termination on error and abort.
 - For a custom adapter or model-service wrapper, check forwarding of `identity` and `telemetry`, per-request identity overrides, disabled attribution, and explicit header suppression. Inspect final wire headers, not only `before_provider_headers`.
+- If the provider supports classifier images, check the selected model's `input`, the actual `compat.imageInput` payload, opt-in header behavior, unsupported MIME types, and the four-image limit for Clef's `"images"` format. For `models.json` overrides, verify provider-level settings reach the classifier; a successful OpenRouter response alone does not prove it received images.
 - Check the exact authentication result shape and its expiry and refresh behavior separately.
 - A successful resource load proves registration only, not authentication or streaming.
 

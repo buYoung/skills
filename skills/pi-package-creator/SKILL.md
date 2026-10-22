@@ -11,7 +11,7 @@ Each of the five steps below names the reference to read before you act. Every c
 
 ## Compatibility
 
-- This bundle targets Pi commit `cae9fd28a2d3d515c83ea495093e3768cc8efab6` (74 commits after `v1.3.0`), not every build reporting `1.3.0`.
+- This bundle targets Pi `v1.4.0`, tag commit `4a080252f06caf63a525d7873c5d94d3c23887e0`. Development builds with the same version string can differ.
 - Node.js must satisfy Pi's `>=22.19.0` requirement.
 - Record the user's actual Pi version and, when available, its commit. A matching version string alone does not prove that every behavior described here is present.
 - Run the bundled checks against the installed Pi. If an API or behavior differs, report the concrete mismatch. Do not invent a newer contract, and do not make reading external documents a completion step.
@@ -101,7 +101,7 @@ Put other runtime libraries in `dependencies` and development-only tooling in `d
 - When adding persistent resources, implement cleanup and session-state restoration. After `await ctx.reload()`, return immediately.
 - `pi.refreshTools()` does not exist; `registerTool()` refreshes runtime tools itself.
 
-[Extensions](references/extensions.md) has complete tool and command contracts, failure handling, and lifecycle patterns. [Advanced extensions](references/advanced-extensions.md) covers event results, session state, UI, and dynamic resources, and [integrations](references/integrations.md) covers providers and MCP.
+[Extensions](references/extensions.md) has complete tool and command contracts, failure handling, and lifecycle patterns. [Advanced extensions](references/advanced-extensions.md) covers event results, session state, UI, and dynamic resources, and [integrations](references/integrations.md) covers providers, classifier calls, and MCP.
 
 ### Skills, prompts, and themes
 

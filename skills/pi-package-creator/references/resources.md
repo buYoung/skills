@@ -118,7 +118,7 @@ Focus on entry points and execution flow.
 Additional context: concurrency
 ```
 
-Empty quoted arguments are preserved in `v1.3.0` and the reference revision. The older `v1.2.0` release drops them; check the actual target when supporting that release.
+Empty quoted arguments are preserved in `v1.3.0` and `v1.4.0`. The older `v1.2.0` release drops them; check the actual target when supporting that release.
 
 ### Frontmatter
 

@@ -1,6 +1,6 @@
 # Evidence and compatibility boundaries
 
-Read this to find the Pi revision these contracts describe, the differences from the `1.3.0` release, the common assumptions the contracts correct, and the limits of what the bundled checks prove. The [revision history](#revision-history-for-maintainers) at the end records how the bundle was checked; you do not need it to build a package.
+Read this to find the Pi revision these contracts describe, the `1.4.0` release boundary and differences from `1.3.0`, the common assumptions the contracts correct, and the limits of what the bundled checks prove. The [revision history](#revision-history-for-maintainers) at the end records how the bundle was checked; you do not need it to build a package.
 
 ## Supported Pi revision
 
@@ -8,19 +8,19 @@ These values were checked directly against the repository:
 
 ```text
 repository: earendil-works/pi
-commit: cae9fd28a2d3d515c83ea495093e3768cc8efab6
-commit date: 2026-10-21
+commit: 4a080252f06caf63a525d7873c5d94d3c23887e0
+commit date: 2026-10-22
 package: @earendil-works/pi-coding-agent
-package.json version: 1.3.0
-relationship to release: 74 commits after v1.3.0
+package.json version: 1.4.0
+relationship to release: exact v1.4.0 tag
 Node engine: >=22.19.0
 ```
 
 The bundle's source contracts were rechecked against this commit, including unchanged contracts carried forward from the earlier baseline. Use this revision when a generated package's README states the supported Pi version or commit; list release compatibility separately when it was actually checked.
 
-### Boundaries around the `1.3.0` release
+### Release boundaries through `1.4.0`
 
-A matching `1.3.0` version string does not prove that post-tag behavior is present. Tag ancestry establishes these boundaries:
+The reference now matches the released `v1.4.0` tag rather than a development build reporting `1.3.0`. All behaviors in the following table are included in `v1.4.0`; the middle column records whether they were already present in the older release. Tag ancestry establishes these boundaries:
 
 | Behavior | In `v1.3.0`? | Relevant change |
 |---|---|---|
@@ -32,12 +32,16 @@ A matching `1.3.0` version string does not prove that post-tag behavior is prese
 | Use request `telemetry` spans instead of `telemetryContext` | No | `2ec55d808` |
 | Carry client identity through Pi AI and apply it in API adapters | No | `adc5fa9f8`, `04a93bad8` |
 | Read and edit `mcp.json` with a leading UTF-8 BOM | No | `bdd9f0399` |
+| Send classifier images using the service's System One format and `compat` | No | `7f225f25d` |
+| Activate eligible extension tools absent from an older branch's recorded loadout | No | `bd3c9b823` |
+| Omit truncated tool calls and their results together during recovery | No | `02726086d` |
+| Keep built-in grep independent of `RIPGREP_CONFIG_PATH` | No | `8c4e87389` |
 
-The current starter also passes on installed Pi `1.3.0`, but it does not exercise every post-tag feature in this table. That result is starter compatibility, not proof that the release implements the whole reference revision.
+The 2026-10-21 record below established starter compatibility with installed Pi `1.3.0`. It does not establish that release's support for the later features, and it is not a substitute for the separate `v1.4.0` checks.
 
 ### Provenance
 
-The original user-supplied analysis `pi-packages-analysis.md` (dated 2026-10-15) and its linked references target `b06c1f2cf1dea6af8748ddeee18c23587d2cb7c6`. The 2026-10-21 update compares the following 91 commits directly with that baseline. The analysis is historical provenance, not a runtime dependency or evidence for later changes; the current source decides any disagreement.
+The original user-supplied analysis `pi-packages-analysis.md` (dated 2026-10-15) and its linked references target `b06c1f2cf1dea6af8748ddeee18c23587d2cb7c6`. The 2026-10-21 update compared the following 91 commits through `cae9fd28a` directly with that baseline. The 2026-10-22 update compares 7 further commits through the `v1.4.0` tag. The analysis is historical provenance, not a runtime dependency or evidence for later changes; the current source decides any disagreement.
 
 The contracts were derived from the package manifest, discovery, and CLI implementation; the extension types, loader, and runner; agent tool execution; the skill and prompt loaders; theme schema, tokens, and color resolution; provider contracts; and MCP configuration at that commit. These names record how the contracts were established; they are not additional reading tasks.
 
@@ -191,3 +195,42 @@ npm exec -- vitest run test/sdk-client-identity.test.ts test/codemode-worker-adm
 ```
 
 The validator deliberately leaves semantic import/bundle inspection as `skipped`; its archive report also requests a separate extracted-artifact run, which was completed here. No new evaluation cases were added. The older deliberately broken package fixtures were not rerun in this update. Upstream UI tests use controlled components and do not establish physical terminal rendering. Live provider authentication, remote MCP services, registry publication, git-managed updates/removal, cross-platform behavior, and model-based skill effectiveness were not verified by this update.
+
+### Released `v1.4.0` update (2026-10-22)
+
+The `v1.4.0` tag resolves to `4a080252f06caf63a525d7873c5d94d3c23887e0`, seven commits after the previous `cae9fd28a` baseline. The tag includes every formerly post-`v1.3.0` boundary listed above. No later `main` changes were included.
+
+The source comparison added four author-facing contracts:
+
+- System One classifier image encoding and opt-in headers, from `packages/ai/src/api/system-one-shared.ts` and its TypeSafe/Workers AI adapters. Public classifier types, `compat-schema.ts`, and coding-agent `core/provider-composer.ts` establish how extension model metadata and provider-level `models.json` overrides reach those encoders.
+- Resume and tree-navigation activation from `core/agent-session.ts`: branch additions/removals, eligible unmentioned extension tools, pending registration, startup selection precedence, and allowlist/exclusion boundaries.
+- Recovery keeps omitted assistant/tool-result pairs together instead of replaying orphaned results, including after session resume.
+- Built-in grep uses `--no-config`, preserving its declared search semantics against ambient ripgrep configuration.
+
+Coding-agent source paths above are under `packages/coding-agent/src/`. Package discovery, extension loading/types, skill and prompt parsers, UI/codemode/MCP implementations, theme contracts, truncation helpers, and the SDK exports used by the bundled validators were unchanged from the previous baseline. Their existing contracts and executable examples were retained.
+
+**Validation environment:** Node `v24.14.0`; SDK built directly from the `v1.4.0` checkout with `npm ci --ignore-scripts`, `npm run hydrate:model-data`, and the required workspace builds, ending with coding-agent `build:unbundled`. Generated model data and build output stayed ignored; the source checkout remained clean. These results use that source-built `1.4.0` SDK, not the separately installed `1.3.0` SDK or an assumed registry installation.
+
+| Check | Result |
+|---|---|
+| Starter package validator with `--expect`, `--runtime`, and `--pack` | 77 assertions passed; no failures |
+| Runtime validation of the actual extracted npm artifact | 55 assertions passed; no failures |
+| Existing starter tool cases on source and extracted artifact | Both runs passed all 3 cases, including invalid-input rejection |
+| TypeSafe and Workers AI System One regressions | 2 files, 29 tests passed |
+| Classifier runtime, default tool selection/restoration, and recovery-pair regressions | 3 files, 24 tests passed |
+| `tools.test.ts -t RIPGREP_CONFIG_PATH` | Selected regression passed; 85 unrelated tests were intentionally not run |
+| Skill parser, internal links, and script syntax | One skill loaded without diagnostics; 58 linked file references resolved; all 4 `.mjs` files passed `node --check` |
+| Patch whitespace | `git diff --check` passed |
+
+The upstream regression commands were:
+
+```bash
+# packages/ai
+npm exec -- vitest run test/typesafe-system-one.test.ts test/cloudflare-workers-ai-system-one.test.ts
+
+# packages/coding-agent
+npm exec -- vitest run test/model-runtime-classifiers.test.ts test/default-tools-setting.test.ts test/suite/regressions/11227-recovery-omits-tool-results.test.ts
+npm exec -- vitest run test/tools.test.ts -t RIPGREP_CONFIG_PATH
+```
+
+The 54 selected upstream tests use controlled requests or local fixtures; no live classifier service was called. Package reports still mark semantic import/bundle inspection as `skipped`; the archive report's separate extracted-artifact checks were completed as recorded above. No new test cases were added, and the earlier deliberately broken package fixtures were not rerun. Physical terminal rendering, live authentication/MCP/classifier services, published-package installation, git update/removal, other operating systems, independent model review, and model-based skill effectiveness remain unverified for this update.

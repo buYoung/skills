@@ -1,6 +1,6 @@
 # Extension implementation contracts
 
-Read this before writing or changing an extension. [The starter extension](../assets/starter/extensions/index.ts) is a complete example of a tool, a command, and a flag with a separate helper module. For events, session state, terminal UI, and dynamic resources, continue to [advanced extensions](advanced-extensions.md); for providers and MCP, to [integrations](integrations.md).
+Read this before writing or changing an extension. [The starter extension](../assets/starter/extensions/index.ts) is a complete example of a tool, a command, and a flag with a separate helper module. For events, session state, terminal UI, and dynamic resources, continue to [advanced extensions](advanced-extensions.md); for providers, classifier calls, and MCP, to [integrations](integrations.md).
 
 ## Contents
 
@@ -62,7 +62,7 @@ Session-dependent actions are not ready during loading. These include message se
 | `parameters` | Object schema, including `Type.Object({})` for no inputs |
 | `execute` | Async function that returns the result |
 
-All five fields are required. Useful optional fields include `promptSnippet`, `promptGuidelines`, `outputSchema`, `executionMode`, and rendering hooks; use only options the target API provides.
+All five fields are required. Useful optional fields include `promptSnippet`, `promptGuidelines`, `outputSchema`, `executionMode`, `exposure`, `defaultActive`, and rendering hooks; use only options the target API provides.
 
 ```text
 execute(toolCallId, params, signal, onUpdate, ctx)
@@ -186,11 +186,17 @@ For a tool that reaches MCP tools, declare `reachesTools(input)` on its definiti
 
 `ctx.executeTool()` alone does not wait for registration. Use the current `ctx.tools` catalog to discover callable tools instead of assuming that every loaded name is available in the current exposure.
 
-In the post-`v1.3.0` reference revision, packages embedding SDK sessions with the built-in `codemode` share worker capacity across all sessions in that process: two workers by default, configurable with a positive integer `PI_CODEMODE_MAX_WORKERS`. At capacity, scripts queue in arrival order for at most 60 seconds or their shorter `timeout_ms`; that wait counts toward the script deadline. The `v1.3.0` release rejects at capacity instead of queuing. A canceled worker retains its slot until it exits. Do not hold every slot while awaiting another in-process session that itself needs codemode. A queued timeout fails without running the script; it does not prove that the requested operation executed.
+In Pi `v1.4.0`, packages embedding SDK sessions with the built-in `codemode` share worker capacity across all sessions in that process: two workers by default, configurable with a positive integer `PI_CODEMODE_MAX_WORKERS`. At capacity, scripts queue in arrival order for at most 60 seconds or their shorter `timeout_ms`; that wait counts toward the script deadline. The `v1.3.0` release rejects at capacity instead of queuing. A canceled worker retains its slot until it exits. Do not hold every slot while awaiting another in-process session that itself needs codemode. A queued timeout fails without running the script; it does not prove that the requested operation executed.
 
 Set `executionMode: "sequential"` on a tool whose shared mutable state cannot tolerate parallel calls. For file mutations, wrap the whole read/modify/write transaction, not only the final write, in the public `withFileMutationQueue(absolutePath, async () => ...)` helper.
 
 `registerTool()` refreshes runtime tools after initialization; there is no public `pi.refreshTools()` method. Do not register repeated copies of a tool on every session event when a single factory registration works.
+
+### Tool activation across resume and tree navigation
+
+Pi `v1.4.0` restores the branch's recorded tool additions and removals, including records before compaction. With default tool selection, an extension tool that the branch never mentioned is treated as newly registered: it activates only for `direct` or `model-only` exposure and when `defaultActive` is not `false`. A tool the branch removed stays inactive. Built-in tools follow `defaultTools` instead.
+
+Recorded tools that are allowed but not yet registered, such as tools from an MCP server still connecting, remain pending and activate when they register. At startup, explicit tool selection takes precedence over transcript restoration; `--tools +name`/`-name` modifiers apply to the restored selection. Tree navigation restores the target branch while respecting the effective tool allowlist and exclusions. Do not unconditionally reactivate every tool from `session_start`, which would undo the branch's removals. Check resumed sessions and `/tree`, not just a fresh session.
 
 ## Commands, flags, and shortcuts
 
@@ -270,6 +276,8 @@ To replace a built-in tool:
 4. Describe the replacement in the package README.
 
 These factories take the working directory as their first argument and fix it when called, but the extension factory has no session context. Create the delegate inside `execute` from `ctx.cwd`, not from a `process.cwd()` captured at load time, so relative paths follow the current session. The shorter `createReadTool` returns an `AgentTool` without the definition-level prompt and rendering information, so re-registering it as an extension cannot preserve those fields.
+
+Pi `v1.4.0`'s built-in `grep` runs ripgrep with `--no-config`, so `RIPGREP_CONFIG_PATH` cannot silently change its regex, literal, or filtering behavior. Preserve that boundary when wrapping the built-in; a separate custom search tool may expose different behavior explicitly.
 
 ### What stops CLI startup
 

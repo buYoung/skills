@@ -16,7 +16,7 @@ Read only the sections for features the package needs. For providers and MCP, co
 
 Handlers run one after another in registration and load order, with no automatic timeout. When a handler throws, Pi usually reports the error and runs the remaining handlers. `tool_call` and `user_bash` are deliberate exceptions: a thrown error blocks the tool call or shell command, because continuing could run an operation the handler meant to stop.
 
-Use the exact event names the target supports. The reference revision includes changes after `v1.3.0`; a matching package version does not establish every request, event, or UI behavior below.
+Use the exact event names the target supports. These contracts target Pi `v1.4.0`; the `v1.3.0` release lacks some request and UI behavior described here. See the release boundaries in [evidence](evidence.md).
 
 ## Choose an event
 
@@ -113,6 +113,8 @@ In `before_agent_start`:
 - Pi collects returned custom messages.
 
 `context` changes the request context, not the permanent session history. `context_with_system` runs afterward and is more invasive: Pi reports removal of the leading system message as an error but does not repair it automatically. Preserve tool declarations, relevant intermediate system messages, and required instructions.
+
+Output-limit/overflow recovery in `v1.4.0` omits a discarded assistant attempt together with its associated tool results, including on resumed sessions. Context handlers must not reintroduce orphaned results from an older cached transcript. Context omission does not undo tool side effects.
 
 ### Inspect tool calls and results
 
@@ -244,7 +246,7 @@ For simple UI, prefer:
 - `ctx.ui.setStatus("acme-status", text)`; pass `undefined` to clear.
 - `ctx.ui.setWidget("acme-widget", lines)`; pass `undefined` to clear.
 
-In the reference revision, editor-slot dialogs (`select`, `confirm`, `input`, `editor`, and non-overlay `custom`) form a stack: the newest dialog is visible, and closing it reveals the previous one. A confirmation opened from inside a custom component can therefore return to that component. Keep each dialog's completion and cancellation scoped to its own interaction; do not assume a new dialog resolved the older Promise.
+In Pi `v1.4.0` (not the `v1.3.0` release), editor-slot dialogs (`select`, `confirm`, `input`, `editor`, and non-overlay `custom`) form a stack: the newest dialog is visible, and closing it reveals the previous one. A confirmation opened from inside a custom component can therefore return to that component. Keep each dialog's completion and cancellation scoped to its own interaction; do not assume a new dialog resolved the older Promise.
 
 A minimal terminal dialog inside a command handler:
 

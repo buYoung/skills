@@ -2,7 +2,7 @@
 
 A complete local Pi package containing one extension, one skill, one prompt, and one theme. It uses no external service or third-party runtime library. The extension reads the session working-directory value without scanning files or writing persistent state.
 
-The design baseline is Pi commit `cae9fd28a2d3d515c83ea495093e3768cc8efab6` (74 commits after `v1.3.0`). Node.js `>=22.19.0` is required. A version string alone does not establish support for every behavior added after that tag.
+The design baseline is Pi `v1.4.0`, tag commit `4a080252f06caf63a525d7873c5d94d3c23887e0`. Node.js `>=22.19.0` is required. Record the commit when using a development build that reports the same version.
 
 ## Run locally
 
@@ -25,7 +25,7 @@ Use the actual copied directory name. Host dependencies are supplied by Pi; this
 
 The skill and prompt need a configured model and file-reading capability to complete an investigation. The tool and command return the current session workspace. The flag changes displayed text while preserving result details.
 
-The prompt supports omitted arguments through defaults. Empty quoted arguments are preserved in `v1.3.0` and at the baseline commit; the older `v1.2.0` release drops them.
+The prompt supports omitted arguments through defaults. Empty quoted arguments are preserved in `v1.3.0` and `v1.4.0`; the older `v1.2.0` release drops them.
 
 ## Keep or remove resources
 

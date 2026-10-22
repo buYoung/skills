@@ -1,6 +1,6 @@
 # Provider and MCP integration recipes
 
-Read this only when the package registers a model provider or an MCP server. These APIs run inside ordinary Pi extensions and follow their loading, trust, dependency, and lifecycle contracts ([extensions](extensions.md), [packaging](packaging.md), [operations](operations.md)). Endpoint URLs, model IDs, authentication methods, and protocol behavior must come from the actual service; the example values below are not live configurations.
+Read this when the package registers a model provider or an MCP server, or calls classifier models. These APIs run inside ordinary Pi extensions and follow their loading, trust, dependency, and lifecycle contracts ([extensions](extensions.md), [packaging](packaging.md), [operations](operations.md)). Endpoint URLs, model IDs, authentication methods, and protocol behavior must come from the actual service; the example values below are not live configurations.
 
 ## Contents
 
@@ -64,6 +64,26 @@ Replace the endpoint, ID, context and output limits, modalities, reasoning suppo
 - `streamSimple` comes with `api`;
 - every supplied model resolves an `api` (at model level, or at provider level for chat models) and a `baseUrl` (at model level, at provider level, or from the provider's existing models).
 
+### Classifier image input and compatibility
+
+Pi `v1.4.0` supports image input for System One classifiers through the `typesafe-system-one` and `cloudflare-workers-ai-system-one` APIs. Extensions call `ctx.modelRegistry.classify(model, { state, questions, images }, options)`; codemode exposes the corresponding `models.classify()` call. This is classification, not image generation or chat.
+
+- Require the selected model's `input` to include `"image"`. An image-capable API does not make every model multimodal. Public `images` entries use base64 image content with `data` and `mimeType`; extension callers use Pi AI's `ImageContent` shape, including `type: "image"`.
+- Check `result.stopReason` and `errorMessage`; a resolved classifier result is not necessarily a successful classification. Pass the caller's cancellation through the options when calling from an extension.
+- Classifier models registered by an extension accept `compat` on the model. In `models.json`, provider-level `compat` applies to existing classifier models; `models` and `modelOverrides` entries are chat-only. Do not place classifier overrides under `modelOverrides`.
+
+`compat.imageInput` selects the actual service's wire format:
+
+| Value | Service and input contract |
+|---|---|
+| `"assets"` | TypeSafe and Jev on Workers AI: PNG/JPEG assets, referenced by name before the JSON state |
+| `"images"` | Clef on Workers AI: PNG/JPEG/WebP data URLs, at most four images; JSON state remains separate |
+| `"state-image-urls"` | OpenRouter: `image_url` parts before the JSON state; the serving model validates supported images |
+
+`compat.sendImageOptInHeader` controls `TypeSafe-Danger-Zone-Images: true`. TypeSafe's own experimental image API requires it; the built-in Workers AI and OpenRouter routes do not. Defaults are detected from the API, provider, endpoint, and model ID, while explicit compatibility values take precedence.
+
+Keep built-in model compatibility metadata when only overriding an endpoint. For a custom proxy that hides the upstream service's identity, set the appropriate compatibility fields explicitly. OpenRouter can accept a TypeSafe-shaped request without an error while silently dropping its assets, so verify the final image-bearing payload rather than treating a successful response as proof that images were used. Use these wire shapes through the built-in adapters instead of pre-encoding them into the public `images` argument.
+
 ### Register a complete provider
 
 For a new integration that owns authentication, discovery, filtering, or streaming, prefer `pi.registerProvider(provider)` with a complete `Provider`. Do not use the internal `registerNativeProvider`.
@@ -78,7 +98,7 @@ import { openAICompletionsApi } from "@earendil-works/pi-ai/compat";
 - `compat` is one specific public compatibility entry point, not permission to import arbitrary host subpaths.
 - The extension loader maps `compat` as a transitional entry point; its source describes it as kept "until compat is removed". Keep these imports in one module so that a later migration stays local.
 - API factories such as `openAICompletionsApi` are not TypeScript exports of the `@earendil-works/pi-ai` core root.
-- `@earendil-works/pi-ai/models` is also a public entry point, mapped by both the Node loader and bundled virtual modules at the reference revision. These loader mappings were added after `v1.3.0`; do not assume that release can load this import from an extension. It exports model-service APIs such as `createModels`, not the legacy global catalog helpers. Inside a session, prefer `ctx.modelRegistry` when the operation should use that session's configured providers and credentials; creating a separate service does not inherit them.
+- `@earendil-works/pi-ai/models` is also a public entry point, mapped by both the Node loader and bundled virtual modules at the reference revision. These loader mappings are included in `v1.4.0`, not the `v1.3.0` release; do not assume the older release can load this import from an extension. It exports model-service APIs such as `createModels`, not the legacy global catalog helpers. Inside a session, prefer `ctx.modelRegistry` when the operation should use that session's configured providers and credentials; creating a separate service does not inherit them.
 - Declare the `@earendil-works/pi-ai` peer. The bundled runtime-load check exposes an import that is unavailable on the installed target; report an incompatibility if it cannot load.
 
 ```ts
@@ -128,7 +148,7 @@ The complete-provider and `ProviderConfig` contracts differ:
 
 ### Preserve request identity and telemetry
 
-The reference revision moves client identity into Pi AI's public API:
+Pi `v1.4.0` includes client identity in Pi AI's public API:
 
 - `ProviderRequestOptions.identity` is a `ClientIdentity` with optional `userAgent`, `attribution`, and `version`. `userAgent` accepts `"detailed"`, `"short"`, or `{ custom: string }`. `attribution: null` explicitly disables inherited attribution.
 - `createModels({ identity })` sets request defaults. `withClientIdentity(models, identity)` wraps an existing model service; per-request identity fields override the wrapper, which overrides the service defaults. `mergeClientIdentity` merges fields and skips `undefined`.
