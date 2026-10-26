@@ -20,3 +20,4 @@
 - [2026-05-07] [JSON 쿼리 설명 리뷰 2차](./2026-05-07-json-query-explanation-review/review.md): AGENTS.md 없음/구버전/신버전 3안 비교 리뷰.
 - [2026-06-10] [적대적 리뷰 기반 강화](./2026-06-10-adversarial-review-hardening/review.md): 서브에이전트 적대적 리뷰로 검증된 파괴 경로(외부 작성 문서 수정, 커스텀 섹션 소실, 모노레포 오탐, 예산 모순 등)에 대한 가드 및 스크립트 강화.
 - [2026-09-07] [JSONinja 실제 적용 검증](./2026-09-07-jetbrains-jsoninja-live-test/review.md): `gpt-5.6-sol` / `medium`에서 스킬명 단독 입력으로 최초 편입 확인과 실제 갱신을 수행하고, 원본·생성본·비교 패치 및 사용자 영역 보존 결과를 보관.
+- [2026-10-26] [Working Agreements 코드 작성 규칙 추가와 실측 검증](./2026-10-26-working-agreements-rule-validation/review.md): Working Agreements에 작업 범위·코드 작성 규칙 14개를 추가하고, Sonnet 하위 에이전트 코딩 84회로 규칙 후보와 스킬 변경 전·후에 따른 코드 차이를 비교. 실행별 diff는 [실측 보고서](./2026-10-26-working-agreements-rule-validation/report.html)에 보관.
