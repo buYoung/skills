@@ -1,6 +1,6 @@
 // Pairs with references/07_language_annotator.md.
 // Annotator is stateless and shared across files/threads. Filter early; do not do
-// expensive resolution without caching (see CachedValue in 05_file_model_psi_basics.md).
+// expensive resolution without caching (see CachedValue in 05_file_model_psi_references_caching.md).
 package com.example.simplelang
 
 import com.example.simplelang.psi.SimpleProperty

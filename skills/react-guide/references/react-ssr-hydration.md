@@ -8,6 +8,8 @@ Read for React 18/19 server rendering, Suspense streaming, server/client entry p
 
 Inspect the exact `react`/`react-dom` versions, server export selected by the runtime/bundler, Node versus Web Streams support, rendered container/document, client entry, asset URLs, data loading, request lifetime, and error reporting. Check minor-specific exports and options before copying current documentation: the streaming APIs arrived in React 18, but current Node exports and newer React 19 features must not be assumed for every older minor. Prefer the Node API for a Node host. See the [React 18 upgrade guide](https://react.dev/blog/2022/03/08/react-18-upgrade-guide) and [server API overview](https://react.dev/reference/react-dom/server).
 
+React 19 removed the legacy roots `ReactDOM.render` and `ReactDOM.hydrate`; use `createRoot` and `hydrateRoot` from `react-dom/client`. It also removed the legacy Node stream renderers: `renderToStaticNodeStream` (18.3 warns) and `renderToNodeStream` (deprecated in 18.0). The 19.0.0 Node server entry exports neither, so replace them with `renderToPipeableStream` or one of the non-streaming APIs below. See [removed React DOM APIs](https://react.dev/blog/2024/04/25/react-19-upgrade-guide#removed-deprecated-react-dom-apis), the [19.0.0 changelog](https://github.com/react/react/blob/main/CHANGELOG.md#1900-december-5-2024), and the [19.0.0 Node server entry](https://github.com/react/react/blob/v19.0.0/packages/react-dom/npm/server.node.js).
+
 ## Select Output and Streaming Behavior
 
 | Host or requirement | API and behavior |
@@ -42,6 +44,8 @@ Trace initial data from the request to the rendered props/store, serialized HTML
 For external stores, `getServerSnapshot` runs on the server and during hydration. It must read the transferred initial snapshot, while `getSnapshot` represents live client data afterward. Keep the initial snapshot fixed even if live state changes before a delayed boundary hydrates. Snapshot references must remain stable until their observed data changes; see [state/data](react-state-data.md) and [useSyncExternalStore](https://react.dev/reference/react/useSyncExternalStore).
 
 The hydration and snapshot contracts imply request isolation: construct mutable stores/data caches per request, rather than mutating a module-global user store. A client store may live for that client root's lifetime. Avoid sharing request data between concurrent users or roots. Browser-only imports must not execute on the server; use a client-only entry or deferred import where necessary. Browser preferences can be applied after hydration while keeping the initial output stable; see [Hooks/Effects](react-hooks-effects.md).
+
+From React 19.3, a Client Component can call `use(browser())`, with `browser` imported from `react-dom`, to render only in the browser. The server leaves the nearest `<Suspense>` boundary's fallback in the HTML, and the component renders after hydration without a recoverable error; without a boundary the server render fails. The server APIs' `onBrowserBailout` option reports these subtrees. This replaces a mounted-flag Effect or `typeof window` branch for that subtree, but a module-level browser access still runs during the server import. Do not use it below 19.3. See [browser](https://react.dev/reference/react-dom/browser).
 
 ## Verify and Report
 

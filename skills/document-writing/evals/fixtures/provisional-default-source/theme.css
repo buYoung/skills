@@ -1,0 +1,6 @@
+/* Ledgerly web app: current production stylesheet (excerpt) */
+:root {
+  --ledgerly-primary: #0F766E;
+  --ledgerly-text: #1F2937;
+  --ledgerly-font-family: "Inter", system-ui, sans-serif;
+}

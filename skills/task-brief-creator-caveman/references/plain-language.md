@@ -42,5 +42,5 @@ A self-check is an author assessment, not measured reader testing. Do not descri
 ## Sources
 
 - [ISO 24495-1:2023 overview](https://www.iso.org/standard/78907.html) — scope, languages, and technical-writing applicability.
-- [International Plain Language Federation: ISO standard](https://www.iplfederation.org/iso-standard/) — public summary of the four principles.
-- [International Plain Language Federation: plain language](https://www.iplfederation.org/plain-language/) — reader needs, wording, structure, design, and evaluation with readers.
+- [International Plain Language Federation: Advancing standards, Part 1](https://www.iplfederation.org/advancing-standards#part-1) — public summary of the four principles.
+- [International Plain Language Federation: About plain language](https://www.iplfederation.org/about-plain-language) — reader needs, wording, structure, design, and evaluation with readers.

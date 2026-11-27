@@ -4,6 +4,7 @@ import { readFile } from 'node:fs/promises';
 import path from 'node:path';
 
 const root = process.argv[2];
+assert.ok(root, 'usage: node external-store-grid-performance.mjs <repaired-fixture-root>');
 const read = (file) => readFile(path.join(root, file), 'utf8');
 const fixtureStoreUrl = new URL('../fixtures/external-store-grid-performance/src/gridStore.mjs', import.meta.url);
 const [grid, storeSource, fixtureStoreSource, pkg, vite, report] = await Promise.all([

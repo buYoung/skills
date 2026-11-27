@@ -127,17 +127,11 @@ For richer changelogs, use a plugin like `@release-it/conventional-changelog`, `
 
 ### Default push args and tag transfer
 
-`["--follow-tags"]` is the default for `pushArgs`. Git transfers missing annotated tags
-reachable from the pushed commits; this may include tags other than the current release.
-It excludes lightweight tags but does not guarantee isolation of the selected service
-app's tag. Do not use `--tags` to solve single-tag transfer: it sends every local tag.
+`["--follow-tags"]` is the default for `pushArgs`. Git transfers missing annotated tags reachable from the pushed commits; this may include tags other than the current release. It excludes lightweight tags but does not guarantee isolation of the selected service app's tag. Do not use `--tags` to solve single-tag transfer: it sends every local tag.
 
 ### Transfer only the selected tag through the built-in push
 
-Keep `git.push: true` so the Inquirer confirmation remains at the actual push point. When
-single-tag transfer is required, compute the exact tag and upstream ref before calling
-release-it, then pass explicit push arguments. For an already verified `origin/main`
-upstream and an app tag template of `api-v${version}`, the entry script can use:
+Keep `git.push: true` so the Inquirer confirmation remains at the actual push point. When single-tag transfer is required, compute the exact tag and upstream ref before calling release-it, then pass explicit push arguments. For an already verified `origin/main` upstream and an app tag template of `api-v${version}`, the entry script can use:
 
 ```js
 const tagName = `api-v${selectedVersion}`;
@@ -156,22 +150,11 @@ const gitOptions = {
 };
 ```
 
-Pass these options as `git` in the same interactive API call, retaining the wrapper's
-clean-check/rollback handling. Adapt and verify the remote, upstream branch, and tag
-policy for the actual target; the computed tag must equal release-it's selected tag.
-Do not insert literal `${tagName}` templates into a JSON `pushArgs` array: 21.0.1 does not
-format array arguments. The built-in method appends its upstream arguments after
-`pushArgs`; with an existing upstream and `pushRepo: ''` it appends none. Inspect this
-ordering again on a version upgrade.
+Pass these options as `git` in the same interactive API call, retaining the wrapper's clean-check/rollback handling. Adapt and verify the remote, upstream branch, and tag policy for the actual target; the computed tag must equal release-it's selected tag. Do not insert literal `${tagName}` templates into a JSON `pushArgs` array: 21.1.3 does not format array arguments. The built-in method appends its upstream arguments after `pushArgs`; with an existing upstream and `pushRepo: ''` it appends none. Inspect this ordering again on a version upgrade.
 
-`--atomic` requires server support; do not silently retry with weaker semantics or a
-broader refspec if it fails. [Git push documentation](https://git-scm.com/docs/git-push)
-explains atomic updates and tag transfer. A branch push still publishes the branch's
-commits; selecting one app does not isolate unrelated commits already on that branch.
+`--atomic` requires server support; do not silently retry with weaker semantics or a broader refspec if it fails. [Git push documentation](https://git-scm.com/docs/git-push) explains atomic updates and tag transfer. A branch push still publishes the branch's commits; selecting one app does not isolate unrelated commits already on that branch.
 
-Disabling `git.push` and moving direct Git commands into `after:release` is excluded from
-the interactive recommended path: it bypasses the push confirmation and can run after a
-skipped stage. Use the built-in task callback, not a replacement shell push.
+Disabling `git.push` and moving direct Git commands into `after:release` is excluded from the interactive recommended path: it bypasses the push confirmation and can run after a skipped stage. Use the built-in task callback, not a replacement shell push.
 
 ### Multiple push args
 
@@ -201,9 +184,7 @@ Or use a Git URL: `"pushRepo": "https://github.com/user/repo.git"`
 }
 ```
 
-Skipping push is an explicit alternative outside the default interactive contract.
-Do not replace it with an automatic push hook. The base command requires commit, tag,
-and push to remain enabled; a user can decline at the relevant confirmation instead.
+Skipping push is an explicit alternative outside the default interactive contract. Do not replace it with an automatic push hook. The base command requires commit, tag, and push to remain enabled; a user can decline at the relevant confirmation instead.
 
 ## Prerequisite Checks
 
@@ -231,10 +212,7 @@ Array and wildcards supported:
 
 ### requireCleanWorkingDir
 
-Requires clean tracked files and index (default: `true`). In release-it 21.0.1 the built-in
-check is `git diff --quiet HEAD`; it does not reject ordinary untracked files. Setting it
-to `false` also prevents the Git plugin from registering its local exit/SIGINT rollback
-handlers. It does not disable every recovery path; see [Recovery Policies](#recovery-policies).
+Requires clean tracked files and index (default: `true`). In release-it 21.1.3 the built-in check is `git diff --quiet HEAD`; it does not reject ordinary untracked files. Setting it to `false` also prevents the Git plugin from registering its local exit/SIGINT rollback handlers. It does not disable every recovery path; see [Recovery Policies](#recovery-policies).
 
 ```json
 {
@@ -244,9 +222,7 @@ handlers. It does not disable every recovery path; see [Recovery Policies](#reco
 }
 ```
 
-Use this override only with an understood initial-state and recovery policy. Allowing dirty
-state can include existing staged changes in the release commit or expose them to a custom
-cleanup operation. Do not prescribe this option for every CLI, CI, or API workflow.
+Use this override only with an understood initial-state and recovery policy. Allowing dirty state can include existing staged changes in the release commit or expose them to a custom cleanup operation. Do not prescribe this option for every CLI, CI, or API workflow.
 
 ### Working State and Staging Scope
 
@@ -260,35 +236,17 @@ Determine these scopes independently before changing a wrapper's preflight:
 | Commit inputs | The repository-wide index, plus any explicitly customized commit arguments |
 | Recoverable changes | Files whose baseline and ownership are known for this execution |
 
-`stageDir()` uses `git add <baseDir> --update` by default, or `--all` with
-`addUntrackedFiles: true`. This does not remove existing index entries, nor prevent a hook
-or plugin from explicitly staging another file. A newly staged file is already an index
-change and is caught by `git status --porcelain --untracked-files=no`.
+`stageDir()` uses `git add <baseDir> --update` by default, or `--all` with `addUntrackedFiles: true`. This does not remove existing index entries, nor prevent a hook or plugin from explicitly staging another file. A newly staged file is already an index change and is caught by `git status --porcelain --untracked-files=no`.
 
-For a wrapper that requires clean initial tracked state, run that check repository-wide.
-Then decide how to handle pre-existing untracked files based on the actual staging and
-write scopes. Unrelated untracked files need not block `--update`; untracked files a
-writer might overwrite, or `--all` might include, need explicit handling. A file outside
-the selected app may still be a shared output. Directory membership alone is not a
-complete policy, and ignored files are not a guarantee against a plugin overwriting them.
+For a wrapper that requires clean initial tracked state, run that check repository-wide. Then decide how to handle pre-existing untracked files based on the actual staging and write scopes. Unrelated untracked files need not block `--update`; untracked files a writer might overwrite, or `--all` might include, need explicit handling. A file outside the selected app may still be a shared output. Directory membership alone is not a complete policy, and ignored files are not a guarantee against a plugin overwriting them.
 
-Check required version inputs and intended outputs as well: an updated but untracked
-file may be omitted from the commit unless a plugin stages it. Inspect the final changeset
-and index instead of inferring the committed files from a clean preflight.
+Check required version inputs and intended outputs as well: an updated but untracked file may be omitted from the commit unless a plugin stages it. Inspect the final changeset and index instead of inferring the committed files from a clean preflight.
 
-The packaged Node example rejects repository-wide tracked/index changes, requires existing
-version manifests/lockfiles to be tracked, and rejects pre-existing untracked files in the
-selected staging directory when `addUntrackedFiles` is enabled. Other unrelated untracked
-files are preserved. Adapt this policy for other writers; it cannot discover arbitrary
-hook/plugin side effects.
+The packaged Node example rejects repository-wide tracked/index changes, requires existing version manifests/lockfiles to be tracked, and rejects pre-existing untracked files in the selected staging directory when `addUntrackedFiles` is enabled. Other unrelated untracked files are preserved. Adapt this policy for other writers; it cannot discover arbitrary hook/plugin side effects.
 
 ### Recovery Policies
 
-Choose recovery behavior for the workflow instead of treating every interruption as one
-transaction. In 21.0.1, `bump` precedes `Git.beforeRelease()`, which enables local rollback
-only when both `git.commit` and `git.requireCleanWorkingDir` are enabled, then stages files.
-The commit confirmation comes later. A failure during bump can therefore occur before
-those handlers are installed.
+Choose recovery behavior for the workflow instead of treating every interruption as one transaction. In 21.1.3, `bump` precedes `Git.beforeRelease()`, which enables local rollback only when both `git.commit` and `git.requireCleanWorkingDir` are enabled, then stages files. The commit confirmation comes later. A failure during bump can therefore occur before those handlers are installed.
 
 | Policy | Conditions and limits |
 |---|---|
@@ -296,26 +254,13 @@ those handlers are installed.
 | Preserve interrupted state | Disable those handlers with `requireCleanWorkingDir: false`, enforce the chosen preflight separately, and report the files/index/commit/tag that remain; this is the packaged example's policy |
 | Restore owned local changes | Capture the relevant baseline before writes, identify every owned output, and restore only where provenance and completed actions permit it; report skipped or failed restoration |
 
-For a custom restoration policy, unchanged `HEAD` is a guard against discarding a created
-commit, not proof that all effects are reversible. Existing staged/unstaged work must not
-be replaced with HEAD, untracked generated files need separate ownership handling, and
-shared outputs may lie outside the selected directory. `git restore --staged --worktree`
-is useful only when its source is the intended baseline and its path list is justified;
-it is not a cleanup command for arbitrary generated files. Check Git compatibility if
-introducing it into a project that previously used older Git.
+For a custom restoration policy, unchanged `HEAD` is a guard against discarding a created commit, not proof that all effects are reversible. Existing staged/unstaged work must not be replaced with HEAD, untracked generated files need separate ownership handling, and shared outputs may lie outside the selected directory. `git restore --staged --worktree` is useful only when its source is the intended baseline and its path list is justified; it is not a cleanup command for arbitrary generated files. Check Git compatibility if introducing it into a project that previously used older Git.
 
-Also account for completed external actions. With npm publishing enabled, 21.0.1 can
-publish before Git commit; a local file restore cannot undo that publication. See
-[lifecycle order](hooks-and-lifecycle.md#plugin-order-and-side-effects). Preserve commits
-and tags after a deliberate stop when that is the workflow's contract. Prompt No, prompt
-Ctrl+C, process signals outside prompts, execution failures, and partial pushes require
-their actual state to be inspected, not the same assumed cleanup.
+Also account for completed external actions. With npm publishing enabled, 21.1.3 can publish before Git commit; a local file restore cannot undo that publication. See [lifecycle order](hooks-and-lifecycle.md#plugin-order-and-side-effects). Preserve commits and tags after a deliberate stop when that is the workflow's contract. Prompt No, prompt Ctrl+C, process signals outside prompts, execution failures, and partial pushes require their actual state to be inspected, not the same assumed cleanup.
 
-Disabling local exit rollback does not disable the push-error path: 21.0.1 may attempt
-`git push origin --delete <tag>` after a failed push. Report remote state as unknown until
-inspected, including when local state appears unchanged.
+Disabling local exit rollback does not disable the push-error path: 21.1.3 may attempt `git push origin --delete <tag>` after a failed push. Report remote state as unknown until inspected, including when local state appears unchanged.
 
-Source: [21.0.1 Git implementation](https://github.com/release-it/release-it/blob/21.0.1/lib/plugin/git/Git.js).
+Source: [21.1.3 Git implementation](https://github.com/release-it/release-it/blob/21.1.3/lib/plugin/git/Git.js).
 
 ### requireUpstream
 
@@ -341,7 +286,7 @@ Stop the process if there are no commits since the latest tag:
 }
 ```
 
-Set `requireCommitsFail: false` to continue but exit with code 0 instead of 1.
+The release stops with exit code 1. Set `requireCommitsFail: false` to stop with exit code 0 instead. The upstream option table says "continue", but the 21.1.3 source still throws, so later steps do not run; only the exit code and log level change.
 
 ### commitsPath
 
@@ -357,8 +302,7 @@ Only check for commits in a specific directory (useful in monorepos):
 
 ## Untracked Files
 
-By default, directory staging does not add untracked files. Already staged files and
-explicit plugin/hook staging are separate. To include untracked files in `stageDir()`:
+By default, directory staging does not add untracked files. Already staged files and explicit plugin/hook staging are separate. To include untracked files in `stageDir()`:
 
 ```json
 {

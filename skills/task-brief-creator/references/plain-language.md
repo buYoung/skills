@@ -24,7 +24,6 @@ This guidance applies the four principles described in the public overview of IS
 - Explain an unfamiliar task-specific term at its first useful occurrence. Preserve exact paths, identifiers, code, messages, units, thresholds, and contract terms.
 - State conditions, negation, uncertainty, and obligation explicitly. Keep ordering words when they carry a dependency. Name the actor when two components could perform the action.
 - Keep one main idea per sentence or fragment. Sentence length and reading-grade scores are not acceptance thresholds; judge whether the intended reader can recover the meaning.
-- Caveman mode may use concise fragments, but the action, target, condition, and sequence must stay clear. Restore normal prose for a field or bullet when compression makes the reader infer any of them.
 
 ## Usable: let the reader act and know when to stop
 
@@ -42,5 +41,5 @@ A self-check is an author assessment, not measured reader testing. Do not descri
 ## Sources
 
 - [ISO 24495-1:2023 overview](https://www.iso.org/standard/78907.html) — scope, languages, and technical-writing applicability.
-- [International Plain Language Federation: ISO standard](https://www.iplfederation.org/iso-standard/) — public summary of the four principles.
-- [International Plain Language Federation: plain language](https://www.iplfederation.org/plain-language/) — reader needs, wording, structure, design, and evaluation with readers.
+- [International Plain Language Federation: Advancing standards, Part 1](https://www.iplfederation.org/advancing-standards#part-1) — public summary of the four principles.
+- [International Plain Language Federation: About plain language](https://www.iplfederation.org/about-plain-language) — reader needs, wording, structure, design, and evaluation with readers.

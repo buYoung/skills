@@ -2,11 +2,15 @@
 """Improve a skill description based on eval results.
 
 Takes eval results (from run_eval.py) and generates an improved description
-by calling `claude -p` as a subprocess (same auth pattern as run_eval.py —
-uses the session's Claude Code auth, no separate ANTHROPIC_API_KEY needed).
+by calling `claude -p` as a subprocess (same auth pattern as run_eval.py).
+`claude -p` uses the Claude Code CLI's own authentication: a signed-in Claude
+account needs no separate key, but if ANTHROPIC_API_KEY is set, `-p` always
+uses that key instead, with API billing.
 """
 
 # Local modification: normalize trailing whitespace.
+# Local modification: correct the authentication, CLAUDECODE, and description
+# length notes.
 
 import argparse
 import json
@@ -29,9 +33,10 @@ def _call_claude(prompt: str, model: str | None, timeout: int = 300) -> str:
     if model:
         cmd.extend(["--model", model])
 
-    # Remove CLAUDECODE env var to allow nesting claude -p inside a
-    # Claude Code session. The guard is for interactive terminal conflicts;
-    # programmatic subprocess usage is safe. Same pattern as run_eval.py.
+    # Claude Code sets CLAUDECODE=1 in the subprocesses it spawns; its docs
+    # describe the variable only as a way to detect that context. It is removed
+    # so the nested `claude -p` does not inherit it. Nested runs are not
+    # documented as supported. Same pattern as run_eval.py.
     env = {k: v for k, v in os.environ.items() if k != "CLAUDECODE"}
 
     result = subprocess.run(
@@ -131,7 +136,7 @@ Based on the failures, write a new and improved description that is more likely 
 1. Avoid overfitting
 2. The list might get loooong and it's injected into ALL queries and there might be a lot of skills, so we don't want to blow too much space on any given description.
 
-Concretely, your description should not be more than about 100-200 words, even if that comes at the cost of accuracy. There is a hard limit of 1024 characters — descriptions over that will be truncated, so stay comfortably under it.
+Concretely, your description should not be more than about 100-200 words, even if that comes at the cost of accuracy. There is a hard limit of 1024 characters — longer descriptions fail validation and are rejected when the skill is packaged or uploaded, so stay comfortably under it.
 
 Here are some tips that we've found to work well in writing these descriptions:
 - The skill should be phrased in the imperative -- "Use this skill for" rather than "this skill does"

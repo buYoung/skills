@@ -4,9 +4,9 @@
 
 - Series: **0.29.x**.
 - Initially reviewed version: **0.29.5**.
-- Current documentation review baseline: **0.29.5**, checked **2026-09-08**.
-- Evidence: official release notes, published package metadata, and official API/SQL documentation. This is a documentation review, not a claim that all examples were type-checked or executed.
-- Official API documentation is a moving reference. Use the target installation's declarations or tagged source when an exact signature differs; the baseline is not an assertion that every live documentation page is frozen at 0.29.5.
+- Current documentation review baseline: **0.29.9**, checked **2026-11-27**.
+- Evidence: official release notes, published package metadata, and official API/SQL documentation. Every TypeScript example in the topic references was type-checked against the 0.29.9 declarations with TypeScript 5.9.3, 6.0.3, and 7.0.2 (`strict`), using a test schema built from the referenced tables and columns and a receiver query for method-chain fragments. Type checking does not show that the generated SQL runs on any database; the examples were not executed.
+- Official API documentation is a moving reference. Use the target installation's declarations or tagged source when an exact signature differs; the baseline is not an assertion that every live documentation page is frozen at 0.29.9.
 
 Read this with the relevant topic reference. It covers query authoring and diagnosis; migration operations and unrelated internal API changes are outside scope.
 
@@ -20,7 +20,7 @@ Read this with the relevant topic reference. It covers query authoring and diagn
 
 ## Runtime and tooling
 
-The [0.29.5 package manifest](https://raw.githubusercontent.com/kysely-org/kysely/v0.29.5/package.json) declares Node.js >=22.0.0, ESM packaging, and rejection declarations for TypeScript <5.4. Check the application's actual runtime and module-loading mode; CommonJS callers need supported `require(esm)` behavior or dynamic import. Node's minimum engine range alone does not establish that every module-loading path works.
+The [0.29.9 package manifest](https://raw.githubusercontent.com/kysely-org/kysely/v0.29.9/package.json) declares Node.js >=22.0.0, ESM packaging, and rejection declarations for TypeScript <5.4. Check the application's actual runtime and module-loading mode; CommonJS callers need supported `require(esm)` behavior or dynamic import. Node's minimum engine range alone does not establish that every module-loading path works.
 
 The [0.29.0 release](https://github.com/kysely-org/kysely/releases/tag/v0.29.0) moved the build target to ES2023 and removed the CommonJS distribution. Inspect other runtimes and driver compatibility separately rather than applying the Node engine declaration to them.
 
@@ -60,8 +60,12 @@ See [building versus execution](https://kysely.dev/docs/recipes/splitting-query-
 | [0.29.3](https://github.com/kysely-org/kysely/releases/tag/v0.29.3) | Release fix concerns migration exclusivity; no query-authoring change is recorded here. |
 | [0.29.4](https://github.com/kysely-org/kysely/releases/tag/v0.29.4) | Fixed PostgreSQL control-client password forwarding and SQLite DELETE RETURNING placement relative to ORDER BY/LIMIT. Server support remains a separate condition. |
 | [0.29.5](https://github.com/kysely-org/kysely/releases/tag/v0.29.5) | Fixed infinite type-check recursion and missing `beforeThrow` calls during in-flight abort handling. |
+| [0.29.6](https://github.com/kysely-org/kysely/releases/tag/v0.29.6) | PostgreSQL/SQLite: `doUpdateSet`'s `where` accepts immutable columns. |
+| [0.29.7](https://github.com/kysely-org/kysely/releases/tag/v0.29.7) | Controlled transactions: commit, rollback, and savepoint commands wait for ongoing queries and streams, so close or exhaust active streams before awaiting them; a failed begin or rollback releases the connection. PostgreSQL releases the client if destroy happens while a connection is being acquired. MSSQL escapes `jsonBuildObject` keys and JSON. |
+| [0.29.8](https://github.com/kysely-org/kysely/releases/tag/v0.29.8) | PostgreSQL discards clients whose rollback failed. A commit that PostgreSQL turns into a rollback now throws `AbortedTransactionError` instead of reporting success. |
+| [0.29.9](https://github.com/kysely-org/kysely/releases/tag/v0.29.9) | Breaking: `key()` and `at()` no longer accept a second type argument for the output type (for example `.key<'url', number>('url')`); use `$castTo<T>()` on the path instead. Inline `key()`/`at()` references inside `jsonBuildObject` no longer infer `unknown`. PostgreSQL/PGlite `withSchema` no longer crashes on `for ... of` and `json_agg`/`to_json` tables in subqueries. PGlite 0.5.15+ aborted commits throw `AbortedTransactionError`. The migrator timestamp fix is outside this reference's scope. |
 
-Do not assume an earlier 0.29 patch contains a later fix. These notes do not authorize changing the user's installed version.
+Do not assume an earlier 0.29 patch contains a later fix. A `key()`/`at()` call with a second type argument type-checks on 0.29.8 but fails from 0.29.9, so check the installed patch when diagnosing that error. These notes do not authorize changing the user's installed version.
 
 ## Topic routing and maintenance
 
@@ -71,6 +75,6 @@ Do not assume an earlier 0.29 patch contains a later fix. These notes do not aut
 - [Operators](operators.md): BETWEEN methods, binding and raw SQL boundaries.
 - [Window functions](window_function.md): OVER, frame semantics and server restrictions.
 
-If the project version is unknown, announce the 0.29.5 assumption as instructed in [SKILL.md](../SKILL.md#2-establish-project-context-and-version). If requested and resolved versions conflict, ask which to target. For another version, consult official evidence for that version instead of treating this file as universal compatibility guidance.
+If the project version is unknown, announce the 0.29.9 assumption as instructed in [SKILL.md](../SKILL.md#2-establish-project-context-and-version). If requested and resolved versions conflict, ask which to target. For another version, consult official evidence for that version instead of treating this file as universal compatibility guidance.
 
 For a later patch in this series, update the current baseline/date and patch differences after review, retaining the initial baseline. Add later minor series as separate files and register them in SKILL.md. Do not backfill historical version documents.

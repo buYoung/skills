@@ -54,7 +54,7 @@ Link verified token source locations and supported mappings to component consume
 
 Own reusable interaction and composition patterns that span components, including their intent, participating elements, states, behavior, responsive adaptation, relevant accessibility consequences, and how invariant direction principles permit contextual variation.
 
-Connect each material pattern's purpose, application and non-application conditions, and supported alternative composition to the user's task and placement rationale. Justify importance and exposure under the common rule contract, and link available applicability comparisons separately from state checks. Explain the connection between quick scanning and detailed evidence when both are needed, preserving conditions, units, and uncertainty.
+For each material pattern, record here what the common rule contract requires: its purpose, application and non-application conditions, supported alternative composition, the task-based reason for its placement and prominence, and, when both are needed, how quick scanning connects to detailed evidence. Link available applicability comparisons separately from state checks.
 
 ### `content.md`
 
@@ -68,9 +68,9 @@ Own cross-system accessibility requirements, including perception, keyboard and 
 
 Own contribution, review, direction approval, representative validation, direction-change triggers, decision authority, status, release, adoption, compatibility, and deprecation processes. Record the approved direction and validation result without preserving rejected hypotheses unless the user requests a separate history. Do not assign owners or lifecycle states that were not supplied. Record delegated base-system decisions with their scope and authority, pending representative validation with the situations still to check, and, for each provisional or awaiting decision, what cannot be finalized and how drafts may proceed.
 
-Record approved correction rationale and affected verification results here, linking to the rule owners. Distinguish document judgments from implementation defects, automatic-check gaps, and execution-tool issues; a one-off preference is not a canonical rule. Connect comparable follow-up results, recurrence, and the next evidence needed using the common rule contract; retain failures and limit effect claims to observed work.
+Record approved corrections, their verification results, and comparable follow-up evidence here as [Record failures and approved improvements](../design-rule-contract.md#record-failures-and-approved-improvements) describes, linking to the affected rule owners.
 
-For a new or substantially rewritten set, document the [new-UI preview workflow](../component-design-contract.md#present-design-previews-for-new-ui): reuse applicable existing design, create and show a concrete preview for new components or UI compositions, explain departures, and handle feedback under existing decision authority. Link actual preview evidence when available; authoring this rule does not itself produce a preview or authorize implementation.
+For a new or substantially rewritten set, document the [new-UI preview workflow](../component-design-contract.md#present-design-previews-for-new-ui) here and link any existing preview evidence.
 
 ### `components/index.md`
 
@@ -98,7 +98,7 @@ Use the component design contract to make these sections substantive: explain th
 
 State how the component preserves invariant direction principles, which variants or states are variable, which adaptations are conditional, what use is prohibited, and which observable cases verify the result. Do not force every component to use identical shape, density, or expression when its function requires a documented variation.
 
-In the applicable sections above, connect canonical implementation names and locations, publicly supported variants and usage examples, and token bindings. Separate public usage from internals and identify stale examples that conflict with approved guidance. State which expression is fixed by the reusable implementation and which supported variations are permitted. Check examples against the actual invocation form and returned value, not just names and options. Describe prohibited use by symptom, user impact, failing condition, and supported alternative.
+In the applicable sections above, connect the implementation, public usage examples, token bindings, the expression the reusable implementation fixes and the variations it permits, and prohibited use as [Connect supported implementation and assets](../design-rule-contract.md#connect-supported-implementation-and-assets) and [Record failures and approved improvements](../design-rule-contract.md#record-failures-and-approved-improvements) define them.
 
 ### `platforms/<platform-name>.md`
 

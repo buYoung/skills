@@ -4,7 +4,7 @@
 Scope: structural checks only. This script does not evaluate the semantic
 correctness of the content — that is the model's job.
 
-Checks (this list is authoritative — SKILL.md defers to it):
+Checks (this list is authoritative — feature-design-doc-validation.md defers to it):
 
   - YAML frontmatter: present; declares `doc-type: Feature Design Doc`;
     carries `created` and `last-verified` freshness metadata; `profile`

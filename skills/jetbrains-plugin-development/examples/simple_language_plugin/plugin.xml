@@ -37,6 +37,10 @@
     <lang.commenter language="Simple"
                     implementationClass="com.example.simplelang.SimpleCommenter"/>
 
-    <colorSettingsPage implementation="com.example.simplelang.SimpleColorSettingsPage"/>
+    <!-- 2026.3+ declaration; displayName must match SimpleColorSettingsPage.getDisplayName().
+         For since-build below 263, register <colorSettingsPage> instead; see
+         references/07_language_syntax_highlighting.md. -->
+    <colorSettings implementation="com.example.simplelang.SimpleColorSettingsPage"
+                   displayName="Simple"/>
   </extensions>
 </idea-plugin>

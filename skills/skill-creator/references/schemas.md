@@ -2,6 +2,8 @@
 
 This document defines the JSON schemas used by skill-creator.
 
+A run directory is `<workspace>/iteration-N/<eval-dir>/<configuration>/`, for example `eval-0-axis-labels/with_skill/`. When a configuration is run more than once, each run gets its own `run-<N>/` directory inside it.
+
 ---
 
 ## evals.json
@@ -32,54 +34,30 @@ Defines the evals for a skill. Located at `evals/evals.json` within the skill di
 - `evals[].prompt`: The task to execute
 - `evals[].expected_output`: Human-readable description of success
 - `evals[].files`: Optional list of input file paths (relative to skill root)
-- `evals[].expectations`: List of verifiable statements
+- `evals[].expectations`: List of verifiable statements (the assertions drafted while the first runs are in progress)
 
 ---
 
-## history.json
+## eval_metadata.json
 
-Tracks version progression in Improve mode. Located at workspace root.
+Describes one test case in an iteration. Located at `<workspace>/iteration-N/<eval-dir>/eval_metadata.json`. `aggregate_benchmark.py` treats a directory holding this file as an eval directory, and the viewer reads `prompt` and `eval_id` from it.
 
 ```json
 {
-  "started_at": "2026-01-15T10:30:00Z",
-  "skill_name": "pdf",
-  "current_best": "v2",
-  "iterations": [
-    {
-      "version": "v0",
-      "parent": null,
-      "expectation_pass_rate": 0.65,
-      "grading_result": "baseline",
-      "is_current_best": false
-    },
-    {
-      "version": "v1",
-      "parent": "v0",
-      "expectation_pass_rate": 0.75,
-      "grading_result": "won",
-      "is_current_best": false
-    },
-    {
-      "version": "v2",
-      "parent": "v1",
-      "expectation_pass_rate": 0.85,
-      "grading_result": "won",
-      "is_current_best": true
-    }
+  "eval_id": 0,
+  "eval_name": "axis-labels",
+  "prompt": "The user's task prompt",
+  "expectations": [
+    "The chart has labeled x and y axes"
   ]
 }
 ```
 
 **Fields:**
-- `started_at`: ISO timestamp of when improvement started
-- `skill_name`: Name of the skill being improved
-- `current_best`: Version identifier of the best performer
-- `iterations[].version`: Version identifier (v0, v1, ...)
-- `iterations[].parent`: Parent version this was derived from
-- `iterations[].expectation_pass_rate`: Pass rate from grading
-- `iterations[].grading_result`: "baseline", "won", "lost", or "tie"
-- `iterations[].is_current_best`: Whether this is the current best version
+- `eval_id`: Integer identifier, matching `evals[].id` in evals.json when the eval comes from there
+- `eval_name`: Descriptive name, also used in the directory name; the benchmark viewer uses it as the section header
+- `prompt`: The task given to every configuration
+- `expectations`: Same statements as `evals[].expectations`; may be empty until assertions are drafted
 
 ---
 
@@ -198,7 +176,7 @@ Output from the executor agent. Located at `<run-dir>/outputs/metrics.json`.
 
 Wall clock timing for a run. Located at `<run-dir>/timing.json`.
 
-**How to capture:** When a subagent task completes, the task notification includes `total_tokens` and `duration_ms`. Save these immediately — they are not persisted anywhere else and cannot be recovered after the fact.
+**How to capture:** If a subagent's completion notification reports token usage and duration, copy them here as soon as it arrives; the notification may be the only place they appear. `aggregate_benchmark.py` reads `total_tokens` from this file, and `total_duration_seconds` when grading.json has no `timing.total_duration_seconds`.
 
 ```json
 {
@@ -218,18 +196,18 @@ Wall clock timing for a run. Located at `<run-dir>/timing.json`.
 
 ## benchmark.json
 
-Output from Benchmark mode. Located at `benchmarks/<timestamp>/benchmark.json`.
+Output from `scripts/aggregate_benchmark.py`. Located at `<workspace>/iteration-N/benchmark.json`.
 
 ```json
 {
   "metadata": {
     "skill_name": "pdf",
     "skill_path": "/path/to/pdf",
-    "executor_model": "claude-sonnet-4-20250514",
+    "executor_model": "claude-sonnet-5-5",
     "analyzer_model": "most-capable-model",
     "timestamp": "2026-01-15T10:30:00Z",
     "evals_run": [1, 2, 3],
-    "runs_per_configuration": 3
+    "runs_per_configuration": 1
   },
 
   "runs": [
@@ -290,16 +268,16 @@ Output from Benchmark mode. Located at `benchmarks/<timestamp>/benchmark.json`.
   - `skill_name`: Name of the skill
   - `timestamp`: When the benchmark was run
   - `evals_run`: List of eval names or IDs
-  - `runs_per_configuration`: Number of runs per config (e.g. 3)
+  - `runs_per_configuration`: Number of runs per configuration and eval, counted from the run directories (1 in the default workflow); a string such as `"1-3"` when the counts differ
 - `runs[]`: Individual run results
   - `eval_id`: Numeric eval identifier
   - `eval_name`: Human-readable eval name (used as section header in the viewer)
-  - `configuration`: Must be `"with_skill"` or `"without_skill"` (the viewer uses this exact string for grouping and color coding)
+  - `configuration`: `"with_skill"` or `"new_skill"` for the skill version, `"without_skill"` or `"old_skill"` for the baseline (the viewer uses these exact strings to tell the skill version from the baseline)
   - `run_number`: Integer run number (1, 2, 3...)
-  - `result`: Nested object with `pass_rate`, `passed`, `total`, `time_seconds`, `tokens`, `errors`
+  - `result`: Nested object with `pass_rate`, `passed`, `total`, `time_seconds`, `tokens`, `errors`. `tokens` comes from `total_tokens` in timing.json and is 0 when it wasn't recorded
 - `run_summary`: Statistical aggregates per configuration
-  - `with_skill` / `without_skill`: Each contains `pass_rate`, `time_seconds`, `tokens` objects with `mean` and `stddev` fields
-  - `delta`: Difference strings like `"+0.50"`, `"+13.0"`, `"+1700"`
+  - One entry per configuration, skill version first: each contains `pass_rate`, `time_seconds`, `tokens` objects with `mean` and `stddev` fields
+  - `delta`: The first configuration minus the second, as strings like `"+0.50"`, `"+13.0"`, `"+1700"`
 - `notes`: Freeform observations from the analyzer
 
 **Important:** The viewer reads these field names exactly. Using `config` instead of `configuration`, or putting `pass_rate` at the top level of a run instead of nested under `result`, will cause the viewer to show empty/zero values. Always reference this schema when generating benchmark.json manually.

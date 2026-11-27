@@ -327,7 +327,7 @@ In the retained examples below, zero matching headings means selective updating 
 - case: "`## ` line inside a fenced code block (``` or ~~~)"
   action: Not a section boundary; parse_sections.py tracks fences and ignores it
 - case: No standard heading matches at all
-  action: File is not skill-generated; do not modify (see Skill-Generated Files Only)
+  action: Selective update unavailable; do not modify. Full regeneration requires an explicit request (see Skill-Generated Files Only)
 ```
 
 ## Monorepo Update Considerations

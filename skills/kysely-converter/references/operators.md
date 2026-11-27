@@ -75,30 +75,30 @@ Maintain boolean grouping and SQL NULL semantics. Use IS NULL/IS NOT NULL for nu
 
 `!<` and `!>` are not MySQL comparison operators; use `>=` and `<=` for those intents. `!!` is not a portable unary boolean test. Kysely accepting an operator token does not establish its meaning for a particular database. See [MySQL comparisons](https://dev.mysql.com/doc/refman/8.0/en/comparison-operators.html).
 
-| SQL | Kysely | 비고 |
+| SQL | Kysely | Notes |
 |-----|--------|------|
 | `REGEXP` | `'regexp'` | |
-| `RLIKE` | `'regexp'` | `REGEXP`의 동의어 |
+| `RLIKE` | `'regexp'` | Synonym for `REGEXP` |
 | `<=>` (null-safe equal) | `'<=>'` | |
 
 ## Arithmetic Operators
-| SQL | Kysely | 비고 |
+| SQL | Kysely | Notes |
 |-----|--------|------|
 | `+` | `'+'` | |
 | `-` | `'-'` | |
 | `*` | `'*'` | |
 | `/` | `'/'` | |
-| `%` (modulo) | `'%'` | `MOD`와 동일 |
+| `%` (modulo) | `'%'` | Same as `MOD` |
 | `^` | `'^'` | **PostgreSQL**: power, **MySQL**: bitwise XOR |
 | `&` (bitwise AND) | `'&'` | |
 | `\|` (bitwise OR) | `'\|'` | |
 | `#` (bitwise XOR) | `'#'` | PostgreSQL only |
 | `<<` (left shift) | `'<<'` | |
 | `>>` (right shift) | `'>>'` | |
-| `\|\|` (concat) | `'\|\|'` | **PostgreSQL**: 문자열/배열/JSONB 연결 |
+| `\|\|` (concat) | `'\|\|'` | **PostgreSQL**: string/array/JSONB concatenation |
 
 ## JSON Operators
-| SQL | Kysely | 비고 |
+| SQL | Kysely | Notes |
 |-----|--------|------|
 | `->` (get JSON element) | `'->'` | |
 | `->>` (get JSON element as text) | `'->>'` | |
@@ -123,7 +123,7 @@ eb.ref('column', '->$').key('field').at('last')
 ```
 
 ## Unary Operators
-| SQL | Kysely | 비고 |
+| SQL | Kysely | Notes |
 |-----|--------|------|
 | `EXISTS` | `'exists'` | `eb.exists()` |
 | `NOT EXISTS` | `'not exists'` | |
@@ -298,30 +298,30 @@ WHERE 'dog' = ANY(SELECT "species" FROM "pet" WHERE "owner_id" = "person"."id")
 Use raw SQL when the selected API cannot express the required syntax. Negated predicates can often be composed with `eb.not(...)`; raw SQL is not mandatory for every item below.
 
 ### MySQL
-| SQL | 설명 |
+| SQL | Description |
 |-----|------|
-| `NOT REGEXP` / `NOT RLIKE` | 정규식 불일치 |
-| `DIV` | 정수 나눗셈 |
-| `XOR` | 논리적 XOR |
-| `SOUNDS LIKE` | 발음 유사성 비교 |
-| `BINARY` | 대소문자 구분 비교를 위한 바이너리 캐스팅 |
+| `NOT REGEXP` / `NOT RLIKE` | Regular expression non-match |
+| `DIV` | Integer division |
+| `XOR` | Logical XOR |
+| `SOUNDS LIKE` | Phonetic similarity comparison |
+| `BINARY` | Binary cast for case-sensitive comparison |
 
 ### PostgreSQL
-| SQL | 설명 |
+| SQL | Description |
 |-----|------|
-| `SIMILAR TO` | SQL 표준 정규식 패턴 매칭 |
-| `NOT SIMILAR TO` | SIMILAR TO 부정 |
-| `#>` | JSON 경로로 JSON 객체 접근 |
-| `#>>` | JSON 경로로 텍스트 접근 |
-| `#-` | JSON 경로 삭제 |
-| `OVERLAPS` | 날짜/시간 범위 겹침 |
+| `SIMILAR TO` | SQL-standard regular expression pattern matching |
+| `NOT SIMILAR TO` | Negated SIMILAR TO |
+| `#>` | JSON object at a JSON path |
+| `#>>` | Text at a JSON path |
+| `#-` | Delete at a JSON path |
+| `OVERLAPS` | Date/time range overlap |
 
 ### Common
-| SQL | 설명 |
+| SQL | Description |
 |-----|------|
 | `NOT BETWEEN` | `eb.not(eb.between(...))` or raw SQL |
 | `NOT BETWEEN SYMMETRIC` | `eb.not(eb.betweenSymmetric(...))` (PostgreSQL) |
-| `ALL` | 배열/서브쿼리 전체 비교 |
+| `ALL` | Comparison against every array/subquery value |
 
 ### Raw SQL Example
 ```ts
@@ -343,7 +343,7 @@ SELECT `amount` DIV 3 AS `quotient`
 ```
 
 ```ts
-// BINARY (MySQL) - 대소문자 구분 비교
+// BINARY (MySQL) - case-sensitive comparison
 .where(sql<boolean>`BINARY ${sql.ref('name')} = ${'John'}`)
 ```
 ```sql

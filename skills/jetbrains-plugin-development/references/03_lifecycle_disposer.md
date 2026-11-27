@@ -15,11 +15,7 @@
 - Disposal triggers — when does each parent actually dispose?
 
 
-The IntelliJ Platform has no destructors and no `finalize()`. Every resource that needs
-cleanup is wired into a `Disposable` tree, and the platform calls `dispose()` post-order
-when a parent goes away. Read this when adding listeners, alarms, custom executors, file
-watchers, swing components that own model state, or anything else with a meaningful end of
-life.
+The IntelliJ Platform has no destructors and no `finalize()`. Every resource that needs cleanup is wired into a `Disposable` tree, and the platform calls `dispose()` post-order when a parent goes away. Read this when adding listeners, alarms, custom executors, file watchers, swing components that own model state, or anything else with a meaningful end of life.
 
 ## The shape of the tree
 
@@ -33,14 +29,11 @@ Disposer.dispose(disposable)             // explicit disposal (children also dis
 val handle = Disposer.newDisposable("name")  // manual scope you own
 ```
 
-Disposal proceeds **post-order**: grandchildren first, then children, then the parent
-itself. An exception in one branch is logged but does not abort sibling disposals — so a
-buggy `dispose()` cannot poison the rest of the tree, but it can still leak its own subtree.
+Disposal proceeds **post-order**: grandchildren first, then children, then the parent itself. An exception in one branch is logged but does not abort sibling disposals — so a buggy `dispose()` cannot poison the rest of the tree, but it can still leak its own subtree.
 
 ## Choose the right parent — every other rule reduces to this
 
-Resource lifetime maps directly to the parent disposable. The single most consequential
-decision is which parent you pick.
+Resource lifetime maps directly to the parent disposable. The single most consequential decision is which parent you pick.
 
 | Resource lives until… | Use as parent |
 |---|---|
@@ -58,12 +51,9 @@ Disposer.register(ApplicationManager.getApplication(), myDisposable)
 Disposer.register(project, myDisposable)
 ```
 
-Their lifetimes are the IDE / project lifetime, not your plugin's. When your plugin is
-dynamically unloaded, neither parent disposes, so your `dispose()` is never called and the
-plugin classloader cannot be GC'd. Always use a parent **your plugin controls**.
+Their lifetimes are the IDE / project lifetime, not your plugin's. When your plugin is dynamically unloaded, neither parent disposes, so your `dispose()` is never called and the plugin classloader cannot be GC'd. Always use a parent **your plugin controls**.
 
-The platform offers helpers like `Application.getMessageBus().connect(...)`; pass the
-disposable parent there too — `connect(applicationService)` or `connect(projectService)`.
+The platform offers helpers like `Application.getMessageBus().connect(...)`; pass the disposable parent there too — `connect(applicationService)` or `connect(projectService)`.
 
 ## Common patterns
 
@@ -71,8 +61,10 @@ disposable parent there too — `connect(applicationService)` or `connect(projec
 
 ```kotlin
 @Service(Service.Level.PROJECT)
-class MyProjectService(project: Project) : Disposable {
-  init {
+class MyProjectService(private val project: Project) : Disposable {
+  // Call once from an explicit trigger (for example a ProjectActivity), not from the
+  // constructor; see 02_runtime_services.md.
+  fun startListening() {
     project.messageBus.connect(this)
       .subscribe(ToolWindowManagerListener.TOPIC, MyTwListener())
   }
@@ -131,12 +123,9 @@ alarm.cancelAllRequests()
 
 Three rules:
 
-1. **Idempotent.** Multiple disposal can happen due to platform retries; do not crash if
-   already disposed.
-2. **Fast.** `dispose()` runs on whichever thread triggered disposal. A slow `dispose()`
-   delays everything queued behind it.
-3. **No exceptions.** Throwing aborts your subtree's disposal and litters the log. Catch and
-   log inside `dispose()`.
+1. **Idempotent.** Multiple disposal can happen due to platform retries; do not crash if already disposed.
+2. **Fast.** `dispose()` runs on whichever thread triggered disposal. A slow `dispose()` delays everything queued behind it.
+3. **No exceptions.** Throwing aborts your subtree's disposal and litters the log. Catch and log inside `dispose()`.
 
 ## Disposal triggers — when does each parent actually dispose?
 
@@ -149,6 +138,4 @@ Three rules:
 | `Disposer.newDisposable()` | When you call `Disposer.dispose(...)` |
 | Plugin descriptor disposable (do not use directly) | Plugin unload |
 
-Note: **extensions do not auto-dispose**. Extensions are stateless by rule, so they should
-not own resources. Any resource you might be tempted to put on an extension belongs in a
-service, with the extension reading from it.
+Note: **extensions do not auto-dispose**. Extensions are stateless by rule, so they should not own resources. Any resource you might be tempted to put on an extension belongs in a service, with the extension reading from it.

@@ -35,7 +35,7 @@
         "Backend fallback still resolves to /console/index.html",
         "A stale preload failure is intercepted and automatic recovery is bounded across reloads",
         "Unsaved work blocks automatic recovery and produces a framework-owner request",
-        "The recovery guard is cleared or rotated after successful boot",
+        "The recovery guard is cleared or rotated only after explicit recovery acknowledgement or a release change",
         "Framework-owned React code remains untouched",
         "The report records actual-topology verification, rollback, and framework-owner needs"
       ],

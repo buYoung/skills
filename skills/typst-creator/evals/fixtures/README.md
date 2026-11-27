@@ -23,7 +23,7 @@ Repeat `--compiler VERSION=PATH` for 0.13.0, 0.13.1, 0.14.0, 0.14.1, 0.14.2, 0.1
 | `resources.typ` | All seven | Specific, wildcard and aliased imports; caller-loaded bytes passed to a helper; computed value 84 |
 | `typst-0.13.typ` | 0.13.0 and later | Reversed list and JSON decoded from bytes |
 | `typst-0.14.typ` | 0.14.0 and later | Dedicated title and skewed fractions |
-| `typst-0.15.typ` | 0.15.0 and later | A4 trim with 3mm bleed on every edge; divider and inclusive sequence 1, 2, 3 |
+| `typst-0.15.typ` | 0.15.0 and later | A4 trim with 3mm bleed on every edge; divider and inclusive sequence 1, 2, 3; partial `first-line-indent` dictionaries from two set rules fold into one value |
 | `typst-0.15-path.typ` | 0.15.0 and later | Caller-created path passed to a helper in another directory; decoded value 42 |
 
 The validator checks compiler identity, exit status and a newly created nonempty PDF. It preserves warnings and reports unchecked releases. It does not install executables, assert all rendered values, check PDF/UA conformance, or prove pixel identity.

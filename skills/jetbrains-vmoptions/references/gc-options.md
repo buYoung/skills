@@ -10,12 +10,15 @@ Keep three layers separate:
 2. **Runtime-selected value:** what ergonomics and initialization selected for this process, shown by `VM.flags -all`.
 3. **IDE bundle value:** what the IDE's default or custom options explicitly selected.
 
-The available direct check of local JBR 25.0.4 reported G1 as its default collector. At inspected source revision `4af5e1194b7f34a396bd56f25eef17624eb60400`, `GCConfig::select_gc_ergonomically()` selects G1 on a server-class machine when no collector is already selected, and Serial on a non-server-class machine when available. The same source rejects multiple collectors. This checked result and source are not proof of the effective collector in another build or in an IDE whose bundled options override it.
+On 2026-11-27, `java -XX:+PrintFlagsFinal -version` with the JBR bundled in IntelliJ IDEA 2026.3.0.1 (`25.0.4.1+1-b635.79`, tag `jbr-release-25.0.4.1b635.79`) reported `UseG1GC = true {ergonomic}` on macOS 15.7.1, aarch64, 14 CPUs, and 64 GiB of memory. That tag's `gcConfig.cpp` is identical to the one at inspected source revision `4af5e1194b7f34a396bd56f25eef17624eb60400`, where `GCConfig::select_gc_ergonomically()` selects G1 on a server-class machine when no collector is already selected, and Serial on a non-server-class machine when available. The same source rejects multiple collectors. This checked result and source are not proof of the effective collector in another build or in an IDE whose bundled options override it.
 
 - [JBR 25.0.4 inspected `gcConfig.cpp` revision](https://github.com/JetBrains/JetBrainsRuntime/blob/4af5e1194b7f34a396bd56f25eef17624eb60400/src/hotspot/share/gc/shared/gcConfig.cpp)
 - [JetBrains Runtime release/build matrix](https://github.com/JetBrains/JetBrainsRuntime)
 
-For JBR 17 and 21, link the exact release tag or commit matching the user's runtime before claiming a source default. When that mapping cannot be confirmed, report only the effective value from the user's process.
+The same `select_gc_ergonomically()` is present at tags `jbr-release-17.0.14b1367.22`, `jbr-release-21.0.9b1038.91`, and `jbr-release-25.0.5.1b635.102` (whose `gcConfig.cpp` is identical to the revision above). On 2026-11-27 the macOS aarch64 release binaries of those three builds, on the machine above, reported `UseG1GC = true {ergonomic}`, and `UseSerialGC = true {ergonomic}` with `-XX:ActiveProcessorCount=1`. For another JBR 17 or 21 build, link the exact release tag or commit matching the user's runtime before claiming a source default. When that mapping cannot be confirmed, report only the effective value from the user's process.
+
+- [JBR 17.0.14 b1367.22 `gcConfig.cpp`](https://github.com/JetBrains/JetBrainsRuntime/blob/jbr-release-17.0.14b1367.22/src/hotspot/share/gc/shared/gcConfig.cpp)
+- [JBR 21.0.9 b1038.91 `gcConfig.cpp`](https://github.com/JetBrains/JetBrainsRuntime/blob/jbr-release-21.0.9b1038.91/src/hotspot/share/gc/shared/gcConfig.cpp)
 
 ## Collector selection compatibility
 
@@ -44,7 +47,7 @@ G1, Parallel, Serial, Shenandoah, or ZGC may be build-dependent. Confirm availab
 <runtime-home>/bin/java -XX:+UseZGC -version
 ```
 
-Run only the candidate relevant to the diagnosis. A successful `-version` preflight means the option is accepted, not that the IDE uses it or benefits from it.
+Run only the candidate relevant to the diagnosis. A successful `-version` preflight means the option is accepted, not that the IDE uses it or benefits from it. On JBR 17 and 21 an unknown option is also accepted unless `-XX:-IgnoreUnrecognizedVMOptions` is added; see [candidate option preflight](prerequisite-check.md#candidate-option-preflight).
 
 ## Selection rules
 

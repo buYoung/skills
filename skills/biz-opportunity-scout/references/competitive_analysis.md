@@ -69,7 +69,7 @@ Use web search to gather competitive intelligence:
 |-----------------------|-------------|
 | "[competitor name] funding series" | Competitor financial strength |
 | "[competitor name] pricing plans" | Pricing comparison |
-| "[industry] market share leader 2024" | Market position mapping |
+| "[industry] market share leader [current year]" | Market position mapping |
 | "[competitor name] reviews complaints" | Weakness identification |
 | "alternatives to [competitor]" | Indirect competitor discovery |
 

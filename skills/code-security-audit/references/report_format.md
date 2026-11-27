@@ -75,7 +75,6 @@ columns:
   - asvs_id: "Specific ASVS requirement ID"
   - cwe: "CWE identifier"
   - location: "file:line or file(s)"
-  - status: "New"
 sort_order: "severity DESC, then domain ASC"
 ```
 
@@ -115,7 +114,7 @@ sections:
     - "OWASP ASVS 5.0.0 as verification baseline"
     - "OWASP API Security Top 10 2023 for API risk assessment"
     - "OWASP CheatSheet Series for remediation guidance"
-    - "OWASP WSTG for test methodology reference"
+    - "OWASP WSTG v4.2 for test methodology reference"
     - "Automated code search + manual code review by AI agent"
 
   scope_limitations:
@@ -273,7 +272,7 @@ possible:
 | Focus Areas | {domains or "All"} |
 | Technology Stack | {detected stack} |
 | Files Analyzed | {count} |
-| Methodology | OWASP 4-source (ASVS 5.0.0 + API Top 10 2023 + CheatSheet + WSTG) |
+| Methodology | OWASP 4-source (ASVS 5.0.0 + API Top 10 2023 + CheatSheet + WSTG v4.2) |
 
 ---
 
@@ -377,7 +376,7 @@ This audit was performed using the OWASP 4-source methodology:
 - **ASVS 5.0.0**: Verification requirements baseline ({level})
 - **API Security Top 10 2023**: API risk taxonomy
 - **CheatSheet Series**: Secure coding remediation guidance
-- **WSTG**: Testing methodology reference
+- **WSTG v4.2**: Testing methodology reference
 
 ### Scope & Limitations
 - {Explicit exclusions}

@@ -2,12 +2,14 @@
 """Detect whether a directory is a monorepo and emit the marker type(s).
 
 Marker rules mirror references/monorepo_detection.md. Some markers (package.json,
-settings.gradle*, pom.xml, Cargo.toml, pyproject.toml) are only conclusive when an
-inner field/section is present, so this script reads each candidate file before
-classifying. Matching is comment- and structure-aware (JSON parse for package.json,
-line-level TOML/Gradle scanning) to avoid false positives from comments, string
-values, or detached `[workspace]` tables. Package discovery itself is left to the
-agent — formats vary too much for a single parser to be worth maintaining here.
+settings.gradle*, pom.xml, Cargo.toml, pyproject.toml, hatch.toml) are only
+conclusive when an inner field/section is present, so this script reads each
+candidate file before classifying. Matching is comment- and structure-aware (JSON
+parse for package.json, line-level TOML/Gradle scanning, XML comments removed for
+pom.xml) to avoid false positives from comments, string values, detached
+`[workspace]` tables, or Hatch environments that declare no workspace members.
+Package discovery itself is left to the agent — formats vary too much for a
+single parser to be worth maintaining here.
 
 A `true` result is provisional: per SKILL.md Step 1, the workflow treats the repo
 as a single document when package discovery finds fewer than 2 packages.
@@ -119,8 +121,14 @@ def gradle_has_includes(path: str) -> bool:
     return len(projects) >= 2
 
 
-def pom_has_modules(path: str) -> bool:
-    return "<modules>" in _read(path)
+_XML_COMMENT = re.compile(r"<!--.*?-->", re.DOTALL)
+
+
+def pom_declares_subprojects(path: str) -> bool:
+    # POM 4.1.0 (Maven 4) uses <subprojects>; <modules> is deprecated there but
+    # remains the Maven 3 form.
+    text = _XML_COMMENT.sub("", _read(path))
+    return "<modules>" in text or "<subprojects>" in text
 
 
 def cargo_has_workspace(path: str) -> bool:
@@ -139,19 +147,68 @@ def cargo_has_workspace(path: str) -> bool:
     return False
 
 
-_PYPROJECT_WORKSPACE_TABLES = (
-    "[tool.hatch.envs",
-    "[tool.uv.workspace",
-    "[tool.rye.workspace",
-)
+_TOML_KEY_SEGMENT = r"(?:[A-Za-z0-9_-]+|\"[^\"]*\"|'[^']*')"
+_TOML_DOTTED_KEY = rf"{_TOML_KEY_SEGMENT}(?:\s*\.\s*{_TOML_KEY_SEGMENT})*"
+_TOML_TABLE_HEADER = re.compile(rf"^\[\[?\s*({_TOML_DOTTED_KEY})\s*\]\]?$")
+_TOML_KEY_VALUE = re.compile(rf"^({_TOML_DOTTED_KEY})\s*=\s*(.*)$")
+_INLINE_MEMBERS = re.compile(r"^\{.*\bmembers\s*=")
+
+
+def _toml_key_path(dotted_key: str) -> tuple:
+    return tuple(segment.strip("\"'")
+                 for segment in re.findall(_TOML_KEY_SEGMENT, dotted_key))
+
+
+def toml_entries(path: str):
+    """Yield (key_path, value) per table header (value None) and key line.
+
+    Line-level scan, not a TOML parser: comments and multiline string bodies are
+    skipped, and key paths are prefixed with the current table.
+    """
+    table = ()
+    multiline_delimiter = None
+    for raw_line in _read(path).splitlines():
+        if multiline_delimiter is not None:
+            if raw_line.count(multiline_delimiter) % 2 == 1:
+                multiline_delimiter = None
+            continue
+        for delimiter in ('"""', "'''"):
+            if raw_line.count(delimiter) % 2 == 1:
+                multiline_delimiter = delimiter
+        line = raw_line.split("#", 1)[0].strip()
+        header = _TOML_TABLE_HEADER.match(line)
+        if header:
+            table = _toml_key_path(header.group(1))
+            yield table, None
+            continue
+        key_value = _TOML_KEY_VALUE.match(line)
+        if key_value:
+            yield table + _toml_key_path(key_value.group(1)), key_value.group(2)
+
+
+def _is_hatch_workspace_entry(key_path: tuple, value, prefix: tuple) -> bool:
+    # Hatch 1.16+ workspaces are per environment: `workspace.members` under
+    # `[tool.hatch.envs.<env>]` in pyproject.toml or `[envs.<env>]` in hatch.toml.
+    # Other environment settings do not declare a workspace.
+    if value is None or key_path[:len(prefix) + 1] != prefix + ("envs",):
+        return False
+    env_key = key_path[len(prefix) + 2:]
+    return (env_key == ("workspace", "members")
+            or (env_key == ("workspace",) and _INLINE_MEMBERS.match(value) is not None))
 
 
 def pyproject_has_workspace(path: str) -> bool:
-    for raw_line in _read(path).splitlines():
-        line = raw_line.split("#", 1)[0].strip()
-        if line.startswith(_PYPROJECT_WORKSPACE_TABLES):
+    for key_path, value in toml_entries(path):
+        if key_path[:3] in (("tool", "uv", "workspace"), ("tool", "rye", "workspace")):
+            return True
+        if _is_hatch_workspace_entry(key_path, value, ("tool", "hatch")):
             return True
     return False
+
+
+def hatch_toml_has_workspace(path: str) -> bool:
+    return any(_is_hatch_workspace_entry(key_path, value, ())
+               for key_path, value in toml_entries(path))
 
 
 # (filename, type_label, optional_predicate)
@@ -161,20 +218,32 @@ MARKERS = [
     ("nx.json", "nx", None),
     ("turbo.json", "turborepo", None),
     ("rush.json", "rush", None),
+    # moon v2 accepts these workspace config formats; v1 read only .yml and .pkl.
     (".moon/workspace.yml", "moonrepo", None),
+    (".moon/workspace.yaml", "moonrepo", None),
+    (".moon/workspace.json", "moonrepo", None),
+    (".moon/workspace.jsonc", "moonrepo", None),
+    (".moon/workspace.toml", "moonrepo", None),
+    (".moon/workspace.hcl", "moonrepo", None),
+    (".moon/workspace.pkl", "moonrepo", None),
     ("go.work", "go-workspaces", None),
+    # WORKSPACE files are legacy: disabled by default in Bazel 8, removed in 9.
     ("WORKSPACE", "bazel", None),
     ("WORKSPACE.bazel", "bazel", None),
     ("MODULE.bazel", "bazel", None),
+    ("REPO.bazel", "bazel", None),
     (".buckconfig", "buck2", None),
     ("pants.toml", "pants", None),
+    # Legacy Pants config; Pants stopped reading pants.ini in 2.0.0.dev0 and uses
+    # TOML configuration (pants.toml).
     ("pants.ini", "pants", None),
     ("package.json", "npm-workspaces", has_workspaces_field),
     ("settings.gradle.kts", "gradle-multiproject", gradle_has_includes),
     ("settings.gradle", "gradle-multiproject", gradle_has_includes),
-    ("pom.xml", "maven-multimodule", pom_has_modules),
+    ("pom.xml", "maven-multimodule", pom_declares_subprojects),
     ("Cargo.toml", "cargo-workspaces", cargo_has_workspace),
     ("pyproject.toml", "python-workspaces", pyproject_has_workspace),
+    ("hatch.toml", "python-workspaces", hatch_toml_has_workspace),
 ]
 
 

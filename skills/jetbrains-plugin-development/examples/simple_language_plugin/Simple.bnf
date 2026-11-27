@@ -1,11 +1,14 @@
 // Pairs with references/07_language_grammar_kit_bnf.md.
-// Grammar-Kit BNF source. The plugin generates SimpleParser, SimpleTypes, and the
-// psi/ + psi/impl/ trees from this file; do not edit the generated files — put
-// custom logic in mixin classes referenced by `mixin=`.
+// Grammar-Kit BNF source. The Grammar-Kit Gradle sub-plugin generates SimpleParser,
+// SimpleTypes, and the psi/ + psi/impl/ trees from this file; do not edit the generated
+// files — put custom logic in mixin classes referenced by `mixin=`. The hand-written
+// classes named here are SimpleElementType.kt, SimpleNamedElement.kt, and
+// SimpleNamedElementImpl.kt. PsiBuilder skips WHITE_SPACE and the comment tokens returned
+// by SimpleParserDefinition.getCommentTokens(), so the grammar does not match whitespace,
+// line breaks, or COMMENT; COMMENT is declared only so that SimpleTypes defines it.
 
 {
   parserClass="com.example.simplelang.parser.SimpleParser"
-  parserUtilClass="com.example.simplelang.parser.SimpleParserUtil"
   extends="com.intellij.extapi.psi.ASTWrapperPsiElement"
 
   psiClassPrefix="Simple"
@@ -24,12 +27,9 @@
   ]
 }
 
-simpleFile ::= item_*
-
-private item_ ::= property | COMMENT | CRLF
+simpleFile ::= property*
 
 property ::= ID EQ ID? {
   mixin="com.example.simplelang.psi.impl.SimpleNamedElementImpl"
   implements="com.example.simplelang.psi.SimpleNamedElement"
-  methods=[ getName setName getNameIdentifier ]
 }

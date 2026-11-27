@@ -62,11 +62,13 @@ targets:
 
 ### 2.1 ASVS Level Selection
 
+Counts are cumulative and include documentation requirements.
+
 | Level | Target | Coverage |
 |-------|--------|----------|
-| **L1** | All applications (minimum baseline) | ~86 requirements — essential controls |
-| **L2** | Applications handling sensitive data (recommended default) | ~230 requirements — standard security |
-| **L3** | Critical applications (banking, healthcare, military) | ~345 requirements — comprehensive defense |
+| **L1** | All applications (minimum baseline) | 70 requirements — essential controls |
+| **L2** | Applications handling sensitive data (recommended default) | 253 requirements (L1 + 183 L2) — standard security |
+| **L3** | Critical applications (banking, healthcare, military) | 345 requirements (L1 + L2 + 92 L3) — comprehensive defense |
 
 ### 2.2 Domain Applicability Matrix
 
@@ -103,7 +105,7 @@ mapping:
   authorization: [V8]
   cryptography: [V11, V12]
   api-security: [V4, V17]
-  session: [V7, V9, V10]
+  session: [V3.3, V3.5, V7, V9, V10]
   file-handling: [V5]
   data-protection: [V14]
   configuration: [V13, V16]
@@ -239,7 +241,7 @@ For each finding, attach applicable references from all 4 sources:
 ```yaml
 finding:
   asvs: "V1.2.1"                            # ASVS requirement ID
-  api_top10: "API1:2023"                     # API Security risk (if applicable)
+  api_top10: null                            # API Security risk ID such as "API1:2023"; null when none applies
   cwe: "CWE-79"                              # CWE identifier
   wstg: "WSTG-INPV-01"                       # WSTG test scenario ID
   cheatsheet: "Cross_Site_Scripting_Prevention_Cheat_Sheet"  # Remediation source

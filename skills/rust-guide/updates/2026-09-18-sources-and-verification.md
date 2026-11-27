@@ -5,7 +5,7 @@ Maintenance material for `rust-guide`. It is not loaded when the skill runs; it 
 ## Verification Performed
 
 - Every fenced Rust example in `references/` (81 blocks) was compiled with `rustc 1.95.0` (`--edition 2024`, `--emit=metadata`); examples marked `rust,deps` were checked in a scratch crate with `thiserror` 2.0.20, `anyhow` 1.0.104, `rayon` 1.12.0, `crossbeam-channel` 0.5.17, `tokio` 1.53.1 (`full`), `arc-swap` 1.9.2, `dashmap` 6.2.1, and `parking_lot` 0.12.5; examples marked `rust,ignore` (mimalloc, criterion, loom) were not compiled.
-- Clippy lint groups and default levels in `lints-and-review.md`, `performance.md`, `concurrency.md`, and `unsafe-and-ffi.md` come from `cargo clippy -- -W help` on Clippy 0.1.95; the `clippy.toml` keys and `#[expect]` examples were executed against that Clippy.
+- Clippy lint groups and default levels in `lints-and-review.md` (replaced by `lints-and-diagnostics.md` in the 2026-09-21 revision), `performance.md`, `concurrency.md`, and `unsafe-and-ffi.md` come from `cargo clippy -- -W help` on Clippy 0.1.95; the `clippy.toml` keys and `#[expect]` examples were executed against that Clippy.
 - Release facts in `references/versions/` were taken from the release announcements and cross-checked against `RELEASES.md` in `rust-lang/rust` (fetched 2026-09-18); the `mismatched_lifetime_syntaxes` example was reproduced with the local compiler.
 - Latest stable at the time of writing: 1.98.1 (2026-09-03); next scheduled: 1.99.0 (2026-10-01).
 
@@ -14,7 +14,7 @@ Maintenance material for `rust-guide`. It is not loaded when the skill runs; it 
 1. Read the release announcement and the version's section of `RELEASES.md` (including Compatibility Notes).
 2. Add a file under `references/versions/` only when the release contains an official deprecation, removal, rename, or migration instruction; otherwise add an index row marked as having no such guidance.
 3. Update the `Availability by Version` tables in the affected practice references and any `since` versions in the text.
-4. Re-run `cargo clippy -- -W help` on the new toolchain and refresh the group placements in `lints-and-review.md`.
+4. Re-run `cargo clippy -- -W help` on the new toolchain, record the group snapshot in the release's maintenance record (the 0.1.95 snapshot is under Lint Catalog Metadata in `2026-09-21-reference-sources.md`), and update any group placement stated in `lints-and-diagnostics.md`, `performance.md`, `concurrency.md`, or `unsafe-and-ffi.md`.
 5. Recompile every Rust block (extract fenced blocks tagged `rust`/`rust,deps` and build with `--edition 2024`) on the new toolchain.
 
 ## Sources by Document
@@ -40,6 +40,8 @@ Maintenance material for `rust-guide`. It is not loaded when the skill runs; it 
 [std::error::Error](https://doc.rust-lang.org/std/error/trait.Error.html), [core::error](https://doc.rust-lang.org/core/error/index.html), [Result](https://doc.rust-lang.org/std/result/enum.Result.html), [Option](https://doc.rust-lang.org/std/option/enum.Option.html), [std::io::ErrorKind](https://doc.rust-lang.org/std/io/enum.ErrorKind.html), [std::process::ExitCode](https://doc.rust-lang.org/std/process/struct.ExitCode.html), [Comprehensive Rust: Error Handling](https://google.github.io/comprehensive-rust/error-handling/result.html) (`error.md`, `thiserror.md`, `anyhow.md`), [Rust API Guidelines: C-GOOD-ERR, C-FAILURE, C-QUESTION-MARK](https://rust-lang.github.io/api-guidelines/checklist.html), [Cargo SemVer compatibility](https://doc.rust-lang.org/cargo/reference/semver.html), [Rustonomicon: FFI](https://doc.rust-lang.org/nomicon/ffi.html), [thiserror](https://docs.rs/thiserror), [anyhow](https://docs.rs/anyhow).
 
 ### `references/practices/lints-and-review.md`
+
+This file was replaced by `lints-and-diagnostics.md`; current sources are listed in `2026-09-21-reference-sources.md`.
 
 [Clippy book](https://doc.rust-lang.org/clippy/) (lint groups, [configuration](https://doc.rust-lang.org/clippy/configuration.html), [continuous integration](https://doc.rust-lang.org/clippy/continuous_integration/index.html)), [Clippy lint list](https://rust-lang.github.io/rust-clippy/master/index.html), `cargo clippy -- -W help` on Clippy 0.1.95, [rustc lint levels](https://doc.rust-lang.org/rustc/lints/levels.html), [rustc lint groups](https://doc.rust-lang.org/rustc/lints/groups.html), [Cargo `[lints]`](https://doc.rust-lang.org/cargo/reference/manifest.html#the-lints-section), [Cargo workspace lints](https://doc.rust-lang.org/cargo/reference/workspaces.html#the-lints-table), [Rust 1.81.0 announcement](https://blog.rust-lang.org/2024/09/05/Rust-1.81.0/) (`#[expect]`), [Rust Design Patterns: `#![deny(warnings)]`](https://rust-unofficial.github.io/patterns/anti_patterns/deny-warnings.html), [Cargo SemVer compatibility: lints](https://doc.rust-lang.org/cargo/reference/semver.html).
 

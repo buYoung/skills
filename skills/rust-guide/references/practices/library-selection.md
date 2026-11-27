@@ -18,7 +18,7 @@ Compare std/core with the dependency's capabilities, documentation, portability,
 | Build scripts and procedural macros | Build-host execution, generated code, reproducibility inputs, build time, and additional toolchain requirements |
 | Maintenance and documentation | Clarity of contracts, supported platforms, upgrade paths, and the cost of depending on unresolved limitations |
 
-RustSec supplies advisories for Rust packages; absence of an advisory is not proof of safety. Build scripts and procedural macros execute on the build host; native compilation additionally needs tools and libraries suitable for the target. These conditions are relevant to dependency adoption, not prerequisites for answering ordinary language questions.
+RustSec supplies advisories for Rust packages; absence of an advisory is not proof of safety. Since 1.100, `[registry] global-min-publish-age` in `.cargo/config.toml` makes Cargo skip versions published more recently than the configured age unless they are already in `Cargo.lock`; this delays some malicious releases but does not replace reviewing dependency updates. Build scripts and procedural macros execute on the build host; native compilation additionally needs tools and libraries suitable for the target. These conditions are relevant to dependency adoption, not prerequisites for answering ordinary language questions.
 
 ## Admission Conditions
 
@@ -54,6 +54,7 @@ Read only the relevant row; these are not additional runtime alternatives.
 | Optimized byte search | memchr | Existing SIMD-backed operation before a custom unsafe kernel; a simple loop can suffice for tiny input |
 | Proven shared-state need | parking_lot, arc-swap, dashmap | Distinct lock, snapshot, and concurrent-map roles; first assess ownership and std synchronization |
 | Serialization already required by the task | serde | Check concrete format, allocation, borrowing, and no_std features separately |
+| Function-level benchmarks on stable | divan | A hand-timed loop with `std::hint::black_box` can suffice for a quick check; existing criterion suites remain valid, but criterion's current repository is below the star floor |
 | A custom synchronization protocol needs exploration | loom | Model supported interleavings; not proof of arbitrary application correctness |
 
 ## Specialized Execution Models

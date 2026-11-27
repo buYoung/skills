@@ -13,8 +13,7 @@
 
 ## Persistent state
 
-The platform's persistence mechanism is `PersistentStateComponent`. State is stored as XML
-in the IDE config directory (Application services) or in `.idea/` (Project services).
+The platform's persistence mechanism is `PersistentStateComponent`. State is stored as XML in the IDE config directory (Application services) or in `.idea/` (Project services).
 
 ### Modern Kotlin pattern — `SimplePersistentStateComponent` + `BaseState`
 
@@ -22,8 +21,7 @@ in the IDE config directory (Application services) or in `.idea/` (Project servi
 @Service
 @State(
   name = "MyPluginSettings",
-  storages = [Storage("my-plugin-settings.xml")],
-  category = SettingsCategory.PLUGINS
+  storages = [Storage("my-plugin-settings.xml", roamingType = RoamingType.DISABLED)]
 )
 class MyPluginSettings : SimplePersistentStateComponent<MyPluginSettings.State>(State()) {
   class State : BaseState() {
@@ -49,15 +47,13 @@ s.state.userId = "new"
 val enabled = s.state.enabled
 ```
 
-Why `BaseState` delegates? They flip an internal `modified` flag on assignment so the
-platform knows when to write to disk. Plain `var` properties skip this and silently fail to
-save.
+Why `BaseState` delegates? They flip an internal `modified` flag on assignment so the platform knows when to write to disk. Plain `var` properties skip this and silently fail to save.
 
 Available delegates:
 
 | Delegate | Type |
 |---|---|
-| `string()` / `string("default")` | `String?` / non-null `String` |
+| `string()` / `string("default")` | `String?` in both cases; an empty string is normalized to `null` |
 | `property(default)` | primitives, enums |
 | `list<T>()` / `set<T>()` / `map<K, V>()` | mutable collections |
 
@@ -65,7 +61,7 @@ Available delegates:
 
 ```kotlin
 @Service
-@State(name = "S", storages = [Storage("s.xml")])
+@State(name = "S", storages = [Storage("s.xml", roamingType = RoamingType.DISABLED)])
 class MyImmutableSettings : SerializablePersistentStateComponent<MyImmutableSettings.State>(State()) {
   data class State(
     @JvmField val userId: String = "",
@@ -78,14 +74,13 @@ class MyImmutableSettings : SerializablePersistentStateComponent<MyImmutableSett
 }
 ```
 
-`@JvmField` is required so the platform's reflection serializer sees the fields directly.
-`updateState { … }` is atomic.
+`@JvmField` is required so the platform's reflection serializer sees the fields directly. `updateState { … }` is atomic.
 
 ### Java pattern — raw `PersistentStateComponent<T>`
 
 ```java
 @Service
-@State(name = "MySettings", storages = @Storage("my-settings.xml"))
+@State(name = "MySettings", storages = @Storage(value = "my-settings.xml", roamingType = RoamingType.DISABLED))
 public final class MySettings implements PersistentStateComponent<MySettings.State> {
   public static final class State {
     public String userId = "";
@@ -109,15 +104,12 @@ public final class MySettings implements PersistentStateComponent<MySettings.Sta
 - `name` — XML root tag. Must be unique; usually FQN-style.
 - `storages` — array of `@Storage`. The first is primary.
 - `reloadable` — auto-reload when the file changes externally (default `true`).
-- `category` — `SettingsCategory` for the Settings Sync plugin. Default `OTHER` is **not
-  synced**; pick `UI`/`CODE`/`KEYMAP`/`TOOLS`/`SYSTEM`/`PLUGINS` if the value should sync
-  across machines.
+- `category` — `SettingsCategory` for the Backup and Sync plugin. Default `OTHER` is **not synced**; pick `UI`/`CODE`/`KEYMAP`/`TOOLS`/`SYSTEM`/`PLUGINS` if the value should sync across machines. Synchronization also requires a roamable `roamingType`.
 
 `@Storage` attributes:
 
 - `value` — file name.
-- `roamingType` — `DEFAULT`, `DISABLED`, `PER_OS`. Light Application services **must** use
-  `DISABLED` for roaming since they are auto-registered.
+- `roamingType` — `DEFAULT` (also when omitted), `PER_OS`, `LOCAL`, or `DISABLED`. If an application-level light service (`@Service`) is a `PersistentStateComponent`, it **must** use `DISABLED`: light services cannot be reliably discovered for roaming. A setting that should roam belongs in an application service registered in `plugin.xml`, with a roamable `roamingType` and a `category`; see [Roaming Settings](https://plugins.jetbrains.com/docs/intellij/roaming-settings.html).
 - `deprecated` — for migrations from old file names.
 
 Default file paths:
@@ -137,14 +129,11 @@ That writes to `.idea/workspace.xml`, typically `.gitignore`d.
 
 ### Lifecycle of state I/O
 
-1. On first `getService(...)`, the platform constructs the component and calls `loadState`
-   with whatever is on disk (or nothing if first run).
+1. On first `getService(...)`, the platform constructs the component and calls `loadState` with whatever is on disk (or nothing if first run).
 2. `getState` is consulted on flush; the platform writes to disk.
 3. Modifications mark the component dirty; the platform flushes on idle and IDE close.
 
-Pre-load tasks: implement `noStateLoaded()` to handle the "no XML yet" case (e.g., copy
-defaults), or `initializeComponent()` for one-time setup after load. These are part of the
-`PersistentStateComponent` contract, not `Disposable`.
+Pre-load tasks: implement `noStateLoaded()` to handle the "no XML yet" case (e.g., copy defaults), or `initializeComponent()` for one-time setup after load. These are part of the `PersistentStateComponent` contract, not `Disposable`.
 
 ## Secrets — `PasswordSafe`
 
@@ -157,5 +146,4 @@ val stored = PasswordSafe.instance.get(attributes)?.getPasswordAsString() // rea
 PasswordSafe.instance.set(attributes, null)                       // remove
 ```
 
-`PasswordSafe` chooses an OS-appropriate keychain (macOS Keychain, Windows DPAPI, KWallet).
-Never store credentials in `PersistentStateComponent` — the file is plaintext.
+`PasswordSafe` chooses an OS-appropriate keychain (macOS Keychain, Windows DPAPI, KWallet). Never store credentials in `PersistentStateComponent` — the file is plaintext.

@@ -8,10 +8,10 @@ ISO 24495-1:2023 describes plain language guidance for written documents, includ
 
 The practices below adapt those public principles to contributor guides. They are not a reproduction of the full standard, a clause-by-clause conformity assessment, or a certification scheme. Do not describe generated documents as ISO-compliant or certified. Do not append an ISO notice or a plain-language checklist to the generated `AGENTS.md`.
 
-Sources checked on 2026-10-06:
+Sources:
 
-- [ISO 24495-1:2023 official catalogue and scope](https://www.iso.org/standard/78907.html)
-- [International Plain Language Federation: the four principles and their language-neutral scope](https://www.iplfederation.org/iso-standard/)
+- [ISO 24495-1:2023 official catalogue and scope](https://www.iso.org/standard/78907.html), checked on 2026-10-06
+- [International Plain Language Federation: the four principles and their language-neutral scope](https://www.iplfederation.org/advancing-standards#part-1), checked on 2026-11-27
 
 ## Write for the Contributor's Task
 

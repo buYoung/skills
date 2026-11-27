@@ -1,20 +1,12 @@
 # Example 06 — Caveman-style `feat` brief
 
-Demonstrates the caveman full-mode register for the saved brief while
-keeping every chat / interview / status surface in normal prose. Same
-shape as `01-pm-paste-feat.md`, simpler input, output rewritten in
-caveman.
+Demonstrates the caveman full-mode register for the saved brief while keeping every chat / interview / status surface in normal prose. Same shape as `01-pm-paste-feat.md`, simpler input, output rewritten in caveman.
 
 ---
 
 ## Input (pasted by user, English)
 
-> We need a global hotkey system in the desktop app. Today, key bindings
-> only work when the app window is focused. We want users to be able to
-> trigger 5 default shortcuts (capture, cancel, next, prev, open
-> settings) even when the app is in the background. Settings should
-> expose an editor for these shortcuts. Tauri v2 plugin only. Windows
-> and macOS must ship together; Linux can come later.
+> We need a global hotkey system in the desktop app. Today, key bindings only work when the app window is focused. We want users to be able to trigger 5 default shortcuts (capture, cancel, next, prev, open settings) even when the app is in the background. Settings should expose an editor for these shortcuts. Tauri v2 plugin only. Windows and macOS must ship together; Linux can come later.
 
 ---
 
@@ -27,13 +19,11 @@ caveman.
 | SCOPE | yes — desktop app hotkey subsystem |
 | TARGET | yes — Tauri v2 plugin, Settings UI, hotkey module |
 
-4/4 anchors → **CONTINUE**. No briefset signal — single execution
-context.
+4/4 anchors → **CONTINUE**. No briefset signal — single execution context.
 
 ## Stage 2 — Work Type
 
-`feat` (new behavior surface). Explicit in input. No confirmation
-needed.
+`feat` (new behavior surface). Explicit in input. No confirmation needed.
 
 ## Stage 3 — Codebase Review (notes)
 
@@ -47,7 +37,7 @@ Three concrete entry points → save threshold met.
 
 | 순번 | 내용 | 수정 추천안 | 근거 |
 |---|---|---|---|
-| 1 | Default shortcut combinations finality | Flag the five default combinations as draft in `Open Questions`; Stage 1 proposes and records one combination per action for local implementation and verification, and product confirms before merge. | Input names five shortcut actions but does not provide concrete key combinations. Codebase review cannot decide product defaults. |
+| 1 | Default shortcut combinations finality | Treat the five default combinations as a draft: the implementer proposes and records one combination per action for local implementation and verification, and the plan keeps a non-blocking question so product confirms the final set before merge. | Input names five shortcut actions but does not provide concrete key combinations. Codebase review cannot decide product defaults. |
 | 2 | Linux behavior for unavailable global-hotkey support | Show the shortcut-editing section as disabled with an explanatory tooltip. | Linux is out of scope for shipping, but Settings may still render in shared UI paths. Disabled state makes the missing capability explicit. |
 
 User: approve rows 1-2.
@@ -56,7 +46,7 @@ Decision table closed. Move to Stage 5.
 
 ---
 
-## Stage 5 — Saved Brief (caveman full mode)
+## Stage 5 — Saved Brief (`docs/briefs/2026-05-05-feat-global-hotkey-system.md`, caveman full mode)
 
 ```markdown
 # [feat] Global hotkey system
@@ -87,7 +77,7 @@ feat
 ## Constraints
 - Tauri v2 plugin only — v1 alternative not on table.
 - Windows + macOS ship together. Linux best-effort, ship after.
-- Follow the documented permission requirements of the chosen plugin/platform; do not assume an accessibility prompt is required without evidence.
+- Follow documented permission requirements of chosen Tauri v2 plugin on each OS; no accessibility prompt unless those docs require it.
 
 ## Related Files / Entry Points
 - `src/hotkeys/useHotkey.ts` — current in-app hotkey impl; need coexistence path with global hotkey.
@@ -133,64 +123,39 @@ feat
 ## Acceptance Criteria
 - [ ] All 5 default shortcut fire successfully while app backgrounded on Windows + macOS.
 - [ ] Shortcut edit in Settings UI apply immediately, no app restart.
-- [ ] In release builds, verify background invocation after plugin registration reports ready; record the tested build and result without inventing a timing threshold.
+- [ ] Release builds: verify background invocation after plugin registration reports ready; record tested build and result.
 - [ ] Linux: Settings section render disabled with tooltip "global hotkey unsupported on this system" when plugin reports unavailable.
 
 ## Open Questions
 - [non-blocking] Are the five default key combinations final, or should the implementer propose a draft? — Default: use the five-action draft generated and recorded in Stage 1 for local implementation and verification only; Reconfirm before: merge approval.
 ```
 
-Validator: the saved example is expected to pass under the documented dummy-path setup; no filename collision occurs. The `(proposed)` marker on
-`src/settings/SettingsScreen.tsx` exempts it from path-existence
-check.
+Validator: under the documented dummy-path setup, `validate_brief.py` reports `PASS - structural checks OK (0 warning(s)).` for the saved example. The `(proposed)` marker on `src/settings/SettingsScreen.tsx` exempts that path from the path-existence check.
 
 ---
 
 ## Stage 6 — Save report (chat, normal prose)
 
-> Saved — `docs/briefs/2026-05-05-feat-global-hotkey-system.md`
-> (`feat`: Global hotkey system; structural validation passed;
-> content validation passed — content and intent self-check passed,
-> caveman parity OK). Open it and let me know if anything needs editing.
-
-(The two Stage 4 decision rows and the populated `Open Questions` do not
-start Stage 5.7; cold-pickup runs only when the user requests it.)
+> Saved — `docs/briefs/2026-05-05-feat-global-hotkey-system.md` (`feat`: Global hotkey system; structural validation passed; content validation passed — content and intent self-check passed, caveman parity OK). Open it and let me know if anything needs editing.
 
 ---
 
 ## Picked Up Cold (downstream agent orientation)
 
-A coding agent opening the saved brief without prior context:
+A coding agent receiving only the saved brief can start without asking for more scope:
 
-1. Reads `# [feat] Global hotkey system` + `## Work Type: feat` →
-   knows behavior profile is "new surface, additive."
-2. Reads `## Current State (As-Is)` → confirms today's hotkey is
-   focus-bound and routes to `src/hotkeys/useHotkey.ts`.
-3. Reads `## Desired Outcome (To-Be)` → end state is 5 backgrounded
-   shortcuts + Settings editor.
-4. Reads `## Constraints` → Tauri v2 only, no v1 fallback,
-   documented platform setup must be verified.
-5. Reads `## Out of Scope` → does not invest in conflict detection or
-   multi-profile.
-6. Routes to `src/hotkeys/useHotkey.ts`, `src-tauri/Cargo.toml`,
-   PR #128, and the proposed `src/settings/SettingsScreen.tsx`.
-
-This section is commentary only, not part of the saved brief template.
-It shows that caveman style preserved the same routing facts, completion
-criteria, and open decisions; the goal is content preservation in a
-different register, not token reduction.
+1. Open `src/hotkeys/useHotkey.ts` and confirm the focus-bound registration branch (per `Current State (As-Is)`); read PR #128 for the prior Tauri v1 constraints.
+2. Add the Tauri v2 global-hotkey plugin dependency in `src-tauri/Cargo.toml` (per `Constraints`: v2 only, no v1 fallback).
+3. Propose and record draft combinations for the five actions, then build the registration contract (Stage 1 and its `Worker decision`).
+4. Add the shortcut-editing section at the proposed `src/settings/SettingsScreen.tsx`, with the disabled state and tooltip on Linux (Stage 2).
+5. Verify the documented macOS plugin setup and permissions and record the result (per `Side Effect Checkpoints`).
 
 ---
 
 ## Notes — what this example demonstrates
 
-- Body prose is caveman full; section headers, the title format, code
-  paths, identifiers, PR numbers, the `(proposed)` marker, and the
-  `- [ ]` checklist marker are all preserved verbatim.
+- Body prose is caveman full; section headers, the title format, code paths, identifiers, PR numbers, the `(proposed)` marker, and the `- [ ]` checklist marker are all preserved verbatim.
 - Requirements keep `Tauri v2 plugin only` and the five named actions intact. No unsupported timing threshold or permission-prompt behavior is introduced.
-- Acceptance Criteria stayed measurable; checklist items survive
-  caveman because they were already concrete.
-- The Linux fallback note (`disabled with tooltip "global hotkey
-  unsupported on this system"`) preserves the example's authored tooltip string — error / UI strings are an Auto-Clarity carve-out.
-- Stage 4 interview, Stage 6 save report, and this `Notes` section are
-  all in normal prose. Caveman never crosses into chat.
+- Acceptance Criteria stayed measurable; checklist items survive caveman because they were already concrete.
+- The Linux fallback note (`disabled with tooltip "global hotkey unsupported on this system"`) preserves the example's authored tooltip string — error / UI strings are an Auto-Clarity carve-out.
+- Stage 4 interview, Stage 6 save report, and this `Notes` section are all in normal prose. Caveman never crosses into chat.

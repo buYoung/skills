@@ -58,8 +58,8 @@ Check `cargo build --release -v` for the flags actually passed, and `cargo build
 
 | Tool | Scope | Notes |
 |---|---|---|
-| `criterion` (crate) | Functions and small operations | Statistical analysis, warm-up, outlier detection, HTML reports; suitable for comparing small operations |
-| `divan` (crate) | Functions | Lighter setup, similar goals |
+| `divan` (crate) | Functions and small operations | Sampled timings (fastest, slowest, median, mean), argument parameterization, optional allocation profiling; registered with `#[divan::bench]`. Meets the [adoption floor](library-selection.md#admission-conditions); the catalog's benchmark harness candidate for a new suite |
+| `criterion` (crate) | Functions and small operations | Statistical analysis, warm-up, outlier detection, HTML reports. Its current repository is below the [adoption floor](library-selection.md#admission-conditions), so it is not a new recommendation; existing criterion suites remain valid to maintain |
 | `hyperfine` | Whole programs | Repeated runs with warm-up and statistics; compare two binaries side by side |
 | Built-in `#[bench]` | Nightly only | Hard error on stable since 1.88 without `custom_test_frameworks` |
 
@@ -82,17 +82,35 @@ fn time_checksum(data: &[u8], iterations: u32) -> Duration {
 }
 ```
 
-```rust,ignore
-use criterion::{criterion_group, criterion_main, Criterion};
+A harness crate replaces the libtest harness for its bench target, so the target sets `harness = false`:
 
-fn bench_checksum(c: &mut Criterion) {
-    let data = vec![7u8; 64 * 1024];
-    c.bench_function("checksum 64 KiB", |b| b.iter(|| checksum(std::hint::black_box(&data))));
+```toml
+[dev-dependencies]
+divan = "0.1"
+
+[[bench]]
+name = "checksum"
+harness = false
+```
+
+```rust,ignore
+// benches/checksum.rs. A bench target is a separate crate, so it imports `checksum`
+// (the function above, made `pub`) from the library under test, here named `checksum_lib`.
+use checksum_lib::checksum;
+use divan::{black_box, Bencher};
+
+fn main() {
+    divan::main();
 }
 
-criterion_group!(benches, bench_checksum);
-criterion_main!(benches);
+#[divan::bench]
+fn checksum_64_kib(bencher: Bencher) {
+    let data = vec![7u8; 64 * 1024];
+    bencher.bench(|| checksum(black_box(&data)));
+}
 ```
+
+Setup before `bencher.bench` is not timed. divan keeps the closure's return value from being optimized away and drops it outside the timed sample loop.
 
 Rules: same machine, same inputs, several runs, report the spread; benchmark the change in isolation; run correctness tests in the release profile too, because overflow checks and debug assertions are off there.
 

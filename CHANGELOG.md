@@ -16,7 +16,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Added
 
-- Added `document-writing` for routed document authoring, with design system templates, branding guidance, and design direction workflows.
+- Added `document-writing` for human-readable structured documents, with ten routed document types, design system templates, branding guidance, design direction workflows, structural validation, and fixture-backed behavior and selection evals. Design System Documents keep product UI and storefront visual assets in separate output sets, and any in-scope digital storefront is researched from current first-party material.
 - Added React 18/19 SSR, streaming, and hydration guidance, plus Vite 7/8 SSR integration guidance.
 
 ### Improved
@@ -47,13 +47,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 ### Removed
 
 - Removed the unused `veo-prompt-director` skill.
-
-### Added
-
-- Added `document-writing` for human-readable structured documents with ten routed document types, progressively loaded references, source-grounded editing, and structural validation. Design System Documents provide separate product UI and storefront visual asset output sets; any in-scope digital storefront is identified dynamically and researched from current first-party material without an allowlist. Added realistic fixture-backed behavior evals, 60 balanced selection cases, paired with-skill/without-skill runs, tool and source receipts, negative controls, blind comparison, static review, an actual PNG canary, and local/CI/release evidence validation.
-
-### Removed
-
 - Removed the standalone `feature-design-doc` package after merging its create, update, fact-check, normalize, template, and validator contracts into `document-writing`.
 
 ## [1.7.1] - 2026-08-10
@@ -99,7 +92,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Internal
 
-- Updated release tooling, repository guidance, and miscellaneous maintenance.
+- Updated release tooling and repository guidance.
 
 ## [1.5.0] - 2026-06-11
 
@@ -111,7 +104,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Improved
 
-- Improved `task-brief-creator` and `task-brief-creator-caveman` guidance for better brief output.
+- Improved `task-brief-creator` and `task-brief-creator-caveman` guidance.
 - Improved `system-prompt-creator` and `agents-md-generator` guidance.
 
 ## [1.4.0] - 2026-05-10
@@ -160,7 +153,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 ### Internal
 
 - Updated release automation to include the Claude plugin version.
-- Cleaned up miscellaneous project maintenance.
 
 ## [1.1.0] - 2026-05-01
 

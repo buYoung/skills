@@ -1,14 +1,8 @@
 # Example 01 — PM paste → `feat` (dark mode in settings)
 
-Long-form input from a PM. Skill runs Stage 3 codebase review to refine
-`Current State (As-Is)`, then the Stage 4 decision table to lock down
-`Out of Scope` and `Acceptance Criteria`.
+Long-form input from a PM. Skill runs Stage 3 codebase review to refine `Current State (As-Is)`, then the Stage 4 decision table to lock down `Out of Scope` and `Acceptance Criteria`.
 
-**What this example produces:** a saved brief that a coding agent can pick up
-without re-reading the PM spec, without asking which `ThemeProvider` to extend,
-and without guessing the flag name. Read the saved brief at the bottom as the
-*work instruction* — every other section here is meta, explaining how the
-skill arrived at it.
+**What this example produces:** a saved brief that names the `ThemeProvider` to extend, the `flag.darkMode` gate, and the Settings-only scope, so a coding agent can start without re-reading the PM spec.
 
 ---
 
@@ -43,43 +37,29 @@ just light/dark and rely on OS detection?
 
 Inline `rg` / `Read`, ~6 reads / 4 greps:
 
-- `src/settings/SettingsScreen.tsx` — Settings entry point. `Appearance`
-  section already exists with one row for "Compact mode". Pattern for
-  adding a row + persisted toggle is established.
-- `src/theme/ThemeProvider.tsx` — existing theme provider. Currently a
-  single `lightTheme` object, no `darkTheme`. `useTheme()` hook returns
-  the active theme. No OS-theme detection yet.
-- `src/storage/userPrefs.ts` — `useUserPref<T>(key, default)` hook handles
-  persistence (localStorage on web, AsyncStorage on RN). Pattern for
-  adding a new pref is one new key constant.
-- `src/feature-flags/flags.ts` — flag system based on env + remote
-  override. Adding `flag.darkMode` is a one-line addition.
-- No existing OS theme detection. `window.matchMedia('(prefers-color-scheme: dark)')`
-  on web; `Appearance.getColorScheme()` on RN.
+- `src/settings/SettingsScreen.tsx` — Settings entry point. `Appearance` section already exists with one row for "Compact mode". Pattern for adding a row + persisted toggle is established.
+- `src/theme/ThemeProvider.tsx` — existing theme provider. Currently a single `lightTheme` object, no `darkTheme`. `useTheme()` hook returns the active theme. No OS-theme detection yet.
+- `src/storage/userPrefs.ts` — `useUserPref<T>(key, default)` hook handles persistence (localStorage on web, AsyncStorage on RN). Pattern for adding a new pref is one new key constant.
+- `src/feature-flags/flags.ts` — flag system based on env + remote override. Adding `flag.darkMode` is a one-line addition.
+- No existing OS theme detection. `window.matchMedia('(prefers-color-scheme: dark)')` on web; `Appearance.getColorScheme()` on RN.
 
 ---
 
 ## Stage 4 — User Decision Table
 
-The skill first uses the Stage 3 codebase review to resolve technical
-facts. It asks the user only for decisions that remain user-owned:
-product intent, scope boundaries, acceptance thresholds, and risk
-tolerance.
 The author selects `feat` from the explicit new capability and derives the side-effect checks from the reviewed integrations.
 
 | 순번 | 내용 | 수정 추천안 | 근거 |
 |---|---|---|---|
 | 1 | Theme selector shape | Use System / Light / Dark, default = System. | The input says default should follow the OS theme, and the open question asks whether System should be explicit. An explicit System option prevents hidden behavior. |
-| 2 | Scope boundary for existing theme consumers | Add an Out of Scope line: do not modify existing `useTheme()` consumers outside Settings. | Probe found 17 `useTheme()` consumers outside Settings and no dark-aware variants. Without this guardrail, a downstream agent may widen the diff into unrelated screens. |
-| 3 | Acceptance criterion for first paint | Include "when pref = System, active theme matches OS preference on first paint." | Stage 3 found no OS-theme detection currently wired. The first-paint case is the likely regression point for the new System default. |
+| 2 | Scope boundary for existing theme consumers | Add an Out of Scope line: do not modify existing `useTheme()` consumers outside Settings. | Code search found 17 `useTheme()` consumers outside Settings and no dark-aware variants. Without this guardrail, a downstream agent may widen the diff into unrelated screens. |
+| 3 | Acceptance criterion for first paint | Include "when pref = System, active theme matches OS preference on first paint." | The repository has no OS-theme detection wired yet. The first-paint case is the likely regression point for the new System default. |
 
 User: approve rows 1-3.
 
 ### Termination
 
-All user-owned decisions are decided. Technical facts resolved by the
-codebase review are not re-asked. The listener-lifecycle choice is bounded
-as a reversible `Worker decision` in Stage 1.
+All user-owned decisions are decided. Technical facts resolved by the codebase review are not re-asked. The listener-lifecycle choice is bounded as a reversible `Worker decision` in Stage 1.
 
 ---
 
@@ -92,7 +72,7 @@ as a reversible `Worker decision` in Stage 1.
 feat
 
 ## Current State (As-Is)
-- [confirmed] `ThemeProvider` exposes only `lightTheme`; `useTheme()` always returns it — Evidence: `src/theme/ThemeProvider.tsx` provider value.
+- [confirmed] As of `4f9c2e1` on `main`, `ThemeProvider` exposes only `lightTheme`; `useTheme()` always returns it — Evidence: `src/theme/ThemeProvider.tsx` provider value.
 - [confirmed] Settings → Appearance has one row (`Compact mode`) — Evidence: `SettingsScreen` Appearance section.
 - [confirmed] No OS-theme detection is wired — Evidence: repository search for `matchMedia` and `Appearance.getColorScheme` returned no theme integration.
 
@@ -134,13 +114,13 @@ feat
 - Replan when: Existing theme consumers require a contract change outside the approved Settings-only scope.
 - Worker decision: Attach the OS-theme listener only while System is active unless the existing provider lifecycle makes an always-on listener simpler without changing behavior.
 
-### Stage 2 — Integrate the Settings experience
+### Stage 2 — Wire the Settings Theme row
 - Starts when: Stage 1 provides the persisted preference and provider contract.
 - Work: Expose the three-option Theme row and connect it to the gated provider behavior.
-- Deliverable: An integrated Settings-only dark-mode experience ready for verification.
+- Deliverable: A Settings Theme row wired to the gated provider, ready for verification.
 - Ends when:
   - [ ] The Theme row persists changes and updates Settings without a reload.
-- Handoff: Overall verification receives the integrated experience and persisted preference state.
+- Handoff: Overall verification receives the wired Theme row and persisted preference state.
 - Replan when: First-paint OS detection cannot avoid a light-theme flash within the existing provider boundary.
 
 ## Side Effect Checkpoints
@@ -160,58 +140,21 @@ feat
 
 ---
 
-## Post-Save Verification Summary
+## Stage 6 — Save Report
 
-This example focuses on the saved brief shape.
-In a live run, the Stage 5.6 content and intent self-check still runs after
-the file is written and structurally validated; it re-reads the saved file
-and compares purpose, scope, entry points, constraints, and acceptance
-thresholds against the input and the answered Stage 4 rows.
-Stage 5.7 cold-pickup does not run by default — the Stage 6 banner reports
-structural validation and the content and intent self-check, with no
-unrequested optional-check line or invitation.
-The user can request the independent sub-agent read at any point in Stage 6.
+> Saved — `docs/briefs/2026-04-23-feat-dark-mode-settings.md` (`feat`: Dark mode toggle in Settings; structural validation passed; content validation passed — content and intent self-check passed). Open it and let me know if anything needs editing.
 
 ## Picked Up Cold — Coding Agent's First Actions
 
-A coding agent receiving only the saved brief above should be able to act
-without further questions. From the brief alone:
+A coding agent receiving only the saved brief above should be able to act without further questions. From the brief alone:
 
-1. Open `src/theme/ThemeProvider.tsx` (named in `Related Files / Entry Points`)
-   and add `darkTheme` next to the existing `lightTheme`, mirroring its token
-   names 1:1 (per `Constraints`).
-2. Add `flag.darkMode` to `src/feature-flags/flags.ts`, default `false` in
-   production (per `Desired Outcome (To-Be)`).
-3. Add the Theme row in `src/settings/SettingsScreen.tsx`'s Appearance
-   section, gated behind `flag.darkMode`, offering System / Light / Dark
-   (per `In Scope` and `Desired Outcome (To-Be)`).
-4. Wire persistence through `useUserPref` in `src/storage/userPrefs.ts`
-   (per `Related Files / Entry Points`).
-
-The agent does **not** touch other `useTheme()` consumers (per `Out of
-Scope`), does not introduce a new theming library (per `Constraints`), and
-does not need to re-interview the PM about the third "system" option — the
-brief locked it down.
+1. Open `src/theme/ThemeProvider.tsx` (named in `Related Files / Entry Points`) and add `darkTheme` next to the existing `lightTheme`, mirroring its token names 1:1 (per `Constraints`).
+2. Add `flag.darkMode` to `src/feature-flags/flags.ts`, default `false` in production (per `Desired Outcome (To-Be)`).
+3. Add the Theme row in `src/settings/SettingsScreen.tsx`'s Appearance section, gated behind `flag.darkMode`, offering System / Light / Dark (per `In Scope` and `Desired Outcome (To-Be)`).
+4. Wire persistence through `useUserPref` in `src/storage/userPrefs.ts` (per `Related Files / Entry Points`).
 
 ---
 
 ## Notes
 
-- **Why `feat` and not `chore` or `refactor`** — adding `darkTheme` and a
-  new Settings row is a user-visible capability that did not exist. Even
-  though most of the work is plumbing, the user-facing surface change is
-  the load-bearing test.
-- **Why the Out-of-Scope list got two extra entries beyond the PM input** —
-  the codebase review surfaced `useTheme()` consumers outside Settings.
-  Without an explicit guardrail, a downstream agent might helpfully
-  cascade-restyle them and blow the scope. This is exactly the case the
-  Out-of-Scope section was designed to catch.
-- **Why the second Acceptance Criterion ("no flash of light theme")
-  exists** — it was not in the PM input, but it is the kind of
-  measurable end-state criterion that prevents a downstream agent from
-  declaring "done" while the experience is broken. Stage 3 surfaced the
-  missing OS-theme detection, and decision-table row 3 turned that gap
-  into the first-paint criterion the user approved.
-- **Why the listener choice is not an Open Question** — teardown policy is
-  a reversible implementation choice. Stage 1 gives the worker a bounded
-  default and a replan boundary instead of delegating it to a reviewer.
+- **Why `feat` and not `chore` or `refactor`** — adding `darkTheme` and a new Settings row is a user-visible capability that did not exist. Even though most of the work is plumbing, the user-facing surface change is the load-bearing test.

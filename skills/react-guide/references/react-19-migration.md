@@ -8,6 +8,8 @@ Read to implement, explain, or validate React 19 migration. Reuse departure find
 
 Collect or reconstruct [departure](react-18-to-19-migration.md) evidence, resolved React 19.x, modern JSX transform, removed-API/type/root call sites, warnings, and existing build/runtime results.
 
+The [removed React DOM APIs](https://react.dev/blog/2024/04/25/react-19-upgrade-guide#removed-deprecated-react-dom-apis) are `ReactDOM.render`, `ReactDOM.hydrate`, `unmountComponentAtNode`, `ReactDOM.findDOMNode`, and `react-dom/test-utils` (import `act` from `react`). Removed legacy server renderers are listed in [SSR and hydration](react-ssr-hydration.md). Check the guide's [other breaking changes](https://react.dev/blog/2024/04/25/react-19-upgrade-guide#other-breaking-changes) for the removed `unstable_*` React DOM APIs.
+
 ## Decision Sequence and Table
 
 1. Inspect available departure and current-source evidence. 2. Inspect JSX, root, removed APIs, types, warnings, build, runtime in order. 3. Classify. 4. Fix authorized blockers. 5. Return arrival result.

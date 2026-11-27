@@ -18,7 +18,7 @@ Inspect installed Vite/Node/plugin versions, package engines, the host's request
 | Browser assets | Vite serves source/transformed modules | Host/CDN serves `dist/client` at the configured base |
 | Error evidence | Use `ssrFixStacktrace` for development SSR errors | Preserve production errors/source maps through the host's diagnostics |
 
-Use `server.middlewareMode: true` with `appType: 'custom'` when the host owns HTML handling. Keep the existing dev server lifecycle rather than creating one per request. See [Vite 7 SSR](https://v7.vite.dev/guide/ssr) and [JavaScript API](https://vite.dev/guide/api-javascript).
+Use `server.middlewareMode: true` with `appType: 'custom'` when the host owns HTML handling. Keep the existing dev server lifecycle rather than creating one per request. See [Vite 7 SSR](https://v7.vite.dev/guide/ssr), [Vite 7 JavaScript API](https://v7.vite.dev/guide/api-javascript), and [Vite 8 JavaScript API](https://vite.dev/guide/api-javascript).
 
 When Vite is a development dependency, put `await import('vite')` inside the development branch as well as the `createServer()` call. A top-level static Vite import is resolved before an `isProduction` branch runs, so guarding only the call still makes production require Vite. Check production startup with development dependencies absent, not just with the dev server disabled.
 

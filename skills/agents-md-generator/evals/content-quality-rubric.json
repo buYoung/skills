@@ -90,6 +90,65 @@
       "failure_examples": ["기존 project 방문 기록은 폐기된다.", "application 상태를 project별 상태로 역마이그레이션한다.", "모든 project마다 환영 화면이 한 번씩 뜬다."]
     }
   ],
+  "structural_criteria_note": "Structural criteria apply to the AGENTS.md output or adoption preview. Their evidence paths are relative to this skill package; the semantic criteria above cite the target repository.",
+  "structural_criteria": [
+    {
+      "id": "S1",
+      "applies_to": ["update", "generate", "stale"],
+      "requirement": "작성한 AGENTS.md의 서문(첫 `## ` 제목 앞)에 `<!-- agents-md-generator: v1; doc-type: single_repo -->` 관리 표식이 독립된 한 줄로 정확히 1개 있고, `parse_sections.py --doc-type single_repo`가 `management_status: managed`와 `generated_doc_type: single_repo`를 보고한다. 최초 편입 확인 전에는 대상 파일을 쓰지 않고 표식 삽입을 변경안에 포함한다.",
+      "evidence": [
+        {"path": "SKILL.md", "lines": "129,147", "finding": "생성 시 서문에 표식 1줄을 넣고, 쓰기 전에 표식 1개와 문서 종류 일치를 확인한다."},
+        {"path": "references/update_strategy.md", "lines": "34-51", "finding": "표식 형식과 위치, unmarked 문서의 변경안 제시와 최초 편입 확인 절차를 정의한다."},
+        {"path": "scripts/parse_sections.py", "lines": "101-113", "finding": "서문 안의 지원 표식 1개만 managed로 판정하고 그 밖의 후보는 invalid로 보고한다."}
+      ],
+      "pass_guidance": "결과 파일에 유효한 표식이 1개 있고 파서가 managed/single_repo를 보고하면 통과한다. stale에서 확인을 기다리는 변경안이면 대상 파일이 입력과 같고 변경안에 표식 삽입이 있으면 통과한다.",
+      "failure_examples": ["표식이 없거나 2개 이상이다.", "표식이 첫 `## ` 제목 뒤에 있다.", "최초 편입 확인 없이 unmarked 문서를 덮어쓴다."]
+    },
+    {
+      "id": "S2",
+      "applies_to": ["update", "generate", "stale"],
+      "requirement": "필수 표준 제목 `## 1. Overview`, `## 3. Core Behaviors & Patterns`, `## 4. Conventions`, `## 5. Working Agreements`가 각각 한 번씩 그대로 있다. `## 2. Ownership Map`은 근거가 있을 때만 두고, 생략해도 뒤 영역 번호를 바꾸지 않는다. `parse_sections.py` 결과에서 `missing_required_standard`가 비어 있고 `is_duplicate_standard`가 true인 영역이 없다.",
+      "evidence": [
+        {"path": "SKILL.md", "lines": "121", "finding": "Ownership Map을 생략해도 뒤 영역 번호를 바꾸지 않는다."},
+        {"path": "references/update_strategy.md", "lines": "94", "finding": "영역 번호는 update mode의 식별자이며 다시 매기지 않는다."},
+        {"path": "scripts/parse_sections.py", "lines": "165,175", "finding": "표준 제목 중복과 누락된 필수 제목을 보고한다."}
+      ],
+      "pass_guidance": "파서 출력에서 필수 제목 누락과 표준 제목 중복이 없고, 제목 문자열과 번호가 표준과 같으면 통과한다.",
+      "failure_examples": ["`## 3. Conventions`처럼 번호를 당겨 쓴다.", "필수 표준 제목이 빠지거나 두 번 나온다.", "근거 없는 Ownership Map을 채워 넣는다."]
+    },
+    {
+      "id": "S3",
+      "applies_to": ["update", "stale"],
+      "requirement": "입력 AGENTS.md의 사용자 영역(`parse_sections.py`에서 `is_standard`가 false인 영역)이 모두 원래 순서로 남고, 각 영역이 입력과 바이트 단위로 같다.",
+      "evidence": [
+        {"path": "SKILL.md", "lines": "155", "finding": "보존한 사용자 영역은 원본과 바이트 단위로 같아야 한다."},
+        {"path": "references/update_strategy.md", "lines": "178-180", "finding": "보존 범위를 원본 바이트에서 복사하고 줄 끝과 공백을 바꾸지 않는다."}
+      ],
+      "pass_guidance": "입력과 결과에서 사용자 영역의 바이트 범위를 비교해 모두 같으면 통과한다.",
+      "failure_examples": ["사용자 영역을 요약하거나 다시 쓴다.", "사용자 영역의 순서를 바꾸거나 일부를 뺀다.", "줄 끝이나 뒤쪽 공백을 정규화한다."]
+    },
+    {
+      "id": "S4",
+      "applies_to": ["update", "generate", "stale"],
+      "requirement": "서문과 관리 영역의 글자 수 합계가 대상 디렉터리에서 `loc_to_limit.py`가 보고한 `character_limit` 이하이며, 사용자 영역은 합계에서 뺀다.",
+      "evidence": [
+        {"path": "SKILL.md", "lines": "146", "finding": "서문과 관리 영역 합계만 한도에 들어가고 사용자 영역은 줄이지 않는다."},
+        {"path": "references/loc_measurement.md", "lines": "58", "finding": "update mode의 한도 범위를 서문과 관리 영역으로 정한다."}
+      ],
+      "pass_guidance": "서문과 관리 영역의 글자 수 합계가 한도 이하이면 통과한다. 영역별 배분 비율을 넘은 것은 실패가 아니다.",
+      "failure_examples": ["관리 영역 합계가 한도를 넘는다.", "한도를 맞추려고 사용자 영역을 줄인다."]
+    },
+    {
+      "id": "S5",
+      "applies_to": ["update", "generate", "stale"],
+      "requirement": "생성 문서가 ISO 준수나 인증을 주장하지 않고, ISO 고지나 plain-language 체크리스트를 덧붙이지 않는다.",
+      "evidence": [
+        {"path": "references/plain_language.md", "lines": "9", "finding": "생성 문서에 ISO 준수·인증 표현, ISO 고지, 체크리스트를 넣지 않는다."}
+      ],
+      "pass_guidance": "결과 문서에 ISO 24495 준수·인증 문구와 plain-language 점검표가 없으면 통과한다.",
+      "failure_examples": ["`ISO 24495-1 compliant`라고 쓴다.", "문서 끝에 plain-language 체크리스트 영역을 추가한다."]
+    }
+  ],
   "stale_correction": {
     "input_claim": "Jayway JsonPath와 JMESPath 두 엔진만 지원하고 Jackson jq는 지원하지 않는다.",
     "required_correction": "Jackson jq를 포함한 세 엔진을 지원하며 jsonQueryType 선택이 JsonQueryService의 jq 실행 분기로 전파된다고 교정해야 한다. jq 표현식 검증은 선택적 상세이며 언급할 경우 정확해야 한다.",

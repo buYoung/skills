@@ -1,6 +1,6 @@
 # Evaluation Cases
 
-`evals.json` contains 16 prompt scenarios covering language concepts, practical patterns, platform constraints, and ecosystem usage. They include both standalone explanations and applications to a supplied situation.
+`evals.json` contains 18 prompt scenarios covering language concepts, practical patterns, platform constraints, and ecosystem usage. They include both standalone explanations and applications to a supplied situation.
 
 Assess the accuracy of the mechanism, the connection to a useful pattern, its conditions and exceptions, and the consistency of examples with the explanation. A suitable comparison is valuable when alternatives matter; not every question needs a library recommendation or a project investigation. Explanations should remain useful when workload, ownership, or target assumptions change.
 

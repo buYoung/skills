@@ -206,8 +206,8 @@ def overlay_working_tree(snapshot_root: Path) -> None:
 
 def contract_hash(skill_path: Path) -> str:
     files = [skill_path / "SKILL.md"]
-    files.extend(path for path in (skill_path / "scripts").glob("*.py") if path.name != "validate_fdd.py")
-    files.extend((skill_path / "references" / "document-types" / "design-system").rglob("*.md"))
+    files.extend((skill_path / "scripts").glob("*.py"))
+    files.extend((skill_path / "references" / "document-types").rglob("*.md"))
     files.extend(
         skill_path / "references" / "shared" / name
         for name in ("human-readable-writing.md", "source-grounding.md", "existing-document-edits.md", "drafting-and-revision.md")

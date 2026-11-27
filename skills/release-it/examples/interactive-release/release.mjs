@@ -184,7 +184,7 @@ try {
       }
     }, { prompt });
   } catch (error) {
-    // release-it 21.0.1 logs API errors before rethrowing them.
+    // release-it 21.1.3 logs API errors before rethrowing them.
     hasReportedReleaseError = true;
     throw error;
   }

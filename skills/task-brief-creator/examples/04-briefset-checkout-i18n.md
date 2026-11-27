@@ -1,18 +1,8 @@
 # Example 04 — Briefset mode: checkout i18n migration
 
-This example shows the full briefset flow on a checkout i18n migration
-that splits cleanly into multiple execution contexts.
+This example shows the full briefset flow on a checkout i18n migration that splits cleanly into multiple execution contexts.
 
-It demonstrates: (a) why the request is a briefset rather than a single
-brief, (b) the Stage 4 decomposition walk (Korean), (c) the parent
-brief, (d) the child briefs, and (e) the validator output.
-
-**What this example produces:** a parent brief that *coordinates* and
-three child briefs that *execute*. A coding agent never picks up the
-parent to write code — the parent tells the orchestrator (or a human
-lead) which child can start now and which has to wait. Each child is a
-standalone work instruction that a coding agent picks up cold, exactly
-the way it would pick up a single-mode brief.
+**What this example produces:** a parent brief that *coordinates* and three child briefs that *execute*. A coding agent never picks up the parent to write code — the parent tells the orchestrator (or a human lead) which child can start now and which has to wait. Each child is a standalone work instruction that a coding agent picks up cold, exactly the way it would pick up a single-mode brief.
 
 ---
 
@@ -23,8 +13,7 @@ the way it would pick up a single-mode brief.
 > - 카트 카피 새로 받음 (마케팅에서 보내준 거)
 > - 결제 시 입력 검증 에러 메시지가 영어로 떠서 한국어 카피로 교체
 >
-> 다 끝나면 결제 화면에서 영어 텍스트가 한 글자도 안 남아야 함.
-> 메시지 파일은 `src/i18n/messages.ko.json` 한 곳에 모임.
+> 다 끝나면 결제 화면에서 영어 텍스트가 한 글자도 안 남아야 함. 메시지 파일은 `src/i18n/messages.ko.json` 한 곳에 모임.
 
 ---
 
@@ -35,25 +24,18 @@ Anchor coverage:
 - **PROBLEM** ✓ — checkout has English hardcoded text leaking through.
 - **GOAL** ✓ — no English remaining in the checkout flow.
 - **SCOPE** ✓ — checkout (cart, message keys, validation copy).
-- **TARGET** ✓ — `src/i18n/messages.ko.json` and the checkout components
-  that consume it.
+- **TARGET** ✓ — `src/i18n/messages.ko.json` and the checkout components that consume it.
 
 Four anchors → CONTINUE.
 
 Briefset signals (per `references/briefset.md`):
 
-- ✅ Each subtask has its own completion criterion (keys cleaned / cart
-  copy applied / validation copy translated).
-- ✅ Each subtask touches a distinct primary entry point — message-key
-  refactor (`src/i18n/`), cart UI components, validation pipeline.
-- ✅ Work types mix: cleaning hardcoded strings is `refactor`, applying
-  marketing copy is `feat`-ish content change, validation copy fix is
-  `fix`.
-- ✅ Shared conflict surface: `src/i18n/messages.ko.json` — every child
-  edits this file.
+- ✅ Each subtask has its own completion criterion (keys cleaned / cart copy applied / validation copy translated).
+- ✅ Each subtask touches a distinct primary entry point — message-key refactor (`src/i18n/`), cart UI components, validation pipeline.
+- ✅ Work types mix: cleaning hardcoded strings is `refactor`, applying marketing copy is `feat`-ish content change, validation copy fix is `fix`.
+- ✅ Shared conflict surface: `src/i18n/messages.ko.json` — every child edits this file.
 
-Multiple signals strong → the author selects **briefset mode** and reports
-the evidence before Stage 2; no output-format confirmation is needed.
+Multiple signals strong → the author selects **briefset mode** and reports the evidence before Stage 2; no output-format confirmation is needed.
 
 ---
 
@@ -83,38 +65,28 @@ read src/checkout/PaymentForm.tsx (validation block)
 
 Findings tagged per child:
 
-- **01 message-keys** — `src/checkout/PaymentForm.tsx:42-78` has hardcoded
-  English error labels; message-key namespacing inconsistent
-  (`payment.err.*` vs `payment_err_*`).
-- **02 cart-copy** — `src/checkout/Cart.tsx`, `src/checkout/CartItem.tsx`
-  consume marketing-owned strings; new copy file pending from PM.
-- **03 validation-copy** — `src/checkout/validation.ts` returns raw
-  English strings from Zod schema; needs to return message keys instead.
+- **01 message-keys** — `src/checkout/PaymentForm.tsx:42-78` has hardcoded English error labels; message-key namespacing inconsistent (`payment.err.*` vs `payment_err_*`).
+- **02 cart-copy** — `src/checkout/Cart.tsx`, `src/checkout/CartItem.tsx` consume marketing-owned strings; new copy file pending from PM.
+- **03 validation-copy** — `src/checkout/validation.ts` returns raw English strings from Zod schema; needs to return message keys instead.
 
-All three children touch `src/i18n/messages.ko.json` → **conflict
-hotspot**.
+All three children touch `src/i18n/messages.ko.json` → **conflict hotspot**.
 
 ---
 
 ## Stage 4 — Briefset User Decision Table (Korean)
 
-코드베이스와 입력으로 명백한 분해, 자식별 작업 유형, 실행 순서,
-병렬화, 충돌 소유권은 작성 담당이 확정한다. 표에는 마케팅 원문의
-수용 기준과 영어 fallback 일정처럼 사용자만 소유하는 결정만 남긴다.
+코드베이스와 입력으로 명백한 분해, 자식별 작업 유형, 실행 순서, 병렬화, 충돌 소유권은 작성 담당이 확정한다. 표에는 마케팅 원문의 수용 기준과 영어 fallback 일정처럼 사용자만 소유하는 결정만 남긴다.
 
 | 순번 | 내용 | 수정 추천안 | 근거 |
 |---|---|---|---|
-| 1 | 자식 02의 마케팅 카피 수용 기준 | `docs/marketing/cart-copy-2026-04.md`와 cart copy diff가 0이어야 한다. | 마케팅 승인 원문은 사용자가 소유하며, 원문 일치가 해석보다 안전한 완료 기준이다. |
-| 2 | 영어 fallback 처리 일정 | 비차단 질문으로 저장하고 EN locale rebuild 전까지 defer한다. | 현재 `ko` 범위는 안전하게 실행할 수 있지만, 별도 fallback 일정은 제품/릴리스 소유 결정이다. |
+| 1 | 카트 카피 교체의 완료 기준 | 화면의 카트 카피가 `docs/marketing/cart-copy-2026-04.md` 원문과 글자 그대로 일치해야(diff 0) 완료로 본다. | 마케팅 승인 원문은 사용자가 소유하며, 원문 일치가 해석보다 안전한 완료 기준이다. |
+| 2 | 영어 fallback 처리 일정 | 이번 작업에서는 영어 fallback을 넣지 않고, EN 로케일 재구축 때까지 미루는 기본값과 함께 후속 질문으로 남긴다. | `ko` 범위는 지금 안전하게 진행할 수 있지만, fallback 일정은 제품·릴리스 쪽에서 정할 일이다. |
 
 User: approve row 1, supply the approved file at `docs/marketing/cart-copy-2026-04.md`, and keep row 2 as a structured non-blocking question with the recommended default.
 
 ### Termination
 
-차단 사용자 결정은 모두 확정됐다. 코드베이스 프로브는 분해,
-작업 유형, 순서, 병렬화, 충돌 규칙을 해결했고, 영어 fallback만
-안전한 기본값과 재확인 시점을 가진 parent `Open Questions`로 남긴다.
-Stage 5로 이동.
+진행을 막는 사용자 결정은 모두 확정됐다. 영어 fallback 일정만 기본값과 재확인 시점을 붙여 부모 계획서의 `Open Questions`에 남기고 Stage 5로 넘어간다.
 
 ---
 
@@ -173,7 +145,7 @@ docs/briefs/2026-04-30-briefset-checkout-i18n.md
 
 ## Global Acceptance Criteria
 - [ ] Inspect rendered Cart, CartItem, and PaymentForm on the Korean locale, including populated/empty cart, required-field errors, and every validation error category returned by the reviewed schema; no user-visible English remains in these states, including attributes and resolved translation values.
-- [ ] Record a non-empty checkout source-file inventory for the scans below. Treat their results as checks of the stated source patterns only; no-match results alone do not prove rendered-language coverage.
+- [ ] Record a non-empty checkout source-file inventory for the scans below; the scans check only the listed source patterns and do not replace the rendered-state inspection above.
 - [ ] `rg -n '>[[:space:]]*[A-Za-z][^<{]*<' src/checkout` returns exit 1 after scanning all checkout JSX files — no matches of this literal JSX-text pattern remain.
 - [ ] `rg -n 'message:[[:space:]]*"[A-Za-z]' src/checkout` returns exit 1 after scanning validation sources — no matches of this literal validation-message pattern remain.
 - [ ] `rg "[가-힣]" src/checkout` returns exit 1 after scanning all checkout sources — Korean copy resolves from `src/i18n/messages.ko.json` rather than hardcoded component text.
@@ -277,8 +249,9 @@ refactor
 feat
 
 ## Current State (As-Is)
-- [confirmed] `Cart.tsx` and `CartItem.tsx` render marketing-owned text — Evidence: the Stage 3 checkout consumer review.
-- [confirmed] The user selected `docs/marketing/cart-copy-2026-04.md` as the copy authority — Evidence: Stage 4 row 1; availability and contents are checked before editing.
+- [confirmed] The `Cart` component renders marketing-owned cart copy — Evidence: the cart text rendered by `Cart` in `src/checkout/Cart.tsx`.
+- [inferred] `CartItem` in `src/checkout/CartItem.tsx` renders the per-item part of that copy — Confirm by: inspect the `CartItem` copy bindings left by child 01 in Stage 1.
+- [inferred] `docs/marketing/cart-copy-2026-04.md` covers every cart and cart-item string — Confirm by: map every rendered `Cart` and `CartItem` string to a source item in Stage 1 and record any string without one.
 
 ## Desired Outcome (To-Be)
 - Cart and cart-item copy matches the approved Korean source verbatim.
@@ -294,6 +267,7 @@ feat
 - [deferred] English fallback strings and the `en` locale rebuild.
 
 ## Constraints
+- `docs/marketing/cart-copy-2026-04.md` is the copy authority; rendered cart copy must match it verbatim.
 - Touch only Korean (`ko`) copy and use the existing `react-i18next` setup.
 - Child 02 owns `cart.*`; do not reorder unrelated message keys or edit `src/i18n/index.ts` after child 01 lands.
 - Preserve the approved wording, punctuation, interpolation names, and cart actions. Ask before choosing among conflicting source versions.
@@ -325,7 +299,7 @@ feat
 - Ends when:
   - [ ] All mapped values match and interpolation renders without missing-key warnings.
 - Handoff: Global verification receives `docs/briefs/handoffs/checkout-i18n/cart-copy.md` after child 01 integration and the child 03 join.
-- Replan when: A mismatch cannot be fixed inside cart-owned values/bindings; stop and return to the parent for bounded correction, re-verification, and relationship review.
+- Replan when: A mismatch cannot be fixed inside cart-owned values/bindings; stop and return to the parent to scope the correction, re-run the cart-copy comparison, and update the parent join before resuming.
 
 ## Side Effect Checkpoints
 - [ ] Existing cart actions and empty/populated state checks still pass.
@@ -338,7 +312,7 @@ feat
 - [ ] The parent join can read the completed `docs/briefs/handoffs/checkout-i18n/cart-copy.md` evidence.
 
 ## Open Questions
-- None — the user selected the copy authority; source availability and any conflicting revisions are explicit start/replan boundaries.
+- None — the copy authority is fixed in Constraints; source availability and any conflicting revisions are explicit start/replan boundaries.
 ```
 
 ## Child brief 03 — validation-copy (saved file)
@@ -350,15 +324,15 @@ feat
 fix
 
 ## Current State (As-Is)
-- [confirmed] Checkout validation returns raw English messages from its Zod schema — Evidence: Stage 3 inspection of `src/checkout/validation.ts`.
+- [confirmed] Checkout validation returns raw English messages from its Zod schema — Evidence: the schema message strings in `src/checkout/validation.ts`.
 - [inferred] Returning the established message keys and resolving their Korean values can close the language gap without changing validation decisions — Confirm by: pin each existing validation category and its display binding in Stage 1.
 
 ## Reproduction
 - Steps: open the Korean checkout PaymentForm; submit missing required values, then exercise each invalid-input category in the existing validation schema.
-- Observed: English validation messages are reported by the input and visible in the reviewed schema; record the actual rendered messages in Stage 1.
+- Observed: the Zod schema defines English validation messages; record the actual rendered messages in Stage 1.
 - Expected: each category displays Korean wording while the same input remains valid or invalid as before.
 - Environment: the project's existing checkout development/test environment with locale set to `ko`; record the tested build and cases before edits.
-- Frequency: not measured yet — record the outcome of each existing validation case during reproduction rather than inventing a rate.
+- Frequency: not measured yet — record the outcome of each existing validation case during Stage 1 reproduction.
 
 ## Desired Outcome (To-Be)
 - Checkout validation messages resolve the established `payment.err.*` Korean values.
@@ -396,7 +370,7 @@ fix
 - Ends when:
   - [ ] Each category has a pinned result and a known display binding before correction.
 - Handoff: Stage 2 receives the baseline and remaining language failures, or global verification receives no-change evidence at `docs/briefs/handoffs/checkout-i18n/validation-copy.md`.
-- Replan when: The evidence is incomplete or a category needs a user-owned wording/contract decision; stop dependent edits and return to the parent for clarification and bounded correction/re-verification before recalculating the route.
+- Replan when: The evidence is incomplete or a category needs a user-owned wording/contract decision; stop dependent edits and return to the parent for the decision; after the correction, re-run the category baseline and recalculate the route.
 
 ### Stage 2 — Correct message resolution and verify behavior
 - Starts when: Stage 1 supplies the category baseline, agreed wording, and remaining language failures.
@@ -406,7 +380,7 @@ fix
 - Ends when:
   - [ ] Every pinned category renders the expected Korean message without changing its validity decision.
 - Handoff: Global verification receives `docs/briefs/handoffs/checkout-i18n/validation-copy.md` after child 01 integration and the child 02 join.
-- Replan when: Correct rendering requires an external return-shape or validation-rule change; stop and return to the parent for a user decision, bounded correction, re-verification, and handoff recalculation.
+- Replan when: Correct rendering requires an external return-shape or validation-rule change; stop and return to the parent for a user decision, then re-run the recorded validation cases and update the handoffs before resuming.
 
 ## Side Effect Checkpoints
 - [ ] Valid checkout still submits successfully using the existing scenario.
@@ -422,53 +396,30 @@ fix
 - None — source and contract uncertainties are explicit investigation/replan boundaries; any new user-owned choice is asked before its dependent edit.
 ```
 
-
 ---
 
 ## Picked Up Cold — How Coding Agents Map onto Waves
 
-The parent's `Execution Order` translates directly to coding-agent
-scheduling:
+The parent's `Execution Order` translates directly to coding-agent scheduling:
 
-- **Wave 1 (sequential).** A single coding agent picks up child 01
-  (`refactor-...01-message-keys`). Its `Behavior Contract` lets the agent
-  verify "no rendered text changed" mechanically (existing tests + manual
-  diff on the cart and payment screens). Wave 1 lands behind a green test
-  suite before Wave 2 starts.
+- **Wave 1 (sequential).** A single coding agent picks up child 01 (`refactor-...01-message-keys`). Its `Behavior Contract` lets the agent verify "no rendered text changed" mechanically (existing tests + manual diff on the cart and payment screens). Wave 1 lands behind a green test suite before Wave 2 starts.
 - **Wave 2 (parallel).** Two coding agents start at the same time:
-  - Agent A picks up child 02 (`feat-...02-cart-copy`) and works only
-    inside the `cart.*` key namespace.
-  - Agent B picks up child 03 (`fix-...03-validation-copy`) and works
-    only inside the `payment.err.*` key namespace.
-  - Both touch `src/i18n/messages.ko.json`, but child 02 owns `cart.*`
-    and child 03 owns `payment.err.*`; neither edits `src/i18n/index.ts`
-    after child 01 establishes exports. The parent's pairwise hotspot
-    rule makes that parallel boundary and rebase join explicit.
+  - Agent A picks up child 02 (`feat-...02-cart-copy`) and works only inside the `cart.*` key namespace.
+  - Agent B picks up child 03 (`fix-...03-validation-copy`) and works only inside the `payment.err.*` key namespace.
+  - Both touch `src/i18n/messages.ko.json`, but child 02 owns `cart.*` and child 03 owns `payment.err.*`; neither edits `src/i18n/index.ts` after child 01 establishes exports. The parent's pairwise hotspot rule makes that parallel boundary and rebase join explicit.
 
 A coding agent picking up child 01 cold should:
 
-1. Open `src/checkout/PaymentForm.tsx` lines 42–78 and confirm the
-   inline English error labels listed in `Current State (As-Is)`.
-2. Open `src/i18n/messages.ko.json`, identify the duplicate
-   `payment_err_*` keys, and plan the collapse to `payment.err.*`.
-3. Add keys initialized with the current rendered values for `cart.*` and `payment.err.*` so
-   children 02 and 03 have a stable surface to fill (per child 01's
-   `Acceptance Criteria` #3).
-4. Run the unit + Cypress suites continuously to keep the `Behavior
-   Contract` verifiable.
-
-The agent does **not** edit cart copy text (per `Out of Scope` — that's
-child 02), does not translate Zod validation strings (per `Out of
-Scope` — that's child 03), and does not touch the English locale (per
-`Shared Constraints`).
+1. Open `src/checkout/PaymentForm.tsx` lines 42–78 and confirm the inline English error labels listed in `Current State (As-Is)`.
+2. Open `src/i18n/messages.ko.json`, identify the duplicate `payment_err_*` keys, and plan the collapse to `payment.err.*`.
+3. Add keys initialized with the current rendered values for `cart.*` and `payment.err.*` so children 02 and 03 have a stable surface to fill (per child 01's `Acceptance Criteria` #3).
+4. Run the unit + Cypress suites continuously to keep the `Behavior Contract` verifiable.
 
 ---
 
 ## Stage 6 — Validator output
 
-`<skill-dir>` is the installed skill package directory (the directory
-containing `SKILL.md`) — the validator ships with the skill, not with
-the user's repository.
+`<skill-dir>` is the installed skill package directory (the directory containing `SKILL.md`) — the validator ships with the skill, not with the user's repository.
 
 ```bash
 $ python3 <skill-dir>/scripts/validate_briefset.py \
@@ -488,6 +439,7 @@ Validating 3 child brief(s)...
   ✓ Section `## Shared Constraints` present.
   ✓ Section `## Global Acceptance Criteria` present.
   ✓ Section `## Open Questions` present.
+  ✓ Parent section order matches the canonical template.
   ✓ `## Child Briefs` uses `- [ ]` checklist format.
   ✓ `## Global Acceptance Criteria` uses `- [ ]` checklist format.
   ✓ `## Execution Order` references every child exactly once with a concrete deliverable location.
@@ -500,40 +452,6 @@ Validating 3 child brief(s)...
 PASS - structural checks OK (0 warning(s)).
 ```
 
-One `validate_briefset.py` invocation covers the whole set — it re-runs
-`validate_brief.py`'s structural checks transitively on every referenced
-child, so the three `child ...: structural checks OK.` lines above *are*
-the per-child validation.
+One `validate_briefset.py` invocation covers the whole set — it re-runs `validate_brief.py`'s structural checks transitively on every referenced child, so the three `child ...: structural checks OK.` lines above *are* the per-child validation.
 
-**Stage 5.7 note** — briefset mode does not start cold-pickup by itself.
-The Stage 5.6 self-check runs on the parent and on each child, and the
-Stage 6 banner reports the structural result and the self-check outcome
-without an unrequested optional-check line or invitation.
-If the user requests it, the parent and each of the three children get
-one fresh read-only sub-agent and one pass each (four spawns, no loop);
-with five or more children the agent would state the spawn count and
-offer a parent-plus-three sample first.
-With all four reports clean, the banner shows the collapsed form
-`cold-pickup: parent + 3/3 children clean`.
-See `references/cold-pickup.md` for the report schema and routing, and
-example 05 for a full single-file pass.
-
----
-
-## What this example shows
-
-- **Briefset trigger is the *signal mix*, not the input length.** The
-  Korean input is short, but mixed types + shared hotspot + ordered
-  dependency are enough.
-- **Per-child work types stay distinct.** Flattening this to a single
-  `feat` would lose the `refactor`'s behavior-preservation discipline
-  and the `fix`'s reproduction-first framing.
-- **Conflict hotspots are separate from dependencies.** 02 and 03 have
-  no functional dependency on each other but both edit a shared file —
-  the parent calls that out so a downstream agent does not run them
-  in unmanaged parallel.
-- **Status lives only on the parent.** Child briefs do not carry their
-  own checkbox.
-- **Children are independently executable.** A downstream agent picking
-  up 02 alone has every piece of context it needs from the child brief
-  itself.
+**Stage 5.7 note** — briefset mode does not start cold-pickup by itself. If the user requests it, the parent and each of the three children get one fresh read-only sub-agent and one pass each (four spawns, no loop). With all four reports clean, the banner shows the collapsed form `cold-pickup: parent + 3/3 children clean`. See `references/cold-pickup.md` for the report schema and routing, and example 05 for a full single-file pass.

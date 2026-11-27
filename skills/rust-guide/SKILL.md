@@ -59,6 +59,6 @@ Read the relevant section of the closest reference first. Long references have c
 
 - Use the relevant topic's explanation, conditions, and examples to answer the question. Distinguish language/API guarantees, conditional practices, and measured outcomes.
 - Match APIs and dependencies to the project's features, MSRV, target, and runtime. Explain relevant nightly alternatives separately from the stable approach.
-- Release references cover Rust 1.80 onward. Each example has its own API requirements; edition 2024 requires Rust 1.85 even when its APIs are older. An older MSRV needs a supported edition and compatible APIs.
+- Release references cover Rust 1.80 through 1.100.0; for a later release, read its official release notes before relying on version-specific claims. Each example has its own API requirements; edition 2024 requires Rust 1.85 even when its APIs are older. An older MSRV needs a supported edition and compatible APIs.
 - Apply the library catalog's role and suitability conditions. Popularity narrows candidates; it does not establish correctness or a performance benefit.
 - State assumptions and unresolved version or target constraints where they affect the answer. Describe compilation, target execution, and measured behavior only to the extent actually established.

@@ -19,9 +19,10 @@ Collect resolved `react/react-dom`, rendering mode and entry/root calls, warning
 | Root owner unresolved | compatibility hold | Do not partially convert | none |
 | React 18-only app ref/Context | React 18 syntax | Use `forwardRef`, `useContext`, `.Provider` as required | none |
 | Library/mixed public consumers | preserve contract | Keep compatible surface | [structure/public API](react-structure-public-api.md) |
-| Compiler baseline/config supplied | compatibility check | Preserve React 18 target/runtime; fix evidenced mismatch | [render performance](react-render-performance.md) |
+| Existing Compiler config, compatibility repair | compatibility check | Preserve React 18 target/runtime; fix evidenced mismatch from current source and diagnostics without a performance baseline | none |
+| Performance adoption with baseline | compatibility check | Preserve React 18 target/runtime; compare the same metric | [render performance](react-render-performance.md) |
 | Existing Compiler config needs build-adapter work | build integration | Preserve target `'18'`, `react-compiler-runtime`, options, and diagnostics | build-tool guidance |
-| Compiler baseline/config absent | blocked | Do not enable/remove memoization | [render performance](react-render-performance.md) |
+| Performance adoption lacks baseline | blocked | Do not enable/remove memoization | [render performance](react-render-performance.md) |
 
 ## Actions and Prohibitions
 

@@ -7,8 +7,7 @@
 
 ## Migrating from `Thread` / `ExecutorService` / `Task.Backgroundable` to coroutines
 
-The recipe most legacy plugins need. Apply this stepwise; each row is a self-contained
-swap.
+The recipe most legacy plugins need. Apply this stepwise; each row is a self-contained swap.
 
 | Old | New |
 |---|---|
@@ -86,17 +85,11 @@ class MyService(
 Notes on the migration:
 
 - `Disposable` and explicit cancellation disappear; the injected `cs` covers cancellation.
-- `invokeLater + WriteCommandAction.runWriteCommandAction` can collapse into the public
-  `@Experimental` suspending `writeCommandAction(project, name) { }` when the supported
-  version range accepts that API. Otherwise keep the stable classic call.
-- The suspending `writeCommandAction` keeps the EDT and undo contracts. In contrast,
-  `writeAction` runs the write phase on a background thread in 2026.2.2; substituting it
-  would change behavior.
+- `invokeLater + WriteCommandAction.runWriteCommandAction` can collapse into the public `@Experimental` suspending `writeCommandAction(project, name) { }` when the supported version range accepts that API. Otherwise keep the stable classic call.
+- The suspending `writeCommandAction` keeps the EDT and undo contracts. In contrast, `writeAction` runs the write phase on a background thread since 2026.2; substituting it would change behavior.
 - `serviceImplementation` XML registration disappears in favor of `@Service`.
 
-When the legacy code is exposed publicly (other plugins or non-coroutine call sites), keep
-the suspending core and add a thin blocking wrapper using `runBlockingCancellable` — but
-*only* for BGT call sites:
+When the legacy code is exposed publicly (other plugins or non-coroutine call sites), keep the suspending core and add a thin blocking wrapper using `runBlockingCancellable` — but *only* for BGT call sites:
 
 ```kotlin
 @RequiresBackgroundThread
@@ -105,16 +98,13 @@ fun analyzeBlocking(file: VirtualFile): List<String> = runBlockingCancellable {
 }
 ```
 
-For EDT call sites, do not block; either offer a coroutine API or schedule with
-`cs.launch { … }`.
+For EDT call sites, do not block; either offer a coroutine API or schedule with `cs.launch { … }`.
 
 ### Preserve behavior across platform versions
 
 - On 2024.1-era targets, `writeAction` switched to EDT and was experimental.
 - On 2025.1+, `edtWriteAction` is the stable, explicit choice for legacy EDT writes.
-- At `idea/2026.2.2` (`1c7e601c0423e544917046c23763b15d0282e2a3`), `writeAction`
-  delegates to `backgroundWriteAction`. Audit every called API before choosing it.
-- For a coroutine launched by an action, use `AnActionEvent.coroutineScope` on 2026.1+,
-  `currentThreadCoroutineScope()` on 2024.2–2025.3, or an injected service scope on 2024.1.
+- At `idea/2026.3` (`c91871ae2864649d952825cff72569e3db0e7ac6`), `writeAction` delegates to `backgroundWriteAction`. Audit every called API before choosing it.
+- For a coroutine launched by an action, use `AnActionEvent.coroutineScope` on 2026.1+, `currentThreadCoroutineScope()` on 2024.2–2025.3, or an injected service scope on 2024.1.
 
 See the fixed-source links and public API status in `04_threading_coroutines_2024.md`.

@@ -207,7 +207,7 @@ patterns:
 cookie_attributes:
   Secure: "true — only transmitted over HTTPS"
   HttpOnly: "true — not accessible via JavaScript"
-  SameSite: "Lax or Strict — prevents CSRF"
+  SameSite: "Lax or Strict — CSRF defense in depth; does not replace a CSRF token (see 4b)"
   Path: "/ or specific path"
   Max-Age: "reasonable session duration"
   prefix: "__Host- (strongest) or __Secure-"
@@ -242,7 +242,7 @@ session_regeneration:
     rails: "reset_session in SessionsController#create"
     laravel: "Session::regenerate() or $request->session()->regenerate()"
     aspnet: "HttpContext.Session.Clear() + generate new session on login"
-    flask: "session.regenerate() or clear and recreate session after login"
+    flask: "session.clear() at login, then set the user's session values (Flask has no session.regenerate(); the default session is a signed cookie)"
     fastapi: "Create new session token and invalidate old one in login handler"
 ```
 
@@ -257,7 +257,7 @@ principle: "Verify that state-changing requests originate from the application i
 
 defense_layers:
   layer_1_samesite_cookie:
-    description: "Primary defense — prevents cookies from being sent on cross-origin requests"
+    description: "Defense in depth — withholds cookies from cross-site requests (Lax still sends them on top-level GET navigations, and sibling subdomains count as same-site). Not a replacement for a CSRF token unless every OWASP 'SameSite may be sufficient on its own' condition holds"
     fix_by_framework:
       express: "cookie: { sameSite: 'lax' } or 'strict'"
       django: "SESSION_COOKIE_SAMESITE = 'Lax'"
@@ -266,9 +266,9 @@ defense_layers:
       laravel: "'same_site' => 'lax' in config/session.php"
 
   layer_2_csrf_token:
-    description: "Synchronizer token pattern — required when SameSite alone is insufficient (e.g., same-site subdomain attacks)"
+    description: "Synchronizer token pattern — CSRF token defense for stateful apps with cookie-based sessions; prefer the framework's built-in protection below. Stateless apps use a signed double-submit cookie"
     fix_by_framework:
-      express: "app.use(csurf({ cookie: { sameSite: 'strict', httpOnly: true } }))"
+      express: "Express has no built-in CSRF middleware, and csurf is archived. Store a synchronizer token in express-session and verify it on every state-changing request, or use a signed double-submit cookie (HMAC bound to the session)"
       django: "CsrfViewMiddleware (enabled by default), {% csrf_token %} in forms"
       spring: "CsrfConfigurer enabled by default in Spring Security; use CsrfTokenRequestAttributeHandler"
       rails: "protect_from_forgery with: :exception (enabled by default)"
@@ -301,15 +301,15 @@ anti_patterns:
 ```yaml
 algorithm_selection:
   symmetric_encryption: "AES-256-GCM or ChaCha20-Poly1305 (authenticated encryption)"
-  asymmetric_encryption: "RSA-2048+ (OAEP padding) or ECDH P-256+"
-  signing: "ECDSA P-256, Ed25519, or RSA-2048+ PSS"
+  asymmetric_encryption: "RSA-3072+ (OAEP padding) or ECDH P-256+"
+  signing: "ECDSA P-256, Ed25519, or RSA-3072+ PSS"
   hashing: "SHA-256, SHA-384, SHA-512, SHA-3, BLAKE2"
   password_hashing: "Argon2id, bcrypt, scrypt, PBKDF2 (see Section 2)"
   mac: "HMAC-SHA256 or KMAC"
 
 deprecated_do_not_use:
   - "DES, 3DES, RC4, Blowfish (symmetric)"
-  - "RSA < 2048 bits, DSA (asymmetric)"
+  - "RSA < 3072 bits (below 128-bit security, ASVS V11.2.3), DSA (asymmetric)"
   - "MD5, SHA-1 (hashing for security)"
   - "ECB mode (block cipher mode)"
   - "PKCS#1 v1.5 padding for RSA encryption"
@@ -355,12 +355,14 @@ csp_recommended:
       img-src 'self' data:;
       font-src 'self';
       connect-src 'self';
+      object-src 'none';
       frame-ancestors 'none';
-      base-uri 'self';
+      base-uri 'none';
       form-action 'self'
   notes:
     - "Avoid 'unsafe-inline' for script-src"
     - "Use nonce-based or hash-based CSP for inline scripts if needed"
+    - "ASVS V3.4.3 minimum: object-src 'none', base-uri 'none', and an allowlist or nonces/hashes; L3 requires a per-response policy with nonces or hashes"
     - "Report-uri or report-to for monitoring violations"
 
 rich_text_sanitization:
@@ -483,13 +485,10 @@ required_headers:
     value: "nosniff"
     purpose: "Prevent MIME-type sniffing"
 
-  - header: "X-Frame-Options"
-    value: "DENY or SAMEORIGIN"
-    purpose: "Prevent clickjacking"
-
   - header: "Content-Security-Policy"
-    value: "default-src 'self'; script-src 'self'; ..."
-    purpose: "Prevent XSS and data injection"
+    value: "default-src 'self'; script-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'; ..."
+    purpose: "Prevent XSS and data injection; frame-ancestors prevents clickjacking"
+    note: "ASVS V3.4.6: X-Frame-Options is obsolete and may not be relied upon; use frame-ancestors"
 
   - header: "Referrer-Policy"
     value: "strict-origin-when-cross-origin"

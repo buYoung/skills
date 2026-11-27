@@ -80,7 +80,7 @@ Describe specifically what to change, add, or remove.
 - **Tone**: Professional
 - **Pipeline pattern**: [A. Blank→Complete / B. Draft→Complete / C. Polish only]
 
-## Background & Purpose
+## Purpose / Background
 
 [Describe why this feature/system is needed.
 Include specific context: user problems, business requirements, or technical debt.]
@@ -158,7 +158,7 @@ User: "Create a global hotkey feature for the corral project. It's a front-end f
 
 **1) Create main issue:**
 ```
-Linear:save_issue
+save_issue
   title: "[corral] Implement global hotkey system"
   team: "private"
   project: "corral"
@@ -169,7 +169,7 @@ Linear:save_issue
 
 **2) Create sub-issues:**
 ```
-Linear:save_issue
+save_issue
   title: "[corral] Configure Tauri global hotkey plugin"
   team: "private"
   project: "corral"
@@ -178,7 +178,7 @@ Linear:save_issue
   description: (filled from sub template)
   → Result: PRI-43
 
-Linear:save_issue
+save_issue
   title: "[corral] Build hotkey settings UI component"
   team: "private"
   project: "corral"
@@ -208,61 +208,54 @@ User: "Create a PRD for a real-time notification system. Project is corral. Star
 
 **1) Pattern selection:** Blank state → Pattern A (content-strategy → content-production → content-humanizer → copy-editing)
 
-**2) Description writing process:**
-- content-strategy: Plan notification system PRD structure (WebSocket connection, notification CRUD API, UI components, notification settings)
-- content-production: Draft with concrete specs (endpoints, data model, component structure)
-- content-humanizer: Remove AI patterns, convert to natural Korean technical writing
-- copy-editing: Clarity + Specificity + So What review
-
-**3) Create main issue:**
+**2) Create main issue:**
 ```
-Linear:save_issue
+save_issue
   title: "[corral] Implement real-time notification system"
   team: "private"
   project: "corral"
   description: |
     ## PRD Context
 
-    - **Topic**: Real-time notification system
+    - **Topic**: 실시간 알림 시스템
     - **Target audience**: Fullstack developers
     - **Language**: Korean
     - **Tone**: Professional
     - **Pipeline pattern**: A. Blank→Complete
 
-    ## Background & Purpose
+    ## Purpose / Background
 
-    Users need to see key in-app events (comments, mentions, status changes)
-    in real time. Currently they must refresh to see new notifications,
-    degrading user experience.
+    사용자는 댓글, 멘션, 상태 변경 같은 주요 인앱 이벤트를 실시간으로
+    확인해야 합니다. 지금은 페이지를 새로고침해야 새 알림이 보입니다.
 
     ## Goal
 
-    Build a WebSocket-based real-time notification system that delivers
-    notifications to users immediately when events occur.
+    이벤트가 발생하면 바로 사용자에게 알림을 보내는 WebSocket 기반
+    실시간 알림 시스템을 만듭니다.
 
     ## Acceptance Criteria
 
-    - [ ] Notifications are received in real time via WebSocket connection
-    - [ ] Notification list API supports pagination (GET /api/notifications?cursor=)
-    - [ ] Unread notification count is displayed in the header
-    - [ ] Clicking a notification navigates to the relevant resource
+    - [ ] WebSocket 연결로 알림을 실시간으로 받는다
+    - [ ] 알림 목록 API가 페이지네이션을 지원한다 (GET /api/notifications?cursor=)
+    - [ ] 헤더에 읽지 않은 알림 수가 표시된다
+    - [ ] 알림을 클릭하면 해당 리소스로 이동한다
 
     ## Scope
 
-    **In Scope:** WebSocket server, notification CRUD API, notification UI components
-    **Out of Scope:** Email/push notifications, notification settings page (handled in follow-up issues)
+    **In Scope:** WebSocket 서버, 알림 CRUD API, 알림 UI 컴포넌트
+    **Out of Scope:** 이메일/푸시 알림, 알림 설정 페이지 (후속 이슈에서 다룸)
 
     ## Impact Area
 
-    Backend: notifications module, WebSocket gateway
-    Frontend: header component, notification dropdown
+    백엔드: notifications 모듈, WebSocket 게이트웨이
+    프론트엔드: 헤더 컴포넌트, 알림 드롭다운
   priority: 2
   → Result: PRI-50
 ```
 
-**4) Create sub-issues:**
+**3) Create sub-issues:**
 ```
-Linear:save_issue
+save_issue
   title: "[corral] Create notification data model and migration"
   team: "private"
   project: "corral"
@@ -271,7 +264,7 @@ Linear:save_issue
   description: |
     ## Task Description
 
-    Create the notifications table that serves as the foundation for the notification system.
+    notifications 테이블을 만드는 마이그레이션(롤백 포함)과 TypeORM 엔티티를 추가합니다.
 
     ## Target Location
 
@@ -281,23 +274,23 @@ Linear:save_issue
     ## Technical Details
 
     - **Data model**:
-      - notifications table: id(UUID), userId(FK), type(enum), title(varchar 200),
+      - notifications 테이블: id(UUID), userId(FK), type(enum), title(varchar 200),
         body(text), resourceType(varchar 50), resourceId(varchar 50),
         isRead(boolean, default false), createdAt(timestamp)
-      - Indexes: (userId, createdAt DESC), (userId, isRead)
+      - 인덱스: (userId, createdAt DESC), (userId, isRead)
 
     ## Done Criteria
 
-    - [ ] Running migration creates the notifications table
-    - [ ] Notification entity is defined with TypeORM decorators
-    - [ ] Rollback migration drops the table
+    - [ ] 마이그레이션을 실행하면 notifications 테이블이 생성된다
+    - [ ] Notification 엔티티가 TypeORM 데코레이터로 정의되어 있다
+    - [ ] 롤백 마이그레이션을 실행하면 테이블이 삭제된다
 
     ## Dependencies
 
     None
   → Result: PRI-51
 
-Linear:save_issue
+save_issue
   title: "[corral] Implement notification CRUD REST API"
   team: "private"
   project: "corral"
@@ -306,7 +299,8 @@ Linear:save_issue
   description: |
     ## Task Description
 
-    Implement the notification CRUD API.
+    알림 목록 조회(커서 기반 페이지네이션), 읽음 처리, 읽지 않은 알림 수 조회 API를
+    구현합니다. 읽음 처리는 본인 알림에만 허용합니다.
 
     ## Target Location
 
@@ -320,24 +314,24 @@ Linear:save_issue
         - Success: 200 + `{ items: Notification[], nextCursor: string | null }`
       - PATCH /api/notifications/:id/read
         - Success: 200 + `{ id, isRead: true }`
-        - Error: 404 (notification not found), 403 (not own notification)
+        - Error: 404 (알림 없음), 403 (본인 알림이 아님)
       - GET /api/notifications/unread-count
         - Success: 200 + `{ count: number }`
 
     ## Done Criteria
 
-    - [ ] GET /api/notifications works with cursor-based pagination
-    - [ ] PATCH /api/notifications/:id/read marks only own notifications as read
-    - [ ] GET /api/notifications/unread-count returns unread notification count
+    - [ ] GET /api/notifications가 커서 기반 페이지네이션으로 동작한다
+    - [ ] PATCH /api/notifications/:id/read는 본인 알림만 읽음으로 바꾼다
+    - [ ] GET /api/notifications/unread-count가 읽지 않은 알림 수를 반환한다
 
     ## Dependencies
 
-    Requires PRI-51 (data model) to be completed first
+    PRI-51(데이터 모델)이 먼저 완료되어야 합니다
   blockedBy: ["PRI-51"]
   → Result: PRI-52
 ```
 
-**5) Report results:**
+**4) Report results:**
 > Issues created
 >
 > **Main issue**: PRI-50 — [corral] Implement real-time notification system

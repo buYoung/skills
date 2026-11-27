@@ -142,5 +142,21 @@
   {
     "query": "Figma에서 모바일 앱 디자인시스템 라이브러리를 만들고 컴포넌트 variants와 auto layout을 실제 파일에 구성해줘.",
     "should_trigger": false
+  },
+  {
+    "query": "`tidyjson` CLI 패키지의 README.md를 새로 써줘. 처음 보는 개발자가 쓸 만한지 판단하고 설치부터 첫 JSON 정리 결과까지 따라갈 수 있어야 해.",
+    "should_trigger": true
+  },
+  {
+    "query": "docs/usage.md의 사용 설명서를 v2.1 기준으로 갱신해줘. 바뀐 설정 파일 위치와 새 `sync` 명령의 작업 흐름을 반영하고 기존 예시는 보존해.",
+    "should_trigger": true
+  },
+  {
+    "query": "docs/ui-kit/README.md가 우리 제품 UI 디자인시스템 문서 세트의 목차 역할을 하는데, 새로 추가된 Toast 컴포넌트 문서로 가는 링크와 정본 위치를 반영해줘.",
+    "should_trigger": true
+  },
+  {
+    "query": "구청 주민에게 보낼 단수 안내 문자를 쉬운 말로 다시 써줘. 날짜와 시간, 물을 받아 두는 방법만 정확하게 남겨줘.",
+    "should_trigger": false
   }
 ]

@@ -33,14 +33,14 @@ Declare extensions through `pi.extensions` or an `extensions/` directory. When a
 
 ## Manifest contract
 
-`package.json.pi` has four runtime fields: `extensions`, `skills`, `prompts`, and `themes`. Pi accepts a field only when its value is an array of strings.
+`package.json.pi` has four resource fields: `extensions`, `skills`, `prompts`, and `themes`. Pi accepts a resource field only when its value is an array of strings. Since `v1.5.0`, the `pi` object acts as a resource manifest only when at least one resource field remains after that check. Pi also reads the string `changelogPath`; see [Show a changelog](#show-a-changelog).
 
 | Input | Pi's behavior |
 |---|---|
 | No `pi`, or `pi` is `null`, an array, or a string | No manifest; conventional discovery applies |
-| `"pi": {}` | Manifest present but empty; a string entry loads no resources |
-| `"extensions": "./index.ts"` | Field silently discarded |
-| `"extensions": ["./index.ts", 42]` | Entire field silently discarded |
+| `"pi": {}`, or a `pi` object with only metadata such as `changelogPath` | No resource manifest; conventional discovery applies |
+| `"extensions": "./index.ts"` | Field silently discarded; without another resource field, conventional discovery applies |
+| `"extensions": ["./index.ts", 42]` | Entire field silently discarded, with the same fallback |
 | Valid array of paths | Pi discovers those resources |
 | Broken `package.json` | Manifest reading falls back; a later extension-package inspection can throw and prevent startup |
 
@@ -52,6 +52,14 @@ Manifest paths are relative to the package root. Pi does not reject `..` paths t
 - Glob discovery excludes path components that start with a dot. List a hidden or symlinked resource root directly when traversal cannot reach it.
 - Entries beginning with `!`, `+`, or `-` filter discovered candidates; they do not add source roots.
 - `pi.image`, `pi.video`, and npm `keywords: ["pi-package"]` are gallery metadata. They are not local loading requirements and do not guarantee a gallery listing.
+
+### Show a changelog
+
+Since `v1.5.0`, Pi shows release notes for packages that load at least one extension. It reads the file named by `pi.changelogPath`, or `CHANGELOG.md` in the package root when that field is absent; set `"changelogPath": ""` to disable it. The path must resolve to a regular file inside the package.
+
+- On the first launch after installation Pi records the package `version` and shows nothing. On a later fresh interactive launch it shows the entries newer than the last recorded version under "Extension Updates", and the `collapseChangelog` setting condenses them to one line per package.
+- Entries start at version headings such as `## [0.2.0]` and are compared with the last recorded version. An unreadable file shows no notes.
+- A root `CHANGELOG.md` is picked up without any manifest entry, so keep it written for users or disable it. Add the file to npm `files` when you intend to ship it.
 
 ## Discovery rules
 
@@ -109,7 +117,7 @@ The two forms do not treat the manifest the same way:
 | Manifest field | String entry | Object entry, user field omitted | Object entry, nonempty user filter |
 |---|---|---|---|
 | Nonempty paths | Manifest | Manifest | Manifest candidates, then user filter |
-| Omitted | None, when a manifest exists | Conventional directory | Conventional directory |
+| Omitted | None, when another resource field makes `pi` a manifest | Conventional directory | Conventional directory |
 | `[]` | None | None | Conventional directory |
 
 Under normal autoload, a **user** field `[]` disables the whole resource type. Do not confuse it with a **manifest** field `[]` or with an empty array in delta mode.
@@ -175,7 +183,7 @@ The `ms` dependency only illustrates the shape; do not add it unless the code us
 
 Keep host packages out of runtime `dependencies` and out of a compiled extension bundle. When physical copies exist, native ESM imports can bypass Pi's module mapping and produce duplicate classes and registries. Pi reports this configuration as a warning, not as a universal startup rejection. The warning also recognizes the legacy `@mariozechner/*` host names and `@sinclair/typebox`.
 
-Import only package roots and the public subpaths that the target version supports. At this revision, Pi maps selected entry points, including `@earendil-works/pi-ai/compat`, `@earendil-works/pi-ai/models`, `@earendil-works/pi-ai/oauth`, `@earendil-works/pi-ai/providers/all`, `typebox/compile`, and `typebox/value`. A mapped root does not make arbitrary subpaths such as `@earendil-works/pi-ai/dist/...` available.
+Import only package roots and the public subpaths that the target version supports. At this revision, Pi maps selected entry points, including `@earendil-works/pi-ai/compat`, `@earendil-works/pi-ai/models`, `@earendil-works/pi-ai/oauth`, `@earendil-works/pi-ai/providers/all`, `typebox/compile`, and `typebox/value`. A mapped root does not make arbitrary subpaths such as `@earendil-works/pi-ai/dist/...` available. Since `v1.5.0`, Pi maps the `@earendil-works/pi-ai` root and `compat` imports to the compat entry plus TypeBox's `Type`, `Static`, and `TSchema`, which Pi AI's own root no longer exports; import TypeBox from `typebox` so the code also type-checks against the published packages.
 
 Do not rely on another installed package's undeclared dependencies or on shared module globals. npm installs share a scope's `node_modules` tree, but that is not a contract for sharing singletons. Use `pi.events` to communicate between extensions.
 

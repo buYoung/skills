@@ -1,25 +1,16 @@
 # Briefset Mode
 
-`task-brief-creator-caveman` defaults to producing **one implementation work plan per invocation**.
-Briefset mode is the alternative path: a **parent execution-management plan** plus N **independently executable child plans**, used when a single task naturally splits into multiple execution contexts.
+`task-brief-creator-caveman` defaults to producing **one implementation work plan per invocation**. Briefset mode is the alternative path: a **parent execution-management plan** plus N **independently executable child plans**, used when a single task naturally splits into multiple execution contexts.
 
-The saved parent and every saved child use caveman full mode for body prose only.
-Their `Open Questions` bodies stay in normal prose, as do Stage 4 tables, Stage 6 reports, and every chat surface.
-Both parent and child plans preserve the same facts, bullets, section depth, execution relationships, and completion rules as their normal-mode equivalents; caveman changes register, never content or structure.
-Section headers, title lines, child paths, checklist markers, and the Auto-Clarity carve-outs in `caveman-style.md` stay verbatim.
+The saved parent and every saved child use caveman full mode for body prose only. Their `Open Questions` bodies stay in normal prose, as do Stage 4 tables, Stage 6 reports, and every chat surface. Both parent and child plans preserve the facts, bullets, section depth, execution relationships, and completion rules of their pre-conversion content inventories; caveman changes register, never content or structure. Section headers, title lines, child paths, checklist markers, and the Auto-Clarity carve-outs in `caveman-style.md` stay verbatim.
 
-The trigger is **coordination across multiple execution contexts**, not "this work is big".
-Independent completion criteria, mixed work types, ordered dependencies, parallelizable waves, or shared conflict hotspots that need coordination — those are the signals.
-Distinct entry-point files are supporting evidence only unless they map to independent work units.
-If strong coordination signals are absent, stay in single-brief mode no matter how long the input is.
+The trigger is **coordination across multiple execution contexts**, not "this work is big". Independent completion criteria, mixed work types, ordered dependencies, parallelizable waves, or shared conflict hotspots that need coordination — those are the signals. Distinct entry-point files are supporting evidence only unless they map to independent work units. If strong coordination signals are absent, stay in single-brief mode no matter how long the input is.
 
 ---
 
 ## When To Select Briefset Mode
 
-Select briefset mode only when the input describes multiple independently executable work units, not just many edits.
-A good quick test: can you write two or more natural child-brief titles, each with its own acceptance criteria and entry point, without inventing scope?
-If not, stay in single-brief mode.
+Select briefset mode only when the input describes multiple independently executable work units, not just many edits. A good quick test: can you write two or more natural child-brief titles, each with its own acceptance criteria and entry point, without inventing scope? If not, stay in single-brief mode.
 
 Strong selection signals:
 
@@ -39,15 +30,11 @@ Supporting signals, not sufficient alone:
 - Long user input.
 - User phrasing like "split this up" without execution-context evidence.
 
-Default to single-brief mode when the work has one goal, one outcome, and one coherent implementation path, even if it touches multiple files.
-Examples: one bug fix across five related files; one refactor that needs coordinated updates in several call sites; one feature that naturally touches UI, state, and API glue.
+Default to single-brief mode when the work has one goal, one outcome, and one coherent implementation path, even if it touches multiple files. Examples: one bug fix across five related files; one refactor that needs coordinated updates in several call sites; one feature that naturally touches UI, state, and API glue.
 
-When strong signals are present, select briefset mode and explain the evidence before Stage 2.
-When signals are absent, select single-brief mode.
-Ask only when the choice depends on a user-owned delivery boundary, independently owned release unit, or scope decision that the code and input cannot settle.
+When strong signals are present, select briefset mode and explain the evidence before Stage 2. When signals are absent, select single-brief mode. Ask only when the choice depends on a user-owned delivery boundary, independently owned release unit, or scope decision that the code and input cannot settle.
 
-When the target area already contains both single-brief and briefset contracts, review both surfaces even if the user asked about only one visible symptom.
-Always check:
+When the target area already contains both single-brief and briefset contracts, review both surfaces even if the user asked about only one visible symptom. Always check:
 
 - Whether a single-brief rule also applies to child briefs.
 - Whether parent validation is intentionally looser than child validation, or whether the difference is a contract gap.
@@ -55,30 +42,19 @@ Always check:
 - Whether save order resolves final child paths before the parent references them.
 - Whether the Stage 5.6 self-check applies to parent and children as documented, and how an opt-in Stage 5.7 request covers the set.
 
-Put only the briefset issues that are necessary for the current work in scope.
-Record independent briefset hardening as `[deferred]` when it is real but not required for the requested fix.
+Put only the briefset issues that are necessary for the current work in scope. Record independent briefset hardening as `[deferred]` when it is real but not required for the requested fix.
 
 ### Secondary decomposition (when bloated)
 
-The criteria above answer *"can this work split at all?"*.
-They do not answer *"once it can, where exactly do we cut?"*.
-That second question is the **Bloat Decomposition Rules (BDR)** layer in `references/bloat-decomposition.md`.
+The criteria above answer *"can this work split at all?"*. They do not answer *"once it can, where exactly do we cut?"*. That second question is the **Bloat Decomposition Rules (BDR)** layer in `references/bloat-decomposition.md`.
 
-Run BDR only after the primary filter has produced a candidate child list.
-If any candidate child triggers two or more of the bloat signals B1–B5 defined in `bloat-decomposition.md`, apply BDR's split rules (S1–S5) and keep-together rules (K1–K2) before locking the decomposition.
-Primary filter answers *"can this split at all?"*; BDR answers *"where exactly to cut."*
-Do not split because a single child needs several execution stages; stage count is not an execution-context signal or a bloat signal.
+Run BDR only after the primary filter has produced a candidate child list. If any candidate child triggers two or more of the bloat signals B1–B5 defined in `bloat-decomposition.md`, apply BDR's split rules (S1–S5) and keep-together rules (K1–K2) before locking the decomposition. Primary filter answers *"can this split at all?"*; BDR answers *"where exactly to cut."* Do not split because a single child needs several execution stages; stage count is not an execution-context signal or a bloat signal.
 
-**User phrasing is not itself a trigger.** Phrases like "다중브리프", "briefset", "multi-brief", or "split this into multiple briefs" do not by themselves engage briefset mode.
-If the user explicitly requests briefset mode but none of the criteria above apply, select single-brief mode and explain that one execution context does not justify a parent.
-Ask only if the request also establishes a user-owned delivery boundary that is not visible in the code or input.
-A one-child briefset is always a collapse target.
+**User phrasing is not itself a trigger.** Phrases like "다중브리프", "briefset", "multi-brief", or "split this into multiple briefs" do not by themselves engage briefset mode. If the user explicitly requests briefset mode but none of the criteria above apply, select single-brief mode and explain that one execution context does not justify a parent. Ask only if the request also establishes a user-owned delivery boundary that is not visible in the code or input. A one-child briefset is always a collapse target.
 
 ### Parallel work is the default within a briefset
 
-Place each active child in the earliest wave its real preconditions allow.
-Children whose start conditions are already satisfied run together unless a verified write conflict or task-specific delivery constraint prevents overlap.
-Child numbers, document order, work type, and the author's preferred review sequence do not create dependencies.
+Place each active child in the earliest wave its real preconditions allow. Children whose start conditions are already satisfied run together unless a verified write conflict or task-specific delivery constraint prevents overlap. Child numbers, document order, work type, and the author's preferred review sequence do not create dependencies.
 
 - Add a dependency only when the successor consumes an output that the predecessor must still produce or verify. An already-available contract belongs in the successor's current state and start condition, not in a new predecessor child.
 - Shared files require an access check, not automatic serialization. Use a verified, non-overlapping ownership partition and join check when the edits can safely coexist. Do not claim parallel safety without that evidence.
@@ -97,8 +73,7 @@ docs/briefs/YYYY-MM-DD-<type>-<set-slug>-NN-<child-slug>.md          # children
 ```
 
 - `<set-slug>` — kebab-case, ≤15 chars, names the umbrella initiative.
-- `NN` — zero-padded child identifier (`01`, `02`, …).
-  The number does not prescribe sequence or a starting wave; the parent's `Execution Order` section does.
+- `NN` — zero-padded child identifier (`01`, `02`, …). The number does not prescribe sequence or a starting wave; the parent's `Execution Order` section does.
 - `<child-slug>` — kebab-case, ≤15 chars, names the child subtask.
 - The combined child slug `<set-slug>-NN-<child-slug>` must remain ≤40 chars so the existing `validate_brief.py` slug check passes.
 
@@ -117,18 +92,15 @@ docs/briefs/2026-04-30-feat-checkout-i18n-02-cart-copy.md
 docs/briefs/2026-04-30-fix-checkout-i18n-03-validation-copy.md
 ```
 
-Filename collisions are resolved with `-v2`, `-v3`, … on the parent and on each child independently — the same rule as single-brief mode.
-Do not overwrite existing files.
+Filename collisions are resolved with `-v2`, `-v3`, … on the parent and on each child independently — the same rule as single-brief mode. Do not overwrite existing files.
 
 ---
 
 ## Parent Brief Template
 
-The parent **manages execution** — it is not itself a work instruction.
-Implementation lives in the children. Apply [plain-language.md](plain-language.md) to parent field values as well as child prose.
+The parent **manages execution** — it is not itself a work instruction. Implementation lives in the children. Apply [plain-language.md](plain-language.md) to parent field values as well as child prose.
 
-The template below uses normal prose for readability.
-Convert only its saved body-prose values to caveman full mode; keep headings, paths, field labels, checklists, and `Open Questions` in their protected forms.
+The template below uses normal prose for readability. Convert only its saved body-prose values to caveman full mode; keep headings, paths, field labels, checklists, and `Open Questions` in their protected forms.
 
 ```markdown
 # Brief Set: <title>
@@ -171,42 +143,14 @@ Convert only its saved body-prose values to caveman full mode; keep headings, pa
 ### Section guidance
 
 - **Purpose** — the shared outcome the set must achieve. Keep decomposition analysis in the authoring process, not in this section.
-- **Child Briefs** — checklist (`- [ ]`).
-  The **only** place status lives.
-  Every child is one top-level checklist bullet; nested child paths do not count.
-  Tick the box when the child is complete.
-  Check each child's distinct completion boundary before saving; if it has none, fold it into a sibling. The saved bullet states its outcome without an *exists because* explanation.
-- **Execution Order** — wave-based ordering and the authoritative source for each child's start, deliverable, deliverable location, done signal, and handoff.
-  Group ready siblings in the earliest safe wave; move only genuinely dependent or conflicting work, or user-required delivery order, to a later wave. A later child waits for its named prerequisite, not every unrelated child in earlier waves.
-  `Done` names an observable child completion signal, not merely "work complete" or "checks pass" without identifying which result is read.
-  Use the shown field labels and casing exactly. Put every entry in one top-level bullet, with no prose before or between entries; do not put unquoted semicolons in `Start`, `Deliverable`, or `Done` values because semicolons separate fields.
-- **Dependencies** — one fixed predecessor → addressable deliverable → successor edge per bullet.
-  Every edge names one repo-relative deliverable path, its minimum format or state shape, the successor start condition, and a reproducible verification action with concrete inputs and an expected signal.
-  Keep the edge on one logical bullet, use each shown field label and casing exactly, and do not put unquoted semicolons inside field values; semicolons outside the inline `Verify` action are the fixed field separators.
-  Use `(proposed)` immediately after a deliverable path that the work will create.
-  Repeat the exact path in the predecessor child's `Deliverable` / `Handoff` and in the successor child's first-stage `Starts when`; a name such as "verified result" without an address is not a handoff.
-  When there are no edges, use one `- None — <reason>` bullet; do not list dependency-free children as pseudo-edges.
-  Reference only children of this set; never reference another briefset (no recursion).
-- **Parallelization** — distinct from `Dependencies`.
-  A child can be dependency-free and still be unsafe to parallelize because it edits a shared file.
-  Use each child's finalized full `docs/briefs/...md` path, describe exactly one pair per bullet, and name `Join when` for each pair. Declare ready independent pairs as `Can run together`; add `Must not overlap` only for an actual dependency, unsafe write overlap, or user-required delivery order. Do not invent a serialized pair to fill the template.
-  Never place three children in one pair declaration and never declare the same pair both ways.
-  A direct or indirect predecessor/successor pair cannot be `Can run together`. A serialized pair belongs in different execution waves.
-  Short labels or basenames do not establish child membership.
-  Put every pair in one top-level bullet with the exact `Can run together:`, `Must not overlap:`, and `Join when:` labels; do not add prose before or between entries.
-- **Conflict Hotspots** — concrete paths under shared editing pressure, expressed one child pair at a time.
-  Use `Access: serialized` plus a full-path `Owner` and write-order rule when the pair must not overlap.
-  Use `Access: parallel-safe` only when the `Rule` names a non-overlapping ownership partition and a join rule.
-  A pair cannot be `Can run together` while any hotspot marks that same pair `serialized`.
-  List writers, not read-only consumers, in `Children`.
-  i18n message bundles, shared schemas, top-level config, route tables, and generated barrel files default to hotspots.
-  Put every hotspot in one top-level bullet and preserve the exact `Children:`, `Access:`, `Owner:`, and `Rule:` labels and casing; do not add prose before or between entries.
+- **Child Briefs** — checklist (`- [ ]`). The **only** place status lives. Every child is one top-level checklist bullet; nested child paths do not count. Tick the box when the child is complete. Check each child's distinct completion boundary before saving; if it has none, fold it into a sibling. The saved bullet states its outcome without an *exists because* explanation.
+- **Execution Order** — wave-based ordering and the authoritative source for each child's start, deliverable, deliverable location, done signal, and handoff. Group ready siblings in the earliest safe wave; move only genuinely dependent or conflicting work, or user-required delivery order, to a later wave. A later child waits for its named prerequisite, not every unrelated child in earlier waves. `Done` names an observable child completion signal, not merely "work complete" or "checks pass" without identifying which result is read. Use the shown field labels and casing exactly. Put every entry in one top-level bullet, with no prose before or between entries; do not put unquoted semicolons in `Start`, `Deliverable`, or `Done` values because semicolons separate fields.
+- **Dependencies** — one fixed predecessor → addressable deliverable → successor edge per bullet. Every edge names one repo-relative deliverable path, its minimum format or state shape, the successor start condition, and a reproducible verification action with concrete inputs and an expected signal. Keep the edge on one logical bullet, use each shown field label and casing exactly, and do not put unquoted semicolons inside field values; semicolons outside the inline `Verify` action are the fixed field separators. Use `(proposed)` immediately after a deliverable path that the work will create. Repeat the exact path in the predecessor child's `Deliverable` / `Handoff` and in the successor child's first-stage `Starts when`; a name such as "verified result" without an address is not a handoff. When there are no edges, use one `- None — <reason>` bullet; do not list dependency-free children as pseudo-edges. Reference only children of this set; never reference another briefset (no recursion).
+- **Parallelization** — distinct from `Dependencies`. A child can be dependency-free and still be unsafe to parallelize because it edits a shared file. Use each child's finalized full `docs/briefs/...md` path, describe exactly one pair per bullet, and name `Join when` for each pair. Declare ready independent pairs as `Can run together`; add `Must not overlap` only for an actual dependency, unsafe write overlap, or user-required delivery order. Do not invent a serialized pair to fill the template. Never place three children in one pair declaration and never declare the same pair both ways. A direct or indirect predecessor/successor pair cannot be `Can run together`. A serialized pair belongs in different execution waves. Short labels or basenames do not establish child membership. Put every pair in one top-level bullet with the exact `Can run together:`, `Must not overlap:`, and `Join when:` labels; do not add prose before or between entries.
+- **Conflict Hotspots** — concrete paths under shared editing pressure, expressed one child pair at a time. Use `Access: serialized` plus a full-path `Owner` and write-order rule when the pair must not overlap. Use `Access: parallel-safe` only when the `Rule` names a non-overlapping ownership partition and a join rule. A pair cannot be `Can run together` while any hotspot marks that same pair `serialized`. List writers, not read-only consumers, in `Children`. i18n message bundles, shared schemas, top-level config, route tables, and generated barrel files default to hotspots. Put every hotspot in one top-level bullet and preserve the exact `Children:`, `Access:`, `Owner:`, and `Rule:` labels and casing; do not add prose before or between entries.
 - **Shared Constraints** — constraints that apply to every child, including initiative-wide `[deferred]` exclusions. Repeat applicable execution constraints in the children; per-child-only constraints stay in their child.
-- **Global Acceptance Criteria** — set-level "done" criteria, including integration-level checks no individual child can verify alone.
-  Each command-based item names the command, complete target/input, and expected exit/output/state; each manual item names the inspected artifact and expected observation.
-  For a no-match success, also prove the intended target population was non-empty and fully scanned.
-- **Open Questions** — set-level non-blocking user decisions only, using the structured default/reconfirm form.
-  Per-child questions live in the child's `Open Questions`, but Stage 4 must still surface user-owned ones during the per-child residuals step of the decision table.
+- **Global Acceptance Criteria** — set-level "done" criteria, including integration-level checks no individual child can verify alone. Each command-based item names the command, complete target/input, and expected exit/output/state; each manual item names the inspected artifact and expected observation. For a no-match success, also prove the intended target population was non-empty and fully scanned.
+- **Open Questions** — set-level non-blocking user decisions only, using the structured default/reconfirm form. Per-child questions live in the child's `Open Questions`, but Stage 4 must still surface user-owned ones during the per-child residuals step of the decision table.
 
 If a section legitimately has nothing, write `- None — <reason>` with a one-line reason rather than leaving the section empty.
 
@@ -218,15 +162,10 @@ If a section legitimately has nothing, write `- None — <reason>` with a one-li
 - The parent is authoritative for relationships among children; each child's `Execution Plan` is authoritative for stages inside that child.
 - Children also follow `references/caveman-style.md`; preserve stage count, field order, checklist depth, and every content obligation while shortening only prose values.
 - Children include their own `Acceptance Criteria` (independent), `Side Effect Checkpoints`, and `Open Questions`. Repeat applicable parent constraints in each child's `Constraints` / `Out of Scope`; do not rely on the worker having read the parent.
-- Child `Open Questions` contains only Stage 4-approved non-blocking user decisions with a safe default and reconfirm milestone.
-  Use `- None — <reason>` when no user-owned decision remains.
-- Children **do not** carry status.
-  Status is parent-only.
-- Children **do not** spawn further children.
-  A child cannot become a parent.
-  If a child's scope grows mid-flow, escalate by re-planning the parent rather than nesting.
-- A child must be executable on its own.
-  If a downstream agent reading only the child brief cannot start work, the child is missing context that should not have been hidden in the parent.
+- Child `Open Questions` contains only Stage 4-approved non-blocking user decisions with a safe default and reconfirm milestone. Use `- None — <reason>` when no user-owned decision remains.
+- Children **do not** carry status. Status is parent-only.
+- Children **do not** spawn further children. A child cannot become a parent. If a child's scope grows mid-flow, escalate by re-planning the parent rather than nesting.
+- A child must be executable on its own. If a downstream agent reading only the child brief cannot start work, the child is missing context that should not have been hidden in the parent.
 - Every child stage adds this briefset-only verification field immediately after `Deliverable`:
 
   ```markdown
@@ -241,40 +180,26 @@ If a section legitimately has nothing, write `- None — <reason>` with a one-li
   - No-op handoff: <recipient receives evidence at `<repo-relative path>`, or None — <reason>>
   ```
 
-  A valid no-change route still produces addressable evidence and tells the parent whether successors continue, skip, or replan.
-  For verification-only or evidence-only child, `Replan when` names failed proof and next action: stop successors, return to parent, activate bounded correction plus re-verification work, and recalculate topology and handoffs before resume.
-  If a no-change route is impossible, use the reasoned `None` form for both fields.
-- For every parent dependency edge, repeat the exact deliverable path in a producer `Deliverable`, `Handoff`, or `No-op handoff` field and in the successor's first-stage `Starts when` field.
-  The producer states the minimum format; the successor states what it requires before starting.
+  A valid no-change route still produces addressable evidence and tells the parent whether successors continue, skip, or replan. For a verification-only or evidence-only child, `Replan when` must name both the failed proof and the next action: stop successors, return to the parent, activate bounded correction plus re-verification work, and recalculate topology and handoffs before resuming. If a no-change route is impossible, use the reasoned `None` form for both fields.
+- For every parent dependency edge, repeat the exact deliverable path in a producer `Deliverable`, `Handoff`, or `No-op handoff` field and in the successor's first-stage `Starts when` field. The producer states the minimum format; the successor states what it requires before starting.
 
 ---
 
 ## Workflow Adaptations
 
-The single-brief stages in `SKILL.md` still apply.
-The diffs:
+The single-brief stages in `SKILL.md` still apply. The diffs:
 
 ### Stage 1 — Ambiguity Gate
 
-After scoring the four anchors, also check the selection criteria above.
-If the input clearly maps onto multiple execution contexts, select briefset mode before Stage 2 and record the evidence.
-If topology depends on a user-owned delivery or scope boundary, ask that underlying decision instead of asking the user to choose an output format.
-The anchor halt rule is unchanged — an underspecified briefset request halts just like an underspecified single-brief request.
+After scoring the four anchors, also check the selection criteria above. If the input clearly maps onto multiple execution contexts, select briefset mode before Stage 2 and record the evidence. If topology depends on a user-owned delivery or scope boundary, ask that underlying decision instead of asking the user to choose an output format. The anchor halt rule is unchanged — an underspecified briefset request halts just like an underspecified single-brief request.
 
 ### Stage 2 — Work Type Selection
 
-The parent has no `Work Type` section — skip type selection for it.
-Determine the type per child from the input and codebase.
-Mixed types across children is an expected, supported case; do not flatten them to a single type just to keep the set "consistent".
+The parent has no `Work Type` section — skip type selection for it. Determine the type per child from the input and codebase. Mixed types across children is an expected, supported case; do not flatten them to a single type just to keep the set "consistent".
 
 ### Stage 3 — Codebase Review
 
-Run one combined review pass, but tag findings and uncertainties with the specific parent or child they will land in.
-Track user-owned uncertainties as candidate questions during the review.
-Route technical unknowns into the affected child's investigation stage, `Worker decision`, or `Replan when`; do not silently resolve or drop them.
-Each child's `Related Files / Entry Points` should be a distinct slice — if two children point at the same primary entry point, they probably collapse into one.
-Track shared contracts separately from child-local findings.
-If an id, key, event, schema, persisted value, generated file, route, command, or payload is used by more than one child or by existing consumers outside the briefset, put that contract in the parent `Shared Constraints` or `Global Acceptance Criteria`, then repeat the applicable constraints and child-specific verification inside each affected child. A child-only reader must receive the constraints needed to execute safely.
+Run one combined review pass, but tag findings and uncertainties with the specific parent or child they will land in. Track user-owned uncertainties as candidate questions during the review. Route technical unknowns into the affected child's investigation stage, `Worker decision`, or `Replan when`; do not silently resolve or drop them. Each child's `Related Files / Entry Points` should be a distinct slice — if two children point at the same primary entry point, they probably collapse into one. Track shared contracts separately from child-local findings. If an id, key, event, schema, persisted value, generated file, route, command, or payload is used by more than one child or by existing consumers outside the briefset, put that contract in the parent `Shared Constraints` or `Global Acceptance Criteria`, then repeat the applicable constraints and child-specific verification inside each affected child. A child-only reader must receive the constraints needed to execute safely.
 
 Before locking the child list, run an **already-satisfied gate** against current code and current verification signals:
 
@@ -283,8 +208,7 @@ Before locking the child list, run an **already-satisfied gate** against current
 - If no active children remain, create no briefset and report `no-work-needed` with the inspected paths, verification action, and observed signal.
 - If one active child remains, collapse to single-plan mode.
 - If two or more remain, keep briefset mode.
-- If the user explicitly requested a saved verification record despite an already-satisfied outcome, keep a verification-only plan and make the no-change route explicit; do not invent edits.
-  If proof fails, plan stops successors and gives parent explicit correction, re-verification, topology, and handoff recalculation route. Bare condition not enough.
+- If the user explicitly requested a saved verification record despite an already-satisfied outcome, keep a verification-only plan and make the no-change route explicit; do not invent edits. If that proof fails, the plan must stop successors and give the parent an explicit correction, re-verification, topology, and handoff recalculation route instead of ending at a bare condition.
 
 When only part of a child's requested outcome may already be satisfied, keep the child but give Stage 1 an observable `No-op when` condition and an addressable `No-op handoff`.
 
@@ -300,23 +224,13 @@ This prevents briefset concerns from disappearing in one run and over-expanding 
 
 ### Stage 4 — User Decision Table
 
-Stage 4 in briefset mode follows the same user-ownership policy described in `stage-4-interview.md`.
-The author locks decomposition, child types, execution order, dependencies, parallelization, and conflict rules when the code and input make them evident.
-Put only user-owned decisions into the four-column table (`순번`, `내용`, `수정 추천안`, `근거`) in this order:
+Stage 4 in briefset mode follows the same user-ownership policy described in `stage-4-interview.md`. The author locks decomposition, child types, execution order, dependencies, parallelization, and conflict rules when the code and input make them evident. Put only user-owned decisions into the four-column table (`순번`, `내용`, `수정 추천안`, `근거`) in this order:
 
-1. **User-owned topology constraints** — ask only when independently owned delivery units, release boundaries, or scope ownership would change the child list.
-   Check internally that each child has a distinct completion boundary; its saved checklist bullet needs only the bounded outcome.
-   If the candidate child list shows ≥ 2 bloat signals from `bloat-decomposition.md`, apply BDR before tabling decomposition decisions.
-   Apply K1 (atomic change unit) **before** generating cuts — K1 short-circuits, so atomic candidates never split.
-   Then run S1–S5 on the surviving candidates and apply K2 (shared failure-path cohesion) to prune the resulting cuts.
-   See `bloat-decomposition.md` Application Order for the authoritative sequence.
-2. **Execution order and parallelization** — add rows only for wave order or parallelization preferences the user owns.
-   Probe shared imports / shared files first, then cite the result in `근거`.
-3. **Per-child residuals** — only after the topology is locked, table each child's user-owned `Acceptance Criteria` thresholds, `Out of Scope`, and unresolved non-blocking `Open Questions`.
-   Technical uncertainty, low-risk wording, local implementation choices, and reversible sequencing choices become an investigation stage, `Worker decision`, `Replan when`, constraint, or author-selected default.
+1. **User-owned topology constraints** — ask only when independently owned delivery units, release boundaries, or scope ownership would change the child list. Check internally that each child has a distinct completion boundary; its saved checklist bullet needs only the bounded outcome. If the candidate child list shows ≥ 2 bloat signals from `bloat-decomposition.md`, apply BDR before tabling decomposition decisions. Apply K1 (atomic change unit) **before** generating cuts — K1 short-circuits, so atomic candidates never split. Then run S1–S5 on the surviving candidates and apply K2 (shared failure-path cohesion) to prune the resulting cuts. See `bloat-decomposition.md` Application Order for the authoritative sequence.
+2. **Execution order and parallelization** — add rows only for wave order or parallelization preferences the user owns. Probe shared imports / shared files first, then cite the result in `근거`.
+3. **Per-child residuals** — only after the topology is locked, table each child's user-owned `Acceptance Criteria` thresholds, `Out of Scope`, and unresolved non-blocking `Open Questions`. Technical uncertainty, low-risk wording, local implementation choices, and reversible sequencing choices become an investigation stage, `Worker decision`, `Replan when`, constraint, or author-selected default.
 
-Briefset Stage 4 still respects the carry-over codebase budget.
-A parent-level branch probe (e.g., "does `i18n/messages.ko.json` import from any other child's entry point?") counts against the same budget as Stage 3.
+Briefset Stage 4 still respects the carry-over codebase budget. A parent-level branch probe (e.g., "does `i18n/messages.ko.json` import from any other child's entry point?") counts against the same budget as Stage 3.
 
 ### Stage 5 — Save + Validate
 
@@ -325,16 +239,12 @@ Save in this order:
 1. Ensure `docs/briefs/` exists.
 2. Resolve child filename collisions first, then write each child brief to its final path (so the parent can reference final filenames, not provisional names).
 
-   When writing child plans, populate `Open Questions` only with Stage 4-approved non-blocking user decisions in the structured default/reconfirm form.
-   Do not add technical or reviewer-owned questions after the table closes just to fill the section.
-   If no such user decision remains, write `- None — <reason>`.
+   When writing child plans, populate `Open Questions` only with Stage 4-approved non-blocking user decisions in the structured default/reconfirm form. Do not add technical or reviewer-owned questions after the table closes just to fill the section. If no such user decision remains, write `- None — <reason>`.
 
 3. Resolve the parent filename collision, then write the parent brief with the finalized child paths.
 4. Filename collisions use `-v2`, `-v3`, … on the parent and on each child independently.
 5. Run `scripts/validate_brief.py` on each child as a sanity check (optional — the briefset validator covers this transitively).
-6. Run `scripts/validate_briefset.py` on the parent.
-   It re-runs child structural validation, so a single parent invocation covers the whole set.
-   Run from the target repository root, with `<skill-dir>` resolved to the absolute installed package directory:
+6. Run `scripts/validate_briefset.py` on the parent. It re-runs child structural validation, so a single parent invocation covers the whole set. Run from the target repository root, with `<skill-dir>` resolved to the absolute installed package directory:
 
    ```bash
    python3 <skill-dir>/scripts/validate_briefset.py \
@@ -349,54 +259,30 @@ Save in this order:
      <artifact-root>/docs/briefs/<parent-filename>.md
    ```
 
-On exit 1, repair the affected parent or child file and rerun `validate_briefset.py` without asking the user.
-If the same structural cause still fails after two repair attempts, leave the files in place and report the residual failure in Stage 6.
-For exit 2, inspect the actual argument, repository-root, missing-file, or read error. Correct that cause; do not infer save failure or rewrite an existing file unnecessarily.
+On exit 1, repair the affected parent or child file and rerun `validate_briefset.py` without asking the user. If the same structural cause still fails after two repair attempts, leave the files in place and report the residual failure in Stage 6. For exit 2, inspect the actual argument, repository-root, missing-file, or read error. Correct that cause; do not infer save failure or rewrite an existing file unnecessarily.
 
 ### Stage 5.6 — Content and Intent Self-Check (briefset)
 
-Run the self-check from `SKILL.md` Stage 5.6 on the **parent** and on **every child** independently.
-Briefset mode adds one parent-specific coverage rule:
+Run the Stage 5.6 self-check (`SKILL.md` Stage 5.6 with the checklist in `self-check.md`) on the **parent** and on **every child** independently. Briefset mode adds these parent-specific checks:
 
-- **Parent decomposition coverage:** every input-implied execution context maps to a child brief.
-  If the input describes 4 work units and the parent lists 3 children, the missing unit must either become a 4th child or be explicitly justified as folded into an existing child (with the absorbing child's outcome updated).
-  A folded unit's distinct concerns — acceptance criteria, edge cases, constraints, side-effect checkpoints — must reappear in the absorbing child's matching sections; folding is where requirement depth is most often silently lost, so verify the migration here.
-  Each child also survives a BDR pass from `bloat-decomposition.md` — each child either has fewer than two bloat signals or records why K1/K2 or the two-pass decomposition limit keeps it together; no atomic-change-unit (K1) is split.
-  Re-decompose only an unexamined candidate with no keep-together exception and remaining decomposition budget. A retained large child must still have an executable route.
-- **Parent contract coverage:** shared contracts discovered during Stage 3 appear in parent `Shared Constraints`, `Conflict Hotspots`, or `Global Acceptance Criteria`.
-  Children may add local checks, but the parent must carry the cross-child compatibility rule so parallel work cannot silently break it.
-- **Handoff address parity:** every dependency edge has one repo-relative deliverable path and minimum format; the exact path appears in the predecessor's output/no-change handoff and the successor's first-stage start condition.
-  A child name, result label, branch nickname, or prose such as "when the verified result is available" is not an address.
+- **Parent decomposition coverage:** every input-implied execution context maps to a child brief. If the input describes 4 work units and the parent lists 3 children, the missing unit must either become a 4th child or be explicitly justified as folded into an existing child (with the absorbing child's outcome updated). A folded unit's distinct concerns — acceptance criteria, edge cases, constraints, side-effect checkpoints — must reappear in the absorbing child's matching sections; folding is where requirement depth is most often silently lost, so verify the migration here. Each child also survives a BDR pass from `bloat-decomposition.md` — each child either has fewer than two bloat signals or records why K1/K2 or the two-pass decomposition limit keeps it together; no atomic-change-unit (K1) is split. Re-decompose only an unexamined candidate with no keep-together exception and remaining decomposition budget. A retained large child must still have an executable route.
+- **Parent contract coverage:** shared contracts discovered during Stage 3 appear in parent `Shared Constraints`, `Conflict Hotspots`, or `Global Acceptance Criteria`. Children may add local checks, but the parent must carry the cross-child compatibility rule so parallel work cannot silently break it.
+- **Handoff address parity:** every dependency edge has one repo-relative deliverable path and minimum format; the exact path appears in the predecessor's output/no-change handoff and the successor's first-stage start condition. A child name, result label, branch nickname, or prose such as "when the verified result is available" is not an address.
 - **Parallel default:** independent children occupy their earliest eligible wave; every later start is justified by a concrete precondition, verified conflict, or task-specific delivery constraint. The saved set explains the operational reason without agent or tooling narration.
 - **Coordination consistency:** each parallelization and hotspot item describes one child pair; no pair is both parallel and serialized; no direct or indirect dependency pair is parallel, and serialized pairs occupy different waves; a `parallel-safe` hotspot names the ownership partition and join rule.
-- **No-change safety:** already-satisfied candidates were removed or collapsed before save, while every surviving child's Stage 1 says how to prove no edits are needed, where that evidence goes, and who performs bounded correction/re-verification if proof fails.
-  A no-change branch must still tell successors whether to continue, skip, or replan.
-- **Verification concreteness:** every child stage and parent dependency edge names a repository-supported command or bounded inspection, its concrete inputs, and an observable expected signal such as an exit code, output token, created state, or threshold.
-  A command that expects no matches also names the target population so an empty or wrong input cannot masquerade as success.
-- **Deferred coverage:** valid findings excluded from the current briefset appear as `[deferred]` in the parent `Shared Constraints` when they affect the whole initiative, or in the relevant child when they affect only that child.
-  Do not drop a finding merely because it is outside the chosen child boundaries.
+- **No-change safety:** already-satisfied candidates were removed or collapsed before save, while every surviving child's Stage 1 says how to prove no edits are needed, where that evidence goes, and who performs bounded correction/re-verification if the proof fails. A no-change branch must still tell successors whether to continue, skip, or replan.
+- **Verification concreteness:** every child stage and parent dependency edge names a repository-supported command or bounded inspection, its concrete inputs, and an observable expected signal such as an exit code, output token, created state, or threshold. A command that expects no matches also names the target population so an empty or wrong input cannot masquerade as success.
+- **Deferred coverage:** valid findings excluded from the current briefset appear as `[deferred]` in the parent `Shared Constraints` when they affect the whole initiative, or in the relevant child when they affect only that child. Do not drop a finding merely because it is outside the chosen child boundaries.
 
-Each child runs all items in the standard Stage 5.6 self-check from `SKILL.md`, including execution-stage continuity and whole-work completion separation, but its input-coverage boundary is the scope allocated to that child by the parent plus relevant shared constraints.
-Sibling-owned concerns from the umbrella input are not missing from the target child; parent decomposition coverage checks them across the set.
-If the parent or any child fails a Stage 5.6 item, batch the justified patches against the same artifact state, re-run `validate_briefset.py`, then run the self-check again within the two-pass budget in `SKILL.md`; there is no separate budget per child. Stop with residuals when the budget is exhausted.
-Run caveman parity on the parent and every child against their pre-conversion content inventories: preserve every child, dependency, ordering edge, parallel join, conflict hotspot, shared constraint, global acceptance criterion, fact, stage, field, and checklist level. An imagined normal-mode output is not evidence of parity.
-Do not skip the child self-check on the assumption "the parent covers it" — children are independently executable, so they are independently completeness-checked.
+Each child runs all items in the standard Stage 5.6 checklist in `self-check.md`, including execution-stage continuity and whole-work completion separation, but its input-coverage boundary is the scope allocated to that child by the parent plus relevant shared constraints. Sibling-owned concerns from the umbrella input are not missing from the target child; parent decomposition coverage checks them across the set. If the parent or any child fails a Stage 5.6 item, batch the justified patches against the same artifact state, re-run `validate_briefset.py`, then run the self-check again within the two-pass budget in `SKILL.md`; there is no separate budget per child. Stop with residuals when the budget is exhausted. Run caveman parity on the parent and every child against their pre-conversion content inventories: preserve every child, dependency, ordering edge, parallel join, conflict hotspot, shared constraint, global acceptance criterion, fact, stage, field, and checklist level. An imagined normal-mode output is not evidence of parity. Do not skip the child self-check on the assumption "the parent covers it" — children are independently executable, so they are independently completeness-checked.
 
 ### Stage 5.7 — Cold-Pickup Verification (briefset, opt-in)
 
-Briefset mode does not start Stage 5.7 by itself; the user must request it as described in `SKILL.md` and `references/cold-pickup.md`.
-When requested, the parent and every child the user did not exclude each get one fresh read-only sub-agent and one pass.
-The parent pass receives the original input file and the parent path and checks the set as a whole, following the referenced children when needed.
-Each child pass receives the original input file, the parent path, and one child path; the parent is the scope-allocation map, and sibling-owned work is not missing from the target child.
-For briefsets with 5 or more children, state the spawn count and offer parent plus up to 3 representative children before spawning.
-Collect every report before patching, patch against the same artifact state, re-run `validate_briefset.py` and Stage 5.6, and stop; another pass needs another request.
-Over-terse bullets flagged in the parent or any child are restored to normal prose under Auto-Clarity like any other drift.
-The Stage 6 banner uses the briefset formats in `references/cold-pickup.md` (`parent + N/N children clean (no over-terse bullets)`, flagged details, or `K/N children verified` when sampled).
+Briefset mode does not start Stage 5.7 by itself; the user must request it as described in `SKILL.md` and `references/cold-pickup.md`. When requested, the parent and every child the user did not exclude each get one fresh read-only sub-agent and one pass. The parent pass receives the original input file and the parent path and checks the set as a whole, following the referenced children when needed. Each child pass receives the original input file, the parent path, and one child path; the parent is the scope-allocation map, and sibling-owned work is not missing from the target child. For briefsets with 5 or more children, state the spawn count and offer parent plus up to 3 representative children before spawning. Collect every report before patching, patch against the same artifact state, re-run `validate_briefset.py` and Stage 5.6, and stop; another pass needs another request. Over-terse bullets flagged in the parent or any child are restored to normal prose under Auto-Clarity like any other drift. The Stage 6 banner uses the briefset formats in `references/cold-pickup.md` (`parent + N/N children clean (no over-terse bullets)`, flagged details, or `K/N children verified` when sampled).
 
 ### Stage 6 — Review + Iterate
 
-Report the parent path, the child paths, the structural validator outcome (parent + per-child), and a separate content outcome covering the Stage 5.6 self-check (parent + per-child) and, only when requested, the actual Stage 5.7 result. Collapse per-document verdicts to `K/N children verified` where appropriate; do not add authoring-process or optional-check narration.
-Keep this report in normal prose; caveman applies only inside the saved parent and child plan bodies.
+Report the parent path, the child paths, the structural validator outcome (parent + per-child), and a separate content outcome covering the Stage 5.6 self-check (parent + per-child) and, only when requested, the actual Stage 5.7 result. Collapse per-document verdicts to `K/N children verified` where appropriate; do not add authoring-process or optional-check narration. Keep this report in normal prose; caveman applies only inside the saved parent and child plan bodies.
 
 If the parent or any child contains structured non-blocking `Open Questions`, present a combined decision table immediately after the save report:
 
@@ -406,9 +292,7 @@ If the parent or any child contains structured non-blocking `Open Questions`, pr
 | 1 | <parent or child path + non-blocking user decision> | <recommended patch to apply> | <safe default and reconfirm milestone> |
 ```
 
-After the user answers, patch the affected parent or child files in place, move resolved questions into the appropriate sections, leave only structured non-blocking user decisions in `Open Questions`, then re-run `validate_briefset.py` and Stage 5.6; re-run Stage 5.7 only if the user asks again.
-If a question is unanswered, skipped, or expires without a task cancellation, keep every declared fallback active and leave the corresponding questions unchanged; they do not block child execution before their named reconfirmation milestones.
-Iterate on disk via `Edit`; do not re-render the briefs into chat.
+After the user answers, patch the affected parent or child files in place, move resolved questions into the appropriate sections, leave only structured non-blocking user decisions in `Open Questions`, then re-run `validate_briefset.py` and Stage 5.6; re-run Stage 5.7 only if the user asks again. If a question is unanswered, skipped, or expires without a task cancellation, keep every declared fallback active and leave the corresponding questions unchanged; they do not block child execution before their named reconfirmation milestones. Iterate on disk via `Edit`; do not re-render the briefs into chat.
 
 ---
 
@@ -448,9 +332,6 @@ Out of scope (still on the human reviewer):
 
 ## Why This Shape
 
-Splitting a brief into a parent + children is a structural answer to a **coordination** problem, not a length problem.
-The parent makes coordination state legible — what runs in parallel, what blocks what, which file two children both want to touch.
-The children stay single-purpose so a downstream agent can pick one up and execute it exactly the way it would execute a standalone brief.
+Splitting a brief into a parent + children is a structural answer to a **coordination** problem, not a length problem. The parent makes coordination state legible — what runs in parallel, what blocks what, which file two children both want to touch. The children stay single-purpose so a downstream agent can pick one up and execute it exactly the way it would execute a standalone brief.
 
-If you find a parent that reads like a single brief with a table of contents, collapse it back to single-brief mode.
-If you find a child that reads like a parent, the decomposition is wrong — re-plan rather than nesting.
+If you find a parent that reads like a single brief with a table of contents, collapse it back to single-brief mode. If you find a child that reads like a parent, the decomposition is wrong — re-plan rather than nesting.

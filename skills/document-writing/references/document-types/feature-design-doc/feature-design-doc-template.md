@@ -22,13 +22,9 @@ Authoring guidance: use the [internal decision note and ownership rules](feature
 
 ## 1. Document Intent
 
-The frontmatter `purpose` and `not` fields already state that this document is a
-design decision source rather than an implementation plan; do not repeat that here.
+The frontmatter `purpose` and `not` fields already state that this document is a design decision source rather than an implementation plan; do not repeat that here.
 
-State whether the design is a draft or an authoritative decision source, identify
-the supplied decision authority, and describe what was actually verified. For
-pre-implementation documents, distinguish design-source review from implementation
-conformance. Use the metadata rules in `feature-design-doc-validation.md`.
+State whether the design is a draft or an authoritative decision source, identify the supplied decision authority, and describe what was actually verified. For pre-implementation documents, distinguish design-source review from implementation conformance. Use the metadata rules in `feature-design-doc-validation.md`.
 
 ---
 
@@ -55,18 +51,13 @@ Define the feature in one sentence.
 
 ### This feature is
 
-> Use this section for category and identity.
-> These statements explain what kind of feature this is.
+> State what kind of feature this is.
 
 - ...
 
 ### This feature is not
 
-> Use this section only for category-level misunderstandings.
-> Do not put version-specific exclusions here. Put those in Scope.
-> Do not put deliberately rejected goals here. Put those in Non-Goals.
-> Omit this subsection when no such misunderstanding is likely; do not invent
-> contrasts to fill it.
+> Use this section only for category-level misunderstandings. Version-specific exclusions belong in Scope; deliberately rejected goals belong in Non-Goals. Omit this subsection when no such misunderstanding is likely; do not invent contrasts to fill it.
 
 - ...
 
@@ -76,11 +67,9 @@ Define the feature in one sentence.
 
 > Goals describe what this design is trying to achieve.
 >
-> Non-Goals are things that could reasonably have been goals,
-> but were intentionally not selected.
+> Non-Goals are things that could reasonably have been goals, but were intentionally not selected.
 >
-> Category-level negatives belong in `Feature Definition`.
-> Version-level exclusions belong in `Scope`.
+> Category-level negatives belong in `Feature Definition`. Version-level exclusions belong in `Scope`.
 
 ### Goals
 
@@ -102,8 +91,7 @@ Users think of this feature as:
 
 - ...
 
-List what users should not need to understand only when readers might otherwise
-expect to learn an internal detail; omit the list otherwise.
+List what users should not need to understand only when readers might otherwise expect to learn an internal detail; omit the list otherwise.
 
 Users should not need to understand:
 
@@ -167,8 +155,7 @@ User does ...
 
 Describe the actual feature design at the system level.
 
-Do not turn this section into a task list.
-Avoid file paths, function names, and PR ordering unless they are essential to the design itself.
+Do not turn this section into a task list. Avoid file paths, function names, and PR ordering unless they are essential to the design itself.
 
 ### 8.1 Behavior
 
@@ -250,8 +237,7 @@ Example policy areas:
 
 Use this section to record meaningful options that were considered and rejected.
 
-This prevents future readers or code agents from reintroducing discarded approaches
-without understanding why they were rejected.
+This prevents future readers or code agents from reintroducing discarded approaches without understanding why they were rejected.
 
 ### Alternative: [Name]
 
@@ -279,18 +265,13 @@ Why not chosen:
 
 > The sections below are checklist prompts.
 >
-> Do not silently delete an item because it seems irrelevant.
-> If an item does not apply, write:
+> Do not silently delete an item because it seems irrelevant. If an item does not apply, write:
 >
 > `Not applicable: [short reason]`
 >
-> Silence is not distinguishable from accidental omission.
-> If applicability or behavior is unknown, use [NEEDS INPUT: ...] rather than
-> inventing a rule or a non-applicability reason.
+> Silence is not distinguishable from accidental omission. If applicability or behavior is unknown, use [NEEDS INPUT: ...] rather than inventing a rule or a non-applicability reason.
 >
-> Compact profile only: the six subsections below may be replaced by a
-> single list with one line per concern, e.g.
-> `- Security: Not applicable: no new attack surface`.
+> Compact profile only: the six subsections below may be replaced by a single list with one line per concern, e.g. `- Security: Not applicable: no new attack surface`.
 
 ### 11.1 Security
 
@@ -326,13 +307,9 @@ Why not chosen:
 
 ## 12. Scope
 
-> Scope is version- or release-specific.
-> For solo or continuous-delivery work with no release train,
-> label the boundary "as implemented (YYYY-MM-DD)".
+> Scope is version- or release-specific. For solo or continuous-delivery work with no release train, label the boundary "as implemented (YYYY-MM-DD)".
 >
-> Use this section to say what is included or excluded from the current delivery.
-> Do not use this section for category-level identity statements.
-> Do not use this section for rejected design alternatives.
+> Use this section to say what is included or excluded from the current delivery. Do not use this section for category-level identity statements. Do not use this section for rejected design alternatives.
 
 ### In Scope for [Version]
 
@@ -364,8 +341,7 @@ Questions that are intentionally left unresolved in this design.
 
 > Optional.
 >
-> Required for cross-platform, OS-sensitive, hardware-sensitive,
-> browser-sensitive, runtime-sensitive, or platform API-heavy features.
+> Required for cross-platform, OS-sensitive, hardware-sensitive, browser-sensitive, runtime-sensitive, or platform API-heavy features.
 
 ### 14.1 Common Design
 
@@ -385,15 +361,11 @@ Describe platform-specific capabilities, constraints, and differences.
 
 > Optional.
 >
-> Required for features with meaningful operation states, partial success,
-> restore results, sync states, migration outcomes, or user-visible failures.
+> Required for features with meaningful operation states, partial success, restore results, sync states, migration outcomes, or user-visible failures.
 >
-> Use this section for externally visible result states.
-> Internal implementation state machines belong in the Implementation Plan
-> unless they are part of the product design.
+> Use this section for externally visible result states. Internal implementation state machines belong in the Implementation Plan unless they are part of the product design.
 >
-> For each state, state briefly the condition that selects it and link to the
-> owning policy; the policy's full rule stays in Policy Decisions.
+> For each state, state briefly the condition that selects it and link to the owning policy; the policy's full rule stays in Policy Decisions.
 
 | State | Meaning | User-visible? |
 | ----- | ------- | ------------- |
@@ -405,11 +377,9 @@ Describe platform-specific capabilities, constraints, and differences.
 
 > Optional.
 >
-> Use this section only for follow-up ideas that are intentionally outside
-> the current scope but worth preserving as future candidates.
+> Use this section only for follow-up ideas that are intentionally outside the current scope but worth preserving as future candidates.
 >
-> Do not duplicate every Out of Scope item here.
-> Only list items that are plausible future product directions.
+> Do not duplicate every Out of Scope item here. Only list items that are plausible future product directions.
 
 - ...
 
@@ -417,13 +387,9 @@ Describe platform-specific capabilities, constraints, and differences.
 
 ## Revision History
 
-> Optional at first save; required from the first update onward.
-> Append-only — never rewrite or delete earlier entries.
+> Optional at first save; required from the first update onward. Append-only — never rewrite or delete earlier entries.
 >
-> Record design changes, superseded decisions (mark the original entry
-> in place with `[superseded YYYY-MM-DD — see Revision History]` and keep it),
-> and known deviations between this document and the implemented behavior
-> that are not yet resolved.
+> Record design changes, superseded decisions (mark the original entry in place with `[superseded YYYY-MM-DD — see Revision History]` and keep it), and known deviations between this document and the implemented behavior that are not yet resolved.
 
 | Date | Type | Summary |
 | ---- | ---- | ------- |
@@ -435,15 +401,11 @@ Describe platform-specific capabilities, constraints, and differences.
 
 > Optional.
 >
-> Use for references, API notes, code maps, diagrams, prior art, research notes,
-> screenshots, or links that support the design but are not part of the core narrative.
+> Use for references, API notes, code maps, diagrams, prior art, research notes, screenshots, or links that support the design but are not part of the core narrative.
 
 ### Code Map (non-normative)
 
-> Recommended for features documented after implementation.
-> Code anchors are navigation metadata, not design content — they are exempt
-> from the implementation-leakage rule, and they MAY go stale. Pair them with
-> the `verified-against` commit so future readers can diff forward.
+> Recommended for features documented after implementation. Code anchors are navigation metadata, not design content — they are exempt from the implementation-leakage rule, and they MAY go stale. Pair them with the `verified-against` commit so future readers can diff forward.
 
 | Concept / Flow | Where it lived (as of `verified-against`) |
 | -------------- | ----------------------------------------- |

@@ -478,6 +478,8 @@ fn mime_type(extension: &str) -> Option<&'static str> {
 | 1.93 | `VecDeque::pop_front_if`, `pop_back_if`; `<[T]>::as_array` |
 | 1.94 | `<[T]>::array_windows` |
 | 1.95 | `Vec::push_mut`, `insert_mut`; `VecDeque::push_back_mut` |
+| 1.99 | `VecDeque::retain_back`; `IntoIterator` for `Box<[T; N]>`; `Vec::into_parts`, `from_parts` |
+| 1.100 | `Vec::from_fn`; `Vec::new_in`, `with_capacity_in` with a custom `Allocator` |
 
 Check the project's `rust-version` before using any of these; the per-release details live in [the versions index](../versions/index.md).
 

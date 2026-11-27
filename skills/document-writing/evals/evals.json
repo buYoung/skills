@@ -127,7 +127,7 @@
       "files": [],
       "expectations": [
         "The artifact is routed to Design System Document with the `default` prebuilt, not to FDD, reference/specification, or UI implementation.",
-        "No file or directory is created because neither a design direction nor representative validation has been approved.",
+        "No file or directory is created because no design direction has been approved.",
         "The response derives two or three materially different direction hypotheses from the supplied product evidence and recommends one with concrete benefits and risks.",
         "The user is asked no more than three plain-language questions about recognizable outcomes or use situations; internal design-axis terminology is not required from the user.",
         "The response does not invent brand values, token values, component inventory, platforms, or claim that the design-system document is complete."
@@ -160,7 +160,7 @@
       "files": [],
       "expectations": [
         "The artifact is routed to Design System Document with `app-store-page`, not to `default` or an image-generation workflow.",
-        "No document file, image, or video is produced because the shared visual direction and representative validation are unapproved.",
+        "No document file, image, or video is produced because no shared visual direction has been approved.",
         "The response proposes two or three materially different storefront-neutral directions and recommends one using the supplied asset roles and audience context.",
         "The approval question uses plain descriptions of visible outcomes rather than asking the user to choose abstract design axes.",
         "No storefront file, mutable dimensions, counts, formats, policy, or completion claim is invented because no storefront or direction was approved."
@@ -176,7 +176,8 @@
         "Exactly the explicitly requested web adaptation is added as `platforms/web.md`.",
         "The web file covers input, navigation, units, native elements, accessibility, and motion differences by referencing common owners.",
         "No iOS or Android platform document is created.",
-        "Web-specific differences are not generalized into the common design-system contract."
+        "Web-specific differences are not generalized into the common design-system contract.",
+        "Base-system values the request covers but the inputs do not supply, such as colors, type, spacing, token names, and the component inventory, are not recorded as canonical; the owners record each needed decision by role as awaiting approval or as a provisional default with its source, the response presents the proposed base system and asks for its approval, and completion is reported as partial."
       ]
     },
     {
@@ -333,7 +334,7 @@
         "The product UI set uses `docs/design-system` and the storefront set uses `docs/design-system-visual-assets`.",
         "No UI component contract is written into storefront files and no storefront specification is written into the UI set.",
         "itch.io is handled through current official-source discovery rather than requiring a special built-in mapping.",
-        "Both requested deliverables are completed rather than silently dropping one."
+        "Both requested output sets are created rather than silently dropping one; if any base-system decision remains awaiting approval, the result is reported as partial completion."
       ]
     },
     {
@@ -550,6 +551,52 @@
         "governance.md records approval F12, its rationale and F12-V verification of conditional and unconditional examples, distinguishing supplied document-to-example results from unperformed live checks. It also records the comparable F12-B/F12-A ledger: 4 then 1 failures across the same 10 conditional quotes with the same inputs and viewport; Q7 remains unresolved. It records the approved reference inspection and Q7 plus unaffected unconditional follow-up, without claiming elimination or general improvement across customers.",
         "The one-off violet-heading preference is not promoted to a canonical rule.",
         "I9 is routed to implementation because dropping currency violates a correct rule; a possible automatic renderer check and the stale execution-tool cache are distinguished from document changes without implementing fixes or automation."
+      ]
+    },
+    {
+      "id": 37,
+      "eval_name": "software-project-readme",
+      "prompt": "`tidyjson` 명령줄 도구를 처음 보는 개발자가 쓸 만한지 판단하고 첫 결과까지 갈 수 있도록 저장소 루트의 `README.md`를 새로 작성해줘. 확인된 사실은 다음과 같다: npm 패키지 이름은 `tidyjson-cli`이고 설치 후 실행 파일 이름은 `tidyjson`이다. Node.js 20 이상이 필요하다. 설치 명령은 `npm install -g tidyjson-cli`다. `tidyjson <파일>`은 들여쓰기를 정리한 JSON을 표준 출력으로 내보내고 원본 파일은 바꾸지 않는다. `--write`를 붙이면 정리한 결과로 원본 파일을 덮어쓴다. 입력이 올바른 JSON이 아니면 줄 번호가 포함된 오류를 출력하고 종료 코드 1로 끝난다. 라이선스, 기여 안내, 별도 사용 설명서는 아직 없다. 확인되지 않은 옵션, 배지, 링크는 만들지 마라.",
+      "expected_output": "README 프로필로 라우팅되어 목적과 적합성, 요구 사항, 설치, 대표 첫 사용 경로를 제공하고 확인되지 않은 정보를 지어내지 않은 소프트웨어 프로젝트 README.",
+      "files": [],
+      "expectations": [
+        "The artifact is routed to software project documentation with the README profile, not to an action guide, reference, or usage manual, and only `README.md` is created.",
+        "The opening states what tidyjson does and who it suits, and the Node.js 20+ requirement appears before the installation command.",
+        "Installation uses `npm install -g tidyjson-cli`, and the first-use path runs `tidyjson` on a reader-supplied JSON file and explains that the formatted JSON goes to standard output while the original file stays unchanged.",
+        "`--write` carries an adjacent warning that it overwrites the original file, and the invalid-JSON error with a line number and exit code 1 appears where it affects the first result.",
+        "The package name `tidyjson-cli` and executable name `tidyjson` stay distinct, and no license, contribution guide, usage-manual link, badge, unconfirmed option, or output presented as verified is added without support in the inputs."
+      ]
+    },
+    {
+      "id": 38,
+      "eval_name": "delegated-base-system",
+      "prompt": "사내 일정 관리 웹앱의 제품 UI 디자인시스템 문서를 `docs/design-system`에 작성해줘. '바쁜 실무자가 오늘 처리할 일을 먼저 보고 한 번에 끝내는 차분한 도구'라는 방향은 제품 책임자인 내가 승인했고, 단순한 일정 입력 화면과 정보가 조밀한 주간 보기에서 이 방향을 검증했다. foundations, tokens, components를 정의해줘. 색상·서체·간격 값과 토큰 이름, 기본 컴포넌트 목록은 아직 정하지 않았는데, 이 값들은 네가 방향에 맞게 직접 정해서 문서에 기록해줘. 나중에 바꿀 수 있으면 된다. 플랫폼별 차이는 이번 범위가 아니다.",
+      "expected_output": "명시적 위임을 승인으로 처리해 기본 체계 값을 정본 문서에 기록하고, 위임 사실과 수정 가능성을 governance에 남긴 `default` Design System Document.",
+      "files": [],
+      "expectations": [
+        "The default product UI set reuses the stated direction approval and both representative results without asking for direction re-approval or new representative validation.",
+        "The explicit request to choose the base values is treated as delegation: concrete color, typography, and spacing decisions, token names and values, and a base component inventory are written into their canonical owners instead of being left awaiting approval.",
+        "`tokens.md` presents the delegated tokens as a lookup table whose status marks them as delegated rather than supplied, verified, or approved by another authority.",
+        "`governance.md` records which base-system decisions were delegated, that the product owner delegated them, and that they remain open to revision.",
+        "The delegated values fit the approved calm, task-first direction and do not conflict with the accessibility requirements the set records; no platform file is created.",
+        "The completion report names the delegated decisions and does not ask the user to approve them before they are recorded."
+      ]
+    },
+    {
+      "id": 39,
+      "eval_name": "sourced-provisional-default-question-order",
+      "prompt": "input의 현재 운영 스타일시트를 참고해서 Ledgerly 회계 웹앱의 제품 UI 디자인시스템 문서를 `docs/design-system`에 작성해줘. foundations, tokens, components를 정의해줘. '금액과 마감일을 먼저 읽게 하는 신중한 업무 도구'라는 방향은 재무 제품 책임자인 내가 승인했어. 대표 결과는 아직 거래 목록 화면 하나만 확인했어. 이 팔레트를 다른 사내 제품에도 쓸지는 아직 정하지 않았어. 질문은 지금 꼭 필요한 것 하나만 해줘.",
+      "expected_output": "승인된 방향을 재사용해 구현 값은 출처 있는 임시 기본값으로, 근거 없는 값은 역할 단위 승인 대기로 기록하고 대표 검증 대기를 남긴 뒤 기본 체계 승인 질문 하나만 한 부분 완료 결과.",
+      "files": [
+        "evals/fixtures/provisional-default-source/theme.css"
+      ],
+      "expectations": [
+        "The default product UI set reuses the stated direction approval and does not ask for it again.",
+        "The primary color, text color, and font family from the supplied stylesheet are recorded as provisional defaults with their status and the stylesheet as their source; the open question about sharing the palette across products does not leave them empty, and they are not presented as approved.",
+        "Needed base-system decisions without a verifiable source, such as the spacing scale, radius, and component inventory, are recorded by role as awaiting approval with empty values; names and values supported only by the assistant's judgment appear in the response proposal, not in the files.",
+        "`governance.md` states once, for the provisional and awaiting decisions, that they cannot be finalized until approval and how drafts and previews may proceed meanwhile; other owners link to that statement instead of restating it.",
+        "Because only one representative result exists, representative validation is recorded as pending in `index.md` and `governance.md` with the contrasting situations still to check.",
+        "The response asks exactly one question, about approving the proposed base system, because base-system approval ranks above representative validation evidence; the pending validation is mentioned without becoming a second question, and completion is reported as partial."
       ]
     }
   ]

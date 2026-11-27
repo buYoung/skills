@@ -13,9 +13,11 @@ import shutil
 import subprocess
 import sys
 
-# Directory excludes matter outside git repositories: tokei honors .gitignore
-# only inside a git repo, so vendored deps and build output would otherwise
-# inflate LOC in exported or unzipped directories.
+# Directory excludes matter outside git repositories: tokei applies .gitignore,
+# .git/info/exclude, and the global git excludes file only when the measured
+# directory or a parent contains .git (not in a jj workspace without a
+# colocated .git), so vendored deps and build output would otherwise inflate
+# LOC in exported, unzipped, or jj-only directories.
 EXCLUDES = [
     "*.json", "*.yaml", "*.yml", "*.md", "*.sh", "*.lock", "*.map", "*.svg",
     "node_modules", "vendor", "dist",
@@ -30,6 +32,10 @@ SCALE_TABLE = [
     (1_000_000, "Large", 30_000),
     (float("inf"), "Extra-Large", 50_000),
 ]
+
+# tokei colors its table when CLICOLOR_FORCE is set, even through a pipe.
+ANSI_SGR_RE = re.compile(r"\x1b\[[0-9;]*m")
+TOTAL_ROW_RE = re.compile(r"\s*Total\s+[\d,]+\s+([\d,]+)")
 
 INSTALL_HINT = (
     "tokei is not installed.\n"
@@ -53,8 +59,8 @@ def run_tokei(path: str) -> str:
 
 
 def parse_total_lines(tokei_output: str) -> int:
-    for line in tokei_output.splitlines():
-        m = re.match(r"\s*Total\s+[\d,]+\s+([\d,]+)", line)
+    for line in ANSI_SGR_RE.sub("", tokei_output).splitlines():
+        m = TOTAL_ROW_RE.match(line)
         if m:
             return int(m.group(1).replace(",", ""))
     raise ValueError("Could not find a 'Total' row in tokei output")

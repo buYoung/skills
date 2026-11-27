@@ -37,7 +37,7 @@ Controls paragraph-level formatting including line spacing, justification, and i
 | `spacing` | length | `1.2em` | Paragraph spacing (between paragraphs) |
 | `justify` | bool | `false` | Justify text |
 | `linebreaks` | auto \| str | `auto` | `"simple"`, `"optimized"` |
-| `first-line-indent` | length \| dictionary | `(amount: 0pt, all: false)` | Indent amount or `(amount:, all:)` configuration |
+| `first-line-indent` | length \| dictionary | `(amount: 0pt, all: false)` | Indent amount or `(amount:, all:)` configuration; 0.15 combines partial dictionaries from separate set rules ([0.15](versions/0.15.md#behavior-changes)) |
 | `hanging-indent` | length | `0pt` | Hanging indent for subsequent lines |
 | `body` | content | required | Paragraph content |
 

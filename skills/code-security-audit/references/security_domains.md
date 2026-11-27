@@ -1,10 +1,12 @@
 # Security Domains
 
-All 17 ASVS 5.0.0 domains with code-audit-relevant requirements and cross-source mappings to API Security Top 10 2023, CheatSheet Series, and WSTG.
+All 17 ASVS 5.0.0 domains with code-audit-relevant requirements and cross-source mappings to API Security Top 10 2023, CheatSheet Series, and WSTG v4.2.
 
-> **Source**: `doc/security/OWASP_Application_Security_Verification_Standard_5.0.0_en.json` (ASVS 5.0.0)
+> **Source**: [`5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.json`](https://raw.githubusercontent.com/OWASP/ASVS/v5.0.0_release/5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.json) at tag [`v5.0.0_release`](https://github.com/OWASP/ASVS/releases/tag/v5.0.0_release) (ASVS 5.0.0)
 >
-> Descriptions are verbatim from JSON ("Verify that" prefix removed for brevity).
+> Descriptions are verbatim from JSON ("Verify that" or "Verify" prefix removed for brevity).
+>
+> ASVS is Copyright © 2008-2025 The OWASP Foundation and licensed under CC BY-SA 4.0. Attribution, modifications, and license terms are in [THIRD_PARTY_NOTICES.md](../THIRD_PARTY_NOTICES.md).
 >
 > Documentation-only sections are listed as comments in YAML blocks.
 >
@@ -201,7 +203,7 @@ V3.7_other_browser_security_considerations:
 |--------|-----------|
 | API Top 10 | API1:2023 to API10:2023 (all 10 risks apply) |
 | CheatSheet | REST_Security, REST_Assessment, GraphQL, Web_Service_Security |
-| WSTG | WSTG-APIT-01 to WSTG-APIT-03 (API Testing) |
+| WSTG | WSTG-APIT-01 (Testing GraphQL); v4.2 has no other API Testing IDs |
 
 ### Key Requirements for Code Audit
 
@@ -444,7 +446,7 @@ V8.4_other_authorization_considerations:
 | Source | Reference |
 |--------|-----------|
 | API Top 10 | API2:2023 Broken Authentication |
-| CheatSheet | JSON_Web_Token_for_Java |
+| CheatSheet | JSON_Web_Token |
 | WSTG | WSTG-SESS-01 (Session Management Schema) |
 
 ### Key Requirements for Code Audit

@@ -2,7 +2,7 @@
 
 ## Purpose and default root
 
-Use this prebuilt for an approved, coherent visual direction and reusable asset system for any digital storefront. The storefront may distribute apps, games, software, media, device experiences, or another product category; support is discovered from the requested scope and current authoritative material rather than a built-in store list. The prebuilt governs assets and their shared visual composition but does not create the assets itself. Its default output root is `docs/design-system-visual-assets`.
+Use this prebuilt for an approved, coherent visual direction and reusable asset system for any digital storefront, whatever kind of product it distributes. The prebuilt governs assets and their shared visual composition but does not create the assets itself. Its default output root is `docs/design-system-visual-assets`.
 
 ## Base document set
 
@@ -38,9 +38,9 @@ Own upper-level visual principles and invariant decisions for color, typography,
 
 Own cross-storefront concepts and mappings such as product identity, captured product views, motion previews, promotional artwork, and shared source material. Explain how different asset types preserve the approved upper-level direction while adapting form, density, hierarchy, and brand emphasis to their function. Storefront files own each operator's official asset names, required status, specifications, placements, and storefront-specific relationships. Do not move those facts into the common contract or force every asset into one surface form.
 
-Link approved asset originals, templates, canonical names and locations, supported variants, usage examples, and token connections where supplied. Distinguish approved sources from observed exports or stale examples; do not invent asset paths. Identify the expression fixed by each source or template and its permitted adaptations, and document its supported application method instead of asking consumers to recreate it from prose.
+Link approved asset originals, templates, supported variants, usage examples, and token connections where supplied, together with the expression each source fixes, its permitted adaptations, and its supported application method, as [Connect supported implementation and assets](../design-rule-contract.md#connect-supported-implementation-and-assets) describes. Distinguish approved sources from observed exports or stale examples.
 
-When a template governs placement, this owner must provide a source-to-application map before composition guidance relies on it: inspected source coordinate space and region bounds, supported scaling or transforms, and the source authority for each region's role. Separate an observed outline from a confirmed product slot or exclusion area. If the role is not established, record that uncertainty alongside the observed geometry. This is substantive asset-owner content even when export sizes or storefront rules are unresolved; source coordinates must not be promoted to export requirements. Other owners link here and state only their local placement consequence.
+When a template governs placement, this owner must provide the source-to-application map described in [Reuse mechanics instead of reconstructing them](../design-rule-contract.md#reuse-mechanics-instead-of-reconstructing-them) before composition guidance relies on it, including the source authority for each region's role. This is substantive asset-owner content even when export sizes or storefront rules are unresolved; source coordinates must not be promoted to export requirements. Other owners link here and state only their local placement consequence.
 
 ### `screenshots-and-previews.md`
 
@@ -52,7 +52,7 @@ When a sequence is decided, record it as a table of position, message, and sourc
 
 Own visual hierarchy, safe areas, and copy embedded in or directly paired with visual assets. It does not own general storefront listing titles, descriptions, tags, or search metadata.
 
-Connect message priority and placement to the viewer's task, what they need to understand first, and why the composition serves that need. For each major composition pattern, record application and non-application conditions, the supported alternative, and available contrasting evidence under the common rule contract. An asset's optional or required status alone does not determine message importance or prominence. Describe supported contextual variants and routes to detail without dropping conditions, units, or uncertainty.
+For each major composition pattern, record here what the common rule contract requires: why its message priority and placement serve what the viewer needs to understand first, its application and non-application conditions, the supported alternative, available contrasting evidence, and supported contextual variants and routes to detail. An asset's optional or required status alone does not determine message importance or prominence.
 
 ### `localization.md`
 
@@ -68,7 +68,7 @@ Own source files, export formats, filenames, locale and store variants, represen
 
 When the user also requests an actual image or video, this file records the approved delivery contract while the production workflow creates the binary asset. The document set links to the resulting asset when available, but its completion report lists the document set and production asset as separate deliverables.
 
-Record approved correction rationale and actual verification outcomes here, linking to the affected rule or asset owner. Separate reusable document decisions from asset defects, automatic-check gaps, execution-tool issues, and unapproved preferences. Describe confirmed failures and their supported alternatives in the responsible rule owner. Connect comparable follow-up results, recurrence, and unresolved causes without inventing improvement rates or a review cadence.
+Record approved corrections, their actual verification results, and comparable follow-up evidence here as [Record failures and approved improvements](../design-rule-contract.md#record-failures-and-approved-improvements) describes, linking to the affected rule or asset owner. Describe confirmed failures and their supported alternatives in the responsible rule owner.
 
 ### `stores/<store-name>.md`
 

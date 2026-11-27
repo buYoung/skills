@@ -11,7 +11,7 @@ Each of the five steps below names the reference to read before you act. Every c
 
 ## Compatibility
 
-- This bundle targets Pi `v1.4.0`, tag commit `4a080252f06caf63a525d7873c5d94d3c23887e0`. Development builds with the same version string can differ.
+- This bundle targets Pi `v1.6.1`, tag commit `ef4a1cfcca62b77ad3558337ff3e1c7f6beeadfe`. Development builds with the same version string can differ.
 - Node.js must satisfy Pi's `>=22.19.0` requirement.
 - Record the user's actual Pi version and, when available, its commit. A matching version string alone does not prove that every behavior described here is present.
 - Run the bundled checks against the installed Pi. If an API or behavior differs, report the concrete mismatch. Do not invent a newer contract, and do not make reading external documents a completion step.
@@ -70,7 +70,7 @@ For npm delivery, include `package.json` with a real name and version. A local p
 - `"type": "module"` is an authoring recommendation, and `"pi-package"` is a gallery-discovery keyword. Neither is required for local loading.
 - Use `[]` to mark resource types the package does not provide. Omitting a type is also valid when settings filters cannot expose unintended conventional resources.
 - A manifest `[]` is not a complete boundary: a settings filter can still expose files in an unused conventional directory. Remove unused resource directories and their `files` entries.
-- An empty `"pi": {}` is not equivalent to having no `pi` manifest.
+- A `pi` object that lists no resource type, such as `"pi": {}`, does not act as a manifest: Pi uses conventional discovery, as it does without a `pi` field.
 
 ### Extension entry points
 
@@ -95,6 +95,7 @@ Put other runtime libraries in `dependencies` and development-only tooling in `d
 
 - Export a default factory that accepts `ExtensionAPI`, and register tools, commands, flags, and handlers there. Put work that needs a session in handlers or on first use. Factories also run for package-management commands and help output: an uncaught factory error stops CLI startup, and unbounded initialization can hang it.
 - Import from public package entry points, normally the package root.
+- Pi validates tool arguments as JSON Schema, after coercing loose values such as numeric strings. TypeBox-only features such as `Type.Refine()`, codecs, and `Format.Set()` formats are not applied, so check those constraints in `execute`.
 - A tool runs as `execute(toolCallId, params, signal, onUpdate, ctx)` and returns `content` and `details`. Report failure by throwing or by returning top-level `isError: true`. Preserve cancellation in downstream work by passing the signal through. Read `ctx.cwd`, `ctx.mode`, and `ctx.hasUI` from the current handler's context.
 - Give public names a package prefix to avoid collisions.
 - Bound model-facing text that grows with repository contents, subprocess output, or service responses before returning it; a timeout alone does not limit result size. Use the complete [bounded-output helper](assets/patterns/bounded-output.ts) and the integration example in [extensions](references/extensions.md).

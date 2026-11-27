@@ -7,6 +7,10 @@
   <id>com.example.folding</id>
   <name>Folding Builder Example</name>
   <vendor email="dev@example.com">Example Inc.</vendor>
+  <description><![CDATA[
+    Folds multi-line comments in Java files with a stateless FoldingBuilderEx that
+    re-walks the current PSI on each call.
+  ]]></description>
 
   <depends>com.intellij.modules.platform</depends>
   <depends>com.intellij.modules.lang</depends>

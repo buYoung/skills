@@ -2,17 +2,9 @@
 
 ## Default Project Command
 
-When generating the interactive service-app command, use `pnpm release` with
-[interactive-workflow.md](interactive-workflow.md): version first
-for a single project; one service app then version for a monorepo; then commit, tag, and
-push confirmations interleaved with their release-it actions. All questions use Inquirer.
-The entry command accepts no arguments and requires TTY input/output before release work.
+When generating the interactive service-app command, use `pnpm release` with [interactive-workflow.md](interactive-workflow.md): version first for a single project; one service app then version for a monorepo; then commit, tag, and push confirmations interleaved with their release-it actions. All questions use Inquirer. The entry command accepts no arguments and requires TTY input/output before release work.
 
-The CLI below supports CI, publishing, pre-release, and diagnostic workflows. Preserve it
-when it is the requested or existing entry point; a config repair does not require a wrapper.
-`--ci` and `--only-version` bypass required confirmations; an explicit CLI increment or a
-recommendation can skip version selection in the stock flow. A false stock confirmation
-can skip only one step rather than stopping the whole release.
+The CLI below supports CI, publishing, pre-release, and diagnostic workflows. Preserve it when it is the requested or existing entry point; a config repair does not require a wrapper. `--ci` and `--only-version` bypass required confirmations; an explicit CLI increment or a recommendation can skip version selection in the stock flow. A false stock confirmation can skip only one step rather than stopping the whole release.
 
 ## Basic Usage
 
@@ -65,7 +57,7 @@ Listed in the order the interactive prompt should surface them — most-used cho
 | `prerelease` / `pre` (rc counter) | `1.3.0-rc.0` → `1.3.0-rc.1` | Increment the pre-release counter. Switch to the rc track with `--preRelease=rc` (typically after beta has stabilized) |
 | `major` | `2.0.0` | Breaking changes |
 | `premajor` | `2.0.0-alpha.0` | Pre-release of next major (less common; used when the next major needs its own alpha/beta/rc cycle) |
-| Explicit version | `3.0.0` | Stock 21.0.1 version resolution accepts valid semver >= current; the packaged interactive menu requires > current |
+| Explicit version | `3.0.0` | Stock 21.1.3 version resolution accepts valid semver >= current; the packaged interactive menu requires > current |
 
 ```bash
 release-it minor              # Interactive with minor bump
@@ -73,11 +65,7 @@ release-it 2.0.0              # Explicit version
 release-it                    # Prompt for increment type
 ```
 
-Version resolution accepting an equal version does not make a repeated release idempotent.
-For example, npm's bump may require `npm.allowSameVersion`, and existing tags or hosted
-releases have their own behavior. Define repeat/update semantics for the applying workflow
-instead of applying the interactive menu's strict-increase rule to every CLI/API call.
-Source: [21.0.1 Version plugin](https://github.com/release-it/release-it/blob/21.0.1/lib/plugin/version/Version.js).
+Version resolution accepting an equal version does not make a repeated release idempotent. For example, npm's bump may require `npm.allowSameVersion`, and existing tags or hosted releases have their own behavior. Define repeat/update semantics for the applying workflow instead of applying the interactive menu's strict-increase rule to every CLI/API call. Source: [21.1.3 Version plugin](https://github.com/release-it/release-it/blob/21.1.3/lib/plugin/version/Version.js).
 
 > **About the (alpha)/(beta)/(rc) labels.** In semver, the increment **type** (`prepatch`/`preminor`/`premajor`) and the pre-release **identifier** (`alpha`/`beta`/`rc`) are independent axes — `prepatch` could be tagged `-alpha.0`, `-beta.0`, or just `-0` depending on `preReleaseId`. The labels above encode a recommended team convention so the prompt reads naturally for users who aren't semver experts:
 >
@@ -147,10 +135,7 @@ Output conventions:
 - `$ git log ...` — Read-only command (actually executes)
 - `! git commit ...` — Write command (skipped)
 
-Lifecycle methods still execute. A custom plugin's direct filesystem calls, child processes,
-or network requests are not automatically intercepted. Guard those effects using
-`this.config.isDryRun`, or route suitable commands through `this.exec()` with correct write
-metadata. A dry run alone does not establish cancellation, recovery, or remote behavior.
+Lifecycle methods still execute. A custom plugin's direct filesystem calls, child processes, or network requests are not automatically intercepted. Guard those effects using `this.config.isDryRun`, or route suitable commands through `this.exec()` with correct write metadata. A dry run alone does not establish cancellation, recovery, or remote behavior.
 
 ### Print-only modes
 
@@ -206,14 +191,17 @@ release-it \
 jobs:
   release:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 0
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
           node-version: 'lts/*'
           registry-url: 'https://registry.npmjs.org'
+          package-manager-cache: false
       - name: git config
         run: |
           git config user.name "${GITHUB_ACTOR}"
@@ -221,17 +209,15 @@ jobs:
       - run: npm ci
       - run: npx release-it --ci
         env:
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 ```
 
-`fetch-depth: 0` is needed if using conventional-changelog or any plugin that reads git history.
+`fetch-depth: 0` is needed if using conventional-changelog or any plugin that reads git history. `package-manager-cache: false` turns off setup-node's automatic dependency cache, which the [setup-node README](https://github.com/actions/setup-node#breaking-changes-in-v5) recommends for workflows with elevated privileges such as a release job. `contents: write` lets `GITHUB_TOKEN` push the release commit and tag and create the GitHub Release. With `registry-url`, `setup-node` writes an `.npmrc` containing `_authToken=${NODE_AUTH_TOKEN}`, so the npm token must reach release-it under that name; an environment variable named only `NPM_TOKEN` is not read by that file. Drop `NODE_AUTH_TOKEN` when npm publishing is disabled or uses trusted publishing. For token limits and the OIDC workflow, see [npm-publishing.md](npm-publishing.md#cicd-environments).
 
 ## Programmatic API
 
-For the interactive service-app command, use `release(options, { prompt })` with the source-checked
-`register`/`show` adapter in [interactive-workflow.md](interactive-workflow.md). The minimal
-API sample below does not implement that contract or force a version question.
+For the interactive service-app command, use `release(options, { prompt })` with the source-checked `register`/`show` adapter in [interactive-workflow.md](interactive-workflow.md). The minimal API sample below does not implement that contract or force a version question.
 
 ```js
 import release from 'release-it';
@@ -247,15 +233,9 @@ console.log(output);
 
 ### Errors and Diagnostic Commands
 
-In **21.0.1**, the API's catch logs `err.message || err`, then rethrows the same error.
-It uses `info` for `err.cause === 'INFO'`, otherwise `error`. This is release-it's internal
-convention, not a general JavaScript error classification. A wrapper using the default
-logger should not print the same API error again. Limit suppression to that call's rejection:
-preflight, post-release reporting, and recovery failures still need their own diagnostics.
-If a custom logger is injected, establish which layer actually presents the error.
+In **21.1.3**, the API's catch logs `err.message || err`, then rethrows the same error. It uses `info` for `err.cause === 'INFO'`, otherwise `error`. This is release-it's internal convention, not a general JavaScript error classification. A wrapper using the default logger should not print the same API error again. Limit suppression to that call's rejection: preflight, post-release reporting, and recovery failures still need their own diagnostics. If a custom logger is injected, establish which layer actually presents the error.
 
-For synchronous read-only Git probes, `execFileSync` writes child stderr to the parent's
-stderr unless `stdio` is explicitly supplied. Capture it for expected unsuccessful lookups:
+For synchronous read-only Git probes, `execFileSync` writes child stderr to the parent's stderr unless `stdio` is explicitly supplied. Capture it for expected unsuccessful lookups:
 
 ```js
 execFileSync('git', args, {
@@ -265,14 +245,9 @@ execFileSync('git', args, {
 });
 ```
 
-Interpret the command's exit status: `git show-ref --verify --quiet -- <ref>` returning 1
-means no matching ref; a spawn failure or a different failure must not be reported as an
-absent tag. Capture diagnostics rather than discarding them. Commands requiring interactive
-authentication or hooks may need different stdio; do not apply a probe helper to every task.
+Interpret the command's exit status: `git show-ref --verify --quiet -- <ref>` returning 1 means no matching ref; a spawn failure or a different failure must not be reported as an absent tag. Capture diagnostics rather than discarding them. Commands requiring interactive authentication or hooks may need different stdio; do not apply a probe helper to every task.
 
-Sources: [21.0.1 API](https://github.com/release-it/release-it/blob/21.0.1/lib/index.js),
-[Node execFileSync](https://nodejs.org/api/child_process.html#child_processexecfilesyncfile-args-options),
-[Git show-ref](https://git-scm.com/docs/git-show-ref).
+Sources: [21.1.3 API](https://github.com/release-it/release-it/blob/21.1.3/lib/index.js), [Node execFileSync](https://nodejs.org/api/child_process.html#child_processexecfilesyncfile-args-options), [Git show-ref](https://git-scm.com/docs/git-show-ref).
 
 ## Debug Mode
 

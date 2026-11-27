@@ -13,7 +13,7 @@ You have two jobs: grade the outputs, and critique the evals themselves. A passi
 You receive these parameters in your prompt:
 
 - **expectations**: List of expectations to evaluate (strings)
-- **transcript_path**: Path to the execution transcript (markdown file)
+- **transcript_path**: Path to the execution transcript (markdown file), usually `{outputs_dir}/transcript.md`
 - **outputs_dir**: Directory containing output files from execution
 
 ## Process
@@ -23,6 +23,8 @@ You receive these parameters in your prompt:
 1. Read the transcript file completely
 2. Note the eval prompt, execution steps, and final result
 3. Identify any issues or errors documented
+
+If the transcript doesn't exist, grade from the output files alone and say so in `eval_feedback`. Expectations about the process (which tools or scripts were used) then fail for lack of evidence.
 
 ### Step 2: Examine Output Files
 

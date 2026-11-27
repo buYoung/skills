@@ -3,6 +3,7 @@ import { readFile } from 'node:fs/promises';
 import path from 'node:path';
 
 const root = process.argv[2];
+assert.ok(root, 'usage: node backend-subpath-stale-chunk.mjs <repaired-fixture-root>');
 const read = (file) => readFile(path.join(root, file), 'utf8');
 const [pkgText, config, nginx, bootstrap, app, ownership, report] = await Promise.all([
   read('package.json'),
@@ -21,13 +22,38 @@ const hasFrameworkMediatedGate = /CustomEvent/.test(bootstrap)
   && /(cancelable:\s*(?:true|canReload)|detail:[\s\S]*reload)/.test(bootstrap)
   && /dispatchEvent/.test(bootstrap);
 
+// Boot events and module evaluation do not prove that the failing lazy path recovered
+// (references/vite-deployment.md), so clearing the guard there does not count.
+const guardClearPattern = /(?:sessionStorage|localStorage)\.removeItem|markSuccessfulPageLoad|rotateReloadGuardAfterSuccessfulLoad|clear\w*Guard/;
+const listenerArguments = (source, eventPattern) => {
+  const found = [];
+  const start = new RegExp(`addEventListener\\(\\s*['"](?:${eventPattern})['"]`, 'g');
+  for (const match of source.matchAll(start)) {
+    let depth = 1;
+    let index = match.index + 'addEventListener('.length;
+    while (index < source.length && depth > 0) {
+      if (source[index] === '(') depth++;
+      if (source[index] === ')') depth--;
+      index++;
+    }
+    found.push(source.slice(match.index, index));
+  }
+  return found;
+};
+const bootEventClear = listenerArguments(bootstrap, 'DOMContentLoaded|pageshow|load')
+  .some((listener) => guardClearPattern.test(listener));
+const moduleEvaluationClear = /^(?:window\.)?(?:sessionStorage|localStorage)\.removeItem\(|^(?:markSuccessfulPageLoad|rotateReloadGuardAfterSuccessfulLoad|clear\w*Guard)\(\s*\)/m.test(bootstrap);
+const releaseRotation = /__CONSOLE_BUILD_ID__/.test(bootstrap);
+const explicitAcknowledgement = /acknowledg|markSuccessfulPageLoad|rotateReloadGuardAfterSuccessfulLoad/i.test(bootstrap)
+  && guardClearPattern.test(bootstrap);
+
 check('Vite base matches the backend /console/ mount', /^8\./.test(pkg.devDependencies?.vite ?? '') && pkg.engines?.node === '>=22.12.0' && /base:\s*["']\/console\/["']/.test(config), 'package.json and vite.config.mjs');
 check('Hashed assets remain under assets/', /assetsDir:\s*["']assets["']/.test(config) && /\[hash\]/.test(config), 'vite.config.mjs');
 check('Current HTML is not stored while hashed assets remain immutable', /index\.html[\s\S]*(no-store|no-cache|max-age=0)/i.test(nginx) && /assets\/[\s\S]*max-age=31536000[\s\S]*immutable/i.test(nginx), 'deploy/nginx.conf');
 check('Backend fallback still resolves to /console/index.html', /try_files[\s\S]*\/console\/index\.html/.test(nginx), 'deploy/nginx.conf');
 check('A stale preload failure is intercepted and automatic recovery is bounded across reloads', /vite:preloadError/.test(bootstrap) && /preventDefault\(\)/.test(bootstrap) && /(sessionStorage|localStorage)/.test(bootstrap) && /reload\(\)/.test(bootstrap), 'src/bootstrap.mjs');
 check('Unsaved work blocks automatic recovery and produces a framework-owner request', (hasDirectDraftGate || hasFrameworkMediatedGate) && /(dispatchEvent|CustomEvent)/.test(bootstrap), 'src/bootstrap.mjs');
-check('The recovery guard is cleared or rotated after successful boot', /(removeItem|markSuccessfulPageLoad|rotateReloadGuardAfterSuccessfulLoad|pageshow|DOMContentLoaded|__CONSOLE_BUILD_ID__)/.test(bootstrap), 'src/bootstrap.mjs guard lifecycle');
+check('The recovery guard is cleared or rotated only after explicit recovery acknowledgement or a release change', (explicitAcknowledgement || releaseRotation) && !bootEventClear && !moduleEvaluationClear, `src/bootstrap.mjs guard lifecycle: acknowledgement=${explicitAcknowledgement}, releaseRotation=${releaseRotation}, bootEventClear=${bootEventClear}, moduleEvaluationClear=${moduleEvaluationClear}`);
 check('Framework-owned React code remains untouched', app.trim() === "// SENTINEL: framework-owner-controlled-do-not-edit\nexport function App() {\n  return <main><h1>Incident console</h1></main>;\n}" && /React incident-console team; read-only/.test(ownership), 'src/App.jsx and OWNERSHIP.md');
 check('The report records actual-topology verification, rollback, and framework-owner needs', /console/i.test(report) && /(old client|stale|404|preload)/i.test(report) && /rollback/i.test(report) && /(framework|React|UI owner)/i.test(report) && /(unverified|not run|runtime|browser)/i.test(report), 'REPORT.md');
 

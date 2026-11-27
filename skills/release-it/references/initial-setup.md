@@ -1,11 +1,6 @@
 # Initial Setup Guide
 
-Identify whether the request concerns CLI/CI configuration, a programmatic caller, an
-interactive service-app command, or a plugin. Analyze the existing entry point, version
-source, enabled actions, and release-it version before generating the needed artifacts.
-For an interactive service-app command, use [interactive-workflow.md](interactive-workflow.md).
-Its first runtime question is version selection for a single project, or selection of one
-service app for a monorepo; setup decisions do not add a runtime start confirmation.
+Identify whether the request concerns CLI/CI configuration, a programmatic caller, an interactive service-app command, or a plugin. Analyze the existing entry point, version source, enabled actions, and release-it version before generating the needed artifacts. For an interactive service-app command, use [interactive-workflow.md](interactive-workflow.md). Its first runtime question is version selection for a single project, or selection of one service app for a monorepo; setup decisions do not add a runtime start confirmation.
 
 ## Flow: Analyze → Resolve Missing Decisions → Generate
 
@@ -57,10 +52,7 @@ From the analysis, you can immediately determine these config values:
 
 ### If an existing release-it config is found
 
-Read the existing config and entry point. Change only the requested behavior, preserving
-relevant version providers, mode flags, hooks, and enabled actions. Add an interactive entry
-point only when that workflow is being set up. Resolve incompatible requirements during
-setup instead of forcing a CLI/CI or publishing workflow through the Git-only adapter.
+Read the existing config and entry point. Change only the requested behavior, preserving relevant version providers, mode flags, hooks, and enabled actions. Add an interactive entry point only when that workflow is being set up. Resolve incompatible requirements during setup instead of forcing a CLI/CI or publishing workflow through the Git-only adapter.
 
 ---
 
@@ -93,8 +85,7 @@ I need a few decisions from you to finalize the config:
 
 ## Step 3: Ask the User
 
-Reuse explicit requirements and compatible existing settings. Ask only when a missing
-decision materially changes behavior; use the listed defaults for ordinary unspecified choices.
+Reuse explicit requirements and compatible existing settings. Ask only when a missing decision materially changes behavior; use the listed defaults for ordinary unspecified choices.
 
 ### Decisions to Resolve
 
@@ -120,12 +111,10 @@ decision materially changes behavior; use the listed defaults for ordinary unspe
 
 For the interactive service-app workflow, the following defaults are already defined:
 - `$schema` URL → always include in JSON format
-- `git.commitMessage` → use `"chore: release v${version}"` (Conventional Commits)
-- Require clean tracked files and index repository-wide. Derive untracked-file handling
-  from the actual writers and staging options; see [git-integration.md](git-integration.md)
+- `git.commitMessage` → use `"chore(release): v${version}"` (Conventional Commits), as in the [base config](interactive-workflow.md#copyable-project-example)
+- Require clean tracked files and index repository-wide. Derive untracked-file handling from the actual writers and staging options; see [git-integration.md](git-integration.md)
 - Confirm commit, tag, and push with `default: true`; Enter approves each displayed action
-- The packaged wrapper preserves interrupted state and disables built-in local exit
-  rollback. Apply a different recovery policy only with its required baseline and ownership checks
+- The packaged wrapper preserves interrupted state and disables built-in local exit rollback. Apply a different recovery policy only with its required baseline and ownership checks
 - `git.requireUpstream` → `true` (safe default)
 - Keep built-in `git.commit`, `git.tag`, and `git.push` enabled; inspect tag transfer scope in [git-integration.md](git-integration.md)
 - `GITHUB_TOKEN` / `GITLAB_TOKEN` → standard env var name
@@ -152,10 +141,7 @@ Based on analysis + user answers, generate these files:
    }
    ```
 
-For an interactive service-app request, copy and adapt the example modules from
-[interactive-workflow.md](interactive-workflow.md). For its monorepo mode, also generate
-`.release-targets.json` and app configs using [monorepo.md](monorepo.md). A CLI/CI config edit
-or custom plugin request does not require those wrapper files.
+For an interactive service-app request, copy and adapt the example modules from [interactive-workflow.md](interactive-workflow.md). For its monorepo mode, also generate `.release-targets.json` and app configs using [monorepo.md](monorepo.md). A CLI/CI config edit or custom plugin request does not require those wrapper files.
 
 ### Conditionally generate
 
@@ -163,8 +149,9 @@ or custom plugin request does not require those wrapper files.
    - Use `workflow_dispatch` trigger with increment input
    - `fetch-depth: 0` for changelog plugins
    - Git user config from `GITHUB_ACTOR`
+   - `permissions: contents: write` for the release commit, tag push, and GitHub release
    - `GITHUB_TOKEN` for GitHub releases
-   - `NPM_TOKEN` only if npm publish enabled
+   - npm token as `NODE_AUTH_TOKEN` only if npm publish uses a token; trusted publishing needs `id-token: write` instead (see [npm-publishing.md](npm-publishing.md#oidc-trusted-publishing))
 
 4. **CHANGELOG.md** (if changelog plugin selected and file doesn't exist)
    - For conventional-changelog: empty file (plugin will populate)
@@ -172,12 +159,11 @@ or custom plugin request does not require those wrapper files.
 
 ### Suggest installing
 
-5. **Dependencies** — match the chosen workflow, package manager, and runtime. The checked
-   interactive example uses this set; retain compatible installed versions for existing work:
+5. **Dependencies** — match the chosen workflow, package manager, and runtime. The checked interactive example uses this set; retain compatible installed versions for existing work:
    ```bash
-   pnpm add -D -E release-it@21.0.1 @inquirer/prompts@8.5.2 semver@7.8.5
+   pnpm add -D -E release-it@21.1.3 @inquirer/prompts@8.8.0 semver@7.8.6
    # If changelog plugin selected:
-   pnpm add -D -E @release-it/conventional-changelog@12.0.0 conventional-changelog-conventionalcommits@10.4.0
+   pnpm add -D -E @release-it/conventional-changelog@12.0.2 conventional-changelog-conventionalcommits@10.4.1
    ```
 
 ---
@@ -186,12 +172,7 @@ or custom plugin request does not require those wrapper files.
 
 ### Publishing and Platform
 
-The default service-app flow ends after Git push with `npm.publish: false`,
-`github.release: false`, and `gitlab.release: false`. Remote host and package visibility
-are context, not instructions to publish. Preserve publishing and CI capabilities when
-explicitly requested and use their dedicated references and commands. For non-Node
-version sources, follow the [version source contract](plugins.md#version-source-contract)
-and adapt every consumer listed in the interactive reference.
+The default service-app flow ends after Git push with `npm.publish: false`, `github.release: false`, and `gitlab.release: false`. Remote host and package visibility are context, not instructions to publish. Preserve publishing and CI capabilities when explicitly requested and use their dedicated references and commands. For non-Node version sources, follow the [version source contract](plugins.md#version-source-contract) and adapt every consumer listed in the interactive reference.
 
 ### Changelog Strategy
 
@@ -205,11 +186,7 @@ CHANGELOG.md exists?
 
 ### Monorepo
 
-Detect workspace metadata, identify deployable service apps, and configure each app's
-version source, changelog path/history, and tag namespace. Generate a single-select menu
-from that verified list. Shared libraries and root tooling are not automatically release
-targets. Without monorepo metadata, omit the app picker and ask for the version first.
-Use bulk or synchronized package release strategies only when explicitly requested.
+Detect workspace metadata, identify deployable service apps, and configure each app's version source, changelog path/history, and tag namespace. Generate a single-select menu from that verified list. Shared libraries and root tooling are not automatically release targets. Without monorepo metadata, omit the app picker and ask for the version first. Use bulk or synchronized package release strategies only when explicitly requested.
 
 ---
 
@@ -219,7 +196,7 @@ Use bulk or synchronized package release strategies only when explicitly request
 
 ```json
 {
-  "$schema": "https://unpkg.com/release-it@21.0.1/schema/release-it.json",
+  "$schema": "https://unpkg.com/release-it@21.1.3/schema/release-it.json",
   "git": {
     "commitMessage": "chore: release v${version}",
     "requireBranch": "main"
@@ -241,15 +218,13 @@ Use bulk or synchronized package release strategies only when explicitly request
 
 ### Private/Internal Package or Application
 
-Use the complete base config and Inquirer entry scripts in
-[interactive-workflow.md](interactive-workflow.md). For service apps in a workspace,
-apply the target-specific overrides in [monorepo.md](monorepo.md).
+Use the complete base config and Inquirer entry scripts in [interactive-workflow.md](interactive-workflow.md). For service apps in a workspace, apply the target-specific overrides in [monorepo.md](monorepo.md).
 
 ### Non-Node Version Provider (adapt all version consumers)
 
 ```json
 {
-  "$schema": "https://unpkg.com/release-it@21.0.1/schema/release-it.json",
+  "$schema": "https://unpkg.com/release-it@21.1.3/schema/release-it.json",
   "npm": false,
   "git": {
     "commitMessage": "chore: release v${version}",

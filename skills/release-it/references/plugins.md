@@ -31,31 +31,15 @@ An external plugin can also disable core plugins with `disablePlugin()`.
 
 ## Version Source Contract
 
-Identify the product's version source independently of the files used to install release
-tooling. A repository can contain `package.json` while its release version belongs to a
-manifest, a plain version file, Git tags, or a custom plugin.
+Identify the product's version source independently of the files used to install release tooling. A repository can contain `package.json` while its release version belongs to a manifest, a plain version file, Git tags, or a custom plugin.
 
-Connect the same source through current-version reading, candidate calculation, resolved
-version checks, actual writes, state reporting, and any requested restoration. Record
-every output, including changelogs, lockfiles, generated files, and shared paths. The
-staging and recovery scope must cover those effects without claiming ownership of unrelated
-changes; see [git-integration.md](git-integration.md#working-state-and-staging-scope).
+Connect the same source through current-version reading, candidate calculation, resolved version checks, actual writes, state reporting, and any requested restoration. Record every output, including changelogs, lockfiles, generated files, and shared paths. The staging and recovery scope must cover those effects without claiming ownership of unrelated changes; see [git-integration.md](git-integration.md#working-state-and-staging-scope).
 
-Choose the writer that fits the project's format: the npm plugin, a configured bumper,
-or a custom plugin. Preserve version semantics such as pre-release identifiers and build
-metadata; the packaged semver menu is not a parser for every versioning scheme.
-External getter precedence does not automatically stop other plugins from writing.
+Choose the writer that fits the project's format: the npm plugin, a configured bumper, or a custom plugin. Preserve version semantics such as pre-release identifiers and build metadata; the packaged semver menu is not a parser for every versioning scheme. External getter precedence does not automatically stop other plugins from writing.
 
-In 21.0.1, `npm.publish: false` disables publishing but retains npm version writes.
-`npm.ignoreVersion: true` changes getter selection, not npm's bump method. Use `npm: false`
-or an appropriate `disablePlugin()` when that plugin must not touch a tooling manifest;
-if npm publication is also required, design its version inputs and writes together.
-See the [npm source](https://github.com/release-it/release-it/blob/21.0.1/lib/plugin/npm/npm.js).
+In 21.1.3, `npm.publish: false` disables publishing but retains npm version writes. `npm.ignoreVersion: true` changes getter selection, not npm's bump method. Use `npm: false` or an appropriate `disablePlugin()` when that plugin must not touch a tooling manifest; if npm publication is also required, design its version inputs and writes together. See the [npm source](https://github.com/release-it/release-it/blob/21.1.3/lib/plugin/npm/npm.js).
 
-For a generated interactive command, adapt all consumers listed in
-[interactive-workflow.md](interactive-workflow.md#copyable-project-example). A custom plugin
-must also respect dry-run and the actual prompt API in
-[custom-plugin-development.md](custom-plugin-development.md).
+For a generated interactive command, adapt all consumers listed in [interactive-workflow.md](interactive-workflow.md#copyable-project-example). A custom plugin must also respect dry-run and the actual prompt API in [custom-plugin-development.md](custom-plugin-development.md).
 
 ---
 
@@ -68,6 +52,8 @@ Recommended bump from commit messages + changelog generation following Conventio
 ```bash
 npm install -D @release-it/conventional-changelog
 ```
+
+Of the presets, version 12.0.2 depends only on `conventional-changelog-angular` and `conventional-changelog-conventionalcommits`, and only these two work with it. A preset name loads `conventional-changelog-<name>`; without that package the plugin fails with `Unable to load the "<name>" preset`. Installing the package is not enough for the other names in the plugin README. The plugin renders with `conventional-changelog-writer` 9, which replaced Handlebars template strings with render functions in 9.0.0. Run on 2026-11-27 with the latest packages, `atom`, `codemirror`, `ember`, `eslint`, `express`, `jquery`, and `jshint` failed with `headerPartial is not a function`, and `jscs` 0.1.0 (a 2016 callback-style export) failed with `Preset is not loaded or have incorrect exports`. Both errors stop `--release-version` and `--dry-run` as well.
 
 ### Basic config
 
@@ -86,10 +72,10 @@ npm install -D @release-it/conventional-changelog
 
 | Option | Description |
 |--------|-------------|
-| `preset` | Commit convention preset: `angular`, `conventionalcommits`, `atom`, `ember`, `eslint`, `jshint` |
+| `preset` | Preset name or `{ name, ...options }`: `angular` or `conventionalcommits` (see [Install](#install)) |
 | `infile` | Path to changelog file to update (e.g. `CHANGELOG.md`) |
 | `header` | Text to prepend to changelog file |
-| `types` | Array of type objects to customize which commit types appear |
+| `preset.types` | conventionalcommits only: type objects that set sections and changelog/bump effect |
 | `writerOpts` | Options passed to `conventional-changelog-writer` |
 
 ### Custom commit types
@@ -104,7 +90,7 @@ npm install -D @release-it/conventional-changelog
           { "type": "feat", "section": "Features" },
           { "type": "fix", "section": "Bug Fixes" },
           { "type": "perf", "section": "Performance" },
-          { "type": "docs", "section": "Documentation", "hidden": false }
+          { "type": "docs", "section": "Documentation", "effect": "changelog" }
         ]
       },
       "infile": "CHANGELOG.md"
@@ -112,6 +98,8 @@ npm install -D @release-it/conventional-changelog
   }
 }
 ```
+
+`effect` is `bump` (default; changelog and bump recommendation), `changelog` (changelog only), or `hidden`. The conventionalcommits 10.4 preset reads `effect`, not a `hidden` flag.
 
 ### How it works
 
@@ -232,14 +220,14 @@ npm install -D @release-it/keep-a-changelog
 
 ---
 
-## release-it-calver-plugin
+## @csmith/release-it-calver-plugin
 
-Calendar versioning (CalVer) instead of semantic versioning.
+Calendar versioning (CalVer) instead of semantic versioning. Checked against 2026.9.0 (peer `release-it ^21.0.0`); the unscoped name `release-it-calver-plugin` is not on npm.
 
 ### Install
 
 ```bash
-npm install -D release-it-calver-plugin
+npm install -D @csmith/release-it-calver-plugin
 ```
 
 ### Basic config
@@ -247,25 +235,31 @@ npm install -D release-it-calver-plugin
 ```json
 {
   "plugins": {
-    "release-it-calver-plugin": {
-      "format": "YYYY.MM.DD"
+    "@csmith/release-it-calver-plugin": {
+      "cycle": "month"
     }
   }
 }
 ```
 
-### Format tokens
+### Options
 
-| Token | Description | Example |
-|-------|-------------|---------|
-| `YYYY` | Full year | `2024` |
-| `YY` | Short year | `24` |
-| `MM` | Month (zero-padded) | `03` |
-| `0M` | Month (zero-padded) | `03` |
-| `DD` | Day (zero-padded) | `15` |
-| `0D` | Day (zero-padded) | `15` |
-| `MINOR` | Auto-incrementing counter | `1`, `2`, `3` |
-| `MICRO` | Auto-incrementing counter | `1`, `2`, `3` |
+| Option | Values | Default |
+|--------|--------|---------|
+| `cycle` | `year` (`2026.0`), `month` (`2026.3.0`), `week` (`2026.13.0`), `day` (`2026.3.24.0`), `auto` | `month` |
+| `prefix` | String prepended to the version, e.g. `ui-` | `""` |
+| `separator` | `"."` or `"-"` | `"."` |
+
+The plugin does not take a token format. Segments are not zero-padded, and the trailing number increments within the cycle. The deprecated `format` option is mapped to a `cycle` with a warning. With the default separator, `month` and `week` give three-segment semver; `year` and `day` output, and any output with the `-` separator, is not semver. Source: [plugin README](https://github.com/casmith/release-it-calver-plugin/blob/v2026.9.0/README.md).
+
+`auto` takes the cycle from the latest version's shape: `2026.0` continues as `year`, `2026.11.0` as `month`, and `2026.11.27.0` as `day`. A three-segment version is always read as a month, so a `week` tag such as `2026.48.0` comes back unchanged (release-it then only warns that the tag exists). Without an earlier CalVer version, `auto` fails with `Invalid release cycle`; start with an explicit cycle. With any cycle, a latest version that is not CalVer, such as `1.2.3`, comes back unchanged.
+
+Run on 2026-11-27 with release-it 21.1.3 and plugin 2026.9.0, non-semver output caused these differences:
+
+- When the npm plugin writes the version, `npm version` (10.9.7 and 11.19.1) rejects `2026.0` with `Invalid version`; npm 11.19.1 also rejects `-` separator output such as `2026-11.0`. It does not reject the `day` form, despite the README: `2026.11.27.0` is written to `package.json` as `2026.11.2-7.0`.
+- The tag name keeps the plugin output, but release-it coerces `${version}` for templates. The default commit message and tag annotation read `Release 2026.0.0` for tag `2026.0` and `Release 2026.11.27` for tag `2026.11.27.0`.
+
+With `year`, `day`, or the `-` separator, use `npm: false` or move the version writes to another provider (see the [version source contract](#version-source-contract)). Use `${tagName}` instead of `${version}` in `git.commitMessage` and `git.tagAnnotation`; with `year`, that gave `Release 2026.0` for tag `2026.0`.
 
 ---
 

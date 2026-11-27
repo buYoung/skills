@@ -8,7 +8,7 @@ Use this index to find feature details without mistaking a release's changes for
 
 | Capability | Available from | Read for detail | Later boundary |
 |---|---|---|---|
-| Proper paragraphs, configurable first-line indentation, outline entry methods | 0.13.0 | [0.13](0.13.md) | 0.15 folds partial indentation dictionaries |
+| Proper paragraphs, configurable first-line indentation, outline entry methods | 0.13.0 | [0.13](0.13.md), [0.15](0.15.md) | 0.15 folds partial indentation dictionaries |
 | Page references, reversed enums, document description | 0.13.0 | [0.13](0.13.md) | Still available in 0.14 and 0.15 |
 | `curve`, `tiling`, encoded bytes passed to loaders | 0.13.0 | [0.13](0.13.md) | Old aliases removed in 0.15 |
 | PDF attachments | 0.13.0 | [0.13](0.13.md), [0.14](0.14.md) | `pdf.embed` renamed to `pdf.attach` in 0.14; old alias removed in 0.15 |

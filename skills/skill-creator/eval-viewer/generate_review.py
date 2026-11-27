@@ -7,10 +7,17 @@ a tiny HTTP server. Feedback auto-saves to feedback.json in the workspace.
 
 Usage:
     python generate_review.py <workspace-path> [--port PORT] [--skill-name NAME]
-    python generate_review.py <workspace-path> --previous-feedback /path/to/old/feedback.json
+    python generate_review.py <workspace-path> --previous-workspace <previous-iteration-path>
+    python generate_review.py <workspace-path> --static <output.html>
+
+Before serving, the script stops an earlier eval viewer still listening on the
+port. Other programs on that port are left running and a free port is used.
 
 No dependencies beyond the Python stdlib are required.
 """
+
+# Local modification: correct the usage text and stop only earlier
+# generate_review.py processes on the port instead of any listener.
 
 import argparse
 import base64
@@ -285,20 +292,45 @@ def generate_html(
 # HTTP server (stdlib only, zero dependencies)
 # ---------------------------------------------------------------------------
 
-def _kill_port(port: int) -> None:
-    """Kill any process listening on the given port."""
+def _is_eval_viewer(pid: int) -> bool:
+    """Return True if the process command line runs generate_review.py."""
     try:
         result = subprocess.run(
-            ["lsof", "-ti", f":{port}"],
+            ["ps", "-p", str(pid), "-o", "command="],
             capture_output=True, text=True, timeout=5,
         )
+    except (subprocess.TimeoutExpired, FileNotFoundError):
+        return False
+    return "generate_review.py" in result.stdout
+
+
+def _kill_port(port: int) -> None:
+    """Stop an earlier eval viewer listening on the given port.
+
+    Processes that are not generate_review.py are left alone; main() then
+    falls back to a free port.
+    """
+    try:
+        result = subprocess.run(
+            ["lsof", "-ti", f":{port}", "-sTCP:LISTEN"],
+            capture_output=True, text=True, timeout=5,
+        )
+        killed = False
         for pid_str in result.stdout.strip().split("\n"):
-            if pid_str.strip():
-                try:
-                    os.kill(int(pid_str.strip()), signal.SIGTERM)
-                except (ProcessLookupError, ValueError):
-                    pass
-        if result.stdout.strip():
+            if not pid_str.strip():
+                continue
+            try:
+                pid = int(pid_str.strip())
+            except ValueError:
+                continue
+            if pid == os.getpid() or not _is_eval_viewer(pid):
+                continue
+            try:
+                os.kill(pid, signal.SIGTERM)
+                killed = True
+            except ProcessLookupError:
+                pass
+        if killed:
             time.sleep(0.5)
     except subprocess.TimeoutExpired:
         pass
@@ -435,14 +467,14 @@ def main() -> None:
         print(f"\n  Static viewer written to: {args.static}\n")
         sys.exit(0)
 
-    # Kill any existing process on the target port
+    # Stop an earlier eval viewer on the target port
     port = args.port
     _kill_port(port)
     handler = partial(ReviewHandler, workspace, skill_name, feedback_path, previous, benchmark_path)
     try:
         server = HTTPServer(("127.0.0.1", port), handler)
     except OSError:
-        # Port still in use after kill attempt — find a free one
+        # Port still in use (another program, or the old viewer didn't exit) — find a free one
         server = HTTPServer(("127.0.0.1", 0), handler)
         port = server.server_address[1]
 

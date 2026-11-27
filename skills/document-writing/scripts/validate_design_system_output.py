@@ -117,6 +117,8 @@ def main() -> int:
     parser.add_argument("--png-alpha", choices=("true", "false"))
     parser.add_argument("--format", choices=("json", "text"), default="text")
     args = parser.parse_args()
+    if args.png_count is None and (args.png_width is not None or args.png_height is not None or args.png_alpha is not None):
+        parser.error("--png-width, --png-height, and --png-alpha require --png-count")
     result = validate(
         Path(args.root),
         args.prebuilt,

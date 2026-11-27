@@ -26,7 +26,8 @@ FRONTMATTER_RE = re.compile(r"\A---\n(?P<body>.*?)\n---(?:\n|\Z)", re.DOTALL)
 LINK_RE = re.compile(r"\[[^\]]*\]\((?P<target>[^)]+)\)")
 FENCE_RE = re.compile(r"```.*?```", re.DOTALL)
 SEMVER_RE = re.compile(r"^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-[0-9A-Za-z.-]+)?(?:\+[0-9A-Za-z.-]+)?$")
-PRODUCTION_BEHAVIOR_IDS = tuple(range(1, 37))
+PRODUCTION_BEHAVIOR_IDS = tuple(range(1, 40))
+PRODUCTION_BEHAVIOR_COUNT = len(PRODUCTION_BEHAVIOR_IDS)
 SELECTION_CASE_COUNT = 60
 EXECUTION_MODEL = "gpt-5.6-luna"
 EXECUTION_REASONING_EFFORT = "medium"
@@ -154,7 +155,7 @@ def validate_eval_manifest(skill_root: Path, report: Report) -> None:
     evals = payload["evals"]
     ids = [item.get("id") for item in evals if isinstance(item, dict)]
     if ids != list(PRODUCTION_BEHAVIOR_IDS):
-        report.fail("evals.json must contain eval 1 through 36 in order")
+        report.fail(f"evals.json must contain eval 1 through {PRODUCTION_BEHAVIOR_COUNT} in order")
     for index, item in enumerate(evals):
         if not isinstance(item, dict):
             report.fail(f"evals[{index}] must be an object")
@@ -172,7 +173,7 @@ def validate_eval_manifest(skill_root: Path, report: Report) -> None:
                 if not (skill_root / relative).is_file():
                     report.fail(f"eval {item.get('id')} fixture is missing: {relative}")
     if not report.failures:
-        report.ok("36 behavior evals have prompts, expectations, and fixtures")
+        report.ok(f"{PRODUCTION_BEHAVIOR_COUNT} behavior evals have prompts, expectations, and fixtures")
 
 
 def validate_trigger_manifest(skill_root: Path, report: Report) -> None:
@@ -218,12 +219,12 @@ def validate_production_suite(skill_root: Path, report: Report) -> None:
         report.fail("production suite behavior must be an object")
         return
     if behavior.get("eval_ids") != list(PRODUCTION_BEHAVIOR_IDS) or behavior.get("repetitions") != 1:
-        report.fail("behavior must cover eval 1 through 36 once")
+        report.fail(f"behavior must cover eval 1 through {PRODUCTION_BEHAVIOR_COUNT} once")
     if behavior.get("configurations") != [{"name": "with_skill", "source": "working-tree", "capability_overrides": {}}]:
         report.fail("behavior must contain only the current working-tree configuration")
     contracts = behavior.get("case_contracts")
     if not isinstance(contracts, dict) or set(contracts) != {str(value) for value in PRODUCTION_BEHAVIOR_IDS}:
-        report.fail("case_contracts must cover eval 1 through 36 exactly")
+        report.fail(f"case_contracts must cover eval 1 through {PRODUCTION_BEHAVIOR_COUNT} exactly")
         contracts = {}
     no_write_ids = {1, 2, 4, 5, 6, 7, 8, 9, 10, 12, 20, 21, 25, 26, 29, 32}
     for eval_id in no_write_ids:
@@ -254,8 +255,8 @@ def validate_production_suite(skill_root: Path, report: Report) -> None:
         if not (all(value is None for value in hashes) or all(is_sha256(value) for value in hashes)):
             report.fail("selection reuse hashes must be all unset or all SHA-256 digests")
     runtime = payload.get("runtime")
-    if not isinstance(runtime, dict) or runtime.get("model") != EXECUTION_MODEL or runtime.get("reasoning_effort") != EXECUTION_REASONING_EFFORT or runtime.get("execution_contexts") != 36 or runtime.get("grading_contexts") != 36:
-        report.fail("runtime must declare the full 36+36 Luna-medium production budget")
+    if not isinstance(runtime, dict) or runtime.get("model") != EXECUTION_MODEL or runtime.get("reasoning_effort") != EXECUTION_REASONING_EFFORT or runtime.get("execution_contexts") != PRODUCTION_BEHAVIOR_COUNT or runtime.get("grading_contexts") != PRODUCTION_BEHAVIOR_COUNT:
+        report.fail(f"runtime must declare the full {PRODUCTION_BEHAVIOR_COUNT}+{PRODUCTION_BEHAVIOR_COUNT} Luna-medium production budget")
     evidence = payload.get("evidence")
     gates = evidence.get("gates") if isinstance(evidence, dict) else None
     if not isinstance(evidence, dict) or evidence.get("schema_version") != 3 or not isinstance(gates, dict):
@@ -296,8 +297,8 @@ def validate_python_eval_scripts(skill_root: Path, report: Report) -> None:
 
 def contract_digest(skill_root: Path) -> str:
     files = [skill_root / "SKILL.md"]
-    files.extend(path for path in (skill_root / "scripts").glob("*.py") if path.name != "validate_fdd.py")
-    files.extend((skill_root / "references" / "document-types" / "design-system").rglob("*.md"))
+    files.extend((skill_root / "scripts").glob("*.py"))
+    files.extend((skill_root / "references" / "document-types").rglob("*.md"))
     files.extend(skill_root / "references" / "shared" / name for name in ("human-readable-writing.md", "source-grounding.md", "existing-document-edits.md", "drafting-and-revision.md"))
     files.extend((skill_root / "evals").rglob("*"))
     included = [path for path in files if path.is_file() and path.relative_to(skill_root).as_posix() != "evals/production-evidence.json" and path.relative_to(skill_root).as_posix() not in {"evals/evals.json", "evals/trigger-evals.json"} and not path.relative_to(skill_root).as_posix().startswith("evals/evidence/")]
@@ -615,8 +616,8 @@ def validate_production_evidence(skill_root: Path, report: Report, require_produ
         if payload.get("selection", {}).get("passed") is not True:
             report.fail("production-ready evidence requires verified selection results")
         if scope.get("kind") != "production" or scope.get("eval_ids") != list(PRODUCTION_BEHAVIOR_IDS):
-            report.fail("production-ready evidence must cover eval 1 through 36")
-        if summary.get("valid_execution_receipts") != 36 or summary.get("deterministic_passed") != 36 or summary.get("completed_independent_gradings") != 36 or summary.get("semantic_passed") != 36 or not isinstance(summary.get("macro_pass_rate"), (int, float)) or summary["macro_pass_rate"] < 0.90:
+            report.fail(f"production-ready evidence must cover eval 1 through {PRODUCTION_BEHAVIOR_COUNT}")
+        if any(summary.get(field) != PRODUCTION_BEHAVIOR_COUNT for field in ("valid_execution_receipts", "deterministic_passed", "completed_independent_gradings", "semantic_passed")) or not isinstance(summary.get("macro_pass_rate"), (int, float)) or summary["macro_pass_rate"] < 0.90:
             report.fail("production-ready behavior gates are incomplete")
         hard_gates = summary.get("hard_gates")
         if not isinstance(hard_gates, dict) or set(hard_gates) != HARD_GATE_NAMES or any(value != "pass" for value in hard_gates.values()):

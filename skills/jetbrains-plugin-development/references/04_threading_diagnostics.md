@@ -4,7 +4,7 @@
 
 | Symptom | Likely cause |
 |---|---|
-| "Read access is allowed from inside read-action only" | You're reading PSI/VFS without a Read Action. Wrap in `ReadAction.compute { }` / `readAction { }`. |
+| "Read access is allowed from inside read-action only" | You're reading PSI/VFS without a Read Action. Wrap in `readAction { }` in coroutines or `ReadAction.nonBlocking(...)` elsewhere; blocking `ReadAction.compute` is deprecated on 2026.1+. |
 | "Write access is allowed from event dispatch thread only" | The code or target version still requires an EDT write. Preserve it with `invokeLater` + `WriteAction.run` or `edtWriteAction`; do not assume the 2026.2 background-write contract applies to older targets. |
 | "Slow operations are prohibited on EDT" | You ran heavy work on the EDT. Move to `Task.Backgroundable` or `cs.launch`. |
 | IDE "freezes" briefly | Long Read or Write on EDT, or long Read on BGT blocking incoming Writes. Use `nonBlocking` / suspending `readAction`. |
@@ -16,39 +16,27 @@
 
 ## Common mistakes
 
-- Treating `Dispatchers.Main` as a non-EDT dispatcher. It is installed on EDT, but since
-  2025.1 it is a pure-UI path without Write Intent. On 2025.3+, prefer `Dispatchers.UI` for
-  Swing-only work and `Dispatchers.EDT` for legacy model access on EDT.
-- Catching `Exception`/`Throwable` and not re-throwing `CancellationException` /
-  `ProcessCanceledException`.
-- Replacing a legacy EDT `WriteAction.run` with 2026.2 `writeAction` without auditing the
-  behavior change. Use `edtWriteAction` to preserve thread affinity.
-- Holding `readAction { … }` open for many seconds — every Write restarts it. Break work
-  into smaller reads, or use `smartReadAction` and reportProgress.
+- Treating `Dispatchers.Main` as a non-EDT dispatcher. It is installed on EDT, but since 2025.1 it is a pure-UI path without Write Intent. On 2025.3+, prefer `Dispatchers.UI` for Swing-only work and `Dispatchers.EDT` for legacy model access on EDT.
+- Catching `Exception`/`Throwable` and not re-throwing `CancellationException` / `ProcessCanceledException`.
+- Replacing a legacy EDT `WriteAction.run` with 2026.2 `writeAction` without auditing the behavior change. Use `edtWriteAction` to preserve thread affinity.
+- Holding `readAction { … }` open for many seconds — every Write restarts it. Break work into smaller reads, or use `smartReadAction` and reportProgress.
 - Mutating a field from inside a `readAction` (the block is supposed to be idempotent).
-- Using `Application.getCoroutineScope()` / `Project.getCoroutineScope()`. Inject a scope
-  via a service.
+- Using `Application.getCoroutineScope()` / `Project.getCoroutineScope()`. Inject a scope via a service.
 - `runBlocking { … }` (kotlinx) inside the IDE. Use `runBlockingCancellable` and only on BGT.
 - A `Task.Backgroundable.run()` that touches Swing directly. Hop to EDT for any UI work.
 
 ## Best practice
 
-- New code: coroutines, service-injected `CoroutineScope`, cancellable `readAction`/
-  `smartReadAction`, and an explicit EDT or BGT write choice. Treat `writeCommandAction` as
-  public experimental API; keep classic `WriteCommandAction` for stable-only support.
-- Annotate public methods with `@RequiresEdt` / `@RequiresBackgroundThread` /
-  `@RequiresReadLock` / `@RequiresWriteLock`. Saves the next maintainer hours of debugging.
-- Treat PCE / `CancellationException` as control flow. Always re-throw, never log it as
-  error.
+- New code: coroutines, service-injected `CoroutineScope`, cancellable `readAction`/ `smartReadAction`, and an explicit EDT or BGT write choice. Treat `writeCommandAction` as public experimental API; keep classic `WriteCommandAction` for stable-only support.
+- Annotate public methods with `@RequiresEdt` / `@RequiresBackgroundThread` / `@RequiresReadLock` / `@RequiresWriteLock`. Saves the next maintainer hours of debugging.
+- Treat PCE / `CancellationException` as control flow. Always re-throw, never log it as error.
 - Avoid creating your own threads or executors. The platform provides everything you need.
-- For >100ms work triggered by a user action, use a progress-reporting background path.
-  Anything less and you can keep it inline on the EDT, but err on the side of background.
+- For >100ms work triggered by a user action, use a progress-reporting background path. Anything less and you can keep it inline on the EDT, but err on the side of background.
 - Keep `update()` cheap (`getActionUpdateThread() = BGT` and millisecond-level work).
 
 ## Import map for the suspending APIs
 
-The platform's coroutine surface is spread across a few packages; pulling them all in by
-hand is the most common newcomer pitfall. Use this as a copy-paste header for new files.
+The platform's coroutine surface is spread across a few packages; pulling them all in by hand is the most common newcomer pitfall. Use this as a copy-paste header for new files.
 
 ```kotlin
 // Read / write actions
@@ -81,9 +69,7 @@ import com.intellij.util.concurrency.ThreadingAssertions
 import com.intellij.util.concurrency.AppExecutorUtil
 ```
 
-`writeIntentReadAction` and `writeCommandAction` are public `@Experimental` APIs in
-2026.2.2. Add their imports only after the plugin explicitly accepts that version-bound
-stability risk. Never copy neighboring internal helpers from platform source.
+`writeIntentReadAction` and `writeCommandAction` are public `@Experimental` APIs in 2026.3. Add their imports only after the plugin explicitly accepts that version-bound stability risk. Never copy neighboring internal helpers from platform source.
 
 ## Related references
 

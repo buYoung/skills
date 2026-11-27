@@ -204,6 +204,8 @@ Establish whether allocation is the bottleneck before replacing an allocator. Co
 
 A global allocator must satisfy allocation layout/alignment, deallocation, and reallocation contracts across the whole program. Allocation methods must not unwind; logging or allocating recursively inside them can re-enter the allocator. `#[global_allocator]` is a final-program integration choice. A reusable library should leave that policy to consumers instead of imposing it as a hidden side effect. The default allocator is target/build dependent, not universally the OS allocator.
 
+Since 1.100 the `Allocator` trait is stable, so a single `Vec` or `Box` can use an arena or pool through `Vec::new_in` or `Box::new_in` without changing the global allocator. Those two are currently the standard types that accept a custom allocator. An `Allocator` implementation must keep each returned block valid until it is deallocated or otherwise invalidated, respect the requested layout, and never unwind from its allocating or deallocating methods.
+
 For an allocator integration, check supported targets, threading and cross-thread deallocation, linking, and allocation/deallocation ownership at FFI boundaries. New wrapper recommendations follow [library selection](library-selection.md); the underlying allocator's reputation does not establish a wrapper's compatibility. Existing allocator choices can remain appropriate for their measured workload.
 
 ## Target and API Boundaries

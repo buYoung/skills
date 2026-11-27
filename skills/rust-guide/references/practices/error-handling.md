@@ -623,6 +623,7 @@ Doc examples use `?`, not `unwrap()`, so copied code keeps propagating errors.
 | 1.89 | `Result::flatten` |
 | 1.91 | `PanicHookInfo::payload_as_str`; panic messages include the thread ID |
 | 1.92 | `unused_must_use` no longer fires on `Result<(), Uninhabited>` |
+| 1.100 | `Result<T, !>` can be written directly; `Infallible` is an alias of `!` |
 
 Per-release details live in [the versions index](../versions/index.md).
 

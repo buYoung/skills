@@ -14,7 +14,8 @@
         "Sub-issue Done Criteria are code-level verifiable, not vague",
         "All descriptions are written in Korean",
         "No AI pattern repetition (e.g., same sentence structure repeated more than 3 times)",
-        "Dependencies between sub-issues are explicitly defined"
+        "Dependencies between sub-issues are explicitly defined",
+        "No save_issue call is made; all issues are written to one Markdown file in the Draft Output format (MAIN / SUB-NN blocks, each listing its fields before the description)"
       ]
     },
     {
@@ -28,7 +29,8 @@
         "Sub-issue UI description includes specific component names or states",
         "Vague expressions like '만들어야합니다' are replaced with more varied, natural Korean",
         "Professional tone is consistent throughout all descriptions",
-        "Original structure and intent are preserved (not rewritten from scratch)"
+        "Original structure and intent are preserved (not rewritten from scratch)",
+        "No save_issue call is made; all issues are written to one Markdown file in the Draft Output format (MAIN / SUB-NN blocks, each listing its fields before the description)"
       ]
     },
     {
@@ -41,7 +43,8 @@
         "Main issue follows the standard template with Purpose/Background, Goal, Acceptance Criteria, Scope, Impact Area",
         "Sub-issues follow standard template with Task Description, Target Location, Technical Details, Done Criteria, Dependencies",
         "Sub-issues have exactly 2 labels: Front-end + Feature",
-        "All titles start with [corral]"
+        "All titles start with [corral]",
+        "No save_issue call is made; all issues are written to one Markdown file in the Draft Output format (MAIN / SUB-NN blocks, each listing its fields before the description)"
       ]
     }
   ]

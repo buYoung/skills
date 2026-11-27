@@ -55,31 +55,4 @@ Use Git and available repository navigation tools, preferring codemap-search whe
 
 ## Archived literal examples
 
-These preserved blocks are historical examples, not steps to execute. Use the current workflow above. Single-commit `show` examples require the root/merge handling above; inclusive range commands require a valid parent. Merge-base commands apply only to an explicitly requested common-ancestor comparison, never as fallback. Worktree `rg` examples must not supply historical or index context.
-
-```bash
-git --no-pager show --stat <commit_hash>
-# or for staged changes:
-git --no-pager diff --cached --stat
-```
-
-```bash
-# Single commit
-git --no-pager show <commit_hash>
-
-# Staged changes
-git --no-pager diff --cached
-
-# Commit range
-git --no-pager diff <start_hash>^..<end_hash>
-
-# File-scoped
-git --no-pager show <commit_hash> -- <file_path>
-```
-
-```bash
-# Find direct callers
-rg -F "symbolName(" .
-# Find broader references
-rg "symbolName" .
-```
+Literal command blocks formerly kept here are preserved in [archived entry-point examples](references/archived_entrypoint_examples.md). They are not steps to execute; do not read that file for a review.

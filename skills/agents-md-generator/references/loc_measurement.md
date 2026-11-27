@@ -10,7 +10,7 @@ tokei -e "*.json" -e "*.yaml" -e "*.yml" -e "*.md" -e "*.sh" -e "*.lock" -e "*.m
 
 **Priority**: This is the **first step** before generating AGENTS.md.
 
-The explicit directory excludes (`node_modules`, `vendor`, `dist`) matter outside git repositories: `tokei` honors `.gitignore` only inside a git repo, so vendored dependencies and build output would otherwise inflate LOC in exported or unzipped directories.
+The explicit directory excludes (`node_modules`, `vendor`, `dist`) matter outside git repositories: `tokei` (checked with 15.0.0) applies `.gitignore`, `.git/info/exclude`, and the global git excludes file only when the measured directory or one of its parents contains `.git`, so vendored dependencies and build output would otherwise inflate LOC in exported or unzipped directories. A Jujutsu workspace without a colocated `.git` gets none of these rules; `tokei` skips the hidden `.jj` directory itself. `.ignore` and `.tokeignore` files apply with or without git.
 
 ## Tool Installation
 
@@ -95,17 +95,17 @@ For monorepo roots, include `Ownership Map` when package-level roles, shared cro
 
 ## tokei Output Interpretation
 
-Use the **Total** lines value from tokei output:
+Use the **Total** row's `Lines` value from tokei output. The table below follows the tokei 15.0.0 layout with example values:
 
 ```
-===============================================================================
- Language            Files        Lines         Code     Comments       Blanks
-===============================================================================
- TypeScript            150        45000        38000         3000         4000
- JavaScript             30         5000         4200          400          400
--------------------------------------------------------------------------------
- Total                 180        50000        42200         3400         4400
-===============================================================================
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ Language              Files        Lines         Code     Comments       Blanks
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ JavaScript               30         5000         4200          400          400
+ TypeScript              150        45000        38000         3000         4000
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ Total                   180        50000        42200         3400         4400
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ```
 
 In this example: Total Lines = 50,000 → Small-Medium → 12,000 chars limit

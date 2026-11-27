@@ -6,9 +6,13 @@ Output is a JSON object with:
     - preamble_end_line   : 0-based line index of the first '## ' heading
                             (everything before this line is preamble and must
                             be preserved verbatim)
-    - sections            : list of {title, start_line, end_line, is_standard}
-                            in document order; line indices are 0-based and
-                            inclusive
+    - sections            : list of {title, start_line, end_line,
+                            canonical_title, is_legacy_standard,
+                            is_optional_standard, is_duplicate_standard,
+                            is_standard} in document order; line indices are
+                            0-based and inclusive. canonical_title is the
+                            current standard heading a standard or legacy
+                            title maps to, or null for custom sections
     - missing_standard    : standard headings that did not appear in the file;
                             backward-compatible union of missing required and
                             missing optional standard headings

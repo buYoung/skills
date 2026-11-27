@@ -54,7 +54,7 @@ Use an alias consistently after introducing it. Derived tables and CTEs expose t
 
 An outer join makes the unmatched side nullable, even when the table declares a column non-null. Filtering that side in WHERE can discard unmatched rows; putting the predicate in ON has a different meaning. A one-to-many join multiplies rows. Avoid adding DISTINCT to hide that multiplication. For new queries, select explicit aliases when joined columns have duplicate names; for conversions, explain any collision in the original output contract.
 
-GROUP BY changes row cardinality; HAVING filters groups, whereas WHERE filters input rows. COUNT(column) excludes NULL; COUNT(*) counts rows. Other aggregates can return NULL for empty input, and numeric output depends on the driver. DISTINCT ON needs appropriate ORDER BY to choose a predictable representative. LIMIT/OFFSET without a complete order may select unstable pages; discuss a tie-breaker for new queries without silently changing source SQL. UNION removes duplicates; UNION ALL retains them. See [PostgreSQL SELECT semantics](https://www.postgresql.org/docs/18/sql-select.html).
+GROUP BY changes row cardinality; HAVING filters groups, whereas WHERE filters input rows. COUNT(column) excludes NULL; COUNT(*) counts rows. Other aggregates can return NULL for empty input, and numeric output depends on the driver. DISTINCT ON needs appropriate ORDER BY to choose a predictable representative. LIMIT/OFFSET without a complete order may select unstable pages; discuss a tie-breaker for new queries without silently changing source SQL. UNION removes duplicates; UNION ALL retains them. See [PostgreSQL SELECT semantics](https://www.postgresql.org/docs/19/sql-select.html).
 
 ## Conditional builders and result types
 
@@ -823,6 +823,8 @@ db.selectFrom('person')
 
 The `->`/`->>` chains below are PostgreSQL-oriented. For MySQL JSON paths, use the `->$`/`->>$` builder operators; see [JSON operators](operators.md#json-operators). The `$` is Kysely path-builder syntax, not a literal database operator.
 
+`key()` and `at()` infer the output type from the column's declared JSON type. From 0.29.9 they accept no output type argument; to override the type, call `.$castTo<T>()` on the path, for example `eb.ref('address', '->>').key('url').$castTo<string | null>()`. Like other type assertions, it does not convert or validate the value; see the [version reference](kysely-0.29.md#patch-specific-evidence).
+
 ### JSON Extraction (->)
 ```sql
 -- PostgreSQL: address->'city'
@@ -954,7 +956,7 @@ db.selectFrom('person')
 ## Advanced Grouping (Raw SQL Required)
 
 ### ROLLUP
-> **Note**: Kysely에서 직접 지원하지 않음 - Raw SQL 사용
+> **Note**: Not directly supported by Kysely; use raw SQL.
 ```sql
 SELECT type, region, SUM(amount) FROM sales GROUP BY ROLLUP(type, region)
 ```
@@ -968,7 +970,7 @@ db.selectFrom('sales')
 ```
 
 ### CUBE
-> **Note**: Kysely에서 직접 지원하지 않음 - Raw SQL 사용
+> **Note**: Not directly supported by Kysely; use raw SQL.
 ```sql
 SELECT type, region, SUM(amount) FROM sales GROUP BY CUBE(type, region)
 ```
@@ -982,7 +984,7 @@ db.selectFrom('sales')
 ```
 
 ### GROUPING SETS
-> **Note**: Kysely에서 직접 지원하지 않음 - Raw SQL 사용
+> **Note**: Not directly supported by Kysely; use raw SQL.
 ```sql
 SELECT type, region, SUM(amount) FROM sales 
 GROUP BY GROUPING SETS ((type), (region), ())
@@ -1001,7 +1003,7 @@ db.selectFrom('sales')
 Read [window frame semantics](window_function.md#window-semantics-and-example-assumptions) before choosing ROWS or RANGE. These explicit frames are not interchangeable with the default OVER frame. The interval example below uses PostgreSQL syntax.
 
 ### ROWS BETWEEN
-> **Note**: Kysely에서 프레임 절 직접 지원하지 않음 - Raw SQL 사용
+> **Note**: Kysely does not directly support frame clauses; use raw SQL.
 ```sql
 SELECT id, amount, 
   SUM(amount) OVER (ORDER BY id ROWS BETWEEN 1 PRECEDING AND CURRENT ROW) AS running_sum
@@ -1040,7 +1042,7 @@ db.selectFrom('transactions')
 ## DBMS-Specific Features (Raw SQL Required)
 
 ### MySQL Index Hints
-> **Note**: Kysely에서 직접 지원하지 않음 - Raw SQL 사용
+> **Note**: Not directly supported by Kysely; use raw SQL.
 ```sql
 SELECT * FROM person USE INDEX (idx_name) WHERE name = 'John'
 ```
@@ -1052,7 +1054,7 @@ sql`SELECT * FROM person USE INDEX (idx_name) WHERE name = ${sql.lit('John')}`
 ```
 
 ### PostgreSQL TABLESAMPLE
-> **Note**: Kysely에서 직접 지원하지 않음 - Raw SQL 사용
+> **Note**: Not directly supported by Kysely; use raw SQL.
 ```sql
 SELECT * FROM large_table TABLESAMPLE BERNOULLI(10)
 ```

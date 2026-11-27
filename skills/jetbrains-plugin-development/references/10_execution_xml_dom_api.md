@@ -2,9 +2,9 @@
 
 ## XML DOM API — typed XML models
 
-When your plugin works with structured XML config files (Spring beans, custom DSL configs),
-the **DOM API** maps elements to typed Java/Kotlin interfaces with validation, completion,
-and references for free.
+When your plugin works with structured XML config files (Spring beans, custom DSL configs), the **DOM API** maps elements to typed Java/Kotlin interfaces with validation, completion, and references for free.
+
+From 2026.3 the XML modules, including the DOM API, ship in the bundled plugin `com.intellij.xml`. Declare the dependency described in `01_core_dependencies.md`; a dependency on the `com.intellij.modules.xml` alias is sufficient.
 
 ### Defining a DOM
 
@@ -73,10 +73,8 @@ GenericAttributeValue<MyTarget> getRef();
 
 ### Inspections
 
-`BasicDomElementsInspection<T>` is a base class for DOM-specific inspections. Register as a
-`<localInspection>` plus the DOM hookup.
+`BasicDomElementsInspection<T>` is a base class for DOM-specific inspections. Register as a `<localInspection>` plus the DOM hookup.
 
 ### Extending DOM dynamically
 
-`DomExtender<MyConfig>` lets you contribute extra elements/attributes based on context
-(e.g., a Spring schema extension). Register with `<dom.extender>`.
+`DomExtender<MyConfig>` lets you contribute extra elements/attributes based on context (e.g., a Spring schema extension). Register with `<dom.extender>`.
