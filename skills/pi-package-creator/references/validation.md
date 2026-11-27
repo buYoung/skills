@@ -247,6 +247,7 @@ Apply these checks only when the package includes the feature. [Integrations](in
 - Assert the request URL, headers, and body; the order of stream events; the final stop reason; usage and cost values where provided; and correct termination on error and abort.
 - For a custom adapter or model-service wrapper, check forwarding of `identity` and `telemetry`, per-request identity overrides, disabled attribution, and explicit header suppression. Inspect final wire headers, not only `before_provider_headers`.
 - If the provider supports classifier images, check the selected model's `input`, the actual `compat.imageInput` payload, opt-in header behavior, unsupported MIME types, and the four-image limit for Clef's `"images"` format. For `models.json` overrides, verify provider-level settings reach the classifier; a successful OpenRouter response alone does not prove it received images.
+- If the package implements image generation, check on `v1.7.0` or later that `aspectRatio` and `size` reach the request in the service's format, and that reported `usage.imageOutput` and the resulting cost match the model's `cost.imageOutput`.
 - Check the exact authentication result shape and its expiry and refresh behavior separately.
 - A successful resource load proves registration only, not authentication or streaming.
 

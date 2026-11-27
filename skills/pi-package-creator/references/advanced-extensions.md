@@ -16,7 +16,7 @@ Read only the sections for features the package needs. For providers and MCP, co
 
 Handlers run one after another in registration and load order, with no automatic timeout. When a handler throws, Pi usually reports the error and runs the remaining handlers. `tool_call` and `user_bash` are deliberate exceptions: a thrown error blocks the tool call or shell command, because continuing could run an operation the handler meant to stop.
 
-Use the exact event names the target supports. These contracts target Pi `v1.6.1`; older releases lack some request and UI behavior described here. See the release boundaries in [evidence](evidence.md).
+Use the exact event names the target supports. These contracts target Pi `v1.7.0`; older releases lack some request and UI behavior described here. See the release boundaries in [evidence](evidence.md).
 
 ## Choose an event
 

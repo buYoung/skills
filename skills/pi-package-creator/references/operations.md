@@ -21,7 +21,7 @@ Read this before delivery. It explains how to write install sources and commands
 ### Relative and local paths
 
 - A relative path passed on the CLI resolves from the working directory.
-- A relative path stored in settings resolves from its scope's configuration directory, not from the project root: the personal agent directory (`~/.pi/agent`, or `PI_CODING_AGENT_DIR`) or the project's `<cwd>/.pi`. A project entry `"./tools/x"` therefore means `<cwd>/.pi/tools/x`.
+- A relative path stored in settings resolves from its scope's configuration directory, not from the project root: the personal agent directory (`~/.pi/agent`, `PI_CODING_AGENT_DIR`, or `--agent-dir`) or the project's `<cwd>/.pi`. A project entry `"./tools/x"` therefore means `<cwd>/.pi/tools/x`.
 - Absolute paths remove this ambiguity during validation.
 - Pi references a local source in place. It does not copy the directory or install its dependencies.
 
@@ -29,7 +29,7 @@ Read this before delivery. It explains how to write install sources and commands
 
 ### Where declarations live
 
-Personal package declarations live in `~/.pi/agent/settings.json`, and `PI_CODING_AGENT_DIR` changes that personal agent directory. Project declarations live in `<project>/.pi/settings.json`; use `-l` with `install` and `remove` for project scope.
+Personal package declarations live in `~/.pi/agent/settings.json`, and `PI_CODING_AGENT_DIR` changes that personal agent directory. Since `v1.7.0`, `--agent-dir <dir>` does the same from the command line, including for package commands such as `pi install`, and takes precedence over the variable. Pi sets `PI_CODING_AGENT_DIR` from the flag, so extensions calling `getAgentDir()` and child processes see the same directory. Project declarations live in `<project>/.pi/settings.json`; use `-l` with `install` and `remove` for project scope.
 
 ### Project trust
 

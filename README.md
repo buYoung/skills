@@ -18,7 +18,7 @@ Some skills require external tools to be installed:
 | skill-creator | Independent agents for candidate refinement; Python 3.10+ and PyYAML for validation; Claude CLI on macOS or Linux for description optimization |
 | react-guide | Node.js for eval validators |
 | vite-guide | Node.js for eval validators |
-| pi-package-creator | Pi v1.6.1 and Node.js 22.19+ for package checks; npm and `tar` for artifact checks |
+| pi-package-creator | Pi v1.7.0 and Node.js 22.19+ for package checks; npm and `tar` for artifact checks |
 
 ## 🚀 Available Skills
 
