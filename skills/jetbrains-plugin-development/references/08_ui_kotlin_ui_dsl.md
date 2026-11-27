@@ -2,12 +2,9 @@
 
 ## Kotlin UI DSL v2 — building panels
 
-The recommended UI builder for any new dialog, settings page, or tool window content. It
-sits on top of Swing but is dramatically more concise.
+The recommended UI builder for any new dialog, settings page, or tool window content. It sits on top of Swing but is dramatically more concise.
 
-Kotlin UI DSL v1 (`com.intellij.ui.layout.*`) was removed completely in 2026.3; code that
-still uses it fails to compile or load there. Follow the
-[migration to version 2](https://plugins.jetbrains.com/docs/intellij/kotlin-ui-dsl.html#migration-to-version-2).
+Kotlin UI DSL v1 (`com.intellij.ui.layout.*`) was removed completely in 2026.3; code that still uses it fails to compile or load there. Follow the [migration to version 2](https://plugins.jetbrains.com/docs/intellij/kotlin-ui-dsl.html#migration-to-version-2).
 
 ```kotlin
 class MySettingsComponent {
@@ -37,22 +34,14 @@ class MySettingsComponent {
 }
 ```
 
-A non-exhaustive list of available cells: `label`, `link`, `text`, `comment`, `textField`,
-`textArea`, `passwordField`, `expandableTextField`, `intTextField`, `spinner`, `checkBox`,
-`radioButton`, `comboBox`, `dropDownLink`, `slider`, `colorButton`, `cell(component)` (any
-Swing), `button`, `actionButton`, `actionsButton`, `browserLink`, `icon`, `separator`,
-`segmentedButton`, plus container helpers `row`, `panel`, `group`, `groupRowsRange`,
-`buttonsGroup`, `collapsibleGroup`.
+A non-exhaustive list of available cells: `label`, `link`, `text`, `comment`, `textField`, `textArea`, `passwordField`, `expandableTextField`, `intTextField`, `spinner`, `checkBox`, `radioButton`, `comboBox`, `dropDownLink`, `slider`, `colorButton`, `cell(component)` (any Swing), `button`, `actionButton`, `actionsButton`, `browserLink`, `icon`, `separator`, `segmentedButton`, plus container helpers `row`, `panel`, `group`, `groupRowsRange`, `buttonsGroup`, `collapsibleGroup`.
 
 Common idioms:
 
-- `bindText` / `bindSelected` / `bindIntValue` / `bindItem` — two-way property binding via
-  Kotlin reflection or a `MutableProperty`.
-- `validationOnInput { … }` / `validationOnApply { … }` — return `null` for OK, or an
-  `ValidationInfo` for errors.
+- `bindText` / `bindSelected` / `bindIntValue` / `bindItem` — two-way property binding via Kotlin reflection or a `MutableProperty`.
+- `validationOnInput { … }` / `validationOnApply { … }` — return `null` for OK, or an `ValidationInfo` for errors.
 - `enabledIf(predicate)` / `visibleIf(predicate)` — reactive enable/visible toggles.
 - `align(Align.FILL)`, `resizableColumn()` — layout shaping.
-- Settings-page convention: implement `apply` / `reset` / `isModified` on the surrounding
-  `Configurable`; use `bind*` to keep the UI state synced with the settings model object.
+- Settings-page convention: implement `apply` / `reset` / `isModified` on the surrounding `Configurable`; use `bind*` to keep the UI state synced with the settings model object.
 
 For complex layouts, mix DSL with raw Swing via `cell(component).align(...)`.

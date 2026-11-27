@@ -176,6 +176,4 @@ This project is open source. Bug reports, feature suggestions, and PRs are alway
 
 MIT License — see [`LICENSE`](./LICENSE).
 
-This repository incorporates material from third-party projects licensed under MIT, Apache-2.0, and CC BY-SA 4.0.
-See [`THIRD_PARTY_NOTICES.md`](./THIRD_PARTY_NOTICES.md) for upstream
-attributions and license texts.
+This repository incorporates material from third-party projects licensed under MIT, Apache-2.0, and CC BY-SA 4.0. See [`THIRD_PARTY_NOTICES.md`](./THIRD_PARTY_NOTICES.md) for upstream attributions and license texts.

@@ -25,19 +25,11 @@ For release-it **21.1.3**, with enabled external plugins A and B in that configu
 - `init`, getters, `beforeBump`, `bump`, `beforeRelease`: A → B → npm → git → github → gitlab → version.
 - `release`, `afterRelease`: npm → git → github → gitlab → version → A → B.
 
-Disabled plugins are omitted. The internal/external groups change places; neither group's
-order is reversed. Each lifecycle phase runs across its plugins before the next phase.
-Global and plugin-specific hooks surround the corresponding methods and can introduce
-their own side effects.
+Disabled plugins are omitted. The internal/external groups change places; neither group's order is reversed. Each lifecycle phase runs across its plugins before the next phase. Global and plugin-specific hooks surround the corresponding methods and can introduce their own side effects.
 
-Consequently, version writes and Git staging precede the commit question. With npm
-publishing enabled, publication can also precede that question. The Git-only interactive
-example disables publishing; do not extend its remaining-state table to other workflows
-without tracing their enabled actions. A hook or plugin failure may occur before local
-rollback is registered. See [recovery policies](git-integration.md#recovery-policies).
+Consequently, version writes and Git staging precede the commit question. With npm publishing enabled, publication can also precede that question. The Git-only interactive example disables publishing; do not extend its remaining-state table to other workflows without tracing their enabled actions. A hook or plugin failure may occur before local rollback is registered. See [recovery policies](git-integration.md#recovery-policies).
 
-Source: [entry point](https://github.com/release-it/release-it/blob/21.1.3/lib/index.js) and
-[plugin factory](https://github.com/release-it/release-it/blob/21.1.3/lib/plugin/factory.js).
+Source: [entry point](https://github.com/release-it/release-it/blob/21.1.3/lib/index.js) and [plugin factory](https://github.com/release-it/release-it/blob/21.1.3/lib/plugin/factory.js).
 
 ## Hook Format
 

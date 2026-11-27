@@ -18,8 +18,7 @@
 
 ## Actions
 
-Actions are user-triggered commands: menu items, toolbar buttons, keyboard shortcuts,
-context menus.
+Actions are user-triggered commands: menu items, toolbar buttons, keyboard shortcuts, context menus.
 
 ### Anatomy of an `AnAction`
 
@@ -40,13 +39,9 @@ class MyAction : AnAction() {
 
 ### `update(AnActionEvent)` — must be cheap
 
-`update` runs frequently: every menu open, every toolbar repaint, every key-routing pass.
-Do **not** read the file system, hit the network, query indexes, or walk PSI here. Evaluate
-trivial conditions on the supplied `AnActionEvent` data only.
+`update` runs frequently: every menu open, every toolbar repaint, every key-routing pass. Do **not** read the file system, hit the network, query indexes, or walk PSI here. Evaluate trivial conditions on the supplied `AnActionEvent` data only.
 
-`e.presentation` controls the user-visible side: `isEnabled`, `isVisible`,
-`isEnabledAndVisible`, `text`, `description`, `icon`. Setting visibility off is preferable
-to disabling for actions that are simply not applicable in the current context.
+`e.presentation` controls the user-visible side: `isEnabled`, `isVisible`, `isEnabledAndVisible`, `text`, `description`, `icon`. Setting visibility off is preferable to disabling for actions that are simply not applicable in the current context.
 
 ### `getActionUpdateThread()` (2022.3+)
 
@@ -57,15 +52,11 @@ Tells the platform whether to dispatch `update` on `BGT` (preferred for new code
 | `BGT` | Most new actions | PSI, VFS, project model (read action implicit) |
 | `EDT` | You must read live Swing component state (focus, tree selection, custom UI) | Swing UI state |
 
-Implement it whenever `update` is overridden. Plugin DevKit reports a missing override.
-Although 2026.3 returns BGT for an action whose `update` remains the default, an overridden
-`update` still falls back to EDT. `actionPerformed` is invoked on EDT.
+Implement it whenever `update` is overridden. Plugin DevKit reports a missing override. Although 2026.3 returns BGT for an action whose `update` remains the default, an overridden `update` still falls back to EDT. `actionPerformed` is invoked on EDT.
 
 ### Field-on-AnAction is forbidden
 
-`AnAction` instances are singletons for the entire IDE lifetime. Storing per-invocation
-state on a field is a race condition across projects/threads and a leak across plugin
-unloads. Put state in a service and look it up from `actionPerformed`/`update`.
+`AnAction` instances are singletons for the entire IDE lifetime. Storing per-invocation state on a field is a race condition across projects/threads and a leak across plugin unloads. Put state in a service and look it up from `actionPerformed`/`update`.
 
 ### Registering in `plugin.xml`
 
@@ -86,20 +77,11 @@ unloads. Put state in a service and look it up from `actionPerformed`/`update`.
 
 Important details:
 
-- `id` must be globally unique across **every plugin in the IDE**, not just yours. Convention:
-  FQN. Duplicate ids break dynamic plugin loading.
-- `<add-to-group>` can appear multiple times — same action shown in multiple places.
-  Common group ids: `MainMenu`, `ToolsMenu`, `EditorPopupMenu`, `ProjectViewPopupMenu`,
-  `MainToolbarLeft`, `EditorTabPopupMenu`, `ConsoleEditorPopupMenu`. The full list lives in
-  `IdeActions` and platform/plugin XML files.
-- Keyboard shortcuts: `keymap="$default"` applies to all keymaps. `keymap="$mac"` /
-  `"Mac OS X 10.5+"` / `"Eclipse"` / etc. target specific keymaps. macOS modifiers: `meta` =
-  Cmd, `control` = Ctrl. For chord shortcuts use `first-keystroke` + `second-keystroke`.
-- `icon` references `AllIcons.*` directly or a field on a plugin icon class
-  (`com.example.MyIcons.ActionIcon`). Typos silently fall back to the default icon —
-  check `idea.log` if your icon is missing.
-- `<override-text place="...">` lets the same action display different labels in different
-  `ActionPlaces` (`MainMenu`, `EditorPopup`, `MainToolbar`, ...).
+- `id` must be globally unique across **every plugin in the IDE**, not just yours. Convention: FQN. Duplicate ids break dynamic plugin loading.
+- `<add-to-group>` can appear multiple times — same action shown in multiple places. Common group ids: `MainMenu`, `ToolsMenu`, `EditorPopupMenu`, `ProjectViewPopupMenu`, `MainToolbarLeft`, `EditorTabPopupMenu`, `ConsoleEditorPopupMenu`. The full list lives in `IdeActions` and platform/plugin XML files.
+- Keyboard shortcuts: `keymap="$default"` applies to all keymaps. `keymap="$mac"` / `"Mac OS X 10.5+"` / `"Eclipse"` / etc. target specific keymaps. macOS modifiers: `meta` = Cmd, `control` = Ctrl. For chord shortcuts use `first-keystroke` + `second-keystroke`.
+- `icon` references `AllIcons.*` directly or a field on a plugin icon class (`com.example.MyIcons.ActionIcon`). Typos silently fall back to the default icon — check `idea.log` if your icon is missing.
+- `<override-text place="...">` lets the same action display different labels in different `ActionPlaces` (`MainMenu`, `EditorPopup`, `MainToolbar`, ...).
 
 ### Action groups
 
@@ -129,15 +111,11 @@ class MyDynamicGroup : ActionGroup() {
 </group>
 ```
 
-Implement `getActionUpdateThread()` on `ActionGroup` too — `getChildren` may be called from
-the same threading regime as `update`.
+Implement `getActionUpdateThread()` on `ActionGroup` too — `getChildren` may be called from the same threading regime as `update`.
 
 ### `DumbAwareAction`
 
-The IDE goes through a "Dumb Mode" indexing phase shortly after project open and after
-significant changes. Non-Dumb-aware actions are disabled during this period. If your action
-does **not** depend on indexes (no `FileBasedIndex` queries, no resolution requiring
-indexes), extend `DumbAwareAction` so it remains usable.
+The IDE goes through a "Dumb Mode" indexing phase shortly after project open and after significant changes. Non-Dumb-aware actions are disabled during this period. If your action does **not** depend on indexes (no `FileBasedIndex` queries, no resolution requiring indexes), extend `DumbAwareAction` so it remains usable.
 
 ```kotlin
 class MyAction : DumbAwareAction("My Action") {
@@ -145,8 +123,7 @@ class MyAction : DumbAwareAction("My Action") {
 }
 ```
 
-Same applies to many providers (`DumbAware` interface) — folding builders, line marker
-providers, completion contributors. See `05_file_model_indexing_stubs.md` for the indexing model.
+Same applies to many providers (`DumbAware` interface) — folding builders, line marker providers, completion contributors. See `05_file_model_indexing_stubs.md` for the indexing model.
 
 ### Reading context from `AnActionEvent`
 
@@ -160,10 +137,7 @@ val files   = e.getData(CommonDataKeys.VIRTUAL_FILE_ARRAY)
 val nav     = e.getData(CommonDataKeys.NAVIGATABLE)
 ```
 
-`getData(...)` returns null if absent. Re-check the precondition in `actionPerformed` because
-the platform does not guarantee that `update()` ran with the same context immediately before
-the action. `getRequiredData(...)` is deprecated for removal in 2026.3, so do not use it in
-new code.
+`getData(...)` returns null if absent. Re-check the precondition in `actionPerformed` because the platform does not guarantee that `update()` ran with the same context immediately before the action. `getRequiredData(...)` is deprecated for removal in 2026.3, so do not use it in new code.
 
 ### Long work in `actionPerformed`
 
@@ -179,31 +153,21 @@ override fun actionPerformed(e: AnActionEvent) {
 }
 ```
 
-`AnActionEvent.coroutineScope` is public from 2026.1 and lets Action System control the
-launched work. Retrieve it only during `actionPerformed`; do not cache it. For
-2024.2–2025.3 use the documented `currentThreadCoroutineScope()`. For 2024.1, call a service
-method that launches from its injected scope. `Task.Backgroundable` remains the classic
-public alternative.
+`AnActionEvent.coroutineScope` is public from 2026.1 and lets Action System control the launched work. Retrieve it only during `actionPerformed`; do not cache it. For 2024.2–2025.3 use the documented `currentThreadCoroutineScope()`. For 2024.1, call a service method that launches from its injected scope. `Task.Backgroundable` remains the classic public alternative.
 
-See `04_threading_background_work_progress.md` and `04_threading_coroutines_2024.md` for the
-full progress/cancellation story.
+See `04_threading_background_work_progress.md` and `04_threading_coroutines_2024.md` for the full progress/cancellation story.
 
 ### Fixed-source evidence
 
-The action threading and coroutine contracts were checked against tag `idea/2026.3`,
-commit `c91871ae2864649d952825cff72569e3db0e7ac6`:
+The action threading and coroutine contracts were checked against tag `idea/2026.3`, commit `c91871ae2864649d952825cff72569e3db0e7ac6`:
 
 - [`AnAction.java`](https://github.com/JetBrains/intellij-community/blob/c91871ae2864649d952825cff72569e3db0e7ac6/platform/editor-ui-api/src/com/intellij/openapi/actionSystem/AnAction.java)
 - [`AnActionEvent.java`](https://github.com/JetBrains/intellij-community/blob/c91871ae2864649d952825cff72569e3db0e7ac6/platform/editor-ui-api/src/com/intellij/openapi/actionSystem/AnActionEvent.java)
 - [`ActionUpdateThread.java`](https://github.com/JetBrains/intellij-community/blob/c91871ae2864649d952825cff72569e3db0e7ac6/platform/editor-ui-api/src/com/intellij/openapi/actionSystem/ActionUpdateThread.java)
 
-The 2026.1 introduction of `AnActionEvent.coroutineScope` is recorded in the official
-[2026 API changes](https://plugins.jetbrains.com/docs/intellij/api-notable-list-2026.html).
-The 2024.2 lower bound for running `actionPerformed` logic in the current thread coroutine
-scope comes from [Coroutine Scopes](https://plugins.jetbrains.com/docs/intellij/coroutine-scopes.html).
+The 2026.1 introduction of `AnActionEvent.coroutineScope` is recorded in the official [2026 API changes](https://plugins.jetbrains.com/docs/intellij/api-notable-list-2026.html). The 2024.2 lower bound for running `actionPerformed` logic in the current thread coroutine scope comes from [Coroutine Scopes](https://plugins.jetbrains.com/docs/intellij/coroutine-scopes.html).
 
-The recommended methods are public (`getActionUpdateThread` is override-only); the examples
-do not call Action System implementation classes or internal scope installers.
+The recommended methods are public (`getActionUpdateThread` is override-only); the examples do not call Action System implementation classes or internal scope installers.
 
 ## Lifecycle of these three components
 
@@ -216,8 +180,5 @@ do not call Action System implementation classes or internal scope installers.
 
 ## End-to-end skeletons in this skill
 
-- `examples/action_basics/` — `HelloAction.kt` (`AnAction` with `getActionUpdateThread`,
-  `update`, `actionPerformed`), `DynamicGreetingsGroup.kt` (`ActionGroup` with computed
-  children), and a `plugin.xml` that registers them under `ToolsMenu` with a keymap entry.
-- `examples/settings_persistence/` — `MyAppSettings.kt` (`@Service` + `SimplePersistentStateComponent`)
-  paired with `MyConfigurable.kt` and a minimal `plugin.xml`.
+- `examples/action_basics/` — `HelloAction.kt` (`AnAction` with `getActionUpdateThread`, `update`, `actionPerformed`), `DynamicGreetingsGroup.kt` (`ActionGroup` with computed children), and a `plugin.xml` that registers them under `ToolsMenu` with a keymap entry.
+- `examples/settings_persistence/` — `MyAppSettings.kt` (`@Service` + `SimplePersistentStateComponent`) paired with `MyConfigurable.kt` and a minimal `plugin.xml`.

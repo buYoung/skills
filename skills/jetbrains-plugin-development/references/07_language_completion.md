@@ -26,8 +26,7 @@ public class MyCompletionContributor extends CompletionContributor {
                         implementationClass="com.example.mylang.MyCompletionContributor"/>
 ```
 
-`PsiElementPattern`s drive when a contributor fires. Common builders live in
-`StandardPatterns`, `PsiJavaPatterns`, `PlatformPatterns`. Build patterns by:
+`PsiElementPattern`s drive when a contributor fires. Common builders live in `StandardPatterns`, `PsiJavaPatterns`, `PlatformPatterns`. Build patterns by:
 
 ```java
 PlatformPatterns.psiElement(MyTypes.ID)
@@ -35,14 +34,9 @@ PlatformPatterns.psiElement(MyTypes.ID)
   .afterLeaf(PlatformPatterns.psiElement(MyTypes.EQ));
 ```
 
-`CompletionType.BASIC` is the standard `Ctrl+Space`. `SMART` is type-matching completion,
-invoked by the `SmartTypeCompletion` action (`Ctrl+Shift+Space` in the default keymap).
-`CLASS_NAME` is deprecated; use `BASIC` instead.
+`CompletionType.BASIC` is the standard `Ctrl+Space`. `SMART` is type-matching completion, invoked by the `SmartTypeCompletion` action (`Ctrl+Shift+Space` in the default keymap). `CLASS_NAME` is deprecated; use `BASIC` instead.
 
-Tweak the result set. `withPrefixMatcher` and `withRelevanceSorter` return a new
-`CompletionResultSet`, so chain them and keep the result; `restartCompletionOnPrefixChange`
-returns `void`, and `runRemainingContributors(params, passResult)` returns the collected
-results:
+Tweak the result set. `withPrefixMatcher` and `withRelevanceSorter` return a new `CompletionResultSet`, so chain them and keep the result; `restartCompletionOnPrefixChange` returns `void`, and `runRemainingContributors(params, passResult)` returns the collected results:
 
 ```java
 CompletionResultSet adjusted = result.withPrefixMatcher(prefix)  // override prefix

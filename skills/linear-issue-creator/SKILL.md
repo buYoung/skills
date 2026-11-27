@@ -1,11 +1,7 @@
 ---
 name: linear-issue-creator
 description: >
-  Create structured Linear issues (main + sub-issues) with project linking, title prefix, and labeling.
-  Supports two workflows: Generic (code tasks) and PRD Pipeline (제품 요구사항 정의서).
-  PRD Pipeline applies content-strategy, content-production, content-humanizer, copy-editing principles
-  to produce high-quality issue descriptions targeting fullstack developers in Korean.
-  Use when asked to create, register, or break down tasks into Linear issues. Not for querying or updating.
+  Create structured Linear issues (main + sub-issues) with project linking, title prefix, and labeling. Supports two workflows: Generic (code tasks) and PRD Pipeline (제품 요구사항 정의서). PRD Pipeline applies content-strategy, content-production, content-humanizer, copy-editing principles to produce high-quality issue descriptions targeting fullstack developers in Korean. Use when asked to create, register, or break down tasks into Linear issues. Not for querying or updating.
 ---
 
 # Linear Issue Creator
@@ -152,8 +148,7 @@ For a full flow example, see `references/templates.md`.
 
 ## PRD Pipeline Workflow
 
-Workflow for producing PRD-quality (product requirements document) issue descriptions.
-Applies principles from four content skills (content-strategy, content-production, content-humanizer, copy-editing) during the description writing process.
+Workflow for producing PRD-quality (product requirements document) issue descriptions. Applies principles from four content skills (content-strategy, content-production, content-humanizer, copy-editing) during the description writing process.
 
 **Fixed context:**
 - Target audience: Fullstack developers
@@ -162,8 +157,7 @@ Applies principles from four content skills (content-strategy, content-productio
 
 ### PRD Step 1: Gather Requirements + Select Pattern
 
-Collect the same information as Generic Step 1 (Project, Work description, Area, Type).
-Additionally confirm:
+Collect the same information as Generic Step 1 (Project, Work description, Area, Type). Additionally confirm:
 
 1. **PRD topic**: What the PRD is about
 2. **Current state**: Topic only, draft exists, or nearly complete
@@ -177,8 +171,7 @@ Additionally confirm:
 
 ### PRD Step 2: Write Descriptions (Per-Pattern Process)
 
-Apply the applicable stages in order to write issue descriptions.
-See `references/prd-pipeline.md` for the detailed guide.
+Apply the applicable stages in order to write issue descriptions. See `references/prd-pipeline.md` for the detailed guide.
 
 **Pattern A (Blank → Complete) — All 4 stages:**
 
@@ -205,18 +198,15 @@ See `references/prd-pipeline.md` for the detailed guide.
    - **So What**: Each requirement explains "why it's needed"
    - **Prove It**: Technical claims have backing (benchmarks, references, etc.)
 
-**Pattern B (Draft → Complete)**: Apply stages 3-4 only
-**Pattern C (Polish only)**: Apply stage 4 only
+**Pattern B (Draft → Complete)**: Apply stages 3-4 only **Pattern C (Polish only)**: Apply stage 4 only
 
 ### PRD Step 3: Create Main Issue
 
-Same as Generic Step 2 — call `save_issue`.
-Use the **PRD Main Issue Description Template** from `references/templates.md`.
+Same as Generic Step 2 — call `save_issue`. Use the **PRD Main Issue Description Template** from `references/templates.md`.
 
 ### PRD Step 4: Create Sub-Issues
 
-Same as Generic Step 3 — create sub-issues.
-Use the **PRD Sub-Issue Description Template** from `references/templates.md`.
+Same as Generic Step 3 — create sub-issues. Use the **PRD Sub-Issue Description Template** from `references/templates.md`.
 
 ### PRD Step 5: Link Dependencies + Report Results
 

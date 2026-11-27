@@ -15,8 +15,7 @@
 
 ## Coroutine API (2024.1+) — recommended
 
-New code should use Kotlin coroutines. The platform provides dispatchers that integrate
-with EDT modality and lock-aware suspending versions of read/write actions.
+New code should use Kotlin coroutines. The platform provides dispatchers that integrate with EDT modality and lock-aware suspending versions of read/write actions.
 
 ### Service-injected `CoroutineScope`
 
@@ -42,13 +41,11 @@ The injected `CoroutineScope`:
 
 - Is cancelled when the service is disposed (project close, plugin unload, IDE shutdown).
 - Replaces manual `Disposable` bookkeeping for almost everything launched inside it.
-- Is the **only** correct scope for service-owned work. `Application.getCoroutineScope()`
-  / `Project.getCoroutineScope()` are `@ApiStatus.Internal`/`Obsolete`. `GlobalScope` leaks.
+- Is the **only** correct scope for service-owned work. `Application.getCoroutineScope()` / `Project.getCoroutineScope()` are `@ApiStatus.Internal`/`Obsolete`. `GlobalScope` leaks.
 
 For action work, use the public API that matches the minimum target:
 
-- 2026.1+: launch from `e.coroutineScope` inside `actionPerformed`. The Action System owns
-  cancellation; retrieve the property only from `actionPerformed`, then launch child work on it.
+- 2026.1+: launch from `e.coroutineScope` inside `actionPerformed`. The Action System owns cancellation; retrieve the property only from `actionPerformed`, then launch child work on it.
 - 2024.2–2025.3: `currentThreadCoroutineScope()` is the documented action path.
 - 2024.1: delegate to a service and launch from its injected scope.
 
@@ -61,11 +58,7 @@ For action work, use the public API that matches the minimum target:
 | `Dispatchers.EDT` | EDT plus Write Intent for legacy model access; modality-aware |
 | `Dispatchers.UI` | 2025.3+ pure UI on EDT, without Write Intent; preferred for Swing-only work |
 
-The IntelliJ Platform installs its EDT dispatcher as `Dispatchers.Main`, so `Main` does run
-on EDT. The lock semantics differ: since 2025.1 it is a pure-UI path without Write Intent,
-and read/write actions must not start inside it. Use `Dispatchers.UI` for explicit pure UI on
-2025.3+, and `Dispatchers.EDT` for legacy model access that must stay on EDT. Carry the
-required `ModalityState` in the coroutine context rather than relying on an unspecified one.
+The IntelliJ Platform installs its EDT dispatcher as `Dispatchers.Main`, so `Main` does run on EDT. The lock semantics differ: since 2025.1 it is a pure-UI path without Write Intent, and read/write actions must not start inside it. Use `Dispatchers.UI` for explicit pure UI on 2025.3+, and `Dispatchers.EDT` for legacy model access that must stay on EDT. Carry the required `ModalityState` in the coroutine context rather than relying on an unspecified one.
 
 ### Suspending Read Actions
 
@@ -92,8 +85,7 @@ val r = constrainedReadAction(
 ) { /* both constraints satisfied */ }
 ```
 
-`ReadConstraint.inSmartMode(project)` waits until Dumb Mode finishes. `withDocumentsCommitted`
-waits until pending document edits have been reflected into the PSI tree.
+`ReadConstraint.inSmartMode(project)` waits until Dumb Mode finishes. `withDocumentsCommitted` waits until pending document edits have been reflected into the PSI tree.
 
 ### Suspending Write Actions
 
@@ -114,13 +106,7 @@ import com.intellij.openapi.application.writeIntentReadAction
 | `writeIntentReadAction { }` | EDT Write Intent | Public `@Experimental`; prefer stable read/write actions |
 | `writeCommandAction(project, name) { }` | EDT + CommandProcessor | Public `@Experimental`; use classic `WriteCommandAction` when stable-only support is required |
 
-Do not migrate `WriteAction.run` or an older `writeAction` mechanically to the 2026.2
-`writeAction`: that can move the body from EDT to BGT. On 2025.1+, use `edtWriteAction` to
-preserve EDT behavior; on earlier targets keep `withContext(Dispatchers.EDT)` plus the
-classic `WriteAction`. For PSI/Document edits that must be undoable, use the experimental suspending
-`writeCommandAction` only when the target accepts that stability risk; otherwise keep the
-stable `WriteCommandAction` and its EDT contract. Use background writes only after confirming
-every called API is BGT-safe.
+Do not migrate `WriteAction.run` or an older `writeAction` mechanically to the 2026.2 `writeAction`: that can move the body from EDT to BGT. On 2025.1+, use `edtWriteAction` to preserve EDT behavior; on earlier targets keep `withContext(Dispatchers.EDT)` plus the classic `WriteAction`. For PSI/Document edits that must be undoable, use the experimental suspending `writeCommandAction` only when the target accepts that stability risk; otherwise keep the stable `WriteCommandAction` and its EDT contract. Use background writes only after confirming every called API is BGT-safe.
 
 ### Read-then-write composites
 
@@ -141,12 +127,7 @@ constrainedReadAndWriteAction(ReadConstraint.inSmartMode(project)) {
 }
 ```
 
-`readAndWriteAction { }` is **deprecated** — replace it according to existing behavior:
-`readAndEdtWriteAction` preserves the historical EDT write phase;
-`readAndBackgroundWriteAction` is an intentional behavior change after a BGT-safety audit.
-The `writeAction` called inside these blocks is the `ReadAndWriteScope` DSL method, not the
-top-level suspending function. `ReadAndWriteScope` is public `@ApiStatus.NonExtendable`:
-use the receiver supplied by these functions and never implement the interface yourself.
+`readAndWriteAction { }` is **deprecated** — replace it according to existing behavior: `readAndEdtWriteAction` preserves the historical EDT write phase; `readAndBackgroundWriteAction` is an intentional behavior change after a BGT-safety audit. The `writeAction` called inside these blocks is the `ReadAndWriteScope` DSL method, not the top-level suspending function. `ReadAndWriteScope` is public `@ApiStatus.NonExtendable`: use the receiver supplied by these functions and never implement the interface yourself.
 
 ### Progress and cancellation
 
@@ -162,12 +143,9 @@ cs.launch {
 }
 ```
 
-`withBackgroundProgress` is the coroutine equivalent of `Task.Backgroundable`. There is also
-`withModalProgress(project, title) { }` for modal dialogs.
+`withBackgroundProgress` is the coroutine equivalent of `Task.Backgroundable`. There is also `withModalProgress(project, title) { }` for modal dialogs.
 
-Cancellation propagates naturally: structured concurrency cancels children, suspension
-points throw `CancellationException`, and the platform's PCE-based APIs translate into the
-same. Critical rule:
+Cancellation propagates naturally: structured concurrency cancels children, suspension points throw `CancellationException`, and the platform's PCE-based APIs translate into the same. Critical rule:
 
 ```kotlin
 try {
@@ -179,12 +157,9 @@ try {
 }
 ```
 
-A `try { … } catch (e: Exception) { log.error(e) }` without re-throwing
-`CancellationException` (and `ProcessCanceledException` in non-coroutine code) silently
-disables cancellation. This is one of the most common bugs in plugin code.
+A `try { … } catch (e: Exception) { log.error(e) }` without re-throwing `CancellationException` (and `ProcessCanceledException` in non-coroutine code) silently disables cancellation. This is one of the most common bugs in plugin code.
 
-For tight Java loops with no suspension points, still call
-`ProgressManager.checkCanceled()` periodically — coroutines only check at suspension points.
+For tight Java loops with no suspension points, still call `ProgressManager.checkCanceled()` periodically — coroutines only check at suspension points.
 
 ### `runBlockingCancellable` — bridging blocking → suspending
 
@@ -194,8 +169,7 @@ For tight Java loops with no suspension points, still call
 fun <T> runBlockingCancellable(action: suspend CoroutineScope.() -> T): T
 ```
 
-Use only when **legacy blocking code already running under a cancellable Job or progress
-indicator** must call a suspending function:
+Use only when **legacy blocking code already running under a cancellable Job or progress indicator** must call a suspending function:
 
 ```kotlin
 fun run(indicator: ProgressIndicator) {
@@ -211,22 +185,16 @@ Rules:
 
 - BGT only. Calling on the EDT deadlocks because it does not pump events.
 - Cancellation of the calling thread's Job or indicator propagates into the suspend body.
-- Without a current Job or indicator, the platform logs an error because the bridge cannot
-  be cancelled from outside. Prefer keeping the call chain suspending.
-- Do not use `kotlinx.coroutines.runBlocking` instead — it ignores platform context and
-  cancellation.
+- Without a current Job or indicator, the platform logs an error because the bridge cannot be cancelled from outside. Prefer keeping the call chain suspending.
+- Do not use `kotlinx.coroutines.runBlocking` instead — it ignores platform context and cancellation.
 
 ### `blockingContext { }` is deprecated (2025.2+)
 
-In 2024.1, `blockingContext { foo() }` was used to enter blocking-mode within a suspend
-function. The deprecation message in the source says the platform installs blocking context
-implicitly starting from 2024.2, but the function itself became a deprecated no-op only in
-2025.2. Call `foo()` directly; the old form emits a deprecation warning on 2025.2+.
+In 2024.1, `blockingContext { foo() }` was used to enter blocking-mode within a suspend function. The deprecation message in the source says the platform installs blocking context implicitly starting from 2024.2, but the function itself became a deprecated no-op only in 2025.2. Call `foo()` directly; the old form emits a deprecation warning on 2025.2+.
 
 ## Fixed-source evidence and public API status
 
-The 2026.3 behavior and annotations above were checked at tag `idea/2026.3`, commit
-`c91871ae2864649d952825cff72569e3db0e7ac6`:
+The 2026.3 behavior and annotations above were checked at tag `idea/2026.3`, commit `c91871ae2864649d952825cff72569e3db0e7ac6`:
 
 - [`application/coroutines.kt`](https://github.com/JetBrains/intellij-community/blob/c91871ae2864649d952825cff72569e3db0e7ac6/platform/core-api/src/com/intellij/openapi/application/coroutines.kt)
 - [`ReadConstraint.kt`](https://github.com/JetBrains/intellij-community/blob/c91871ae2864649d952825cff72569e3db0e7ac6/platform/core-api/src/com/intellij/openapi/application/ReadConstraint.kt)
@@ -236,11 +204,6 @@ The 2026.3 behavior and annotations above were checked at tag `idea/2026.3`, com
 - [`util/progress/src/steps.kt`](https://github.com/JetBrains/intellij-community/blob/c91871ae2864649d952825cff72569e3db0e7ac6/platform/util/progress/src/steps.kt)
 - [`AnActionEvent.java`](https://github.com/JetBrains/intellij-community/blob/c91871ae2864649d952825cff72569e3db0e7ac6/platform/editor-ui-api/src/com/intellij/openapi/actionSystem/AnActionEvent.java)
 
-The `blockingContext` boundary was compared with the `242` and `251` branch sources, which
-do not mark it `@Deprecated` yet. Version boundaries come from the official
-[2025 API changes](https://plugins.jetbrains.com/docs/intellij/api-notable-list-2025.html)
-and [2026 API changes](https://plugins.jetbrains.com/docs/intellij/api-notable-list-2026.html).
+The `blockingContext` boundary was compared with the `242` and `251` branch sources, which do not mark it `@Deprecated` yet. Version boundaries come from the official [2025 API changes](https://plugins.jetbrains.com/docs/intellij/api-notable-list-2025.html) and [2026 API changes](https://plugins.jetbrains.com/docs/intellij/api-notable-list-2026.html).
 
-Only unannotated public APIs and explicitly identified public `@Experimental` APIs are
-listed as callable plugin APIs. Do not call neighboring `@ApiStatus.Internal` helpers such
-as `readActionUndispatched`, `Dispatchers.ui(...)`, or `Dispatchers.UiWithModelAccess`.
+Only unannotated public APIs and explicitly identified public `@Experimental` APIs are listed as callable plugin APIs. Do not call neighboring `@ApiStatus.Internal` helpers such as `readActionUndispatched`, `Dispatchers.ui(...)`, or `Dispatchers.UiWithModelAccess`.

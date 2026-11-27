@@ -1,20 +1,12 @@
 # Example 06 — Caveman-style `feat` brief
 
-Demonstrates the caveman full-mode register for the saved brief while
-keeping every chat / interview / status surface in normal prose. Same
-shape as `01-pm-paste-feat.md`, simpler input, output rewritten in
-caveman.
+Demonstrates the caveman full-mode register for the saved brief while keeping every chat / interview / status surface in normal prose. Same shape as `01-pm-paste-feat.md`, simpler input, output rewritten in caveman.
 
 ---
 
 ## Input (pasted by user, English)
 
-> We need a global hotkey system in the desktop app. Today, key bindings
-> only work when the app window is focused. We want users to be able to
-> trigger 5 default shortcuts (capture, cancel, next, prev, open
-> settings) even when the app is in the background. Settings should
-> expose an editor for these shortcuts. Tauri v2 plugin only. Windows
-> and macOS must ship together; Linux can come later.
+> We need a global hotkey system in the desktop app. Today, key bindings only work when the app window is focused. We want users to be able to trigger 5 default shortcuts (capture, cancel, next, prev, open settings) even when the app is in the background. Settings should expose an editor for these shortcuts. Tauri v2 plugin only. Windows and macOS must ship together; Linux can come later.
 
 ---
 
@@ -27,13 +19,11 @@ caveman.
 | SCOPE | yes — desktop app hotkey subsystem |
 | TARGET | yes — Tauri v2 plugin, Settings UI, hotkey module |
 
-4/4 anchors → **CONTINUE**. No briefset signal — single execution
-context.
+4/4 anchors → **CONTINUE**. No briefset signal — single execution context.
 
 ## Stage 2 — Work Type
 
-`feat` (new behavior surface). Explicit in input. No confirmation
-needed.
+`feat` (new behavior surface). Explicit in input. No confirmation needed.
 
 ## Stage 3 — Codebase Review (notes)
 
@@ -140,51 +130,32 @@ feat
 - [non-blocking] Are the five default key combinations final, or should the implementer propose a draft? — Default: use the five-action draft generated and recorded in Stage 1 for local implementation and verification only; Reconfirm before: merge approval.
 ```
 
-Validator: under the documented dummy-path setup, `validate_brief.py`
-reports `PASS - structural checks OK (0 warning(s)).` for the saved
-example. The `(proposed)` marker on `src/settings/SettingsScreen.tsx`
-exempts that path from the path-existence check.
+Validator: under the documented dummy-path setup, `validate_brief.py` reports `PASS - structural checks OK (0 warning(s)).` for the saved example. The `(proposed)` marker on `src/settings/SettingsScreen.tsx` exempts that path from the path-existence check.
 
 ---
 
 ## Stage 6 — Save report (chat, normal prose)
 
-> Saved — `docs/briefs/2026-05-05-feat-global-hotkey-system.md`
-> (`feat`: Global hotkey system; structural validation passed;
-> content validation passed — content and intent self-check passed,
-> caveman parity OK). Open it and let me know if anything needs editing.
+> Saved — `docs/briefs/2026-05-05-feat-global-hotkey-system.md` (`feat`: Global hotkey system; structural validation passed; content validation passed — content and intent self-check passed, caveman parity OK). Open it and let me know if anything needs editing.
 
 ---
 
 ## Picked Up Cold (downstream agent orientation)
 
-A coding agent receiving only the saved brief can start without asking
-for more scope:
+A coding agent receiving only the saved brief can start without asking for more scope:
 
-1. Open `src/hotkeys/useHotkey.ts` and confirm the focus-bound
-   registration branch (per `Current State (As-Is)`); read PR #128 for
-   the prior Tauri v1 constraints.
-2. Add the Tauri v2 global-hotkey plugin dependency in
-   `src-tauri/Cargo.toml` (per `Constraints`: v2 only, no v1 fallback).
-3. Propose and record draft combinations for the five actions, then
-   build the registration contract (Stage 1 and its `Worker decision`).
-4. Add the shortcut-editing section at the proposed
-   `src/settings/SettingsScreen.tsx`, with the disabled state and tooltip
-   on Linux (Stage 2).
-5. Verify the documented macOS plugin setup and permissions and record
-   the result (per `Side Effect Checkpoints`).
+1. Open `src/hotkeys/useHotkey.ts` and confirm the focus-bound registration branch (per `Current State (As-Is)`); read PR #128 for the prior Tauri v1 constraints.
+2. Add the Tauri v2 global-hotkey plugin dependency in `src-tauri/Cargo.toml` (per `Constraints`: v2 only, no v1 fallback).
+3. Propose and record draft combinations for the five actions, then build the registration contract (Stage 1 and its `Worker decision`).
+4. Add the shortcut-editing section at the proposed `src/settings/SettingsScreen.tsx`, with the disabled state and tooltip on Linux (Stage 2).
+5. Verify the documented macOS plugin setup and permissions and record the result (per `Side Effect Checkpoints`).
 
 ---
 
 ## Notes — what this example demonstrates
 
-- Body prose is caveman full; section headers, the title format, code
-  paths, identifiers, PR numbers, the `(proposed)` marker, and the
-  `- [ ]` checklist marker are all preserved verbatim.
+- Body prose is caveman full; section headers, the title format, code paths, identifiers, PR numbers, the `(proposed)` marker, and the `- [ ]` checklist marker are all preserved verbatim.
 - Requirements keep `Tauri v2 plugin only` and the five named actions intact. No unsupported timing threshold or permission-prompt behavior is introduced.
-- Acceptance Criteria stayed measurable; checklist items survive
-  caveman because they were already concrete.
-- The Linux fallback note (`disabled with tooltip "global hotkey
-  unsupported on this system"`) preserves the example's authored tooltip string — error / UI strings are an Auto-Clarity carve-out.
-- Stage 4 interview, Stage 6 save report, and this `Notes` section are
-  all in normal prose. Caveman never crosses into chat.
+- Acceptance Criteria stayed measurable; checklist items survive caveman because they were already concrete.
+- The Linux fallback note (`disabled with tooltip "global hotkey unsupported on this system"`) preserves the example's authored tooltip string — error / UI strings are an Auto-Clarity carve-out.
+- Stage 4 interview, Stage 6 save report, and this `Notes` section are all in normal prose. Caveman never crosses into chat.

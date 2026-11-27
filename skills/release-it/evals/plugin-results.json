@@ -2,7 +2,7 @@
   "checked_at": "2026-11-27",
   "scope": "Plugin code extracted from the Markdown reference and run with the real release-it API and stock prompt. Answers, core-order marker commands, and notification fetch are local stubs. No external notification, publication, or remote operation.",
   "releaseItVersion": "21.1.3",
-  "referenceSha256": "97f57bc9e225db4423d61d2ca134af3cda085d2bcdda31b24bbae58fc0dfed52",
+  "referenceSha256": "825431b2b67ef0bf6e4d7c63a57cfe129837a41676f033d93c4a1092f0757d20",
   "results": [
     {
       "name": "version-provider",

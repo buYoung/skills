@@ -1,12 +1,8 @@
 # Example 01 — PM paste → `feat` (dark mode in settings)
 
-Long-form input from a PM. Skill runs Stage 3 codebase review to refine
-`Current State (As-Is)`, then the Stage 4 decision table to lock down
-`Out of Scope` and `Acceptance Criteria`.
+Long-form input from a PM. Skill runs Stage 3 codebase review to refine `Current State (As-Is)`, then the Stage 4 decision table to lock down `Out of Scope` and `Acceptance Criteria`.
 
-**What this example produces:** a saved brief that names the `ThemeProvider`
-to extend, the `flag.darkMode` gate, and the Settings-only scope, so a coding
-agent can start without re-reading the PM spec.
+**What this example produces:** a saved brief that names the `ThemeProvider` to extend, the `flag.darkMode` gate, and the Settings-only scope, so a coding agent can start without re-reading the PM spec.
 
 ---
 
@@ -41,19 +37,11 @@ just light/dark and rely on OS detection?
 
 Inline `rg` / `Read`, ~6 reads / 4 greps:
 
-- `src/settings/SettingsScreen.tsx` — Settings entry point. `Appearance`
-  section already exists with one row for "Compact mode". Pattern for
-  adding a row + persisted toggle is established.
-- `src/theme/ThemeProvider.tsx` — existing theme provider. Currently a
-  single `lightTheme` object, no `darkTheme`. `useTheme()` hook returns
-  the active theme. No OS-theme detection yet.
-- `src/storage/userPrefs.ts` — `useUserPref<T>(key, default)` hook handles
-  persistence (localStorage on web, AsyncStorage on RN). Pattern for
-  adding a new pref is one new key constant.
-- `src/feature-flags/flags.ts` — flag system based on env + remote
-  override. Adding `flag.darkMode` is a one-line addition.
-- No existing OS theme detection. `window.matchMedia('(prefers-color-scheme: dark)')`
-  on web; `Appearance.getColorScheme()` on RN.
+- `src/settings/SettingsScreen.tsx` — Settings entry point. `Appearance` section already exists with one row for "Compact mode". Pattern for adding a row + persisted toggle is established.
+- `src/theme/ThemeProvider.tsx` — existing theme provider. Currently a single `lightTheme` object, no `darkTheme`. `useTheme()` hook returns the active theme. No OS-theme detection yet.
+- `src/storage/userPrefs.ts` — `useUserPref<T>(key, default)` hook handles persistence (localStorage on web, AsyncStorage on RN). Pattern for adding a new pref is one new key constant.
+- `src/feature-flags/flags.ts` — flag system based on env + remote override. Adding `flag.darkMode` is a one-line addition.
+- No existing OS theme detection. `window.matchMedia('(prefers-color-scheme: dark)')` on web; `Appearance.getColorScheme()` on RN.
 
 ---
 
@@ -71,9 +59,7 @@ User: approve rows 1-3.
 
 ### Termination
 
-All user-owned decisions are decided. Technical facts resolved by the
-codebase review are not re-asked. The listener-lifecycle choice is bounded
-as a reversible `Worker decision` in Stage 1.
+All user-owned decisions are decided. Technical facts resolved by the codebase review are not re-asked. The listener-lifecycle choice is bounded as a reversible `Worker decision` in Stage 1.
 
 ---
 
@@ -156,30 +142,19 @@ feat
 
 ## Stage 6 — Save Report
 
-> Saved — `docs/briefs/2026-04-23-feat-dark-mode-settings.md` (`feat`: Dark mode toggle in Settings; structural validation passed; content validation passed — content and intent self-check passed).
-> Open it and let me know if anything needs editing.
+> Saved — `docs/briefs/2026-04-23-feat-dark-mode-settings.md` (`feat`: Dark mode toggle in Settings; structural validation passed; content validation passed — content and intent self-check passed). Open it and let me know if anything needs editing.
 
 ## Picked Up Cold — Coding Agent's First Actions
 
-A coding agent receiving only the saved brief above should be able to act
-without further questions. From the brief alone:
+A coding agent receiving only the saved brief above should be able to act without further questions. From the brief alone:
 
-1. Open `src/theme/ThemeProvider.tsx` (named in `Related Files / Entry Points`)
-   and add `darkTheme` next to the existing `lightTheme`, mirroring its token
-   names 1:1 (per `Constraints`).
-2. Add `flag.darkMode` to `src/feature-flags/flags.ts`, default `false` in
-   production (per `Desired Outcome (To-Be)`).
-3. Add the Theme row in `src/settings/SettingsScreen.tsx`'s Appearance
-   section, gated behind `flag.darkMode`, offering System / Light / Dark
-   (per `In Scope` and `Desired Outcome (To-Be)`).
-4. Wire persistence through `useUserPref` in `src/storage/userPrefs.ts`
-   (per `Related Files / Entry Points`).
+1. Open `src/theme/ThemeProvider.tsx` (named in `Related Files / Entry Points`) and add `darkTheme` next to the existing `lightTheme`, mirroring its token names 1:1 (per `Constraints`).
+2. Add `flag.darkMode` to `src/feature-flags/flags.ts`, default `false` in production (per `Desired Outcome (To-Be)`).
+3. Add the Theme row in `src/settings/SettingsScreen.tsx`'s Appearance section, gated behind `flag.darkMode`, offering System / Light / Dark (per `In Scope` and `Desired Outcome (To-Be)`).
+4. Wire persistence through `useUserPref` in `src/storage/userPrefs.ts` (per `Related Files / Entry Points`).
 
 ---
 
 ## Notes
 
-- **Why `feat` and not `chore` or `refactor`** — adding `darkTheme` and a
-  new Settings row is a user-visible capability that did not exist. Even
-  though most of the work is plumbing, the user-facing surface change is
-  the load-bearing test.
+- **Why `feat` and not `chore` or `refactor`** — adding `darkTheme` and a new Settings row is a user-visible capability that did not exist. Even though most of the work is plumbing, the user-facing surface change is the load-bearing test.

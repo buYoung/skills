@@ -1,12 +1,7 @@
 ---
 name: jetbrains-vmoptions
 description: >
-  Diagnose and tune JetBrains IDE VM options against the IDE's actual boot runtime, including bundled or custom
-  JetBrains Runtime (JBR) 17, 21, and 25. Use whenever a user asks about JetBrains IDE performance, freezes,
-  startup or indexing speed, memory pressure, garbage collection, heap sizing, `.vmoptions`, or IntelliJ IDEA,
-  WebStorm, PyCharm, GoLand, Rider, CLion, PhpStorm, RubyMine, RustRover, or DataGrip JVM tuning. Distinguish the IDE process
-  from project JDK, Gradle, build, test, and remote-backend processes; propose evidence-based minimal changes,
-  confirm effective flags after restart, and provide rollback and before/after measurement steps.
+  Diagnose and tune JetBrains IDE VM options against the IDE's actual boot runtime, including bundled or custom JetBrains Runtime (JBR) 17, 21, and 25. Use whenever a user asks about JetBrains IDE performance, freezes, startup or indexing speed, memory pressure, garbage collection, heap sizing, `.vmoptions`, or IntelliJ IDEA, WebStorm, PyCharm, GoLand, Rider, CLion, PhpStorm, RubyMine, RustRover, or DataGrip JVM tuning. Distinguish the IDE process from project JDK, Gradle, build, test, and remote-backend processes; propose evidence-based minimal changes, confirm effective flags after restart, and provide rollback and before/after measurement steps.
 ---
 
 # JetBrains IDE VM Options

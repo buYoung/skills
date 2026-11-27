@@ -1,14 +1,8 @@
 # Example 02 — Rough typed input → `fix` (iOS Safari login bug)
 
-Single-line typed input. Skill clears the four-anchor gate (PROBLEM,
-GOAL implicit, SCOPE narrow, TARGET findable), then leans on the `fix`
-behavior profile to shape Acceptance Criteria around reproduction.
+Single-line typed input. Skill clears the four-anchor gate (PROBLEM, GOAL implicit, SCOPE narrow, TARGET findable), then leans on the `fix` behavior profile to shape Acceptance Criteria around reproduction.
 
-**What this example produces:** a saved brief with a pinned `Reproduction`
-that lets a coding agent pin the failure *before* touching code.
-Where a new regression test is mentioned, the example assumes the user
-allowed that test during Stage 4; otherwise the brief would require an
-existing test or manual repro path instead.
+**What this example produces:** a saved brief with a pinned `Reproduction` that lets a coding agent pin the failure *before* touching code. Where a new regression test is mentioned, the example assumes the user allowed that test during Stage 4; otherwise the brief would require an existing test or manual repro path instead.
 
 ---
 
@@ -24,23 +18,16 @@ login breaks on iOS Safari when password contains `@`
 
 Inline `rg` / `Read`, ~5 reads / 6 greps:
 
-- `src/auth/LoginForm.tsx` — form submission handler. Calls
-  `validatePassword()` then POSTs to `/api/login`.
-- `src/auth/validation.ts:34` — `validatePassword()` calls
-  `decodeURIComponent` on raw input, added in PR #211. This is an
-  investigation lead, not a demonstrated iOS-specific cause. Capture the
-  actual input and failure before attributing the bug to decoding; `@`
-  alone does not establish a malformed percent-encoding sequence.
-- `cypress/e2e/login.cy.ts` — existing E2E suite. Has a "valid login"
-  case but no characters-in-password edge cases.
+- `src/auth/LoginForm.tsx` — form submission handler. Calls `validatePassword()` then POSTs to `/api/login`.
+- `src/auth/validation.ts:34` — `validatePassword()` calls `decodeURIComponent` on raw input, added in PR #211. This is an investigation lead, not a demonstrated iOS-specific cause. Capture the actual input and failure before attributing the bug to decoding; `@` alone does not establish a malformed percent-encoding sequence.
+- `cypress/e2e/login.cy.ts` — existing E2E suite. Has a "valid login" case but no characters-in-password edge cases.
 - No iOS Safari-specific test harness; team uses BrowserStack on demand.
 
 ---
 
 ## Stage 4 — User Decision Table
 
-Stage 3 already pins the suspected interaction site.
-The author selects `fix` from the explicit defect and routes patch-versus-remove into Stage 1 evidence plus a bounded Worker decision.
+Stage 3 already pins the suspected interaction site. The author selects `fix` from the explicit defect and routes patch-versus-remove into Stage 1 evidence plus a bounded Worker decision.
 
 | 순번 | 내용 | 수정 추천안 | 근거 |
 |---|---|---|---|
@@ -48,18 +35,11 @@ The author selects `fix` from the explicit defect and routes patch-versus-remove
 | 2 | Out of Scope boundary | Lock both the broader validation-chain refactor and the `/api/login` request/response contract out of scope. | Both sit next to the suspected line in `validatePassword()`. Touching them would widen the defect fix into unrelated behavior change. |
 | 3 | Regression coverage permission | Allow one Cypress case for the shared password-submission contract on a supported desktop browser; retain BrowserStack iPhone Safari verification for the reported device-specific failure. | Repository policy requires user permission before adding a new test case. |
 
-User: approve rows 2-3; for row 1 the user supplies the values —
-iOS Safari 17 on iPhone 14 via BrowserStack, QA account
-`qa+iossafari@example.com` whose password contains `@` (stored in the
-1Password item "QA iOS Safari"), "invalid credentials" toast, 5/5
-attempts on fresh sessions, reproducing on both the `main` dev build
-and the current production build.
+User: approve rows 2-3; for row 1 the user supplies the values — iOS Safari 17 on iPhone 14 via BrowserStack, QA account `qa+iossafari@example.com` whose password contains `@` (stored in the 1Password item "QA iOS Safari"), "invalid credentials" toast, 5/5 attempts on fresh sessions, reproducing on both the `main` dev build and the current production build.
 
 ### Termination
 
-All user-owned decisions are decided. `Reproduction` is pinned from the
-user's row-1 answer, while PR #211 investigation becomes Stage 1 work with
-a bounded Worker decision. Stage 5 follows.
+All user-owned decisions are decided. `Reproduction` is pinned from the user's row-1 answer, while PR #211 investigation becomes Stage 1 work with a bounded Worker decision. Stage 5 follows.
 
 ---
 
@@ -142,47 +122,21 @@ fix
 
 ## Stage 6 — Save Report
 
-> Saved — `docs/briefs/2026-04-23-fix-ios-safari-login-at-symbol.md` (`fix`: iOS Safari login fails when password contains `@`; structural validation passed; content validation passed — content and intent self-check passed, caveman parity OK).
-> Open it and let me know if anything needs editing.
+> Saved — `docs/briefs/2026-04-23-fix-ios-safari-login-at-symbol.md` (`fix`: iOS Safari login fails when password contains `@`; structural validation passed; content validation passed — content and intent self-check passed, caveman parity OK). Open it and let me know if anything needs editing.
 
 ## Picked Up Cold — Coding Agent's First Actions
 
-A coding agent receiving only the saved brief should be able to start,
-verify, patch, and know when the fix is complete without asking for more
-scope. From the brief alone:
+A coding agent receiving only the saved brief should be able to start, verify, patch, and know when the fix is complete without asking for more scope. From the brief alone:
 
-1. Spin up the documented repro environment (BrowserStack, iOS Safari 17,
-   account `qa+iossafari@example.com` with the password from the
-   1Password item "QA iOS Safari", per `Reproduction`).
-   Confirm the failure on `main` to verify the repro is real.
-2. Record the shared password-submission contract and add the approved
-   Cypress case on a supported desktop browser. Pin a red-to-green case
-   there only if the observed cause reproduces there; keep the original
-   iPhone Safari failure and its verification separate.
-3. Open `src/auth/validation.ts:34` (named in `Related Files / Entry
-   Points` with the suspected interaction site already noted) and read
-   PR #211's motivation before patching, as required by Stage 1's investigation and bounded `Worker decision`.
-4. Patch the offending step. The device-specific before/after check and the supported-browser Cypress case must pass; full
-   suite stays green (per `Acceptance Criteria` and `Side Effect
-   Checkpoints`).
+1. Spin up the documented repro environment (BrowserStack, iOS Safari 17, account `qa+iossafari@example.com` with the password from the 1Password item "QA iOS Safari", per `Reproduction`). Confirm the failure on `main` to verify the repro is real.
+2. Record the shared password-submission contract and add the approved Cypress case on a supported desktop browser. Pin a red-to-green case there only if the observed cause reproduces there; keep the original iPhone Safari failure and its verification separate.
+3. Open `src/auth/validation.ts:34` (named in `Related Files / Entry Points` with the suspected interaction site already noted) and read PR #211's motivation before patching, as required by Stage 1's investigation and bounded `Worker decision`.
+4. Patch the offending step. The device-specific before/after check and the supported-browser Cypress case must pass; full suite stays green (per `Acceptance Criteria` and `Side Effect Checkpoints`).
 
 ---
 
 ## Notes
 
-- **Why the Acceptance Criteria lead with the actual device reproduction** —
-  the `fix` behavior profile requires reproduction-first on the affected
-  target. The approved Cypress case is a separate supported-browser contract
-  check: [Cypress browser support](https://docs.cypress.io/app/references/launching-browsers#webkit-experimental)
-  covers experimental desktop WebKit, not iPhone Safari.
-  Without that permission, the brief would use an existing test or manual
-  reproduction path instead.
-- **Why Side Effect Checkpoint #2 lists URL-significant characters** —
-  `decodeURIComponent` is the suspect. Anything that would change its
-  behavior risks regressing other passwords. The downstream agent needs
-  to deliberately verify, not assume.
-- **Why the password is a 1Password reference, not a literal** — briefs
-  are committed artifacts, and the template forbids embedding real
-  credentials; the brief references the secret's location instead. The
-  load-bearing fact for this bug — the password contains `@` — is stated
-  explicitly, so nothing the downstream agent needs is lost.
+- **Why the Acceptance Criteria lead with the actual device reproduction** — the `fix` behavior profile requires reproduction-first on the affected target. The approved Cypress case is a separate supported-browser contract check: [Cypress browser support](https://docs.cypress.io/app/references/launching-browsers#webkit-experimental) covers experimental desktop WebKit, not iPhone Safari. Without that permission, the brief would use an existing test or manual reproduction path instead.
+- **Why Side Effect Checkpoint #2 lists URL-significant characters** — `decodeURIComponent` is the suspect. Anything that would change its behavior risks regressing other passwords. The downstream agent needs to deliberately verify, not assume.
+- **Why the password is a 1Password reference, not a literal** — briefs are committed artifacts, and the template forbids embedding real credentials; the brief references the secret's location instead. The load-bearing fact for this bug — the password contains `@` — is stated explicitly, so nothing the downstream agent needs is lost.

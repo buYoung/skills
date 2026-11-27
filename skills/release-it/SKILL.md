@@ -1,72 +1,38 @@
 ---
 name: release-it
 description: >-
-  release-it configuration, setup, troubleshooting, and plugin development. Triggers on .release-it.* config files,
-  release-it CLI or programmatic usage, version bumping, changelog generation, npm publishing, GitHub/GitLab releases,
-  git tagging, hooks lifecycle, pre-release workflows, CI/CD pipelines, monorepo strategies,
-  @inquirer/prompts interactive service-app releases, and custom plugin development.
+  release-it configuration, setup, troubleshooting, and plugin development. Triggers on .release-it.* config files, release-it CLI or programmatic usage, version bumping, changelog generation, npm publishing, GitHub/GitLab releases, git tagging, hooks lifecycle, pre-release workflows, CI/CD pipelines, monorepo strategies, @inquirer/prompts interactive service-app releases, and custom plugin development.
 ---
 
 # release-it Release Automation
 
-release-it is a generic, pluggable CLI tool that automates versioning and package publishing.
-It handles version bumping, Git committing/tagging/pushing, npm publishing, and GitHub/GitLab
-release creation -- all in a single configurable workflow. Language-agnostic with a powerful
-plugin system for extending behavior.
+release-it is a generic, pluggable CLI tool that automates versioning and package publishing. It handles version bumping, Git committing/tagging/pushing, npm publishing, and GitHub/GitLab release creation -- all in a single configurable workflow. Language-agnostic with a powerful plugin system for extending behavior.
 
 ## Choose the Applying Workflow
 
-Start with the requested operation and the project's existing release entry point. A config
-repair, CI job, publishing workflow, or plugin does not by itself require a new interactive
-wrapper. Preserve the chosen execution mode and enabled capabilities when fixing it.
+Start with the requested operation and the project's existing release entry point. A config repair, CI job, publishing workflow, or plugin does not by itself require a new interactive wrapper. Preserve the chosen execution mode and enabled capabilities when fixing it.
 
-- **Configuration, CLI, or CI:** use [configuration.md](references/configuration.md) and
-  [cli-and-workflow.md](references/cli-and-workflow.md); load publishing references when applicable.
-- **Programmatic wrapper:** inspect the API, prompt/log ownership, and installed version using
-  [cli-and-workflow.md](references/cli-and-workflow.md). Use the interactive contract below when
-  generating the service-app command, not as an override for every API caller.
-- **Version source or custom plugin:** use [plugins.md](references/plugins.md) and
-  [custom-plugin-development.md](references/custom-plugin-development.md). Tooling manifests do
-  not determine the application's version source.
-- **Dirty state, cancellation, or recovery:** use [git-integration.md](references/git-integration.md)
-  to distinguish write paths, staging scope, the shared index, and recoverable state.
+- **Configuration, CLI, or CI:** use [configuration.md](references/configuration.md) and [cli-and-workflow.md](references/cli-and-workflow.md); load publishing references when applicable.
+- **Programmatic wrapper:** inspect the API, prompt/log ownership, and installed version using [cli-and-workflow.md](references/cli-and-workflow.md). Use the interactive contract below when generating the service-app command, not as an override for every API caller.
+- **Version source or custom plugin:** use [plugins.md](references/plugins.md) and [custom-plugin-development.md](references/custom-plugin-development.md). Tooling manifests do not determine the application's version source.
+- **Dirty state, cancellation, or recovery:** use [git-integration.md](references/git-integration.md) to distinguish write paths, staging scope, the shared index, and recoverable state.
 
-The concrete adapter and source-level behavior in this skill are checked against release-it
-**21.1.3**. Match configuration schemas, runtime requirements, and plugin interfaces to the
-applying project's version; an example's dependency pin is not an instruction to upgrade it.
+The concrete adapter and source-level behavior in this skill are checked against release-it **21.1.3**. Match configuration schemas, runtime requirements, and plugin interfaces to the applying project's version; an example's dependency pin is not an instruction to upgrade it.
 
 ## Default Interactive Contract
 
-For a new interactive service-app release command, generate `pnpm release` using the project entry script and `@inquirer/prompts` adapter in
-[interactive-workflow.md](references/interactive-workflow.md). All release questions use
-Inquirer; release-it performs the version update and Git operations.
+For a new interactive service-app release command, generate `pnpm release` using the project entry script and `@inquirer/prompts` adapter in [interactive-workflow.md](references/interactive-workflow.md). All release questions use Inquirer; release-it performs the version update and Git operations.
 
 - **Single project:** `pnpm release → choose version → confirm commit / commit → confirm tag / tag → confirm push / push`.
 - **Monorepo:** `pnpm release → choose one service app → choose version → confirm commit / commit → confirm tag / tag → confirm push / push`.
 
-The first question in a non-monorepo is the version selection. Do not add an app picker or
-a separate start confirmation. In a monorepo, offer only the verified service apps with a
-single-select picker, even when there is only one eligible app. Resolve an unclear service
-app boundary during setup, then use that app's version source, changelog, and tag policy.
+The first question in a non-monorepo is the version selection. Do not add an app picker or a separate start confirmation. In a monorepo, offer only the verified service apps with a single-select picker, even when there is only one eligible app. Resolve an unclear service app boundary during setup, then use that app's version source, changelog, and tag policy.
 
-Display the current version and concrete next versions. Always wait for the user's selection;
-recommended increments, existing settings, and CI environment variables cannot replace it.
-Pass the selected exact version and target configuration to release-it's API.
+Display the current version and concrete next versions. Always wait for the user's selection; recommended increments, existing settings, and CI environment variables cannot replace it. Pass the selected exact version and target configuration to release-it's API.
 
-Ask each Git confirmation at its release-it execution point and await that action before
-asking the next. A negative answer or cancellation stops that action and the entire remaining
-flow. Use Inquirer's native `y/n` confirmation with `default: true` for commit, tag, and push,
-so Enter approves the displayed action, including push;
-Ctrl+C cancels the active question. Report the actual remaining files, index, commit, tag,
-and push status according to the chosen recovery policy. The packaged example preserves
-interrupted work; automatic restoration needs explicit scope and baseline handling.
-Check for an interactive terminal before any release work. Do not use
-`--ci`, `--only-version`, canned answers, or a direct push hook in this default path.
+Ask each Git confirmation at its release-it execution point and await that action before asking the next. A negative answer or cancellation stops that action and the entire remaining flow. Use Inquirer's native `y/n` confirmation with `default: true` for commit, tag, and push, so Enter approves the displayed action, including push; Ctrl+C cancels the active question. Report the actual remaining files, index, commit, tag, and push status according to the chosen recovery policy. The packaged example preserves interrupted work; automatic restoration needs explicit scope and baseline handling. Check for an interactive terminal before any release work. Do not use `--ci`, `--only-version`, canned answers, or a direct push hook in this default path.
 
-CI automation, npm publishing, and hosted releases remain supported as explicitly requested
-extensions with their own configuration. Do not infer them from a Git remote or add them to
-the default service-app flow. Read the adapter compatibility notes before applying it to a
-different release-it version; its injection surface is confirmed in source, not a stable CLI option.
+CI automation, npm publishing, and hosted releases remain supported as explicitly requested extensions with their own configuration. Do not infer them from a Git remote or add them to the default service-app flow. Read the adapter compatibility notes before applying it to a different release-it version; its injection surface is confirmed in source, not a stable CLI option.
 
 ## Quick Start
 
@@ -109,8 +75,7 @@ release-it supports 6 config file formats. Pick one:
 | TOML | `.release-it.toml` | Table-based config |
 | package.json | `"release-it": {}` property | Zero extra files |
 
-Example schema for the checked version: `"$schema": "https://unpkg.com/release-it@21.1.3/schema/release-it.json"`.
-Use the applying project's release-it version when generating its configuration.
+Example schema for the checked version: `"$schema": "https://unpkg.com/release-it@21.1.3/schema/release-it.json"`. Use the applying project's release-it version when generating its configuration.
 
 Only override options that differ from defaults. See [configuration.md](references/configuration.md) for common defaults, config file lookup, and the `extends` mechanism.
 

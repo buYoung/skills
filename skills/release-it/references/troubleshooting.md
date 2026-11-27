@@ -10,15 +10,9 @@
 
 **Solutions**:
 1. Commit or stash changes before running release-it
-2. If the workflow intentionally permits existing changes, define its staging and recovery
-   policy before disabling the check with `--no-git.requireCleanWorkingDir` or
-   `"git": { "requireCleanWorkingDir": false }`. In 21.1.3 this also prevents registration
-   of local exit/SIGINT rollback handlers.
+2. If the workflow intentionally permits existing changes, define its staging and recovery policy before disabling the check with `--no-git.requireCleanWorkingDir` or `"git": { "requireCleanWorkingDir": false }`. In 21.1.3 this also prevents registration of local exit/SIGINT rollback handlers.
 
-For wrappers, inspect the actual preflight command. release-it's built-in tracked/index
-check ignores ordinary untracked files; a wrapper's `status --untracked-files=all` can be
-stricter. Match checks to writers, staging options, and the shared index instead of treating
-every untracked file as releasable work. See [Git state and recovery](git-integration.md#working-state-and-staging-scope).
+For wrappers, inspect the actual preflight command. release-it's built-in tracked/index check ignores ordinary untracked files; a wrapper's `status --untracked-files=all` can be stricter. Match checks to writers, staging options, and the shared index instead of treating every untracked file as releasable work. See [Git state and recovery](git-integration.md#working-state-and-staging-scope).
 
 ---
 
@@ -77,8 +71,7 @@ When disabled, release-it adds `--set-upstream origin <branch>` to the push comm
 **Error**: `ENEEDAUTH` or `E403` or `E401`, or `E_STAGE_REQUIRED`
 
 **Causes**:
-- Missing, expired, or revoked npm token (classic tokens no longer work; granular write
-  tokens expire after at most 90 days)
+- Missing, expired, or revoked npm token (classic tokens no longer work; granular write tokens expire after at most 90 days)
 - `.npmrc` not configured, or the token exported under a name the `.npmrc` does not read
 - A stage-only token used for a direct `npm publish` (`E_STAGE_REQUIRED`)
 - Scoped package not configured for public access
@@ -104,10 +97,7 @@ When disabled, release-it adds `--set-upstream origin <branch>` to the push comm
    }
    ```
 
-4. For CI, ensure the variable named in `.npmrc` is set. `actions/setup-node` with
-   `registry-url` reads `NODE_AUTH_TOKEN`, not `NPM_TOKEN`. For `E_STAGE_REQUIRED`, set
-   `npm.stage: true` or use a token that allows direct publishing. See
-   [npm-publishing.md](npm-publishing.md#cicd-environments)
+4. For CI, ensure the variable named in `.npmrc` is set. `actions/setup-node` with `registry-url` reads `NODE_AUTH_TOKEN`, not `NPM_TOKEN`. For `E_STAGE_REQUIRED`, set `npm.stage: true` or use a token that allows direct publishing. See [npm-publishing.md](npm-publishing.md#cicd-environments)
 
 5. If registry doesn't support `npm ping`/`npm whoami` (e.g. Nexus):
    ```json
@@ -208,16 +198,11 @@ When disabled, release-it adds `--set-upstream origin <branch>` to the push comm
 
 #### No interactive prompts in the default command
 
-For `pnpm release`, inspect the entry script in [interactive-workflow.md](interactive-workflow.md).
-Check both TTYs first, reject CLI arguments, and pass `ci: false`, `only-version: false`,
-`release-version: false`, and `changelog: false` as API overrides. Recommended increments
-and inherited version flags must not replace the Inquirer version selection. Do not solve
-missing interactive prompts with `--ci`, `--only-version`, pipes, or automatic answers.
+For `pnpm release`, inspect the entry script in [interactive-workflow.md](interactive-workflow.md). Check both TTYs first, reject CLI arguments, and pass `ci: false`, `only-version: false`, `release-version: false`, and `changelog: false` as API overrides. Recommended increments and inherited version flags must not replace the Inquirer version selection. Do not solve missing interactive prompts with `--ci`, `--only-version`, pipes, or automatic answers.
 
 #### Intentional CI automation
 
-For an explicitly separate non-interactive workflow, release-it auto-detects CI. If it
-is not detected, use `--ci` explicitly:
+For an explicitly separate non-interactive workflow, release-it auto-detects CI. If it is not detected, use `--ci` explicitly:
 
 ```bash
 npx release-it --ci
@@ -276,31 +261,18 @@ Ensure the CI has push access:
 
 ## Interactive Stop Problems
 
-- **Single-project first question is not version:** remove the unconditional app picker or
-  start confirmation; structure detection is read-only and does not ask a runtime question.
-- **Wrong app/version/changelog:** change cwd before config loading; inspect the selected
-  app manifest, version guard, tag prefix/match, and both changelog history scopes.
-- **Declining commit still tags/pushes:** a false stock prompt result skips only the task.
-  Throw the adapter's stop exception before calling the callback.
-- **Cancellation destroys the local commit/tag:** inspect release-it's exit rollback handlers.
-  The example prechecks repository-wide tracked/index state and disables those local handlers.
-- **Version changes remain after No/Ctrl+C:** bump and staging precede the commit question.
-  Check the selected recovery policy; the example deliberately preserves state. A restoration
-  policy needs the original baseline, known outputs, and completed-action checks, not only HEAD.
-- **Cancellation/error is printed twice:** 21.1.3 logs an API error before rethrowing it.
-  Suppress only the wrapper's repeat of that error; keep diagnostics for preflight and recovery.
-- **Missing tag prints a Git fatal message:** explicitly capture stderr in synchronous
-  diagnostic commands and distinguish a missing ref from a failed lookup.
-- **Enter proceeds through push:** the command uses `default: true` for all Git confirmations.
-  `(Y/n)` accepts Enter; type `n` to decline or Ctrl+C to cancel. This is expected behavior.
-- **Push runs without its question:** remove direct push hooks from the default path, keep
-  `git.push: true`, and inject the Inquirer adapter through the second API argument.
-- **Prompt interface changed:** inspect the installed version's `register`/`show` calls and
-  run the PTY evaluation before claiming compatibility with a new version.
+- **Single-project first question is not version:** remove the unconditional app picker or start confirmation; structure detection is read-only and does not ask a runtime question.
+- **Wrong app/version/changelog:** change cwd before config loading; inspect the selected app manifest, version guard, tag prefix/match, and both changelog history scopes.
+- **Declining commit still tags/pushes:** a false stock prompt result skips only the task. Throw the adapter's stop exception before calling the callback.
+- **Cancellation destroys the local commit/tag:** inspect release-it's exit rollback handlers. The example prechecks repository-wide tracked/index state and disables those local handlers.
+- **Version changes remain after No/Ctrl+C:** bump and staging precede the commit question. Check the selected recovery policy; the example deliberately preserves state. A restoration policy needs the original baseline, known outputs, and completed-action checks, not only HEAD.
+- **Cancellation/error is printed twice:** 21.1.3 logs an API error before rethrowing it. Suppress only the wrapper's repeat of that error; keep diagnostics for preflight and recovery.
+- **Missing tag prints a Git fatal message:** explicitly capture stderr in synchronous diagnostic commands and distinguish a missing ref from a failed lookup.
+- **Enter proceeds through push:** the command uses `default: true` for all Git confirmations. `(Y/n)` accepts Enter; type `n` to decline or Ctrl+C to cancel. This is expected behavior.
+- **Push runs without its question:** remove direct push hooks from the default path, keep `git.push: true`, and inject the Inquirer adapter through the second API argument.
+- **Prompt interface changed:** inspect the installed version's `register`/`show` calls and run the PTY evaluation before claiming compatibility with a new version.
 
-After a stop, inspect the index/worktree, version file, HEAD, and exact local tag. A failed
-push can trigger release-it's own remote tag cleanup and leave remote state uncertain;
-report that uncertainty. See [interactive-workflow.md](interactive-workflow.md).
+After a stop, inspect the index/worktree, version file, HEAD, and exact local tag. A failed push can trigger release-it's own remote tag cleanup and leave remote state uncertain; report that uncertainty. See [interactive-workflow.md](interactive-workflow.md).
 
 ## Debugging
 

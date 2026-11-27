@@ -2,8 +2,7 @@
 
 ### Long-lived references — `SmartPsiElementPointer`
 
-Holding a `PsiElement` across Read Actions risks `IllegalStateException` (`element is not
-valid`). Use a smart pointer:
+Holding a `PsiElement` across Read Actions risks `IllegalStateException` (`element is not valid`). Use a smart pointer:
 
 ```kotlin
 val pointer = SmartPointerManager.getInstance(project).createSmartPsiElementPointer(element)
@@ -11,8 +10,7 @@ val pointer = SmartPointerManager.getInstance(project).createSmartPsiElementPoin
 val restored: PsiElement? = pointer.element
 ```
 
-Smart pointers track document edits and survive incremental re-parses while the element's
-identity remains meaningful.
+Smart pointers track document edits and survive incremental re-parses while the element's identity remains meaningful.
 
 ### `PsiReference` and resolution
 
@@ -50,8 +48,7 @@ Implementing these is the precondition for rename refactoring and correct find-u
 
 ### `FileViewProvider` — multi-language files
 
-Files like JSP, Vue SFCs, Blade templates contain multiple languages. The `FileViewProvider`
-keeps a separate PSI tree per language:
+Files like JSP, Vue SFCs, Blade templates contain multiple languages. The `FileViewProvider` keeps a separate PSI tree per language:
 
 ```kotlin
 val viewProvider = psiFile.viewProvider
@@ -60,9 +57,7 @@ val htmlPsi = viewProvider.getPsi(HTMLLanguage.INSTANCE)
 val element = viewProvider.findElementAt(offset, HTMLLanguage.INSTANCE)
 ```
 
-Custom multi-language files supply a `FileViewProviderFactory`. `HTMLLanguage` belongs to the
-XML and HTML support, which is the separate bundled plugin `com.intellij.xml` from 2026.3;
-see `01_core_dependencies.md` for the dependency to declare.
+Custom multi-language files supply a `FileViewProviderFactory`. `HTMLLanguage` belongs to the XML and HTML support, which is the separate bundled plugin `com.intellij.xml` from 2026.3; see `01_core_dependencies.md` for the dependency to declare.
 
 ### `CachedValue` — PSI-aware caching
 
@@ -79,9 +74,7 @@ val result = CachedValuesManager.getCachedValue(psiElement) {
 
 Common trackers:
 
-- `PsiModificationTracker.MODIFICATION_COUNT` — any physical PSI change, plus entering or
-  leaving Dumb Mode. For a narrower dependency, its Javadoc suggests
-  `PsiModificationTracker.getInstance(project).forLanguage(language)`.
+- `PsiModificationTracker.MODIFICATION_COUNT` — any physical PSI change, plus entering or leaving Dumb Mode. For a narrower dependency, its Javadoc suggests `PsiModificationTracker.getInstance(project).forLanguage(language)`.
 - `ModificationTracker.NEVER_CHANGED` — permanent cache.
 - `ModificationTracker.EVER_CHANGED` — never cache (debug only).
 - `VirtualFileManager.VFS_STRUCTURE_MODIFICATIONS` — VFS topology changes.

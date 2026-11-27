@@ -2,18 +2,13 @@
 
 ## Common mistakes
 
-- Treating `ProjectManager.getInstance().defaultProject` as a real project. Use the open
-  projects list.
+- Treating `ProjectManager.getInstance().defaultProject` as a real project. Use the open projects list.
 - Storing `Project` references on application-level state. They become invalid on close.
 - Editing `ModuleRootManager` outside a Write Action. Throws.
-- Not calling `model.commit()` (or not calling `model.dispose()` on failure). Leaks the
-  modifiable snapshot.
-- Iterating `ProjectFileIndex.iterateContent` from the EDT for huge projects. Move to a
-  background thread inside a Read Action.
+- Not calling `model.commit()` (or not calling `model.dispose()` on failure). Leaks the modifiable snapshot.
+- Iterating `ProjectFileIndex.iterateContent` from the EDT for huge projects. Move to a background thread inside a Read Action.
 - Ignoring `isExcluded` and traversing into excluded directories.
-- Writing a new `StartupActivity` instead of a `ProjectActivity`. `StartupActivity` is
-  obsolete; an existing Java `StartupActivity` that does not need indexes should implement
-  `DumbAware`, otherwise it runs on the EDT after project open.
+- Writing a new `StartupActivity` instead of a `ProjectActivity`. `StartupActivity` is obsolete; an existing Java `StartupActivity` that does not need indexes should implement `DumbAware`, otherwise it runs on the EDT after project open.
 
 ## Related references
 

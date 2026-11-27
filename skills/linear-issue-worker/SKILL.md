@@ -1,15 +1,12 @@
 ---
 name: linear-issue-worker
 description: >
-  Execute code tasks from Linear sub-issues: resolve dependencies, implement changes, validate Done Criteria, and sync status.
-  Use when asked to work on, implement, or start coding a Linear issue, either a main issue or one of its sub-issues (e.g. PRI-42).
+  Execute code tasks from Linear sub-issues: resolve dependencies, implement changes, validate Done Criteria, and sync status. Use when asked to work on, implement, or start coding a Linear issue, either a main issue or one of its sub-issues (e.g. PRI-42).
 ---
 
 # Linear Issue Worker
 
-Execute code tasks from Linear issues produced by the `linear-issue-creator` skill.
-Read structured sub-issues, resolve dependency order, perform the actual file changes,
-and keep Linear in sync throughout.
+Execute code tasks from Linear issues produced by the `linear-issue-creator` skill. Read structured sub-issues, resolve dependency order, perform the actual file changes, and keep Linear in sync throughout.
 
 Tool names below (`get_issue`, `list_issues`, `list_comments`, `save_issue`, `save_comment`) are examples; see Tool Call Summary in `references/linear-api.md` for how they map to the connected server.
 
@@ -17,10 +14,7 @@ Tool names below (`get_issue`, `list_issues`, `list_comments`, `save_issue`, `sa
 
 ## Contract with linear-issue-creator
 
-The creator produces a **1 main issue + N sub-issues** structure.
-Each sub-issue contains everything needed for one unit of code work:
-Task Description, Target Location, Technical Details, Done Criteria, and Dependencies.
-This skill consumes that structure and turns it into real code changes.
+The creator produces a **1 main issue + N sub-issues** structure. Each sub-issue contains everything needed for one unit of code work: Task Description, Target Location, Technical Details, Done Criteria, and Dependencies. This skill consumes that structure and turns it into real code changes.
 
 ---
 
@@ -68,8 +62,7 @@ Proceed?
 
 ### Step 3 — Process Each Sub-Issue
 
-For each sub-issue in order, run the full execution cycle below.
-After completing one sub-issue, re-evaluate the remaining list — previously blocked issues may now be ready.
+For each sub-issue in order, run the full execution cycle below. After completing one sub-issue, re-evaluate the remaining list — previously blocked issues may now be ready.
 
 ---
 
@@ -174,8 +167,7 @@ The reviewer treats a `## ✅ Work Complete` comment newer than its latest revie
 
 **Comment Quality Guide (Content Skill Principles):**
 
-Apply these principles when writing completion comments to improve quality.
-Target audience: Fullstack developers | Language: Korean | Tone: Professional
+Apply these principles when writing completion comments to improve quality. Target audience: Fullstack developers | Language: Korean | Tone: Professional
 
 1. **content-strategy**: Structure comments clearly (maintain Changes → Done Criteria → Notes order. Each section delivers the information the reader needs without gaps).
 2. **content-production**: Write specific, verifiable content.

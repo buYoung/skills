@@ -12,14 +12,10 @@
 ## Listeners and the message bus
 
 Two layers:
-- **Message bus** — the platform's pub/sub infrastructure, organized in an Application bus
-  and per-Project buses.
-- **Declarative listeners** — convenience syntax in `plugin.xml` that registers a class
-  against a `Topic`. Lazily instantiated on first event.
+- **Message bus** — the platform's pub/sub infrastructure, organized in an Application bus and per-Project buses.
+- **Declarative listeners** — convenience syntax in `plugin.xml` that registers a class against a `Topic`. Lazily instantiated on first event.
 
-Use declarative listeners by default. Use manual `MessageBusConnection` only when the
-subscription must come and go dynamically (e.g., subscribed only while a tool window is
-visible).
+Use declarative listeners by default. Use manual `MessageBusConnection` only when the subscription must come and go dynamically (e.g., subscribed only while a tool window is visible).
 
 ### Declarative listeners
 
@@ -49,11 +45,9 @@ Attributes:
 Listener class rules:
 
 1. **Stateless** — exactly the same reasoning as for extensions.
-2. **Do NOT implement `Disposable`** — Plugin DevKit's "Listener implementation implements
-   'Disposable'" inspection flags this. The platform manages listener lifetime.
+2. **Do NOT implement `Disposable`** — Plugin DevKit's "Listener implementation implements 'Disposable'" inspection flags this. The platform manages listener lifetime.
 3. **Lazy instantiation** — created on first matching event, not at plugin load.
-4. **Project listeners may take a `Project` constructor parameter** when project context is
-   needed:
+4. **Project listeners may take a `Project` constructor parameter** when project context is needed:
    ```java
    final class MyToolWindowListener implements ToolWindowManagerListener {
      private final Project project;
@@ -104,13 +98,9 @@ bus.connect(cs)
 bus.syncPublisher(MyChangeListener.TOPIC).onChanged("new value")
 ```
 
-`@Topic.AppLevel` versus `@Topic.ProjectLevel` selects the bus. `broadcastDirection` on
-`Topic` controls whether messages flow `TO_CHILDREN` (default — app-level publishes also
-reach project-level subscribers), `TO_PARENT`, or `NONE`.
+`@Topic.AppLevel` versus `@Topic.ProjectLevel` selects the bus. `broadcastDirection` on `Topic` controls whether messages flow `TO_CHILDREN` (default — app-level publishes also reach project-level subscribers), `TO_PARENT`, or `NONE`.
 
-**Always pass a parent to `connect(...)`** — `parentDisposable`, the service's `this`
-(if `Disposable`), or an injected `CoroutineScope`. A bare `connect()` with no parent
-requires a manual `disconnect()` and is an easy leak source. Plugin DevKit warns about it.
+**Always pass a parent to `connect(...)`** — `parentDisposable`, the service's `this` (if `Disposable`), or an injected `CoroutineScope`. A bare `connect()` with no parent requires a manual `disconnect()` and is an easy leak source. Plugin DevKit warns about it.
 
 ### Listener vs service vs extension
 
@@ -118,11 +108,9 @@ Quick disambiguation when designing a new feature:
 
 - **Need to react to platform events?** Listener.
 - **Need to hold mutable state?** Service.
-- **Need to implement an interface the platform calls based on context (a file type, a
-  language, a PSI element)?** Extension.
+- **Need to implement an interface the platform calls based on context (a file type, a language, a PSI element)?** Extension.
 
-A common composition: declarative listener delegates immediately to a service that owns the
-state and the work.
+A common composition: declarative listener delegates immediately to a service that owns the state and the work.
 
 ```kotlin
 class MyVfsListener : BulkFileListener {

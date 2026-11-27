@@ -1,10 +1,6 @@
 # Structural Validator Scope
 
-`scripts/validate_brief.py` is a stand-alone Python 3 script (no external deps) that verifies structural conformity of a saved brief.
-It runs as step 5 of Stage 5 (save + validate) but can also be run ad-hoc against any existing brief.
-`SKILL.md` gives the commands and exit codes; this file lists what the validator checks and what stays on content review.
-For the briefset parent validator, see the Validator Scope section in `briefset.md`.
-This reference is instruction prose, not a saved plan; keep it in normal prose.
+`scripts/validate_brief.py` is a stand-alone Python 3 script (no external deps) that verifies structural conformity of a saved brief. It runs as step 5 of Stage 5 (save + validate) but can also be run ad-hoc against any existing brief. `SKILL.md` gives the commands and exit codes; this file lists what the validator checks and what stays on content review. For the briefset parent validator, see the Validator Scope section in `briefset.md`. This reference is instruction prose, not a saved plan; keep it in normal prose.
 
 ## What `validate_brief.py` Checks
 

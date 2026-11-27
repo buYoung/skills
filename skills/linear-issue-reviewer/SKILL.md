@@ -1,8 +1,7 @@
 ---
 name: linear-issue-reviewer
 description: >
-  Review completed Linear sub-issues: cross-validate Done Criteria, code changes, and worker comments to approve, request changes, or ask for clarification.
-  Use when asked to review, validate, or QA done Linear issues.
+  Review completed Linear sub-issues: cross-validate Done Criteria, code changes, and worker comments to approve, request changes, or ask for clarification. Use when asked to review, validate, or QA done Linear issues.
 ---
 
 # Linear Issue Reviewer
@@ -166,8 +165,7 @@ Write a review comment based on the verdict. Use the templates from `references/
 
 **Review Comment Quality Guide (Content Skill Principles):**
 
-Apply these principles when writing review comments to improve quality.
-Target audience: Fullstack developers | Language: Korean | Tone: Professional
+Apply these principles when writing review comments to improve quality. Target audience: Fullstack developers | Language: Korean | Tone: Professional
 
 1. **content-strategy**: Structure review comments clearly (verdict summary → per-item verification → specific feedback → next steps).
 2. **content-production**: Include specific evidence and code references.
@@ -212,8 +210,7 @@ Execute this only when **all** sub-issues except Canceled ones have been Approve
 3. If all items are covered → post final review comment
 4. If gaps exist → identify which criteria are unmet and suggest next steps. If the main issue is already Done (Parent auto-close), tell the user it was closed before these gaps were resolved
 
-Post the final review comment on the main issue using the templates from `references/comment-templates.md` (Final Review sections).
-Apply the same **Review Comment Quality Guide** above to the final review comment as well.
+Post the final review comment on the main issue using the templates from `references/comment-templates.md` (Final Review sections). Apply the same **Review Comment Quality Guide** above to the final review comment as well.
 
 ---
 

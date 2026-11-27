@@ -1,12 +1,8 @@
 # Third-Party Notices
 
-This repository incorporates material from the open-source projects listed
-below. Their original copyright notices and license texts are preserved
-below or in the linked package files.
+This repository incorporates material from the open-source projects listed below. Their original copyright notices and license texts are preserved below or in the linked package files.
 
-The primary license for this repository is described in [`LICENSE`](./LICENSE).
-The notices below apply only to the specific portions of this repository
-that were adapted from each upstream project.
+The primary license for this repository is described in [`LICENSE`](./LICENSE). The notices below apply only to the specific portions of this repository that were adapted from each upstream project.
 
 ---
 
@@ -17,11 +13,8 @@ that were adapted from each upstream project.
 - **Author:** Matt Pocock
 - **License:** MIT
 - **Used in:**
-  - [`skills/task-brief-creator/`](./skills/task-brief-creator/) —
-    the Stage 4 user decision workflow is adapted from the `grill-me`
-    skill.
-  - [`skills/task-brief-creator-caveman/`](./skills/task-brief-creator-caveman/) —
-    inherits the same Stage 4 decision workflow.
+  - [`skills/task-brief-creator/`](./skills/task-brief-creator/) — the Stage 4 user decision workflow is adapted from the `grill-me` skill.
+  - [`skills/task-brief-creator-caveman/`](./skills/task-brief-creator-caveman/) — inherits the same Stage 4 decision workflow.
 
 ### License text
 
@@ -57,10 +50,7 @@ SOFTWARE.
 - **Author:** Julius Brussee
 - **License:** MIT
 - **Used in:**
-  - [`skills/task-brief-creator-caveman/`](./skills/task-brief-creator-caveman/) —
-    the caveman full-mode prose-compression rules (article and filler
-    removal, fragment-friendly patterns, Auto-Clarity carve-outs) are
-    adapted from the upstream `caveman` skill.
+  - [`skills/task-brief-creator-caveman/`](./skills/task-brief-creator-caveman/) — the caveman full-mode prose-compression rules (article and filler removal, fragment-friendly patterns, Auto-Clarity carve-outs) are adapted from the upstream `caveman` skill.
 
 ### License text
 
@@ -109,8 +99,4 @@ SOFTWARE.
 - **Copyright:** Copyright © 2008-2025 The OWASP Foundation
 - **License:** [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/)
 - **Used in:**
-  - [`skills/code-security-audit/`](./skills/code-security-audit/) —
-    `references/security_domains.md` reproduces the ASVS 5.0.0 requirement
-    descriptions. That text is distributed under CC BY-SA 4.0. The changes
-    are listed in
-    [`skills/code-security-audit/THIRD_PARTY_NOTICES.md`](./skills/code-security-audit/THIRD_PARTY_NOTICES.md).
+  - [`skills/code-security-audit/`](./skills/code-security-audit/) — `references/security_domains.md` reproduces the ASVS 5.0.0 requirement descriptions. That text is distributed under CC BY-SA 4.0. The changes are listed in [`skills/code-security-audit/THIRD_PARTY_NOTICES.md`](./skills/code-security-audit/THIRD_PARTY_NOTICES.md).

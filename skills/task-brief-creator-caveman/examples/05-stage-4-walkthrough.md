@@ -1,11 +1,8 @@
 # Example 05 — Stage 4 decision table (`useAuth` hook refactor)
 
-A multi-decision `refactor` input where Stage 4 first resolves
-codebase-answerable facts, then asks the user to decide the remaining
-scope and contract questions in one Markdown decision table.
+A multi-decision `refactor` input where Stage 4 first resolves codebase-answerable facts, then asks the user to decide the remaining scope and contract questions in one Markdown decision table.
 
-The chat exchange below is in Korean because the user wrote in Korean.
-The saved brief is in English (skill output policy).
+The chat exchange below is in Korean because the user wrote in Korean. The saved brief is in English (skill output policy).
 
 ---
 
@@ -29,52 +26,36 @@ useAuth 훅 깔끔하게 정리하고 싶은데 컴포넌트 너무 많이 의�
 
 **Anchors present: 4 / 4** → CONTINUE. No halt.
 
-Briefset signals not strong enough to recommend a split (one named
-hook, one cohesive cleanup goal) — stay in single-brief output mode.
+Briefset signals not strong enough to recommend a split (one named hook, one cohesive cleanup goal) — stay in single-brief output mode.
 
 ---
 
 ## Provisional Work Type (Stage 2)
 
-Input language ("정리", "어디까지 손대야 할지") plus the consumer-count
-evidence makes `refactor` clear, so the author selects it without asking.
+Input language ("정리", "어디까지 손대야 할지") plus the consumer-count evidence makes `refactor` clear, so the author selects it without asking.
 
 ---
 
 ## Codebase Review Notes (Stage 3)
 
-Inline `rg` / `Read` / allowed symbol probes, ~6 reads / 4 queries
-(carry-over budget for Stage 4 probes: ~9 reads / ~6 queries unused +
-~5 reads / ~3 queries Stage 4 cap):
+Inline `rg` / `Read` / allowed symbol probes, ~6 reads / 4 queries (carry-over budget for Stage 4 probes: ~9 reads / ~6 queries unused + ~5 reads / ~3 queries Stage 4 cap):
 
-- `src/hooks/useAuth.ts` — 7 exports: `useAuth` hook, `AuthState`
-  type, `AuthAction` enum, `loginWithCredentials`, `logout`,
-  `refreshSession`, `useAuthSelector` (memoized derived state).
-  3 internal helpers not exported.
-- `src/contexts/AuthContext.tsx` — paired provider. Stores reducer
-  state and dispatches into `useAuth`. Tightly coupled.
-- `rg "from '@/hooks/useAuth'" -t ts` → 14 component files import
-  one or more named exports. `useAuth` itself: 12 sites.
-  `useAuthSelector`: 4 sites. Other named exports: ≤ 2 sites each.
-- `src/hooks/__tests__/useAuth.test.ts` — 23 tests covering the
-  hook surface (`login`, `logout`, refresh, selector memoization).
-- 6 component tests jest-mock `@/hooks/useAuth` with a stub object;
-  none of them assert on internals.
+- `src/hooks/useAuth.ts` — 7 exports: `useAuth` hook, `AuthState` type, `AuthAction` enum, `loginWithCredentials`, `logout`, `refreshSession`, `useAuthSelector` (memoized derived state). 3 internal helpers not exported.
+- `src/contexts/AuthContext.tsx` — paired provider. Stores reducer state and dispatches into `useAuth`. Tightly coupled.
+- `rg "from '@/hooks/useAuth'" -t ts` → 14 component files import one or more named exports. `useAuth` itself: 12 sites. `useAuthSelector`: 4 sites. Other named exports: ≤ 2 sites each.
+- `src/hooks/__tests__/useAuth.test.ts` — 23 tests covering the hook surface (`login`, `logout`, refresh, selector memoization).
+- 6 component tests jest-mock `@/hooks/useAuth` with a stub object; none of them assert on internals.
 
 Tagged technical uncertainties from review (resolve by probe; do not save as `Open Questions`):
 
-- Is `useAuthSelector` part of the public surface or an internal
-  helper that leaked? (4 import sites is a small spread.)
-- The 3 internal helpers — are any of them used elsewhere via dynamic
-  reach (e.g., through `AuthContext`)?
+- Is `useAuthSelector` part of the public surface or an internal helper that leaked? (4 import sites is a small spread.)
+- The 3 internal helpers — are any of them used elsewhere via dynamic reach (e.g., through `AuthContext`)?
 
 ---
 
 ## Stage 4 — User Decision Table
 
-The skill probes codebase-answerable nodes first. It does not ask about
-the 3 internal helpers after `rg "_validateToken\|_normalizeRole\|_decodeJwt"`
-shows they are only referenced inside `useAuth.ts`.
+The skill probes codebase-answerable nodes first. It does not ask about the 3 internal helpers after `rg "_validateToken\|_normalizeRole\|_decodeJwt"` shows they are only referenced inside `useAuth.ts`.
 
 | 순번 | 내용 | 수정 추천안 | 근거 |
 |---|---|---|---|
@@ -84,10 +65,7 @@ User: approve row 1 and freeze `AuthContext.tsx`.
 
 ### Termination
 
-남은 사용자 소유 결정 없음, 사용자 응답 일관, 예산 안에서 완료.
-`Open Questions` 후보 중 codebase로 해결된 2개는 제거. 잔여 질문이
-없으므로 `- None — <reason>` 형태로 사유를 명시해 닫는다. Stage 5로
-이동.
+남은 사용자 소유 결정 없음, 사용자 응답 일관, 예산 안에서 완료. `Open Questions` 후보 중 codebase로 해결된 2개는 제거. 잔여 질문이 없으므로 `- None — <reason>` 형태로 사유를 명시해 닫는다. Stage 5로 이동.
 
 ---
 
@@ -175,25 +153,11 @@ refactor
 
 ## Stage 5.6 — Content and Intent Self-Check
 
-After structural validation passes, the author re-reads the saved brief
-from disk and runs the Stage 5.6 checklist against the original Korean
-input and the answered Stage 4 row. The intent-fidelity item confirms
-that the purpose (tidy `useAuth` internals), the frozen `AuthContext.tsx`
-and consumer files, the first stage (behavior/export baseline before
-edits), and the 23-case acceptance threshold all survived into the brief;
-the caveman-parity item confirms each requirement stays separately
-addressable after compression. No patch is needed, so the run completes
-in one self-check pass.
+After structural validation passes, the author re-reads the saved brief from disk and runs the Stage 5.6 checklist against the original Korean input and the answered Stage 4 row. The intent-fidelity item confirms that the purpose (tidy `useAuth` internals), the frozen `AuthContext.tsx` and consumer files, the first stage (behavior/export baseline before edits), and the 23-case acceptance threshold all survived into the brief; the caveman-parity item confirms each requirement stays separately addressable after compression. No patch is needed, so the run completes in one self-check pass.
 
-Stage 6 banner (Korean, because the chat is Korean — structural validation
-reported separately from content validation; cold-pickup is opt-in and did
-not run):
+Stage 6 banner (Korean, because the chat is Korean — structural validation reported separately from content validation; cold-pickup is opt-in and did not run):
 
-> 저장 완료 — `docs/briefs/2026-05-04-refactor-useauth-hook.md`
-> (`refactor`: Tidy `useAuth` hook internals while freezing public
-> surface; 구조 검증 통과; 내용 검증 통과 — 내용/의도 자체 검증 통과, 문체 변환
-> 동등성 확인).
-> 파일 열어보고 고칠 부분 있으면 알려줘.
+> 저장 완료 — `docs/briefs/2026-05-04-refactor-useauth-hook.md` (`refactor`: Tidy `useAuth` hook internals while freezing public surface; 구조 검증 통과; 내용 검증 통과 — 내용/의도 자체 검증 통과, 문체 변환 동등성 확인). 파일 열어보고 고칠 부분 있으면 알려줘.
 
 ---
 
@@ -205,13 +169,7 @@ The user replies:
 콜드픽업 실행
 ```
 
-One fresh read-only sub-agent is spawned for the single brief. It receives
-**only** the brief path and the path of a scratch file holding the original
-Korean input verbatim — no Stage 3 uncertainty register, no Stage 4
-decisions, no self-check result — and it may not search or read anything
-else in the repository. Phase 1 reconstructs the plan from the brief alone
-and lists any caveman bullet too terse to carry its intent; phase 2 opens
-the input file and compares. Its report:
+One fresh read-only sub-agent is spawned for the single brief. It receives **only** the brief path and the path of a scratch file holding the original Korean input verbatim — no Stage 3 uncertainty register, no Stage 4 decisions, no self-check result — and it may not search or read anything else in the repository. Phase 1 reconstructs the plan from the brief alone and lists any caveman bullet too terse to carry its intent; phase 2 opens the input file and compares. Its report:
 
 ```yaml
 verdict: clean
@@ -236,70 +194,40 @@ ask_backs: []
 missing_concerns: []
 ```
 
-`verdict: clean` with empty `over_terse_bullets`, `intent_deviations`,
-`ask_backs`, and `missing_concerns` leaves nothing to route and nothing to
-patch; the pass ends here, the scratch input file is deleted, and no
-second pass runs unless the user asks again.
+`verdict: clean` with empty `over_terse_bullets`, `intent_deviations`, `ask_backs`, and `missing_concerns` leaves nothing to route and nothing to patch; the pass ends here, the scratch input file is deleted, and no second pass runs unless the user asks again.
 
 Updated Stage 6 banner:
 
-> 저장 완료 — `docs/briefs/2026-05-04-refactor-useauth-hook.md`
-> (`refactor`: Tidy `useAuth` hook internals while freezing public
-> surface; 구조 검증 통과; 내용 검증 통과 — 내용/의도 자체 검증 통과, 문체 변환
-> 동등성 확인; cold-pickup: clean (의도 이탈 없음, 되묻기 없음, 누락 없음,
-> 과하게 압축된 불릿 없음)).
-> 파일 열어보고 고칠 부분 있으면 알려줘.
+> 저장 완료 — `docs/briefs/2026-05-04-refactor-useauth-hook.md` (`refactor`: Tidy `useAuth` hook internals while freezing public surface; 구조 검증 통과; 내용 검증 통과 — 내용/의도 자체 검증 통과, 문체 변환 동등성 확인; cold-pickup: clean (의도 이탈 없음, 되묻기 없음, 누락 없음, 과하게 압축된 불릿 없음)). 파일 열어보고 고칠 부분 있으면 알려줘.
 
-The English equivalent of the cold-pickup field is
-`cold-pickup: clean (no intent deviations, no ask-backs, no missing concerns, no over-terse bullets)`.
+The English equivalent of the cold-pickup field is `cold-pickup: clean (no intent deviations, no ask-backs, no missing concerns, no over-terse bullets)`.
 
 ---
 
 ## Picked Up Cold — Coding Agent's First Actions
 
-A coding agent receiving only the saved brief should be able to start,
-preserve the locked behavior, and decide completion without asking for
-more scope. From the brief alone:
+A coding agent receiving only the saved brief should be able to start, preserve the locked behavior, and decide completion without asking for more scope. From the brief alone:
 
-1. Run `pnpm vitest run src/hooks/__tests__/useAuth.test.ts` against `main`
-   to confirm the 23-case baseline is green (Behavior Contract).
-2. Open `src/hooks/useAuth.ts` (only edit target named in `Related
-   Files / Entry Points`) and restructure internals — group helpers,
-   remove dead branches, normalize naming. Stay inside the file.
-3. Re-run the locked suite after each meaningful change. The suite
-   stays green or the change is reverted (Behavior Contract +
-   Acceptance Criteria #1).
-4. Confirm `git diff --stat` shows changes only in
-   `src/hooks/useAuth.ts` (Side Effect Checkpoints + Out of Scope).
-5. Verify named-export shape with a type-check pass against the
-   unmodified consumers (Acceptance Criteria #2 & #4).
-6. Review the `useAuth.ts` diff for clearer internal organization without
-   using line-count reduction as the success signal (Acceptance Criteria #5).
+1. Run `pnpm vitest run src/hooks/__tests__/useAuth.test.ts` against `main` to confirm the 23-case baseline is green (Behavior Contract).
+2. Open `src/hooks/useAuth.ts` (only edit target named in `Related Files / Entry Points`) and restructure internals — group helpers, remove dead branches, normalize naming. Stay inside the file.
+3. Re-run the locked suite after each meaningful change. The suite stays green or the change is reverted (Behavior Contract + Acceptance Criteria #1).
+4. Confirm `git diff --stat` shows changes only in `src/hooks/useAuth.ts` (Side Effect Checkpoints + Out of Scope).
+5. Verify named-export shape with a type-check pass against the unmodified consumers (Acceptance Criteria #2 & #4).
+6. Review the `useAuth.ts` diff for clearer internal organization without using line-count reduction as the success signal (Acceptance Criteria #5).
 
-The agent does **not** touch `AuthContext.tsx` (frozen), does not edit
-any of the 14 importing components, and does not refactor across
-files. The brief explicitly hands the cross-file work to a future
-brief if it is ever needed.
+The agent does **not** touch `AuthContext.tsx` (frozen), does not edit any of the 14 importing components, and does not refactor across files. The brief explicitly hands the cross-file work to a future brief if it is ever needed.
 
 ---
 
 ## Notes
 
-- **Why the decision table produced a tighter brief** — the
-  `AuthContext` coupling decision gates the rest of the Out of Scope
-  section, so it appears as its own row with the recommended brief
-  change and evidence. The user can override just that row without
-  losing the other resolved decisions.
-- **Budget accounting** — Stage 3 used ~6 reads / 4 queries; the
-  Stage 4 probes added ~3 reads / 2 queries. Total
-  well under the soft caps (~15 + ~5 reads, ~10 + ~3 queries).
+- **Why the decision table produced a tighter brief** — the `AuthContext` coupling decision gates the rest of the Out of Scope section, so it appears as its own row with the recommended brief change and evidence. The user can override just that row without losing the other resolved decisions.
+- **Budget accounting** — Stage 3 used ~6 reads / 4 queries; the Stage 4 probes added ~3 reads / 2 queries. Total well under the soft caps (~15 + ~5 reads, ~10 + ~3 queries).
 
 
 ## Requirements Clarification and Fallback Walkthroughs
 
-These are worked interaction scenarios, not measured agent runs. Apply the
-same policy in normal chat prose; only saved plan prose uses caveman
-register.
+These are worked interaction scenarios, not measured agent runs. Apply the same policy in normal chat prose; only saved plan prose uses caveman register.
 
 | Situation | Question and recommendation | Answer or lack of answer | Required outcome |
 |---|---|---|---|
@@ -316,7 +244,4 @@ A representative saved fallback retains the established shape:
 - [non-blocking] Should System follow live OS-theme changes? — Default: retain the OS-theme snapshot until reload, preserving the current behavior; Reconfirm before: UI acceptance.
 ```
 
-The fallback is a declared temporary route, not an approved product decision.
-A user who instead says "finish the questions and write with those defaults"
-permits authoring when the stated defaults are safe; this differs from cancelling
-the task.
+The fallback is a declared temporary route, not an approved product decision. A user who instead says "finish the questions and write with those defaults" permits authoring when the stated defaults are safe; this differs from cancelling the task.

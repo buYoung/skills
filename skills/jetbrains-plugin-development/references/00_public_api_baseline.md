@@ -1,57 +1,27 @@
 # Public API and Version Baseline
 
-Read this before selecting APIs or applying a version migration. The public API boundary
-in `../SKILL.md` governs every reference and example, including older-version guidance.
+Read this before selecting APIs or applying a version migration. The public API boundary in `../SKILL.md` governs every reference and example, including older-version guidance.
 
 ## Source identity
 
 - Repository: [JetBrains/intellij-community](https://github.com/JetBrains/intellij-community).
 - Fixed source tag: [`idea/2026.3`](https://github.com/JetBrains/intellij-community/tree/idea/2026.3).
-- Resolved commit: [`c91871ae2864649d952825cff72569e3db0e7ac6`](https://github.com/JetBrains/intellij-community/commit/c91871ae2864649d952825cff72569e3db0e7ac6).
-  The build tag `idea/263.7307.200` points to the same commit; SDK documentation source
-  links for 2026.3 use that build tag.
+- Resolved commit: [`c91871ae2864649d952825cff72569e3db0e7ac6`](https://github.com/JetBrains/intellij-community/commit/c91871ae2864649d952825cff72569e3db0e7ac6). The build tag `idea/263.7307.200` points to the same commit; SDK documentation source links for 2026.3 use that build tag.
 - Tag identity checked through the [GitHub ref API](https://api.github.com/repos/JetBrains/intellij-community/git/ref/tags/idea/2026.3) on 2026-11-27.
-- The 2026.3.0.1 bugfix build (263.7307.353) has no `idea/2026.3.0.1` tag; its build tag
-  shares a commit with `idea/2026.3.1-rc`, so it is not used as the baseline.
-- SDK and Gradle documentation are live sources, not snapshots of this commit. Record their
-  applicable versions separately; a current page can describe changes newer than 2026.3.
+- The 2026.3.0.1 bugfix build (263.7307.353) has no `idea/2026.3.0.1` tag; its build tag shares a commit with `idea/2026.3.1-rc`, so it is not used as the baseline.
+- SDK and Gradle documentation are live sources, not snapshots of this commit. Record their applicable versions separately; a current page can describe changes newer than 2026.3.
 
-The repository name does not establish availability in a particular IDE product or edition.
-Resolve the target product/build, dependencies, minimum IDE version, Gradle plugin version,
-and Java/Kotlin toolchain before adapting an example. Keep 2024.1-era guidance only where
-its documented contract still applies; do not project current dispatcher, LSP, or Kotlin
-frontend behavior onto that branch.
+The repository name does not establish availability in a particular IDE product or edition. Resolve the target product/build, dependencies, minimum IDE version, Gradle plugin version, and Java/Kotlin toolchain before adapting an example. Keep 2024.1-era guidance only where its documented contract still applies; do not project current dispatcher, LSP, or Kotlin frontend behavior onto that branch.
 
 ## How to establish external availability
 
-For each changed API, record the member/signature or EP, intended operation (call, override,
-implementation, or registration), minimum and target version, source permalink, and status.
-Inspect the member and enclosing declarations, supertypes, package-level restrictions,
-module visibility/exports, documentation, and EP metadata. Visibility and an `-api` directory
-are clues, not proof; a type in a module declared `visibility="internal"` is not a supported
-external dependency simply because its Kotlin declaration is public or experimental.
-An `impl` package name or internal calls inside a library implementation is not by itself
-proof that a documented external base class is forbidden. Check the supported public member
-contract and its actual restrictions; apply the same evidence standard to allowing and
-rejecting a candidate.
-`Internal` or `IntellijInternalApi` at an applicable boundary rejects the candidate; a
-`NonExtendable` type may be consumed but not implemented, while an `OverrideOnly` callback
-may be overridden but not called as a client operation.
+For each changed API, record the member/signature or EP, intended operation (call, override, implementation, or registration), minimum and target version, source permalink, and status. Inspect the member and enclosing declarations, supertypes, package-level restrictions, module visibility/exports, documentation, and EP metadata. Visibility and an `-api` directory are clues, not proof; a type in a module declared `visibility="internal"` is not a supported external dependency simply because its Kotlin declaration is public or experimental. An `impl` package name or internal calls inside a library implementation is not by itself proof that a documented external base class is forbidden. Check the supported public member contract and its actual restrictions; apply the same evidence standard to allowing and rejecting a candidate. `Internal` or `IntellijInternalApi` at an applicable boundary rejects the candidate; a `NonExtendable` type may be consumed but not implemented, while an `OverrideOnly` callback may be overridden but not called as a client operation.
 
-For a supported declarative EP, its platform-owned descriptor bean may itself be an
-implementation detail. Register the documented XML; do not instantiate or access that bean.
-Conversely, a dynamic EP is not necessarily external-public. Inspect API-status metadata
-as well as its dynamic flag.
+For a supported declarative EP, its platform-owned descriptor bean may itself be an implementation detail. Register the documented XML; do not instantiate or access that bean. Conversely, a dynamic EP is not necessarily external-public. Inspect API-status metadata as well as its dynamic flag.
 
-Separate availability from stability. External `Experimental` APIs still require version
-qualification and may change without compatibility guarantees. Never accept an internal
-API merely because it also carries `Experimental`, because the user accepts risk, or
-because Plugin Verifier exits successfully. Keep unresolved candidates out of recommended
-examples and state the public alternative's functional limits.
+Separate availability from stability. External `Experimental` APIs still require version qualification and may change without compatibility guarantees. Never accept an internal API merely because it also carries `Experimental`, because the user accepts risk, or because Plugin Verifier exits successfully. Keep unresolved candidates out of recommended examples and state the public alternative's functional limits.
 
-Official policy: [Internal API Migration](https://plugins.jetbrains.com/docs/intellij/api-internal.html),
-[API status and compatibility](https://plugins.jetbrains.com/docs/intellij/verifying-plugin-compatibility.html),
-and [2026 API changes](https://plugins.jetbrains.com/docs/intellij/api-changes-list-2026.html).
+Official policy: [Internal API Migration](https://plugins.jetbrains.com/docs/intellij/api-internal.html), [API status and compatibility](https://plugins.jetbrains.com/docs/intellij/verifying-plugin-compatibility.html), and [2026 API changes](https://plugins.jetbrains.com/docs/intellij/api-changes-list-2026.html).
 
 ## Evidence routing
 
@@ -82,8 +52,4 @@ These findings apply to the pinned 2026.3 declarations, not automatically to eve
 
 ## Verification limits
 
-Source review establishes the inspected contracts only. It does not compile a plugin,
-run its feature, prove support across all IDE versions, or demonstrate dynamic unload.
-The bundled examples are partial integration skeletons, not independent build projects.
-Record which declaration checks, local consistency checks, builds, verifier runs, and
-sandbox exercises actually occurred. Never promote an unrun check to a passing result.
+Source review establishes the inspected contracts only. It does not compile a plugin, run its feature, prove support across all IDE versions, or demonstrate dynamic unload. The bundled examples are partial integration skeletons, not independent build projects. Record which declaration checks, local consistency checks, builds, verifier runs, and sandbox exercises actually occurred. Never promote an unrun check to a passing result.

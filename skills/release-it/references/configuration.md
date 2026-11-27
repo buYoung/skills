@@ -2,8 +2,7 @@
 
 ## Initial Setup Considerations
 
-Before writing a config file, identify the requested workflow and existing configuration.
-See [initial-setup.md](initial-setup.md) for context and decisions that may need resolution.
+Before writing a config file, identify the requested workflow and existing configuration. See [initial-setup.md](initial-setup.md) for context and decisions that may need resolution.
 
 Key rules for new configs:
 - **Always include `$schema`** in JSON configs for IDE autocomplete and validation
@@ -24,20 +23,11 @@ Key rules for new configs:
 
 ---
 
-The packaged interactive wrapper overrides mode/version controls, checks tracked/index
-state repository-wide, and preserves interrupted local work. These are that example's
-policies, not required overrides for CLI/CI or every API caller. Read the
-[working-state and recovery criteria](git-integration.md#working-state-and-staging-scope)
-and [adapter compatibility notes](interactive-workflow.md) before reusing them.
+The packaged interactive wrapper overrides mode/version controls, checks tracked/index state repository-wide, and preserves interrupted local work. These are that example's policies, not required overrides for CLI/CI or every API caller. Read the [working-state and recovery criteria](git-integration.md#working-state-and-staging-scope) and [adapter compatibility notes](interactive-workflow.md) before reusing them.
 
 ## Config File Formats
 
-release-it 21.1.3 loads `.release-it` from the working directory through c12. It tries the
-name without an extension, then the extensions `.js`, `.ts`, `.mjs`, `.cjs`, `.mts`, `.cts`,
-`.json`, `.jsonc`, `.json5`, `.yaml`, `.yml`, `.toml` in that order, then the same name under
-`.config/`, and uses the first match.
-A `release-it` property in `package.json` is merged beneath that file rather than ignored.
-`--config <file>` loads a different file, and `--config false` skips both sources.
+release-it 21.1.3 loads `.release-it` from the working directory through c12. It tries the name without an extension, then the extensions `.js`, `.ts`, `.mjs`, `.cjs`, `.mts`, `.cts`, `.json`, `.jsonc`, `.json5`, `.yaml`, `.yml`, `.toml` in that order, then the same name under `.config/`, and uses the first match. A `release-it` property in `package.json` is merged beneath that file rather than ignored. `--config <file>` loads a different file, and `--config false` skips both sources.
 
 ### JSON (most common)
 
@@ -175,9 +165,7 @@ release-it --no-plugins.@release-it/keep-a-changelog.strictLatest
 
 ## Git Options (defaults)
 
-The option tables below list common options with release-it 21.1.3 defaults from
-`config/release-it.json`. Options marked _(unset)_ have no entry there; the plugin source
-supplies the stated behavior.
+The option tables below list common options with release-it 21.1.3 defaults from `config/release-it.json`. Options marked _(unset)_ have no entry there; the plugin source supplies the stated behavior.
 
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|

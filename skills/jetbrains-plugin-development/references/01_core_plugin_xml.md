@@ -2,8 +2,7 @@
 
 ## `plugin.xml` (Plugin Configuration File)
 
-Located at `src/main/resources/META-INF/plugin.xml`. The IDE reads this file to learn what
-your plugin contributes.
+Located at `src/main/resources/META-INF/plugin.xml`. The IDE reads this file to learn what your plugin contributes.
 
 ### Required and recommended elements
 
@@ -41,11 +40,9 @@ your plugin contributes.
 `<idea-plugin>` attributes worth knowing:
 
 - `url` — homepage link.
-- `require-restart="true"` — opt out of dynamic install/update. Default is `false`.
-  Set to `true` only when you cannot satisfy dynamic-plugin constraints.
+- `require-restart="true"` — opt out of dynamic install/update. Default is `false`. Set to `true` only when you cannot satisfy dynamic-plugin constraints.
 
-The `<id>` is the **immutable identity** of the plugin in the JetBrains Marketplace. Renaming
-it after publishing breaks every user's upgrade path; they will see a new, separate plugin.
+The `<id>` is the **immutable identity** of the plugin in the JetBrains Marketplace. Renaming it after publishing breaks every user's upgrade path; they will see a new, separate plugin.
 
 ### File-naming conventions that matter
 
@@ -65,9 +62,7 @@ Icons are picked up by filename, not by an XML element.
 
 ## Listeners, actions, and other top-level descriptor blocks
 
-These have their own references: use `02_runtime_listeners_message_bus.md` for listeners,
-`02_runtime_actions.md` for actions, and `01_core_extensions.md` for extension points.
-Quick syntactic reminder so you can recognize them in `plugin.xml`:
+These have their own references: use `02_runtime_listeners_message_bus.md` for listeners, `02_runtime_actions.md` for actions, and `01_core_extensions.md` for extension points. Quick syntactic reminder so you can recognize them in `plugin.xml`:
 
 ```xml
 <applicationListeners>
