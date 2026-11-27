@@ -5,7 +5,7 @@
 - Series: **0.29.x**.
 - Initially reviewed version: **0.29.5**.
 - Current documentation review baseline: **0.29.9**, checked **2026-11-27**.
-- Evidence: official release notes, published package metadata, and official API/SQL documentation. This is a documentation review, not a claim that all examples were type-checked or executed. Only the JSON path examples in [SELECT](select.md#json-data-processing) and [Operators](operators.md#json-path-for-ebref) were type-checked against the 0.29.9 declarations.
+- Evidence: official release notes, published package metadata, and official API/SQL documentation. Every TypeScript example in the topic references was type-checked against the 0.29.9 declarations with TypeScript 5.9.3, 6.0.3, and 7.0.2 (`strict`), using a test schema built from the referenced tables and columns and a receiver query for method-chain fragments. Type checking does not show that the generated SQL runs on any database; the examples were not executed.
 - Official API documentation is a moving reference. Use the target installation's declarations or tagged source when an exact signature differs; the baseline is not an assertion that every live documentation page is frozen at 0.29.9.
 
 Read this with the relevant topic reference. It covers query authoring and diagnosis; migration operations and unrelated internal API changes are outside scope.

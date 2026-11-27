@@ -212,7 +212,8 @@ authentication fails, and `gitlab.proxy` was added.
 
 On 2026-11-27 the executable example was checked on Node **26.13.0**, release-it **21.1.3**,
 Inquirer **8.8.0**, semver **7.8.6**, and conventional-changelog **12.0.2** (conventionalcommits
-preset **10.4.1**). Inspect installed `engines` when applying it: release-it 21.1.3,
+preset **10.4.1**). The PTY scenarios also passed on Node 22.22.2 and 24.22.3 with the same
+packages. Inspect installed `engines` when applying it: release-it 21.1.3,
 `@inquirer/prompts` 8.8.0, and conventional-changelog 12.0.2 require Node
 `^22.22.2 || ^24.15.0 || >=26.0.0`. Node 24.14.0 and earlier 24.x releases fall outside it.
 

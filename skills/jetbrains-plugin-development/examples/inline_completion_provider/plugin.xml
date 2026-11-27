@@ -6,6 +6,10 @@
   <id>com.example.inlinecompletion</id>
   <name>Inline Completion Example</name>
   <vendor email="dev@example.com">Example Inc.</vendor>
+  <description><![CDATA[
+    Shows a gray inline suggestion at the end of a line through an
+    InlineCompletionProvider.
+  ]]></description>
 
   <depends>com.intellij.modules.platform</depends>
   <depends>com.intellij.modules.lang</depends>

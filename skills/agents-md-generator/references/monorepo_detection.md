@@ -37,7 +37,7 @@ For Gradle, count distinct literal project paths across complete `include(...)` 
 
 - **`pyproject.toml`** with `workspace.members` under a `[tool.hatch.envs.<env>]` table, or **`hatch.toml`** with the same key under `[envs.<env>]`: Hatch workspaces (Hatch 1.16+). Workspaces are configured per environment; an environment table without `workspace.members` is ordinary environment configuration, not a monorepo marker
 - **`pyproject.toml`** with `[tool.uv.workspace]`: uv workspaces
-- **`pyproject.toml`** with `[tool.rye.workspace]`: Rye workspaces. Rye is no longer developed, but existing repositories may still use this table
+- **`pyproject.toml`** with `[tool.rye.workspace]`: Rye workspaces. Rye is no longer developed (its GitHub repository was archived on 2026-02-05), but existing repositories may still use this table
 - Multiple `pyproject.toml` or `setup.py` under a shared root with a top-level orchestration config
 
 TOML matching is line-level static detection, like the Gradle check. It reads table headers, dotted keys, and Hatch's `workspace = { members = … }` inline form, and skips comments and multiline strings. Other TOML spellings are not evaluated.
@@ -46,7 +46,7 @@ TOML matching is line-level static detection, like the Gradle check. It reads ta
 
 - **`MODULE.bazel`** or **`REPO.bazel`**: Bazel repository boundary markers. Legacy **`WORKSPACE`** or **`WORKSPACE.bazel`** files are still detected; Bazel 8 disables WORKSPACE support by default and Bazel 9 removes it. A boundary marker is also present in single-project Bazel repositories, so package discovery decides
 - **`.buckconfig`**: Buck2
-- **`pants.toml`**: Pants. Legacy **`pants.ini`** is still detected; current Pants no longer reads `pants.ini`, and its configuration is TOML (`pants.toml`)
+- **`pants.toml`**: Pants. Legacy **`pants.ini`** is still detected; Pants stopped reading `pants.ini` in 2.0.0.dev0 (1.30.x still reads it), and its configuration is TOML (`pants.toml`)
 
 ## Workspace Package Discovery
 
@@ -81,7 +81,7 @@ After identifying a monorepo, discover packages from the relevant configuration:
 ### Build Systems
 
 - **Bazel**: Scan directories containing `BUILD` or `BUILD.bazel` files
-- **Buck2**: Scan directories containing build files — `BUCK` by default, or the name configured in the `.buckconfig` `[buildfile]` section (some projects use `TARGETS`)
+- **Buck2**: Scan directories containing build files — `BUCK.v2` or `BUCK` by default. In `.buckconfig`, `[buildfile] name_v2` replaces that list; otherwise `[buildfile] name` sets it, with `<name>.v2` tried before each `<name>` (some projects use `TARGETS`). Each cell reads its own `[buildfile]` section
 - **Pants**: Scan directories containing `BUILD` files
 
 ## Fallback Discovery

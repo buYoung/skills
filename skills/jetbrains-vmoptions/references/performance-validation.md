@@ -114,7 +114,7 @@ If the difference remains within the observed spread, report no demonstrated imp
 
 ## Verification limits
 
-- An option accepted by `<runtime>/bin/java ... -version` is only recognized by that binary.
+- An option accepted by `<runtime>/bin/java ... -version` is only recognized by that binary. JBR 17 and 21 also accept unknown options by default; see [candidate option preflight](prerequisite-check.md#candidate-option-preflight).
 - An option shown in the launch command may still be overridden, obsolete, or inactive; check initialized flags and logs.
 - An active option is not evidence of a performance benefit; compare workload metrics.
 - Results from one machine, project, IDE/JBR build, or plugin set do not guarantee results elsewhere.

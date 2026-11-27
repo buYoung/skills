@@ -67,14 +67,18 @@ Recommended bump from commit messages + changelog generation following Conventio
 
 ```bash
 npm install -D @release-it/conventional-changelog
-# For a preset other than angular or conventionalcommits, e.g. ember:
-npm install -D conventional-changelog-ember
 ```
 
 Of the presets, version 12.0.2 depends only on `conventional-changelog-angular` and
-`conventional-changelog-conventionalcommits`. Other presets load from
-`conventional-changelog-<name>`; without that package the plugin fails with
-`Unable to load the "<name>" preset`.
+`conventional-changelog-conventionalcommits`, and only these two work with it. A preset
+name loads `conventional-changelog-<name>`; without that package the plugin fails with
+`Unable to load the "<name>" preset`. Installing the package is not enough for the other
+names in the plugin README. The plugin renders with `conventional-changelog-writer` 9, which
+replaced Handlebars template strings with render functions in 9.0.0. Run on 2026-11-27
+with the latest packages, `atom`, `codemirror`, `ember`, `eslint`, `express`, `jquery`,
+and `jshint` failed with `headerPartial is not a function`, and `jscs` 0.1.0 (a 2016
+callback-style export) failed with `Preset is not loaded or have incorrect exports`.
+Both errors stop `--release-version` and `--dry-run` as well.
 
 ### Basic config
 
@@ -93,7 +97,7 @@ Of the presets, version 12.0.2 depends only on `conventional-changelog-angular` 
 
 | Option | Description |
 |--------|-------------|
-| `preset` | Preset name or `{ name, ...options }`: `angular`, `conventionalcommits`, `atom`, `codemirror`, `ember`, `eslint`, `express`, `jquery`, `jscs`, `jshint` |
+| `preset` | Preset name or `{ name, ...options }`: `angular` or `conventionalcommits` (see [Install](#install)) |
 | `infile` | Path to changelog file to update (e.g. `CHANGELOG.md`) |
 | `header` | Text to prepend to changelog file |
 | `preset.types` | conventionalcommits only: type objects that set sections and changelog/bump effect |
@@ -276,11 +280,31 @@ npm install -D @csmith/release-it-calver-plugin
 The plugin does not take a token format. Segments are not zero-padded, and the trailing
 number increments within the cycle. The deprecated `format` option is mapped to a `cycle`
 with a warning. With the default separator, `month` and `week` give three-segment semver;
-`year` and `day` output, and any output with the `-` separator, is not semver. The plugin
-README notes that `npm version` rejects the four-segment `day` form, so when the npm plugin
-writes the version, use a three-segment cycle or move the writes to another provider (see
-the [version source contract](#version-source-contract)). Source:
+`year` and `day` output, and any output with the `-` separator, is not semver. Source:
 [plugin README](https://github.com/casmith/release-it-calver-plugin/blob/v2026.9.0/README.md).
+
+`auto` takes the cycle from the latest version's shape: `2026.0` continues as `year`,
+`2026.11.0` as `month`, and `2026.11.27.0` as `day`. A three-segment version is always read
+as a month, so a `week` tag such as `2026.48.0` comes back unchanged (release-it then only
+warns that the tag exists). Without an earlier CalVer version, `auto` fails with
+`Invalid release cycle`; start with an explicit cycle. With any cycle, a latest version that
+is not CalVer, such as `1.2.3`, comes back unchanged.
+
+Run on 2026-11-27 with release-it 21.1.3 and plugin 2026.9.0, non-semver output caused
+these differences:
+
+- When the npm plugin writes the version, `npm version` (10.9.7 and 11.19.1) rejects
+  `2026.0` with `Invalid version`; npm 11.19.1 also rejects `-` separator output such as
+  `2026-11.0`. It does not reject the `day` form, despite the README:
+  `2026.11.27.0` is written to `package.json` as `2026.11.2-7.0`.
+- The tag name keeps the plugin output, but release-it coerces `${version}` for templates.
+  The default commit message and tag annotation read `Release 2026.0.0` for tag `2026.0`
+  and `Release 2026.11.27` for tag `2026.11.27.0`.
+
+With `year`, `day`, or the `-` separator, use `npm: false` or move the version writes to
+another provider (see the [version source contract](#version-source-contract)). Use
+`${tagName}` instead of `${version}` in `git.commitMessage` and `git.tagAnnotation`; with
+`year`, that gave `Release 2026.0` for tag `2026.0`.
 
 ---
 

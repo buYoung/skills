@@ -207,7 +207,7 @@ patterns:
 cookie_attributes:
   Secure: "true — only transmitted over HTTPS"
   HttpOnly: "true — not accessible via JavaScript"
-  SameSite: "Lax or Strict — prevents CSRF"
+  SameSite: "Lax or Strict — CSRF defense in depth; does not replace a CSRF token (see 4b)"
   Path: "/ or specific path"
   Max-Age: "reasonable session duration"
   prefix: "__Host- (strongest) or __Secure-"
@@ -257,7 +257,7 @@ principle: "Verify that state-changing requests originate from the application i
 
 defense_layers:
   layer_1_samesite_cookie:
-    description: "Primary defense — prevents cookies from being sent on cross-origin requests"
+    description: "Defense in depth — withholds cookies from cross-site requests (Lax still sends them on top-level GET navigations, and sibling subdomains count as same-site). Not a replacement for a CSRF token unless every OWASP 'SameSite may be sufficient on its own' condition holds"
     fix_by_framework:
       express: "cookie: { sameSite: 'lax' } or 'strict'"
       django: "SESSION_COOKIE_SAMESITE = 'Lax'"
@@ -266,7 +266,7 @@ defense_layers:
       laravel: "'same_site' => 'lax' in config/session.php"
 
   layer_2_csrf_token:
-    description: "Synchronizer token pattern — required when SameSite alone is insufficient (e.g., same-site subdomain attacks)"
+    description: "Synchronizer token pattern — CSRF token defense for stateful apps with cookie-based sessions; prefer the framework's built-in protection below. Stateless apps use a signed double-submit cookie"
     fix_by_framework:
       express: "Express has no built-in CSRF middleware, and csurf is archived. Store a synchronizer token in express-session and verify it on every state-changing request, or use a signed double-submit cookie (HMAC bound to the session)"
       django: "CsrfViewMiddleware (enabled by default), {% csrf_token %} in forms"

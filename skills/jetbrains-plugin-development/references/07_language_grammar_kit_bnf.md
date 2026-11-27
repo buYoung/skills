@@ -39,7 +39,6 @@ myFile ::= property*
 property ::= ID EQ ID? {
   mixin="com.example.mylang.psi.impl.MyNamedElementImpl"
   implements="com.example.mylang.psi.MyNamedElement"
-  methods=[ getName setName getNameIdentifier ]
 }
 ```
 
@@ -61,7 +60,11 @@ for the lexer.
 
 Custom logic (e.g. `getName`/`setName` for rename support) goes in **`mixin` classes** that
 the generated `*Impl` classes extend, **never** in the generated files themselves
-(regenerated builds overwrite them).
+(regenerated builds overwrite them). Do not also list those methods in `methods=[...]`: that
+attribute injects static methods from `psiImplUtilClass`, so without one the generator only
+leaves `//WARNING: getName(...) is skipped` comments in the PSI interface
+([Grammar-Kit HOWTO 3.3–3.4](https://github.com/JetBrains/Grammar-Kit/blob/master/HOWTO.md)).
+The mixin and the `implements` interface already provide the methods.
 
 Hand-written parser skeleton:
 

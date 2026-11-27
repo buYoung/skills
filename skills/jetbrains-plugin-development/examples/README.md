@@ -25,5 +25,6 @@ in the paired reference.
 Read each example top-to-bottom alongside the matching reference. The reference explains
 *why*; the example shows *how the pieces wire together*.
 
-Package names are `com.example.<feature>` for clarity. Adjust to your own group when
-copying.
+Package names and plugin IDs are `com.example.<feature>` for clarity. Adjust both to your own
+group when copying; Plugin Verifier rejects the `com.example` plugin ID prefix
+(`ForbiddenPluginIdPrefix`).

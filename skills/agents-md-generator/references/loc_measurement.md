@@ -10,7 +10,7 @@ tokei -e "*.json" -e "*.yaml" -e "*.yml" -e "*.md" -e "*.sh" -e "*.lock" -e "*.m
 
 **Priority**: This is the **first step** before generating AGENTS.md.
 
-The explicit directory excludes (`node_modules`, `vendor`, `dist`) matter outside git repositories: `tokei` applies `.gitignore` only when the measured directory or one of its parents contains `.git`, so vendored dependencies and build output would otherwise inflate LOC in exported or unzipped directories. `.ignore` and `.tokeignore` files apply with or without git.
+The explicit directory excludes (`node_modules`, `vendor`, `dist`) matter outside git repositories: `tokei` (checked with 15.0.0) applies `.gitignore`, `.git/info/exclude`, and the global git excludes file only when the measured directory or one of its parents contains `.git`, so vendored dependencies and build output would otherwise inflate LOC in exported or unzipped directories. A Jujutsu workspace without a colocated `.git` gets none of these rules; `tokei` skips the hidden `.jj` directory itself. `.ignore` and `.tokeignore` files apply with or without git.
 
 ## Tool Installation
 

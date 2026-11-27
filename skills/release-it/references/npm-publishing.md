@@ -62,6 +62,7 @@ steps:
     with:
       node-version: 'lts/*'
       registry-url: 'https://registry.npmjs.org'
+      package-manager-cache: false
   - run: npx release-it --ci
     env:
       NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
@@ -145,7 +146,7 @@ Yarn may override global env vars causing auth issues. Explicitly set the regist
 
 ## Skip Prerequisite Checks
 
-Some registries (Nexus, Verdaccio) don't support `npm ping`/`npm whoami`/`npm access`:
+Some registries don't support every prerequisite check (`npm ping`, `npm whoami`, `npm access`). For example, Verdaccio 7.1.2 answered `npm ping` and `npm whoami` but not `npm access` (checked 2026-11-27):
 
 ```json
 {
@@ -233,6 +234,11 @@ jobs:
         with:
           node-version: 'lts/*'
           registry-url: 'https://registry.npmjs.org'
+          package-manager-cache: false
+      - name: git config
+        run: |
+          git config user.name "${GITHUB_ACTOR}"
+          git config user.email "${GITHUB_ACTOR}@users.noreply.github.com"
       # OIDC requires npm v11.5.1+ and Node 22.14.0+
       - run: npm install -g npm@latest
       - run: npm ci

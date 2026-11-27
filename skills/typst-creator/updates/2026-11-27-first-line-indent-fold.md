@@ -19,3 +19,4 @@ This revision documents the 0.15 folding of `par.first-line-indent`. The compati
 - `python3 -m unittest discover -s scripts -p 'test_*.py'`: 11 tests passed.
 - `python3 scripts/validate_version_support.py --compiler 0.15.1=<typst>` with the local `typst 0.15.1`: 11 checks passed (version check and 10 fixtures), no warnings. The other six releases were not installed and were not checked in this revision; the fixture's 0.15.0 behavior rests on the tagged source above.
 - With typst 0.15.1, the previous and revised `typst-0.15.typ` rendered to byte-identical single-page PNGs at 72 ppi.
+- Follow-up on 2026-11-27 with the official macOS arm64 release archives of 0.13.0, 0.13.1, 0.14.0, 0.14.1, 0.14.2, 0.15.0, and 0.15.1: `validate_version_support.py --require-all` passed all 65 checks with no warnings and no unchecked releases. The fold assertion block alone compiles with 0.15.0 and 0.15.1 and fails with 0.14.2 (`dictionary does not contain key "amount"`).

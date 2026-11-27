@@ -216,6 +216,7 @@ jobs:
         with:
           node-version: 'lts/*'
           registry-url: 'https://registry.npmjs.org'
+          package-manager-cache: false
       - name: git config
         run: |
           git config user.name "${GITHUB_ACTOR}"
@@ -228,6 +229,9 @@ jobs:
 ```
 
 `fetch-depth: 0` is needed if using conventional-changelog or any plugin that reads git history.
+`package-manager-cache: false` turns off setup-node's automatic dependency cache, which the
+[setup-node README](https://github.com/actions/setup-node#breaking-changes-in-v5) recommends
+for workflows with elevated privileges such as a release job.
 `contents: write` lets `GITHUB_TOKEN` push the release commit and tag and create the GitHub
 Release. With `registry-url`, `setup-node` writes an `.npmrc` containing
 `_authToken=${NODE_AUTH_TOKEN}`, so the npm token must reach release-it under that name; an

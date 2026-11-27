@@ -234,8 +234,8 @@ MARKERS = [
     ("REPO.bazel", "bazel", None),
     (".buckconfig", "buck2", None),
     ("pants.toml", "pants", None),
-    # Legacy Pants config; current Pants no longer reads pants.ini and uses TOML
-    # configuration (pants.toml).
+    # Legacy Pants config; Pants stopped reading pants.ini in 2.0.0.dev0 and uses
+    # TOML configuration (pants.toml).
     ("pants.ini", "pants", None),
     ("package.json", "npm-workspaces", has_workspaces_field),
     ("settings.gradle.kts", "gradle-multiproject", gradle_has_includes),

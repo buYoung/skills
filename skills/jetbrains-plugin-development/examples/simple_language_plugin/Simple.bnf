@@ -32,5 +32,4 @@ simpleFile ::= property*
 property ::= ID EQ ID? {
   mixin="com.example.simplelang.psi.impl.SimpleNamedElementImpl"
   implements="com.example.simplelang.psi.SimpleNamedElement"
-  methods=[ getName setName getNameIdentifier ]
 }

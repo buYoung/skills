@@ -119,6 +119,12 @@ and the Python runner, evaluation JSON files, JSON reference blocks, package-loc
 links/fragments, and the skill-creator `quick_validate.py` also passed. The forward check
 above was not rerun.
 
+Also on 2026-11-27, the PTY scenarios were rerun with the same dependency versions and
+example hashes on the two lower supported Node lines, using nodejs.org binaries: **43/43
+passed** on Node 22.22.2 (npm 10.9.7) and **43/43 passed** on Node 24.22.3 (npm 11.19.1),
+both with pnpm 10.11.0 and Git 2.50.1 (Apple Git-155). The plugin checks were not rerun on
+these versions. The JSON result files keep the Node 26.13.0 run.
+
 On 2026-09-25, 43/43 PTY scenarios and 7/7 plugin checks passed using Node 24.14.0,
 npm 11.9.0, pnpm 10.11.0, Git 2.50.1 (Apple Git-155), release-it 21.0.1,
 `@inquirer/prompts` 8.5.2, semver 7.8.5, and conventional-changelog 12.0.0. Supporting

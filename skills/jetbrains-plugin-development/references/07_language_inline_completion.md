@@ -51,6 +51,9 @@ suggestion computation, with cancellation respected.
 
 For a minimal provider and its `plugin.xml` registration, see
 [`examples/inline_completion_provider/`](../examples/inline_completion_provider/).
+Compile it with the Kotlin `jvmDefault` setting from `01_core_gradle_project.md`; otherwise
+the compiler bridges the internal `isEditorTypeSupported` default into the provider class and
+`verifyPlugin` fails on internal API usage.
 
 ### Events and request lifecycle
 

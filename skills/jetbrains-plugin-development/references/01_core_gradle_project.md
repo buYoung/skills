@@ -63,6 +63,7 @@ dependencies {
 intellijPlatform {
   pluginConfiguration {
     name = "My Plugin"
+    version = "1.0.0"                      // <version>; defaults to project.version
     ideaVersion {
       sinceBuild = "263"                   // this example targets 2026.3
       untilBuild = provider { null }       // open until you have a known break
@@ -81,6 +82,32 @@ The `2026.2+` platform, including 2026.3, requires Java 25. Configure the Gradle
 project toolchain accordingly before compiling this example. The `sinceBuild` value is a claim about
 the plugin's tested minimum, not a synonym for the version used to compile it; choose the
 lowest branch you have actually verified.
+
+`buildPlugin` still produces an archive when the descriptor has no `<version>` or
+`<description>`, but `verifyPlugin` rejects that archive as an invalid plugin. Set the version
+here or as `project.version`, and keep a `<description>` in `plugin.xml` or
+`pluginConfiguration`.
+
+The platform bundles the Kotlin standard library. Add
+`kotlin.stdlib.default.dependency=false` to `gradle.properties` unless the plugin must ship its
+own stdlib; without the property, `verifyPluginProjectConfiguration` reports a stdlib
+dependency conflict (see [Kotlin Standard Library](https://plugins.jetbrains.com/docs/intellij/using-kotlin.html#kotlin-standard-library)).
+
+In its default `enable` mode, the Kotlin compiler adds a bridge override to the plugin class
+for each interface method it inherits with a default body. When that member is
+`@ApiStatus.Internal`, as `InlineCompletionProvider.isEditorTypeSupported` is in 2026.3,
+`verifyPlugin` reports an internal API override and invocation that the source never wrote.
+The `no-compatibility` mode skips these bridges
+([Kotlin compiler options](https://kotlinlang.org/docs/compiler-reference.html)):
+
+```kotlin
+kotlin {
+  jvmToolchain(25)
+  compilerOptions {
+    jvmDefault = org.jetbrains.kotlin.gradle.dsl.JvmDefaultMode.NO_COMPATIBILITY
+  }
+}
+```
 
 Useful tasks: `runIde`, `buildPlugin`, `signPlugin`, `publishPlugin`, `verifyPlugin`,
 `prepareSandbox`, `runIdeForUiTests`. (The verifier task was renamed from
@@ -149,8 +176,9 @@ chosen Gradle and IntelliJ Platform Gradle Plugin versions.
 
 When the plugin uses a JFlex lexer or a Grammar-Kit BNF (see `07_language_pipeline.md` and
 `examples/simple_language_plugin/`), apply the dedicated Grammar-Kit sub-plugin. It provides
-both `generateLexer` and `generateParser`; do not add the removed `jflex()` helper or treat
-Grammar-Kit as a runtime plugin dependency:
+both `generateLexer` and `generateParser`. Grammar-Kit and JFlex are build tools, not runtime
+plugin dependencies. The sub-plugin supplies their versions; use the `grammarKit(...)` and
+`jflex(...)` dependency helpers only to override them:
 
 ```kotlin
 plugins {
@@ -163,9 +191,29 @@ dependencies {
     intellijIdea("2026.3")
   }
 }
+
+tasks {
+  generateLexer {
+    sourceFile = file("src/main/grammar/Simple.flex")
+  }
+  generateParser {
+    sourceFile = file("src/main/grammar/Simple.bnf")
+  }
+}
+
+sourceSets {
+  main {
+    java {
+      srcDir(tasks.generateLexer)
+      srcDir(tasks.generateParser)
+    }
+  }
+}
 ```
 
-These wire the `generateLexer` / `generateParser` Gradle tasks against the target platform.
+Each task needs its `sourceFile`. Passing the task to `srcDir()` adds its generated output to
+the main source set and makes compilation depend on generation, as in the
+[Grammar-Kit recipe](https://plugins.jetbrains.com/docs/intellij/tools-intellij-platform-gradle-plugin-recipes.html#generate-a-lexer-and-parser-with-grammar-kit).
 The plugin version must be kept in lockstep with the main IntelliJ Platform Gradle Plugin.
 `composeUI()` is unrelated to language generation and should be added only when the plugin
 actually embeds the corresponding UI technology.
