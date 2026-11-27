@@ -1,0 +1,96 @@
+{
+  "skill_name": "dba-guide",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "We're on Amazon RDS for MySQL 8.0.42 (one Multi-AZ primary, one read replica that feeds our reporting jobs). AWS keeps emailing us about MySQL 8.0 end of standard support. We still have an old PHP service that logs in with a mysql_native_password user, and our ops scripts parse SHOW MASTER STATUS and SHOW SLAVE STATUS. What do we have to check before moving to 8.4, what is going to break, and how should we run the upgrade with the least downtime? Someone also suggested jumping straight to 9.7 — is that a good idea for us?",
+      "expected_output": "Uses the actual lifecycle: community 8.0 past end of support, 8.4 and 9.7 LTS, and RDS for MySQL standard and Extended Support status for 8.0 with charges. Finds the mysql_native_password accounts with a query, explains that 8.4 ships the plugin disabled (and how to enable it temporarily) while 9.x no longer has it, and replaces SHOW MASTER/SLAVE STATUS with the 8.4 statements. Runs the upgrade checker, rehearses on a copy, and proposes a low-downtime switch with a rollback plan. Rejects a direct 8.0 to 9.7 jump on RDS because the supported path goes through 8.4.",
+      "files": [],
+      "expectations": [
+        "States that community MySQL 8.0 is past end of support (April 2026) or that RDS for MySQL 8.0 runs only under paid RDS Extended Support",
+        "Gives a query against mysql.user (plugin column) to find accounts that use mysql_native_password",
+        "States that mysql_native_password accounts keep working on RDS for MySQL 8.4 (community 8.4 ships the plugin disabled), so the PHP account does not block the 8.4 upgrade",
+        "States that mysql_native_password no longer exists in 9.x, so moving to 9.7 requires converting those accounts first",
+        "Maps SHOW MASTER STATUS to SHOW BINARY LOG STATUS and SHOW SLAVE STATUS to SHOW REPLICA STATUS for the ops scripts",
+        "States that RDS does not offer a direct 8.0 to 9.7 major upgrade; the path goes through 8.4",
+        "Recommends rehearsing on a copy and a low-downtime switch (for example RDS Blue/Green Deployments) with a rollback plan",
+        "Mentions running an upgrade precheck (MySQL Shell util.checkForServerUpgrade or the RDS upgrade prechecks)"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "PostgreSQL 16 on a VM. A dashboard query got slow over the last two weeks. EXPLAIN (ANALYZE, BUFFERS) shows:\n\nIndex Only Scan using events_account_created_idx on events  (cost=0.57..48211.30 rows=41210 width=16) (actual time=0.044..2874.511 rows=40877 loops=1)\n  Index Cond: ((account_id = 913) AND (created_at >= '2026-10-01 00:00:00+00'))\n  Heap Fetches: 40811\n  Buffers: shared hit=1290 read=38544\nPlanning Time: 0.210 ms\nExecution Time: 2881.902 ms\n\npg_stat_user_tables for events shows n_live_tup 182M, n_dead_tup 61M, last_autovacuum 15 days ago. The table gets about 3,000 updates per second. A teammate wants to run VACUUM FULL tonight. What is going on and what should we do?",
+      "expected_output": "Explains that the heap fetches in an index-only scan mean the visibility map is not set, and connects this to vacuum not finishing or being held back. Checks what holds back the xmin horizon (long or idle-in-transaction sessions, replication slots, prepared transactions, standby feedback) with concrete queries. Tunes autovacuum per table, warns that VACUUM FULL takes an ACCESS EXCLUSIVE lock and rewrites the table, offers a plain VACUUM or a non-blocking alternative, and gives verification steps.",
+      "files": [],
+      "expectations": [
+        "Explains that Heap Fetches in an Index Only Scan mean pages are not marked all-visible in the visibility map",
+        "Checks long-running or idle-in-transaction sessions holding back the xmin horizon (pg_stat_activity backend_xmin or xact_start)",
+        "Checks replication slots (pg_replication_slots xmin or catalog_xmin) as a possible xmin holder",
+        "Checks prepared transactions (pg_prepared_xacts) or hot_standby_feedback on standbys as possible xmin holders",
+        "Warns that VACUUM FULL takes an ACCESS EXCLUSIVE lock and rewrites the table, blocking reads and writes",
+        "Recommends per-table autovacuum settings with ALTER TABLE ... SET (autovacuum_...)",
+        "Gives a verification step such as re-running EXPLAIN (ANALYZE, BUFFERS) to see Heap Fetches drop or checking last_autovacuum / n_dead_tup after vacuum"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "We run a self-hosted MongoDB 7.0 replica set. The app uses multi-document transactions (some run 2-3 minutes during nightly reconciliation), change streams with fullDocument: 'updateLookup' and fullDocumentBeforeChange, $lookup with a pipeline, a text index for search, a TTL index on sessions, and $merge into a reporting collection. Management wants to move to Amazon DocumentDB so we stop running servers. Which DocumentDB engine version should we target, what will break or behave differently, and how would you migrate?",
+      "expected_output": "Names the supported DocumentDB engine versions and picks one, explaining why. Checks each feature against the compatibility documentation for that engine version: the 1-minute transaction limit, change stream options and retention, $lookup forms (correlated subqueries only from 8.0.2), text index support, TTL behavior, and $merge availability. Separates unsupported features from behavior that differs, and outlines a migration with compatibility tests, a sync method, and a cutover and rollback plan.",
+      "files": [],
+      "expectations": [
+        "Names the currently supported DocumentDB engine versions including 8.0 and 5.0, and recommends a specific one",
+        "States that DocumentDB transactions are limited to 1 minute, so the 2-3 minute reconciliation transactions must be redesigned",
+        "States whether $merge is supported for the chosen engine version (supported only on 8.0)",
+        "States text index support by engine version (not on 4.0; available on 5.0 and 8.0)",
+        "Addresses $lookup with a pipeline: correlated subqueries are supported only on 8.0 (8.0.2 or later), not on 5.0",
+        "Addresses change stream support for fullDocument updateLookup or fullDocumentBeforeChange on DocumentDB, and change stream retention configuration",
+        "Outlines a migration method (for example AWS DMS or dump/restore plus change capture) with a compatibility test before cutover"
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "Self-hosted Redis 7.2.5 on a 32 GB VM, single primary with two replicas and Sentinel. appendonly yes, appendfsync everysec, maxmemory 24gb, maxmemory-policy noeviction. Several times an hour p99 latency jumps from 1 ms to 300+ ms. INFO shows latest_fork_usec:610000, used_memory_human:19.8G, mem_fragmentation_ratio:1.41, and the log has 'Asynchronous AOF fsync is taking too long (disk is busy?)'. 1) What is causing the spikes and how do we confirm it? 2) We also have to decide whether to stay on Redis or move to Valkey next quarter. What should drive that decision?",
+      "expected_output": "Connects the spikes to fork cost of AOF rewrites or RDB saves on a large dataset and to disk fsync stalls, and lists the confirming evidence: LATENCY DOCTOR or LATENCY HISTORY, latest_fork_usec, rewrite timing, transparent huge pages, disk metrics, SLOWLOG for O(N) commands, and big keys. Gives mitigations with their trade-offs. For the Redis versus Valkey decision, uses the actual support status of Redis 7.2, the license change from 7.4, Valkey's compatibility with Redis 7.2 data and replication, and the availability of each engine on managed services.",
+      "files": [],
+      "expectations": [
+        "Attributes the spikes to fork latency during AOF rewrite or RDB save, citing latest_fork_usec of about 610 ms",
+        "Mentions transparent huge pages as a cause of fork or copy-on-write latency and recommends disabling them",
+        "Uses the latency monitor (latency-monitor-threshold with LATENCY DOCTOR or LATENCY HISTORY/LATEST) to confirm",
+        "Addresses the AOF fsync warning as disk contention, with options such as a faster disk or no-appendfsync-on-rewrite and its durability trade-off",
+        "States the support status of Redis 7.2 correctly (still supported as an extended release, to 2029-12-01)",
+        "States the license history: 7.2 and earlier BSD-3-Clause, 7.4 RSALv2/SSPLv1, 8.0 and later adding AGPLv3",
+        "States that Valkey forked from Redis 7.2 and can take over a Redis 7.2 dataset or replication, while Redis 7.4+ data needs a logical copy"
+      ]
+    },
+    {
+      "id": 5,
+      "prompt": "Our IoT events table in DynamoDB is on-demand. Partition key is deviceType (there are 5 types), sort key is the event timestamp. During firmware rollouts we get throttling errors even though the table is on-demand. We also need 'latest 50 events for a device' and want events gone after 30 days. Please redesign the key schema and tell us how to confirm the cause of the throttling first.",
+      "expected_output": "Explains per-partition throughput limits and why a partition key with five values concentrates traffic even in on-demand mode, and how on-demand capacity scales. Confirms the cause with CloudWatch throttling metrics and Contributor Insights before changing anything. Redesigns around the device ID as partition key with time-ordered sort keys, adds write sharding only if one device can exceed a partition's limits, shows the Query that returns the latest 50 events, uses TTL for retention with its deletion delay, and plans the move of existing data.",
+      "files": [],
+      "expectations": [
+        "States per-partition throughput limits (3,000 read units and 1,000 write units per second)",
+        "Explains that a partition key with only five values concentrates traffic on few partitions even in on-demand mode",
+        "Recommends confirming with CloudWatch Contributor Insights and throttling metrics before redesigning",
+        "Proposes device ID as the partition key with the event timestamp in the sort key",
+        "Shows the latest-50 query with ScanIndexForward false and Limit 50",
+        "Uses TTL for 30-day retention and notes that expired items are deleted asynchronously, not at the exact expiry time",
+        "Plans the move of existing data to the new key schema (new table with backfill, or streams-based migration)"
+      ]
+    },
+    {
+      "id": 6,
+      "prompt": "We still have MySQL 5.7.44 on-prem (about 800 GB, InnoDB, statement-based binlog) and want to move to Aurora MySQL. What target should we pick, what's the safest migration path, and what in 5.7 is going to bite us?",
+      "expected_output": "States that 5.7 is outside the covered range and past community end of support, limits itself to documented upgrade facts, and names the 8.0 upgrade documentation and the upgrade checker. Picks an Aurora MySQL major version with its MySQL compatibility and support dates, proposes a rehearsed migration path (for example replication from an intermediate 8.0 or an AWS-documented path) with a rollback plan, and lists the 5.7 to 8.0 incompatibilities that matter, such as reserved words, removed features, authentication defaults, and character set changes.",
+      "files": [],
+      "expectations": [
+        "States that MySQL 5.7 is past community end of support and outside the versions the guidance is based on",
+        "Recommends a current Aurora MySQL major version (version 3, MySQL 8.0 compatible, or Aurora MySQL 8.4) and does not recommend Aurora MySQL version 2 as the target",
+        "States that 5.7 cannot go directly to 8.4; the path goes through 8.0",
+        "Mentions running the MySQL Shell upgrade checker (util.checkForServerUpgrade) against the 5.7 server",
+        "Lists at least three 5.7 to 8.0 incompatibilities, for example new reserved words, removed query cache, caching_sha2_password default, utf8mb4 default character set, or removed features",
+        "Proposes a migration path with rehearsal and a rollback or fallback plan (for example binlog replication into Aurora and cutover)",
+        "Addresses the statement-based binlog: recommends ROW format for replication-based migration or explains the risk"
+      ]
+    }
+  ]
+}
