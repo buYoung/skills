@@ -1,6 +1,6 @@
 # Evidence and compatibility boundaries
 
-Read this to find the Pi revision these contracts describe, the release boundaries from `1.3.0` through `1.6.1`, the common assumptions the contracts correct, and the limits of what the bundled checks prove. The [revision history](#revision-history-for-maintainers) at the end records how the bundle was checked; you do not need it to build a package.
+Read this to find the Pi revision these contracts describe, the release boundaries from `1.3.0` through `1.7.0`, the common assumptions the contracts correct, and the limits of what the bundled checks prove. The [revision history](#revision-history-for-maintainers) at the end records how the bundle was checked; you do not need it to build a package.
 
 ## Supported Pi revision
 
@@ -8,19 +8,19 @@ These values were checked directly against the repository:
 
 ```text
 repository: earendil-works/pi
-commit: ef4a1cfcca62b77ad3558337ff3e1c7f6beeadfe
-commit date: 2026-11-25 (UTC)
+commit: fb0fe823539f6d04850f6e34748c01f01f212e1f
+commit date: 2026-11-27 (UTC)
 package: @earendil-works/pi-coding-agent
-package.json version: 1.6.1
-relationship to release: exact v1.6.1 tag
+package.json version: 1.7.0
+relationship to release: exact v1.7.0 tag
 Node engine: >=22.19.0
 ```
 
 The bundle's source contracts were rechecked against this commit, including unchanged contracts carried forward from the earlier baseline. Use this revision when a generated package's README states the supported Pi version or commit; list release compatibility separately when it was actually checked.
 
-### Release boundaries from `1.5.0` through `1.6.1`
+### Release boundaries from `1.5.0` through `1.7.0`
 
-All behaviors in this table are included in `v1.6.1`. The middle column names the oldest release tag that contains the change, so a target older than that release lacks it:
+All behaviors in this table are included in `v1.7.0`. The middle column names the oldest release tag that contains the change, so a target older than that release lacks it:
 
 | Behavior | First release | Relevant change |
 |---|---|---|
@@ -42,10 +42,14 @@ All behaviors in this table are included in `v1.6.1`. The middle column names th
 | Anchor find path patterns at the search directory | `v1.6.0` | `282b01c80` |
 | Keep pending restored tools when only tools outside the restored loadout are deactivated | `v1.6.0` | `3345c2925` |
 | Accept `blockedKind` on `select`, `confirm`, and `input` dialogs | `v1.6.1` | `642a705e1` |
+| Always include Pi attribution in the coding-agent session identity, and remove the install-telemetry setting and `PI_TELEMETRY` | `v1.7.0` | `484da3a86` |
+| Accept `--agent-dir <dir>` as the command-line form of `PI_CODING_AGENT_DIR` | `v1.7.0` | `dd71a6fc7` |
+| Accept `aspectRatio` and `size` in `ImagesOptions` and as the third argument of codemode `models.generateImages()` | `v1.7.0` | `c863bdf19` |
+| Report `usage.imageOutput` and price it at `cost.imageOutput` | `v1.7.0` | `a512c3fe2`, `ccda1f74b` |
 
 ### Release boundaries through `1.4.0`
 
-All behaviors in the following table are included in `v1.4.0` and the later releases through `v1.6.1`; the middle column records whether they were already present in the older `v1.3.0` release. Tag ancestry establishes these boundaries:
+All behaviors in the following table are included in `v1.4.0` and the later releases through `v1.7.0`; the middle column records whether they were already present in the older `v1.3.0` release. Tag ancestry establishes these boundaries:
 
 | Behavior | In `v1.3.0`? | Relevant change |
 |---|---|---|
@@ -66,7 +70,7 @@ The 2026-10-21 record below established starter compatibility with installed Pi 
 
 ### Provenance
 
-The original user-supplied analysis `pi-packages-analysis.md` (dated 2026-10-15) and its linked references target `b06c1f2cf1dea6af8748ddeee18c23587d2cb7c6`. The 2026-10-21 update compared the following 91 commits through `cae9fd28a` directly with that baseline. The 2026-10-22 update compares 7 further commits through the `v1.4.0` tag, and the 2026-11-27 update the following 1186 commits through the `v1.6.1` tag. The analysis is historical provenance, not a runtime dependency or evidence for later changes; the current source decides any disagreement.
+The original user-supplied analysis `pi-packages-analysis.md` (dated 2026-10-15) and its linked references target `b06c1f2cf1dea6af8748ddeee18c23587d2cb7c6`. The 2026-10-21 update compared the following 91 commits through `cae9fd28a` directly with that baseline. The 2026-10-22 update compares 7 further commits through the `v1.4.0` tag, the 2026-11-27 update the following 1186 commits through the `v1.6.1` tag, and the 2026-11-28 update the following 781 commits through the `v1.7.0` tag. The analysis is historical provenance, not a runtime dependency or evidence for later changes; the current source decides any disagreement.
 
 The contracts were derived from the package manifest, discovery, and CLI implementation; the extension types, loader, and runner; agent tool execution; the skill and prompt loaders; theme schema, tokens, and color resolution; provider contracts; and MCP configuration at that commit. These names record how the contracts were established; they are not additional reading tasks.
 
@@ -328,3 +332,52 @@ A follow-up check ran the package flows that the `v1.6.1` update had left unveri
 | Starter validator, extracted artifact, and starter tool cases against this release | 77 assertions passed with 2 skipped; 55 passed with 2 not applicable and 1 skipped; 3 of 3 cases passed on both copies |
 
 The results matched the references, so no contract changed. The PTY driver did not answer the OSC 7501 support query, so `PI_PROGRAM_STATUS=1` forced the reports; how a particular terminal presents them was not observed. A remote git host, SSH sources, `pi config -l`, the `No packages were updated, see the warnings above` message, and editor replacement during an open dialog were not exercised.
+
+### Released `v1.7.0` update (2026-11-28)
+
+The `v1.7.0` tag is a lightweight tag for `fb0fe823539f6d04850f6e34748c01f01f212e1f`, committed 2026-11-27 (UTC), 781 commits after the previous `v1.6.1` reference. A fresh clone at that tag was compared file by file with `v1.6.1` through the source map in the maintainer notes. No later `main` changes were included.
+
+The package manager, manifest and filter handling, project trust, extension loader, types, and runner, resource loader, skill and prompt parsers, frontmatter parsing, theme schema, tokens, and colors, MCP client and configuration, built-in tool operations, truncation helpers, and the SDK exports used by the bundled checks were unchanged, so those contracts and the embedded theme checker were carried forward. The System One classifier adapters now share `api/json-request.ts` with the new `pi-image` API; their headers, hooks, timeouts, and retries moved there unchanged. The changed files added these author-facing contracts, each listed with its first release in the boundary table above:
+
+- Request identity: the coding-agent session identity always includes Pi attribution. The install-telemetry setting, its `SettingsManager` methods, and `PI_TELEMETRY` were removed.
+- Operations: `--agent-dir <dir>` sets `PI_CODING_AGENT_DIR` before anything reads it, including for package commands.
+- Image models: `ImagesOptions.aspectRatio` and `size`, the options argument of codemode `models.generateImages()`, `usage.imageOutput`, and `cost.imageOutput`.
+
+Other `v1.7.0` changes do not change a package-authoring contract in this bundle and were not added: terminal program resume through OSC 7577, `models.json` errors reported as warnings in `createAgentSessionServices()` diagnostics, the `pi-image` API, which has no factory on a public entry point and serves the built-in Radius provider, and provider catalog and Copilot cache changes.
+
+**Validation environment:** Node `v26.13.0` and npm `11.20.0`; SDK built from the `v1.7.0` checkout with the same steps as the `v1.6.1` update. The first build, started from `/tmp`, failed in the `durable` workspace because TypeScript loaded the Pi AI declarations through both `/tmp` and `/private/tmp`; building from the physical `/private/tmp` path passed. The checkout had no tracked or untracked changes afterward. All commands ran with an environment cleared of `PI_*` variables.
+
+| Check | Result |
+|---|---|
+| Starter package validator with `--expect`, `--runtime`, and `--pack` | 77 assertions passed, 2 skipped; Pi `1.7.0` reported by the loaded SDK |
+| Runtime validation of the actual extracted npm artifact | 55 assertions passed, 2 not applicable, 1 skipped |
+| Existing starter tool cases on source and extracted artifact | Both runs passed all 3 cases |
+| Deliberately broken packages | All 10 cases from the `v1.6.1` update were rejected, each by its intended check, including the 5-second deadline for the nonterminating factory |
+| Source CLI `--agent-dir` | With `PI_CODING_AGENT_DIR` pointing at another directory, `--agent-dir <dir> install <local>` wrote `{"packages":["../pkg"]}` only to the flag directory's `settings.json`; `list` showed the package with the flag and `No packages installed.` without it. An extension factory saw the flag directory in both `getAgentDir()` and `PI_CODING_AGENT_DIR`. `--agent-dir` without a value exited 1 with `Error: --agent-dir requires a directory` |
+| Direct calls to the built `calculateCost()` | With `cost.output: 10` and `cost.imageOutput: 30`, 1,000,000 output tokens cost 18 with a 400,000-token `imageOutput` split and 30 without the split; without `cost.imageOutput`, they cost 10 |
+| Upstream regressions for changed contracts | coding-agent 7 files, 228 tests; Pi AI image generation and model data 4 files, 67 tests; all passed |
+| Upstream regressions for carried-forward contracts | coding-agent 18 files, 407 tests, plus the selected `RIPGREP_CONFIG_PATH` test; Pi AI validation, identity, telemetry, and System One 7 files, 245 tests; `pi-tui` container 4 tests; all passed |
+| Skill parser, internal links, and script syntax | One skill loaded without diagnostics; 88 relative links and anchors resolved; all 4 `.mjs` files passed `node --check` |
+| Patch whitespace | `git diff --check` passed |
+
+With `TMPDIR` under the home directory, two `package-manager.test.ts` tests failed: ancestor discovery from the test's temporary project found the home directory's `.agents/skills`. With `TMPDIR` under `/private/tmp`, all 145 tests in that file passed. `package-manager.ts` did not change in this range.
+
+The upstream regression commands were:
+
+```bash
+# packages/coding-agent
+npm exec -- vitest run test/sdk-client-identity.test.ts test/agent-dir-arg.test.ts test/args.test.ts test/models-json-error-diagnostic.test.ts test/suite/agent-session-codemode.test.ts test/usage-totals.test.ts test/model-registry.test.ts
+npm exec -- vitest run test/prompt-templates.test.ts test/package-manager.test.ts test/changelog.test.ts test/interactive-mode-extension-changelog.test.ts test/exec.test.ts test/exec-runtime-limit.test.ts test/interactive-mode-extension-dialogs.test.ts test/default-tools-setting.test.ts test/grep-operations.test.ts test/git-update.test.ts test/suite/regressions/7187-malformed-package-manifest.test.ts test/suite/regressions/11264-pi-events-handler-errors.test.ts test/codemode-worker-admission.test.ts test/mcp-extension.test.ts test/model-runtime-classifiers.test.ts test/interactive-mode-status.test.ts test/suite/regressions/11227-recovery-omits-tool-results.test.ts test/suite/regressions/11156-pi-ai-models-virtual-module.test.ts
+npm exec -- vitest run test/tools.test.ts -t RIPGREP_CONFIG_PATH
+
+# packages/ai
+npm exec -- vitest run test/openrouter-images.test.ts test/pi-image.test.ts test/image-model-data.test.ts test/models-runtime.test.ts
+npm exec -- vitest run test/validation.test.ts test/validation-probes.test.ts test/identity.test.ts test/telemetry-options.test.ts test/telemetry.test.ts test/typesafe-system-one.test.ts test/cloudflare-workers-ai-system-one.test.ts
+
+# packages/tui
+node --test test/container.test.ts
+```
+
+**Release build, recorded separately:** the published npm release `@earendil-works/pi-coding-agent@1.7.0`, installed into a disposable directory with `--ignore-scripts`, also passed the starter validator with `--runtime --pack` (77 passed, 2 skipped), the extracted-artifact run (55 passed, 2 not applicable, 1 skipped), and the starter tool cases on both copies (3 of 3 each).
+
+The validator still marks semantic import and bundle inspection as `skipped`. A package's own `images` implementation receiving `aspectRatio` and `size` was established from `ModelRuntime.generateImages()` and the upstream codemode tests, not from a packaged provider. No live image, classifier, or provider service was called. The package lifecycle flows from the 2026-11-27 release checks were not rerun because the package manager did not change. Physical terminal rendering, OSC 7577 reporting, other operating systems, independent model review, and model-based skill effectiveness remain unverified for this update.

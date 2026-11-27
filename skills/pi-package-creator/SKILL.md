@@ -11,7 +11,7 @@ Each of the five steps below names the reference to read before you act. Every c
 
 ## Compatibility
 
-- This bundle targets Pi `v1.6.1`, tag commit `ef4a1cfcca62b77ad3558337ff3e1c7f6beeadfe`. Development builds with the same version string can differ.
+- This bundle targets Pi `v1.7.0`, tag commit `fb0fe823539f6d04850f6e34748c01f01f212e1f`. Development builds with the same version string can differ.
 - Node.js must satisfy Pi's `>=22.19.0` requirement.
 - Record the user's actual Pi version and, when available, its commit. A matching version string alone does not prove that every behavior described here is present.
 - Run the bundled checks against the installed Pi. If an API or behavior differs, report the concrete mismatch. Do not invent a newer contract, and do not make reading external documents a completion step.

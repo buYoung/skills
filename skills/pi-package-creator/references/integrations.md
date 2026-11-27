@@ -84,6 +84,14 @@ Since `v1.4.0`, Pi supports image input for System One classifiers through the `
 
 Keep built-in model compatibility metadata when only overriding an endpoint. For a custom proxy that hides the upstream service's identity, set the appropriate compatibility fields explicitly. OpenRouter can accept a TypeSafe-shaped request without an error while silently dropping its assets, so verify the final image-bearing payload rather than treating a successful response as proof that images were used. Use these wire shapes through the built-in adapters instead of pre-encoding them into the public `images` argument.
 
+### Image generation options and pricing
+
+Since `v1.7.0`, these fields apply to image models:
+
+- `ImagesOptions` accepts optional `aspectRatio` and `size` strings, such as `"16:9"` and `"2K"`. Extensions pass them to `ctx.modelRegistry.generateImages(model, context, options)`, and codemode's `models.generateImages()` takes `{ aspectRatio, size }` as its third argument and rejects any other key. Built-in image APIs send the values unchanged, and the model decides which values it supports. A package's own `images` implementation receives them in `options` and must translate them to its service's request format.
+- A model's `cost` accepts `imageOutput`, the USD rate per million image output tokens. `calculateCost()` prices `usage.imageOutput` at that rate and the rest of `output` at `cost.output`. When usage omits `imageOutput`, all output uses the image rate; without `cost.imageOutput`, all output uses `cost.output`.
+- An image implementation sets `usage.imageOutput`, a subset of `output`, only when the service reports that split.
+
 ### Register a complete provider
 
 For a new integration that owns authentication, discovery, filtering, or streaming, prefer `pi.registerProvider(provider)` with a complete `Provider`. Do not use the internal `registerNativeProvider`.
@@ -152,7 +160,7 @@ Since `v1.4.0`, Pi AI's public API includes client identity:
 
 - `ProviderRequestOptions.identity` is a `ClientIdentity` with optional `userAgent`, `attribution`, and `version`. `userAgent` accepts `"detailed"`, `"short"`, or `{ custom: string }`. `attribution: null` explicitly disables inherited attribution.
 - `createModels({ identity })` sets request defaults. `withClientIdentity(models, identity)` wraps an existing model service; per-request identity fields override the wrapper, which overrides the service defaults. `mergeClientIdentity` merges fields and skips `undefined`.
-- Plain Pi AI defaults to a detailed `User-Agent` and no attribution. Agent loops add Pi attribution by default; the coding-agent request path instead derives it from its install-telemetry setting. Do not hard-code Pi attribution into a package's adapter.
+- Plain Pi AI defaults to a detailed `User-Agent` and no attribution. Agent loops add Pi attribution by default. Since `v1.7.0`, the coding-agent session identity always includes Pi attribution; earlier releases derived it from the install-telemetry setting and `PI_TELEMETRY`, which `v1.7.0` removed. Do not hard-code Pi attribution into a package's adapter.
 - When delegating to a built-in API, forward `options.identity`. When implementing HTTP directly, `getIdentityHeaders(model, options?.identity)` supplies defaults below model, provider, and request headers. Honor explicit overrides and `null` suppression rather than re-adding removed headers. `before_provider_headers` runs before those API-level defaults, so its observers need not see every final wire header.
 - Request instrumentation uses `options.telemetry` (a span), not the removed `telemetryContext` option. Preserve it when forwarding options. Pi AI's `createModels` streaming path records request and usage observations; do not start duplicate request instrumentation around the same delegated call.
 

@@ -2,7 +2,7 @@
 
 A complete local Pi package containing one extension, one skill, one prompt, and one theme. It uses no external service or third-party runtime library. The extension reads the session working-directory value without scanning files or writing persistent state.
 
-The design baseline is Pi `v1.6.1`, tag commit `ef4a1cfcca62b77ad3558337ff3e1c7f6beeadfe`. Node.js `>=22.19.0` is required. Record the commit when using a development build that reports the same version.
+The design baseline is Pi `v1.7.0`, tag commit `fb0fe823539f6d04850f6e34748c01f01f212e1f`. Node.js `>=22.19.0` is required. Record the commit when using a development build that reports the same version.
 
 ## Run locally
 
