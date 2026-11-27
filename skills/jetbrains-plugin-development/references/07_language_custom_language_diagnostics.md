@@ -10,7 +10,8 @@
   outside your text range. Confuses Find Usages.
 - Implementing `PsiNamedElement.setName(...)` as a no-op. Rename appears to "do nothing"
   silently.
-- Forgetting `<colorSettingsPage>` — users can't theme your colors.
+- Forgetting to register the `ColorSettingsPage` (`<colorSettings>` on 2026.3+,
+  `<colorSettingsPage>` before) — users can't theme your colors.
 - Skipping `BAD_CHARACTER` from the lexer. Invalid characters slip past unhighlighted.
 
 ## Related references

@@ -6,6 +6,10 @@ When your plugin works with structured XML config files (Spring beans, custom DS
 the **DOM API** maps elements to typed Java/Kotlin interfaces with validation, completion,
 and references for free.
 
+From 2026.3 the XML modules, including the DOM API, ship in the bundled plugin
+`com.intellij.xml`. Declare the dependency described in `01_core_dependencies.md`; a
+dependency on the `com.intellij.modules.xml` alias is sufficient.
+
 ### Defining a DOM
 
 ```java

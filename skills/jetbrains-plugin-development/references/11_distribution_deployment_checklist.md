@@ -45,9 +45,10 @@ examples in this skill are not standalone build/run verification targets.
 
 ## Related references
 
-- `01_core_plugin_xml.md` — descriptor mechanics, `<depends>`, sinceBuild/untilBuild.
-- `03_lifecycle_disposer.md` — leak diagnosis when dynamic unload fails.
-- `04_threading_model.md` — `Application.coroutineScope` is forbidden, why injected
-  scopes matter.
-- `02_runtime_services.md` and `02_runtime_listeners_message_bus.md` — safe owners for plugin-owned state,
-  listeners, and subscriptions.
+- `01_core_plugin_xml.md` — descriptor mechanics; `01_core_dependencies.md` — `<depends>`,
+  sinceBuild/untilBuild.
+- `03_lifecycle_leak_diagnostics.md` — leak diagnosis when dynamic unload fails.
+- `04_threading_coroutines_2024.md` — why `Application.getCoroutineScope()` is forbidden and
+  injected scopes matter.
+- `02_runtime_services.md` and `02_runtime_listeners_message_bus.md` — injected service
+  scopes and safe owners for plugin-owned state, listeners, and subscriptions.

@@ -38,7 +38,7 @@ TOML blocks are fragments of `Cargo.toml` or `.cargo/config.toml` as labelled. C
 | `codegen-units` | `256` | `16` |
 | `rpath` | `false` | `false` |
 
-`test` inherits `dev`, `bench` inherits `release`, `cargo install` builds `release`. `cargo build --release` is shorthand for `--profile release`; custom profiles are selected with `--profile <name>` and output to `target/<name>/`.
+`test` inherits `dev`, `bench` inherits `release`, `cargo install` builds `release`. The built-in `debug` profile (1.99) inherits `dev` and currently has the same settings. Since Cargo 1.99, incremental compilation is off by default when the `CI` environment variable is set, whatever the profile says; `build.incremental = true` or `CARGO_INCREMENTAL=1` turns it back on. `cargo build --release` is shorthand for `--profile release`; custom profiles are selected with `--profile <name>` and output to `target/<name>/`.
 
 ## What the Settings Change
 
@@ -230,17 +230,17 @@ Use [memory and allocation](memory-and-allocation.md#allocator-selection) for al
 - `[profile.dev.package."*"] opt-level = 2` so dependencies are compiled once with optimization while the workspace stays at `opt-level = 0`.
 - `cargo check` in the edit loop; `cargo build --timings` to find the crates that serialize the build; split crates on the critical path.
 - A faster linker (`lld` is default on x86_64 Linux since 1.90; `mold` where available).
-- `build.build-dir` (1.91) on a fast disk shared across worktrees; `CARGO_INCREMENTAL=1` is already the dev default.
-- Trim dependency features (`default-features = false` plus the needed features) and remove unused dependencies (`cargo-udeps`, `cargo-machete` from the ecosystem).
+- `build.build-dir` (1.91) on a fast disk shared across worktrees; incremental compilation is already on in `dev` outside CI.
+- Trim dependency features (`default-features = false` plus the needed features) and remove unused dependencies. Cargo 1.100 reports them through the `cargo::unused_dependencies` lint when every target that can use a dependency table is built; `cargo-udeps` and `cargo-machete` come from the ecosystem.
 - Nightly-only: the parallel front end (`-Z threads=8`) and the Cranelift backend for dev builds; do not depend on them in a stable toolchain.
 
 ## CI Flags
 
-- Pin the toolchain with `rust-toolchain.toml` (`channel = "1.98.1"` or `"stable"` with a documented upgrade routine).
+- Pin the toolchain with `rust-toolchain.toml` (`channel = "1.NN.N"` naming the latest patch release of the chosen version, or `"stable"` with a documented upgrade routine).
 - `cargo build --locked` and `cargo test --locked` fail when `Cargo.lock` would change, so CI does not silently resolve new versions.
 - A command-line or CI warning policy can be tied to a known toolchain: `CARGO_BUILD_WARNINGS=deny` (1.97) or `RUSTFLAGS="-D warnings"`. Broad in-source `deny(warnings)` can break local builds when new lints appear; dependency lint caps can lower configured severity. Use the scope that matches the intended policy.
 - `cargo clippy --all-targets --all-features -- -D warnings` on supported feature/target combinations with the chosen toolchain (see [lint configuration](lints-and-diagnostics.md#configuring-lints-in-cargotoml)). Use a feature matrix where all-features does not represent supported builds.
-- Cache `~/.cargo/registry`, `~/.cargo/git`, and `target/` keyed by lockfile hash; Cargo 1.88+ garbage-collects the global cache automatically (files unused for 3 months from the network, 1 month if regenerable), which a shared CI cache must tolerate.
+- Cache `~/.cargo/registry`, `~/.cargo/git`, and `target/` keyed by lockfile hash; Cargo 1.88+ garbage-collects the global cache automatically (files unused for 3 months from the network, 1 month if regenerable), which a shared CI cache must tolerate. Write a `target/` cache that pull requests can read only from jobs without secrets in their environment: Cargo, Miri, and build scripts do not guarantee that environment variables stay out of `target/`, and the Rust security response team reported in 2026-09 that `cargo miri` stored the whole environment there.
 
 ## Verification
 
@@ -259,7 +259,7 @@ Use [memory and allocation](memory-and-allocation.md#allocator-selection) for al
 - Mixing `RUSTFLAGS` in CI with `build.rustflags` locally, which causes full rebuilds and different codegen between the two.
 - `#![deny(warnings)]` in `lib.rs`.
 - Forgetting that tests and benches ignore `panic = "abort"`, then being surprised by different behavior in production.
-- Expecting `cargo install` to honor `Cargo.lock` without `--locked`.
+- Expecting `cargo install` before Cargo 1.100 to honor the packaged `Cargo.lock` without `--locked`; from 1.100 it does so by default and `--locked` is a no-op.
 
 ## Availability by Version
 
@@ -275,5 +275,7 @@ Use [memory and allocation](memory-and-allocation.md#allocator-selection) for al
 | 1.95 | Custom target-spec JSON removed from stable |
 | 1.96 | wasm targets no longer pass `--allow-undefined`; `-C link-arg=--allow-undefined` restores it |
 | 1.97 | v0 symbol mangling default; `CARGO_BUILD_WARNINGS`; `linker_messages` lint |
+| 1.99 | Incremental compilation off by default in CI; built-in `debug` profile |
+| 1.100 | New intermediate artifact layout in the build directory; `cargo install` uses the packaged lockfile; ABI-changing ARM target features rejected |
 
 Per-release details live in [the versions index](../versions/index.md).

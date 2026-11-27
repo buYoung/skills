@@ -57,17 +57,19 @@ Install the tested dependency set with the project's package manager (add `-w` f
 workspace-root tooling):
 
 ```bash
-pnpm add -D -E release-it@21.0.1 @inquirer/prompts@8.5.2 semver@7.8.5
+pnpm add -D -E release-it@21.1.3 @inquirer/prompts@8.8.0 semver@7.8.6
 # When using the changelog configuration below:
-pnpm add -D -E @release-it/conventional-changelog@12.0.0 conventional-changelog-conventionalcommits@10.4.0
+pnpm add -D -E @release-it/conventional-changelog@12.0.2 conventional-changelog-conventionalcommits@10.4.1
 ```
 
-`semver` computes and validates menu values. Inquirer owns the questions; release-it and its
-changelog plugin own the writes. Declare `@inquirer/prompts` as a direct development dependency
-even though release-it also depends on it. Wrapper-owned cancellation and state messages
-use `console.info`; inspection failures and other wrapper errors use stderr. The API logs
-its own errors before throwing, and the wrapper avoids reprinting them. Its logger controls
-the output stream, so capture both stdout and stderr when checking diagnostics.
+`semver` computes and validates menu values; release-it 21.1.x itself uses `verkit` instead.
+Inquirer owns the questions; release-it and its changelog plugin own the writes. Declare
+`@inquirer/prompts` as a direct development dependency even though release-it also depends
+on it; the pin matches the exact version release-it 21.1.3 requires. Wrapper-owned
+cancellation and state messages use `console.info`; inspection failures and other wrapper
+errors use stderr. The API logs its own errors before throwing, and the wrapper avoids
+reprinting them. Its logger controls the output stream, so capture both stdout and stderr
+when checking diagnostics.
 Add the entry command to the root `package.json`:
 
 ```json
@@ -82,7 +84,7 @@ A single-project `.release-it.json` starts with:
 
 ```json
 {
-  "$schema": "https://unpkg.com/release-it@21.0.1/schema/release-it.json",
+  "$schema": "https://unpkg.com/release-it@21.1.3/schema/release-it.json",
   "git": {
     "commit": true,
     "tag": true,
@@ -159,11 +161,11 @@ or CI commands when requested; do not quietly turn this command into either mode
 recommendation and pre-release settings cannot overwrite the exact selection. The first
 external plugin checks release-it's resolved current/next versions in `beforeBump`, before
 file writes. Review custom plugins for earlier side effects or version-provider overrides;
-the example's tested changelog integration is conventional-changelog 12.0.0.
+the example's tested changelog integration is conventional-changelog 12.0.2.
 
 ## Prompt Adapter Interface and Compatibility
 
-Source-confirmed integration for **release-it 21.0.1**:
+Source-confirmed integration for **release-it 21.1.3**:
 
 | Surface | Required behavior |
 |---|---|
@@ -196,18 +198,29 @@ does not accept a valid answer in Inquirer.
 This injection is visible in source and is not a promised stable prompt customization API.
 Before changing versions, inspect the installed dependency and re-run the PTY checks:
 
-- [21.0.1 entry point](https://github.com/release-it/release-it/blob/21.0.1/lib/index.js)
-- [Prompt registration and execution](https://github.com/release-it/release-it/blob/21.0.1/lib/prompt.js)
-- [Plugin step routing](https://github.com/release-it/release-it/blob/21.0.1/lib/plugin/Plugin.js)
-- [Git actions and rollback](https://github.com/release-it/release-it/blob/21.0.1/lib/plugin/git/Git.js)
-- [Config and CI precedence](https://github.com/release-it/release-it/blob/21.0.1/lib/config.js)
+- [21.1.3 entry point](https://github.com/release-it/release-it/blob/21.1.3/lib/index.js)
+- [Prompt registration and execution](https://github.com/release-it/release-it/blob/21.1.3/lib/prompt.js)
+- [Plugin step routing](https://github.com/release-it/release-it/blob/21.1.3/lib/plugin/Plugin.js)
+- [Git actions and rollback](https://github.com/release-it/release-it/blob/21.1.3/lib/plugin/git/Git.js)
+- [Config and CI precedence](https://github.com/release-it/release-it/blob/21.1.3/lib/config.js)
 
-The executable example is checked on Node **24.14.0**, release-it **21.0.1**, Inquirer **8.5.2**,
-semver **7.8.5**, and conventional-changelog **12.0.0**. Inspect installed `engines` when
-applying it: release-it 21.0.1 and conventional-changelog 12.0.0 require Node
-`^22.21.0 || >=24.0.0`, while `@inquirer/prompts`
-8.5.2 requires `>=23.5.0 || ^22.13.0 || ^20.17.0`. Compatibility with another release-it version
-is unverified until its interface and behavior are checked; do not change a project's runtime silently.
+From 21.0.1 to 21.1.3, the entry point, prompt, Plugin, plugin factory, and config modules are
+unchanged. The Git plugin now passes branch, tag, and remote names as argument arrays instead
+of shell strings; commit, tag, and push routing is the same. Other 21.1.x changes outside this
+adapter: an interactive release with publishing enabled can run `npm login` when
+authentication fails, and `gitlab.proxy` was added.
+
+On 2026-11-27 the executable example was checked on Node **26.13.0**, release-it **21.1.3**,
+Inquirer **8.8.0**, semver **7.8.6**, and conventional-changelog **12.0.2** (conventionalcommits
+preset **10.4.1**). Inspect installed `engines` when applying it: release-it 21.1.3,
+`@inquirer/prompts` 8.8.0, and conventional-changelog 12.0.2 require Node
+`^22.22.2 || ^24.15.0 || >=26.0.0`. Node 24.14.0 and earlier 24.x releases fall outside it.
+
+The earlier 2026-09-25 check used Node 24.14.0, release-it 21.0.1, Inquirer 8.5.2, semver 7.8.5,
+and conventional-changelog 12.0.0. That set required Node `^22.21.0 || >=24.0.0` (release-it,
+conventional-changelog) and `>=23.5.0 || ^22.13.0 || ^20.17.0` (Inquirer 8.5.2); it describes
+projects that remain on 21.0.1. Compatibility with another release-it version is unverified
+until its interface and behavior are checked; do not change a project's runtime silently.
 
 ## Stopping and Remaining State
 

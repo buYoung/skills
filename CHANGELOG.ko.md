@@ -16,7 +16,7 @@
 
 ### 추가
 
-- `document-writing`에 문서 유형별 작성 흐름과 디자인 시스템 문서 템플릿 추가
+- 사람이 읽는 구조화 문서를 위한 `document-writing` skill 추가: 10개 문서 유형별 작성 흐름, 디자인 시스템 문서 템플릿, 구조 검증, fixture 기반 행동·선택 eval. Design System Document는 제품 UI와 storefront 시각 자산을 별도 출력 세트로 나누고, 범위에 든 디지털 storefront는 현재 1차 자료로 조사
 - `react-guide`에 React 18/19 SSR·스트리밍·hydration, `vite-guide`에 Vite 7/8 SSR 통합 가이드 추가
 
 ### 개선
@@ -47,13 +47,6 @@
 ### 제거
 
 - `veo-prompt-director` 스킬과 README의 관련 안내 제거
-
-### 추가
-
-- 사람이 읽기 좋은 구조화 문서를 위한 `document-writing` skill 추가 — 10개 문서 유형 라우팅, 점진적 reference 로딩, 근거 기반 편집, 구조 검증 지원. Design System Document는 제품 UI와 storefront 시각 자산 출력 세트를 분리하고, allowlist 없이 범위에 포함된 임의의 디지털 storefront를 동적으로 식별해 현재 1차 자료를 조사. 현실형 fixture 행동 eval, 균형형 선택 사례 60개, 스킬 사용·미사용 쌍대 실행, tool·출처 기록, negative control, blind 비교, 정적 review, 실제 PNG canary와 로컬·CI·release evidence 검증 추가
-
-### 제거
-
 - `feature-design-doc`의 생성·갱신·사실 확인·정규화·템플릿·검증기 계약을 `document-writing`으로 통합하고 독립 패키지 제거
 
 ## [1.7.1] - 2026-08-10
@@ -155,7 +148,6 @@
 ### 내부
 
 - `release-it`에서 `claude plugin` 버전도 함께 갱신하도록 정리
-- 기타 관리 항목 정리
 
 ## [1.1.0] - 2026-05-01
 

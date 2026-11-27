@@ -4,14 +4,6 @@ A multi-decision `refactor` input where Stage 4 first resolves
 codebase-answerable facts, then asks the user to decide the remaining
 scope and contract questions in one Markdown decision table.
 
-**What this example shows:** how Stage 4 separates technical facts from
-user-owned decisions. Narrow codebase probes remove questions that do
-not need user judgment. The remaining questions are shown as rows with
-`순번`, `내용`, `수정 추천안`, and `근거`. The walkthrough also shows the
-Stage 5.6 content and intent self-check, the default Stage 6 banner with
-cold-pickup not run, and a user-requested Stage 5.7 cold-pickup pass
-that comes back clean.
-
 The chat exchange below is in Korean because the user wrote in Korean.
 The saved brief is in English (skill output policy).
 
@@ -108,11 +100,11 @@ User: approve row 1 and freeze `AuthContext.tsx`.
 refactor
 
 ## Current State (As-Is)
-- [confirmed] `src/hooks/useAuth.ts` exports 7 named values and 14 component files depend on the surface — Evidence: export declarations plus repository import search.
+- [confirmed] As of `8d3e7b0` on `main`, `src/hooks/useAuth.ts` exports 7 named values and 14 component files depend on the surface — Evidence: export declarations plus repository import search.
 - [confirmed] The 3 file-internal helpers have no reach outside `useAuth.ts` — Evidence: repository-wide symbol search.
 - [confirmed] `useAuthSelector` is imported in 4 dashboard components — Evidence: named-import search.
 - [confirmed] `src/hooks/__tests__/useAuth.test.ts` carries 23 behavior cases — Evidence: the existing test declarations covering login, logout, refresh, and selector memoization.
-- [confirmed] `src/contexts/AuthContext.tsx` is coupled through reducer/dispatch and frozen by the Stage 4 scope decision — Evidence: provider imports and the approved scope row.
+- [confirmed] `src/contexts/AuthContext.tsx` is coupled to `useAuth.ts` through reducer state and dispatch — Evidence: the provider's reducer and dispatch wiring into `useAuth`.
 
 ## Behavior Contract
 - Locked: every case in `src/hooks/__tests__/useAuth.test.ts` (all 23 tests).
@@ -176,7 +168,7 @@ refactor
 - [ ] `src/hooks/useAuth.ts` diff shows clearer internal organization (helpers grouped, dead branches removed, naming consistent) without relying on line-count reduction as the success signal.
 
 ## Open Questions
-- None — every Stage 3 uncertainty was resolved by a codebase probe (internal-helper reach, `useAuthSelector` consumer spread) or by a Stage 4 user answer (`AuthContext.tsx` freeze).
+- None — internal-helper reach and `useAuthSelector` consumers are confirmed in Current State, and the `AuthContext.tsx` freeze is a hard Out of Scope boundary.
 ```
 
 ---
@@ -249,7 +241,7 @@ Updated Stage 6 banner:
 > 저장 완료 — `docs/briefs/2026-05-04-refactor-useauth-hook.md`
 > (`refactor`: Tidy `useAuth` hook internals while freezing public
 > surface; 구조 검증 통과; 내용 검증 통과 — 내용/의도 자체 검증 통과;
-> cold-pickup: clean (의도 이탈 없음, ask-back 없음, missing 없음)).
+> cold-pickup: clean (의도 이탈 없음, 되묻기 없음, 누락 없음)).
 > 파일 열어보고 고칠 부분 있으면 알려줘.
 
 The English equivalent of the cold-pickup field is
@@ -292,43 +284,15 @@ brief if it is ever needed.
   section, so it appears as its own row with the recommended brief
   change and evidence. The user can override just that row without
   losing the other resolved decisions.
-- **Why two candidates did not become user questions** — the
-  codebase-precedence check resolved them. One probe confirmed the 3
-  internal helpers had no external reach; another probe confirmed
-  `useAuthSelector`'s consumer spread. Technical facts do not become
-  user questions once the repository can answer them.
-- **Why Open Questions ended at `- None — <reason>`** — every Stage 3
-  candidate open question was either resolved by a probe (helpers
-  reach, selector publicness) or by a user answer (AuthContext freeze).
-  Recording `None` with its reason is honest, not lazy — and the reason
-  is mandatory: the validator rejects a bare `- None`.
-- **Why this passed the structural validator** — Stage 4 is a
-  behavior variant of the brief-authoring pipeline, not an output
-  variant. The saved plan has the same nine required H2 sections
-  plus the type-conditional `Behavior Contract` for `refactor`, its
-  `Out of Scope` bullets carry `[hard]` / `[deferred]` classification,
-  and `Open Questions` closes with the reasoned `- None — <reason>`
-  form the validator requires. `validate_brief.py` does not care how
-  the bullets were authored — only that the saved artifact meets the
-  template contract.
-- **Why the user's "Context 동결" answer reshaped Out of Scope** —
-  row 1 is a user-owned scope decision, so the saved plan reflects
-  that answer by freezing `AuthContext.tsx` and keeping the work inside
-  `useAuth.ts`.
 - **Budget accounting** — Stage 3 used ~6 reads / 4 queries; the
   Stage 4 probes added ~3 reads / 2 queries. Total
   well under the soft caps (~15 + ~5 reads, ~10 + ~3 queries).
-- **Why the table still avoids lazy batching** — each row maps to a
-  concrete brief edit, and dependent facts are called out in `근거`.
-  It is not a generic "add or change?" prompt; it is a compact decision
-  register the user can approve or override by row.
 
 
 ## Requirements Clarification and Fallback Walkthroughs
 
 These are worked interaction scenarios, not measured agent runs. Apply the
-same policy in normal chat prose for both variants; only saved plan prose
-changes register.
+same policy in normal chat prose.
 
 | Situation | Question and recommendation | Answer or lack of answer | Required outcome |
 |---|---|---|---|

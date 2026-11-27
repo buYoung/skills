@@ -71,8 +71,10 @@ disposable parent there too — `connect(applicationService)` or `connect(projec
 
 ```kotlin
 @Service(Service.Level.PROJECT)
-class MyProjectService(project: Project) : Disposable {
-  init {
+class MyProjectService(private val project: Project) : Disposable {
+  // Call once from an explicit trigger (for example a ProjectActivity), not from the
+  // constructor; see 02_runtime_services.md.
+  fun startListening() {
     project.messageBus.connect(this)
       .subscribe(ToolWindowManagerListener.TOPIC, MyTwListener())
   }

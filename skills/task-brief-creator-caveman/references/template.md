@@ -6,8 +6,7 @@ The emitted **output artifact is in English, written in caveman full mode** (bod
 Caveman compression applies to body prose — section headers, the title `# [<type>] <title>`, the `## Work Type` value, code blocks, paths, identifiers, error strings, the `- [ ]` checklist marker, and the `- N/A — <reason>` escape token all stay verbatim.
 See `caveman-style.md` for the full list of Auto-Clarity carve-outs and conversion rules.
 
-The **chat interaction language follows the user's input** — Korean input gets a Korean reply, English input gets an English reply — but that is the chat layer, not the saved document.
-**Chat is always normal prose, never caveman.**
+Chat replies follow the user's input language and are **always normal prose, never caveman**; only the saved document uses English caveman body prose.
 
 Per-section "Good" / "Bad" examples below describe the *technical contract* (specificity, measurability, concreteness) — those are what survive caveman conversion.
 The "Caveman OK" line under each example shows the same contract emitted in caveman full mode.
@@ -136,11 +135,11 @@ This is the baseline the `Desired Outcome (To-Be)` will be compared against.
 - Preserve structural facts that change the coding route.
   If the input or a referenced spec names architecture layers, data models, function/API groups, settings, event flows, or platform boundaries that affect edit locations, call order, responsibility boundaries, or verification, give each distinct implementation obligation its own bullet instead of abstracting it into "related logic" or "platform work".
 - Prefix every load-bearing top-level bullet with exactly `[confirmed]` or `[inferred]`:
-  - `[confirmed]`: cite file / section / symbol / command proving stable fact.
-  - `[inferred]`: state judgement or likely failure mode and name investigation, fixture, or command that confirms it.
-  - Do not rely on line number alone; pair it with section heading, symbol, nearby literal text, or validator message.
+  - `[confirmed]`: cite the file / section / symbol / command that proves the stable fact.
+  - `[inferred]`: state the judgement or likely failure mode and name the investigation, fixture, or command that will confirm it.
+  - Do not rely on a line number alone; pair it with a section heading, symbol, nearby literal text, or validator message so the downstream agent can still find it after edits shift line numbers.
 - Keep `[confirmed]`, `[inferred]`, `Evidence:`, and `Confirm by:` tokens clear under caveman conversion.
-  Classification accuracy is content-review responsibility; structural validator checks only prefix shape.
+- Classification accuracy is a content-review responsibility. The structural validator checks only that the prefix exists.
 
 ### § Reproduction (`fix` only)
 
@@ -164,8 +163,6 @@ Examples:
 - Bad: `Sometimes login fails.` (no steps, no environment, not actionable)
 - Caveman OK (order kept): `Steps: load /login on iOS Safari 17, type password "foo@bar", then submit. Result: "invalid credentials" toast. Expected: success.`
 - Caveman OK (frequency): `Frequency: intermittent — ~30% on cold session, never after success in same browser.`
-
-If the bug is a visual regression where the entire repro is one navigation step, the `- N/A — <reason>` escape hatch is acceptable.
 
 **Step-order note:** caveman compression here keeps `then` / `next` / `before` / `after` whenever step order matters.
 Do not collapse three steps into a single conjunction-less fragment.
@@ -212,7 +209,7 @@ Examples:
 - Bad: `Tests still pass.` (which tests? what do they actually pin?)
 - Caveman OK: `` Locked: public methods of `UserService` (signature, return shape, thrown errors). Contract: `src/user/__tests__/UserService.test.ts` pass unchanged. Verification: full suite + 3 manual scenarios in `docs/qa/user-service.md`. ``
 
-If existing tests do not cover behavior the refactor must preserve, record verification gap in first investigation stage or `Side Effect Checkpoints`.
+If existing tests do not cover the behavior the refactor must preserve, record the verification gap in the first investigation stage or `Side Effect Checkpoints`.
 Expanding test coverage is allowed only when the user or repository rules permit it.
 
 ### § Desired Outcome (To-Be)
@@ -225,13 +222,13 @@ This is what tells the downstream agent when to stop.
   - Good: `LoginForm` email error shows live while the user is typing.
   - Bad: Refactor `LoginForm` to detect email change via `useEffect`.
   - Caveman OK: `` `LoginForm` show email error live as user type. ``
-- Put ordered work in `Execution Plan`; keep low-level implementation prescriptions out of both sections.
-  `Desired Outcome (To-Be)` states observable end state; each execution stage states bounded outcome and handoff.
+- Put the ordered work in `Execution Plan`; keep low-level implementation prescriptions out of both sections.
+  `Desired Outcome (To-Be)` states the observable end state, while each execution stage states a bounded outcome and handoff.
 - Preserve structural target facts that direct implementation.
   If completion depends on a specific layer split, data shape, API list, setting, event sequence, or platform behavior, state that end-state as its own bullet or move exact constraints into `## Constraints`.
-- If code already has an internal completion signal, keep it distinct from user's success goal when they are not same thing.
-  Example: event firing, status row changing, or validator passing may prove workflow advanced; it may not prove user understood new UX, operator can recover failure, or downstream consumer sees intended data.
-  Put internal signal in `Current State (As-Is)` / `Side Effect Checkpoints`; put desired user or operator result here.
+- If the code already has an internal completion signal, keep it distinct from the user's success goal when they are not the same thing.
+  Example: an event firing, a status row changing, or a validator passing may prove the workflow advanced; it may not prove the user understood the new UX, the operator can recover the failure, or the downstream consumer sees the intended data.
+  Put the internal signal in `Current State (As-Is)` / `Side Effect Checkpoints`, and put the desired user or operator result here.
 
 ### § Scope
 
@@ -240,8 +237,8 @@ Out of Scope is the higher-leverage one: it stops the downstream agent from bein
 
 - **In Scope** — concrete surface area the agent is allowed to change.
   If `In Scope` and `Desired Outcome (To-Be)` are saying the same thing, rewrite `In Scope` as the boundary of where the change applies.
-  For review-style plans, put only must-fix findings and tightly coupled checks here.
-  Do not move every valid finding into `In Scope` just because review found it.
+  For review-style briefs, put only the must-fix findings and tightly coupled checks here.
+  Do not move every valid finding into `In Scope` just because the review found it.
 - **Out of Scope** — specific things the agent might otherwise assume are in play.
   - Good: Do not change the `PaymentService` interface — other teams depend on it.
   - Bad: Don't touch unrelated code.
@@ -256,14 +253,14 @@ Out of Scope is the higher-leverage one: it stops the downstream agent from bein
 
 If the task is legitimately narrow and there's no realistic adjacent overreach, write `- None — self-contained.` Do not pad.
 
-When input is review, audit, TODO list, or broad cleanup request, triage findings before writing this section:
+When the input is a review, audit, TODO list, or broad cleanup request, triage findings before writing this section:
 
-- Must fix now — directly required for user's requested outcome.
-- Check while here — cheap, tightly coupled verification that prevents must-fix work from drifting.
+- Must fix now — directly required for the user's requested outcome.
+- Check while here — cheap, tightly coupled verification that prevents the must-fix work from drifting.
 - Deferred — real issues that should not expand this brief.
 
-Use `[deferred]` bullets for third group.
-If user must choose whether deferred item becomes must-fix, save it in `Open Questions` only when a safe non-blocking default and reconfirm milestone exist; otherwise halt before writing.
+Use `[deferred]` bullets for the third group.
+If the user needs to choose whether a deferred item becomes must-fix, save it in `Open Questions` only when a safe non-blocking default and reconfirm milestone exist; otherwise halt before writing.
 
 ### § Constraints
 
@@ -276,15 +273,12 @@ Examples of what belongs:
 - Mobile Safari 15+ must still work.
 - Agent may choose between two implementation paths only when both satisfy the listed constraints; name the required behavior, risk, and verification.
 - Existing saved records with `status: "pending"` must still load without migration.
-- Existing event name `payment:retry-scheduled` and payload fields remain compatible unless requester explicitly approves breaking change.
+- Existing event name `payment:retry-scheduled` and payload fields remain compatible unless the requester explicitly approves a breaking change.
 
 This section is optional.
 If none, omit the section entirely — do not write `None`.
 
 ### § Related Files / Entry Points
-
-The most expensive thing a coding agent does on a large codebase is figure out where to start.
-This section eliminates that cost.
 
 Each entry should tell the agent where to start, what action starts there, and why that entry matters.
 A useful entry routes the first edit or first read; a weak entry only says the file is "related".
@@ -304,22 +298,22 @@ Rules:
 - Existing paths must exist in the repo as of the codebase review step.
 - Proposed new paths are allowed only when the user confirms them or the target directory / naming pattern is clear from the repo.
 - The proposed marker is the exact literal token `(proposed)` placed immediately after the inline-code path — variants like `(proposed edit)` or `(proposed path)` are not recognized by the structural validator, and a marker later in the line does not skip validation for earlier paths.
-- Root filenames such as `package.json`, `README.md`, and `.gitignore` are checked on disk just like slash-bearing paths. A safe extensionless basename such as `LICENSE`, `Makefile`, `Dockerfile`, or `Pipfile` is checked when it is the first inline-code token, already exists at the repository root, or carries the exact adjacent `(proposed)` marker. This makes a made-up first entry fail while later code symbols such as `STANDARD_SECTIONS` remain symbols; use `()` for code symbols.
+- Root filenames such as `package.json`, `README.md`, and `.gitignore` are checked on disk just like slash-bearing paths. An extensionless name such as `LICENSE`, `Makefile`, `Dockerfile`, or `Pipfile` is checked when it is the first inline-code token, already exists at the repository root, or carries the exact adjacent `(proposed)` marker. Any other extensionless name, such as a later `STANDARD_SECTIONS` token, is treated as a code symbol. Write code symbols with `()` so one in first position is not checked as a file.
 - Put file entry points before the first prose-separating ` — ` outside inline code. Inline code after it is explanation, not another file to validate. Multiple file tokens before the separator are all checked.
 - URLs are supplementary references, not filesystem paths. Write a route as ``- Route: `/login` — <purpose>`` and provide a separate file/directory entry for its implementation. Neither URLs nor routes satisfy the mandatory file-entry count.
 
 - Prefer stable locators over bare line numbers.
   Good: `` `validate_entry_paths()` in `scripts/validate_brief.py` — tighten `(proposed)` handling.``
   Risky: `` `scripts/validate_brief.py:570` — fix this.``
-  Line numbers may appear, but pair them with section, symbol, or nearby literal token.
+  Line numbers may be included, but pair them with a section, symbol, or nearby literal token.
 - Never invent PR numbers, existing paths, or prior briefs.
 - If the review does not turn up at least one concrete entry point, ask the user before saving.
   Do not emit an empty `Related Files / Entry Points` section.
 
 ### § Execution Plan
 
-This is authoritative implementation sequence for single plan and each briefset child.
-Fresh coding agent must recover first stage, intended order, stage deliverables, handoffs, replan boundaries, and point where overall verification begins.
+This is the authoritative implementation sequence for a single brief and for each briefset child.
+A fresh coding agent must be able to recover the first stage, intended order, deliverable passed between stages, replan boundaries, and the point at which overall verification begins.
 
 Use one or more consecutively numbered H3 stages in this exact field order:
 
@@ -334,23 +328,23 @@ Use one or more consecutively numbered H3 stages in this exact field order:
 - Replan when: <condition, or None — <reason>>
 ```
 
-Add `- Worker decision: <bounded reversible implementation choice>` only when worker genuinely owns local choice.
-Keep choice inside user scope, constraints, and compatibility envelope; never delegate product decision or breaking change.
+Add `- Worker decision: <bounded reversible implementation choice>` only when the worker genuinely owns a local choice.
+Keep the choice inside the user's scope, constraints, and compatibility envelope; do not use it to delegate a product decision or breaking change.
 For a briefset child, augment this base shape with the mandatory `No-op when`, `No-op handoff`, and per-stage `Verify` / `Inputs` / `Expected` fields in `references/briefset.md`; the parent validator checks those additions transitively.
 
 Rules:
 
-- Start Stage 1 from concrete precondition: confirmed baseline, available dependency, or named input.
-- State `Work` as bounded stage outcome, not exact edits, functions, or implementation recipe.
-- Name `Deliverable`: pinned reproduction, stable contract, migrated state, integrated surface, or verification evidence.
-- Make every verification action reproducible: name repository-supported command or bounded inspection, concrete input/target, and observable expected signal.
-  If repository does not establish command, use bounded inspection instead of inventing one.
+- Start Stage 1 from a concrete precondition such as a confirmed baseline, available dependency, or named input.
+- State `Work` as the bounded outcome the stage must produce, not exact edits, functions, or an implementation recipe.
+- Name the `Deliverable` so the next stage knows what it receives: a pinned reproduction, stabilized contract, migrated state, integrated surface, or verification evidence.
+- Make every verification action reproducible: name the repository-supported command or bounded inspection, its concrete input/target, and the observable expected signal.
+  If the repository does not establish a command, use a bounded inspection instead of inventing one.
 - Put stage-local completion only under `Ends when` as one or more indented checklist items.
-- Make `Handoff` name next stage or overall verification and deliverable received.
-- Use `Replan when` for discovery invalidating route. Name next owner/action, not only condition. If none useful, use `None — <reason>`.
-- In verification-only or no-change stage, failed proof stops dependent work and returns to owning plan for bounded correction, re-verification, and relationship recalculation before resume.
-- Put technical uncertainty into investigation stage or `Replan when`; never into `Open Questions`.
-- Keep `Acceptance Criteria` out of stages. Evaluate only after all required stages and side-effect checks finish.
+- Make `Handoff` name the next stage or overall verification and the deliverable it receives.
+- Use `Replan when` for a discovery that invalidates the route and name the next owner/action, not only the condition. If no replan boundary is useful, use `None — <reason>`.
+- In a verification-only or no-change stage, a failed proof must stop dependent work and return to the owning plan: correct the failed item within the plan's scope, re-run the proof, and recompute the affected stage handoffs (or child relationships in a briefset) before execution resumes.
+- Put technical uncertainty into an investigation stage or `Replan when`; do not convert it into an `Open Questions` item.
+- Keep `Acceptance Criteria` out of individual stages. They are evaluated only after all required stages and side-effect checks finish.
 
 **Auto-Clarity:** Preserve every stage, field label, field order, indented checklist, handoff referent, replan condition, path, command, input, and expected signal exactly enough to remain mechanically and semantically recoverable.
 Caveman may shorten prose values only; it may not merge fields, remove a stage, flatten `Ends when`, drop briefset no-op or verification fields, or turn stage order into implication.
@@ -371,44 +365,44 @@ Derive checkpoints from:
 2. Known integrations — what external services / teams touch this surface?
 3. User's answers during Stage 4.
 
-Always add explicit checkpoints for contracts that codebase review shows must remain stable:
+Always add explicit checkpoints for contracts that the codebase review shows must remain stable:
 
 - Persisted identifiers, status values, and storage formats.
 - Public API shapes, CLI flags, route names, schema fields, event names, and cross-process payloads.
-- i18n keys, analytics event names, generated files, and config keys consumed outside edited module.
+- i18n keys, analytics event names, generated files, and config keys consumed outside the edited module.
 
 Avoid generic compatibility language.
-Name contract and expected preservation behavior.
+Name the contract and the expected preservation behavior.
 
 ### § Acceptance Criteria
 
 Measurable whole-work completion criteria, evaluated only after every required execution stage and side-effect checkpoint is complete.
 Checklist format.
 Distinct from `Desired Outcome (To-Be)`: `Desired Outcome` describes the end state; `Acceptance Criteria` describe how to verify the end state is reached.
-Distinct from `Execution Plan`: stage completion belongs under each stage's `Ends when`; do not duplicate local gates here.
+Distinct from `Execution Plan`: stage completion belongs under each stage's `Ends when`; do not duplicate those local gates here.
 
 - Good: `- [ ] Error message appears after 500ms debounce while the user is typing the email.`
 - Good: `- [ ] Lighthouse Performance score ≥ 90 (mobile).`
 - Bad: `- [ ] UX feels better.`
 - Bad: `- [ ] All tests pass.` (empty — tests always have to pass)
-- If task has both internal pass condition and user / operator success condition, include both as separate criteria.
-  Good: ``- [ ] `job.completed` emit only after export file written.``
-  Good: `- [ ] Success toast tell operator where to find exported file.`
+- If the task has both an internal pass condition and a user / operator success condition, include both as separate criteria.
+  Good: ``- [ ] `job.completed` is emitted only after the export file is written.``
+  Good: `- [ ] The success toast tells the operator where to find the exported file.`
   Bad: `- [ ] Export works.` (collapses system completion and operator usability)
 - When the verification command is not obvious from the repo, name it inline (e.g. `npx cypress run --spec ...`).
 - For validator or workflow-contract fixes, include one small proof path when allowed:
-  - Good: `- [ ] Sample Related Files bullet with one proposed path and one fake existing path fails validation for fake path.`
-  - Good: `- [ ] Existing validator scripts pass on saved plan exercising changed rule.`
-  - Bad: `- [ ] Validator stricter.` (no observable proof)
-- Do not require new test files, fixture files, or automation unless user or repository rules allow them.
-  If malformed sample is needed only to prove behavior, specify temporary or scratch-only use when repository permits; do not commit unless explicitly requested.
+  - Good: `- [ ] A sample Related Files bullet with one proposed path and one fake existing path fails validation for the fake path.`
+  - Good: `- [ ] Existing validator scripts still pass on the saved brief that exercises the changed rule.`
+  - Bad: `- [ ] Validator is stricter.` (no observable proof)
+- Do not require new test files, fixture files, or automation unless the user or repository rules allow them.
+  If a small malformed sample is needed only to prove behavior, specify that it should be temporary or scratch-only when the repository permits, and should not be committed unless explicitly requested.
 
 Derive technical proof paths from input and code evidence. Ask when the desired behavior or acceptance threshold remains ambiguous, offering a grounded recommendation. If unanswered, record a safe fallback and reconfirmation point; halt when no safe fallback exists. Do not invent user acceptance requirements.
 
 ### § Open Questions
 
-Non-blocking decisions only user owns and that can safely use stated default until named reconfirmation point.
-This section stays in normal prose. It is not parking lot for technical unknowns, reviewer preferences, or reversible implementation choices.
+Non-blocking decisions that only the user owns and that can safely use a stated default until a named reconfirmation point.
+This section stays in normal prose. It is not a parking lot for technical unknowns, reviewer preferences, or reversible implementation choices.
 
 - Allow only product behavior, scope, compatibility breaks, external ownership, acceptance thresholds, or other user-owned choices.
 - Use this exact normal-prose form for every saved question:
@@ -417,11 +411,11 @@ This section stays in normal prose. It is not parking lot for technical unknowns
   - [non-blocking] <question> — Default: <safe fallback>; Reconfirm before: <stage or milestone>
   ```
 
-- Ensure default lets worker execute safely now and reconfirmation occurs before decision becomes irreversible.
-- Default valid only until that point. If no answer when worker reaches it, stop before crossing boundary and ask user again.
-- If no safe default exists, decision is blocking: halt Stage 4 and do not create file until user answers.
-- Move codebase facts into investigation stages, reversible choices into `Worker decision`, invalidation conditions into `Replan when`, and fixed limits into `Constraints`.
-- Do not leave decisions to reviewer or downstream worker.
+- Ensure the default lets the worker execute safely now and the reconfirmation point occurs before the decision becomes irreversible.
+- The default is valid only until that point. If no answer exists when the worker reaches it, stop before crossing the boundary and ask the user again.
+- If no safe default exists, the decision is blocking: halt Stage 4 and do not create the file until the user answers.
+- Move codebase-verifiable facts into investigation stages, bounded reversible choices into `Worker decision`, invalidation conditions into `Replan when`, and fixed limits into `Constraints`.
+- Do not leave decisions to a reviewer or downstream worker in this section.
 - If there genuinely are none, write `- None — <reason>`, e.g. `- None — no user-owned decisions remain; implementation choices are bounded in Constraints.`
   The exact em dash form is required; the validator rejects a plain hyphen, an en dash, and bare `- None`.
 
@@ -430,7 +424,7 @@ This section stays in normal prose. It is not parking lot for technical unknowns
 ## Worked Example
 
 The example below is emitted in caveman full mode.
-Headers, paths, identifiers, PR numbers, error strings, and the title-line format stay verbatim; body prose is compressed.
+Headers, the full title line (including its normal capitalization and articles), paths, identifiers, PR numbers, error strings, and `Open Questions` keep their protected form; body prose is compressed.
 
 ```markdown
 # [feat] Introduce global hotkey system
@@ -439,8 +433,8 @@ Headers, paths, identifiers, PR numbers, error strings, and the title-line forma
 feat
 
 ## Current State (As-Is)
-- [confirmed] As of `<short-sha>` on `<branch>`, key bindings in `src/hotkeys/useHotkey.ts` fire only while app window focused — Evidence: `useHotkey()` registration branch.
-- [confirmed] Background shortcuts no register — Evidence: existing manual hotkey scenario on `<short-sha>`.
+- [confirmed] As of `a1b2c3d` on `main`, key bindings in `src/hotkeys/useHotkey.ts` fire only while app window focused — Evidence: `useHotkey()` registration branch.
+- [confirmed] Background shortcuts no register — Evidence: existing manual hotkey scenario on `a1b2c3d`.
 
 ## Desired Outcome (To-Be)
 - OS-level global shortcut invoke app action even while app backgrounded.
@@ -505,6 +499,3 @@ feat
 ## Open Questions
 - [non-blocking] On Linux, if support is unavailable, should the Settings section be hidden or shown as disabled? — Default: hide the unsupported section; Reconfirm before: Linux release scope is approved.
 ```
-
-**Note:** the title line `# [feat] Introduce global hotkey system` keeps normal capitalization and articles because the title format is contract (validator parses `# [<type>] <title>`).
-Title text, Open Questions, and the other Auto-Clarity regions retain their protected form.

@@ -42,7 +42,7 @@ survive plugin unload and leak the classloader. See `02_runtime_services.md` and
 
 For action-owned work, use `AnActionEvent.coroutineScope` on 2026.1+,
 `currentThreadCoroutineScope()` on 2024.2–2025.3, or a service-injected scope on 2024.1.
-The event property is public in `idea/2026.2.2`; its installer is internal and forbidden.
+The event property is public in `idea/2026.3`; its installer is internal and forbidden.
 
 ### Action API drift
 
@@ -63,8 +63,8 @@ The event property is public in `idea/2026.2.2`; its installer is internal and f
 | Model work on `Dispatchers.Main` | `Dispatchers.EDT` when EDT is required, or `Dispatchers.Default` plus explicit `readAction`/`writeAction` |
 | Deprecated `readAndWriteAction` | `readAndEdtWriteAction` to preserve its EDT write phase; choose the background variant only after a BGT-safety audit |
 
-At tag `idea/2026.2.2` (commit
-`1c7e601c0423e544917046c23763b15d0282e2a3`), public `writeAction` delegates to public
+Since 2026.2, and still at tag `idea/2026.3` (commit
+`c91871ae2864649d952825cff72569e3db0e7ac6`), public `writeAction` delegates to public
 `backgroundWriteAction`. This differs from its 2024.1-era EDT behavior. See the source and
 status links in `04_threading_coroutines_2024.md` before applying a mechanical replacement.
 

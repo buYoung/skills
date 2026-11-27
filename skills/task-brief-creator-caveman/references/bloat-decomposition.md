@@ -109,7 +109,7 @@ One signal alone is not enough — every non-trivial child trips at least one, s
 - **B1 — Conflict hotspots.** The candidate's `Related Files / Entry Points` covers four or more files, or four or more files would be edited under the cut.
 - **B2 — Mixed acceptance criteria.** The candidate's acceptance criteria mix items belonging to different execution waves, or items belonging to different failure modes (no shared verification path).
 - **B3 — Blocks multiple waves.** The candidate sits as a precondition for two or more downstream children that themselves run in different execution waves.
-- **B4 — Hard one-sentence "Exists because".** The candidate's `Exists because` cannot be stated in one sentence without conjunctions like "and / plus / also."
+- **B4 — No one-sentence outcome.** The candidate's bounded outcome cannot be stated in one sentence without conjunctions like "and / plus / also."
 - **B5 — Outsized vs siblings.** The candidate's draft file size is at least 1.5× the median sibling brief size in the same briefset.
 
 Size alone is **not** a split rationale.
@@ -134,7 +134,7 @@ B5 is a by-product signal — it only justifies a split in conjunction with one 
    Drop the cut if its two halves share the same failure path.
 6. **Apply the surviving cut.** Replace the original candidate with the post-cut children.
 7. **Re-run bloat detection** on each new child.
-   If a child still triggers ≥ 2 signals, BDR can iterate, but cap iteration depth at **two passes per candidate** (each child has its own iteration budget).
+   If a child still triggers ≥ 2 signals, BDR can iterate, but cap iteration depth at **two passes per candidate**.
    When that limit is reached, retain the candidate with the examined exception and an executable stage sequence, or ask only if a user-owned scope decision is required. Do not keep splitting to satisfy a signal-count checklist. Count descendants against the original candidate's two-pass budget; a cut does not reset it.
    As a separate global sanity check: if the post-BDR child count exceeds ~8, surface a "briefset is unusually wide; consider splitting the umbrella" comment to the user — that scale typically signals an under-scoped umbrella, not a successful decomposition.
 

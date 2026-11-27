@@ -1,7 +1,7 @@
 // Pairs with references/07_language_lexer_jflex.md.
-// JFlex source. The IntelliJ Platform Gradle Plugin runs JFlex with --charat to
+// JFlex source. The Grammar-Kit Gradle sub-plugin runs JFlex with --charat to
 // produce com.example.simplelang.SimpleLexer (which implements FlexLexer); we
-// then wrap it in FlexAdapter via SimpleLexerAdapter.kt.
+// then wrap it in FlexAdapter via SimpleLexerAdapter in SimpleParserDefinition.kt.
 package com.example.simplelang;
 
 import com.intellij.lexer.FlexLexer;

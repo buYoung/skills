@@ -88,14 +88,15 @@ When Serena MCP is available, prefer these tools over `rg` / `grep` / `find` for
 
 - **`find_symbol`**: Locate symbol definitions (functions, classes, methods) by `name_path` and optional `relative_path`
 - **`find_referencing_symbols`**: Cross-reference callers — required for tracing flows end-to-end (e.g., error propagation, wiring chains)
-- **`find_referencing_code_snippets`**: Inspect actual usage contexts surrounding a symbol
+- **`find_implementations`** / **`find_declaration`**: Jump from a symbol to its implementations or to its declaration
 - **`get_symbols_overview`**: Top-level symbol map of a file — use to compare multiple implementations of the same role (e.g., 5 dialogs, 5 commands)
 - **`search_for_pattern`**: Regex search across the codebase (alternative to `rg`)
 - **`list_dir` / `find_file` / `read_file`**: File navigation and reading alternatives
 
 ### Constraints
 
-- Use **only the read-only tools above**. Do **NOT** invoke write/edit tools (`replace_symbol_body`, `insert_after_symbol`, `insert_before_symbol`, `rename_symbol`, `safe_delete_symbol`, `create_text_file`, `edit_memory`, etc.) or `execute_shell_command` during AGENTS.md generation — generation is a read-only analysis task.
+- Use **only the read-only tools above**. Do **NOT** invoke write/edit tools (`replace_symbol_body`, `insert_after_symbol`, `insert_before_symbol`, `rename_symbol`, `safe_delete_symbol`, `replace_content`, `replace_in_files`, `create_text_file`, `edit_memory`, etc.) or `execute_shell_command` during AGENTS.md generation — generation is a read-only analysis task.
+- Do **NOT** use `serena_repl`. Serena v2 can be configured to expose a REPL interface instead of separate tools; that single tool runs Python code, so it is not limited to read-only operations. When Serena exposes only the REPL interface, use the fallback below.
 - Memory tools (`write_memory`, `read_memory`, `list_memories`, `delete_memory`, `rename_memory`) are out of scope for this skill.
 
 ### Fallback
@@ -204,12 +205,12 @@ If an update anchor exists:
 python ./scripts/git_ownership_signals.py <target_directory> --anchor <anchor_commit>
 ```
 
-The output shape is stable:
+The field names and order are stable. This example shows a run at the repository root with default options, using placeholder paths and dates, with `top_changed_paths` shortened to two entries. With `--anchor`, the output shows `range: anchor` and an `anchor:` line instead of `since:`:
 
 ```markdown
 repo: /abs/path
 scope: .
-range: since
+range: default_3mo
 since: 3 months ago
 commits: 142
 limit: 20
@@ -222,7 +223,7 @@ top_changed_paths:
 - 31 src/payment/PaymentService.ts last=2026-06-10 exists=true
 
 notes:
-- excludes: *.lock, pnpm-lock.yaml, package-lock.json, yarn.lock, node_modules/**, vendor/**, dist/**, build/**
+- excludes: *.lock, pnpm-lock.yaml, package-lock.json, yarn.lock, poetry.lock, Pipfile.lock, Cargo.lock, Gemfile.lock, Podfile.lock, node_modules/**, */node_modules/**, vendor/**, */vendor/**, dist/**, */dist/**, build/**, */build/**, coverage/**, */coverage/**, .next/**, */.next/**, .turbo/**, */.turbo/**
 - use: discovery signal only; confirm against current code or documented contracts
 ```
 
@@ -321,7 +322,7 @@ Lock files must NOT be read:
 - `pyproject.toml`, `ruff.toml`, `mypy.ini`, `pytest.ini`, `tox.ini`
 - Build configs such as `vite.config.*`, `webpack.config.*`, `rollup.config.*`, `build.gradle*`, `pom.xml`, `Makefile`, `Dockerfile`
 - Test configs such as `vitest.config.*`, `jest.config.*`, `playwright.config.*`, `cypress.config.*`
-- Workspace configs such as `pnpm-workspace.yaml`, `turbo.json`, `nx.json`, `lerna.json`, `rush.json`, `.moon/workspace.yml`
+- Workspace configs such as `pnpm-workspace.yaml`, `turbo.json`, `nx.json`, `lerna.json`, `rush.json`, `.moon/workspace.*`
 - CI workflow files such as `.github/workflows/*`, `.gitlab-ci.yml`, `azure-pipelines.yml`, `circle.yml`
 
 ### Package Manifests

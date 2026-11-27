@@ -3,6 +3,7 @@ import { readFile } from 'node:fs/promises';
 import path from 'node:path';
 
 const root = process.argv[2];
+assert.ok(root, 'usage: node mixed-react-modal-library.mjs <repaired-fixture-root>');
 const read = (file) => readFile(path.join(root, file), 'utf8');
 const [pkg, consumers, context, modal, exportsFile, types, report] = await Promise.all([
   read('package.json'),

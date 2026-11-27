@@ -6,14 +6,14 @@ links, or documentation actions for PSI or symbol targets.
 ## API boundary and version
 
 The target-provider interfaces and their descriptor registrations are available to external
-plugins in IntelliJ Community `idea/2026.2.2` at commit
-`1c7e601c0423e544917046c23763b15d0282e2a3`. Register them through the qualified EP names in
-[`LangExtensionPoints.xml`](https://github.com/JetBrains/intellij-community/blob/1c7e601c0423e544917046c23763b15d0282e2a3/platform/platform-resources/src/META-INF/LangExtensionPoints.xml);
+plugins in IntelliJ Community `idea/2026.3` at commit
+`c91871ae2864649d952825cff72569e3db0e7ac6`. Register them through the qualified EP names in
+[`intellij.platform.lang.impl.xml`](https://github.com/JetBrains/intellij-community/blob/c91871ae2864649d952825cff72569e3db0e7ac6/platform/lang-impl/resources/intellij.platform.lang.impl.xml);
 their `EP_NAME` fields are `@ApiStatus.Internal` and must not be called by plugin code.
 The declarations are
-[`DocumentationTargetProvider`](https://github.com/JetBrains/intellij-community/blob/1c7e601c0423e544917046c23763b15d0282e2a3/platform/lang-impl/src/com/intellij/platform/backend/documentation/DocumentationTargetProvider.java),
-[`PsiDocumentationTargetProvider`](https://github.com/JetBrains/intellij-community/blob/1c7e601c0423e544917046c23763b15d0282e2a3/platform/lang-impl/src/com/intellij/platform/backend/documentation/PsiDocumentationTargetProvider.java),
-and [`SymbolDocumentationTargetProvider`](https://github.com/JetBrains/intellij-community/blob/1c7e601c0423e544917046c23763b15d0282e2a3/platform/lang-impl/src/com/intellij/platform/backend/documentation/SymbolDocumentationTargetProvider.java).
+[`DocumentationTargetProvider`](https://github.com/JetBrains/intellij-community/blob/c91871ae2864649d952825cff72569e3db0e7ac6/platform/lang-impl/src/com/intellij/platform/backend/documentation/DocumentationTargetProvider.java),
+[`PsiDocumentationTargetProvider`](https://github.com/JetBrains/intellij-community/blob/c91871ae2864649d952825cff72569e3db0e7ac6/platform/lang-impl/src/com/intellij/platform/backend/documentation/PsiDocumentationTargetProvider.java),
+and [`SymbolDocumentationTargetProvider`](https://github.com/JetBrains/intellij-community/blob/c91871ae2864649d952825cff72569e3db0e7ac6/platform/lang-impl/src/com/intellij/platform/backend/documentation/SymbolDocumentationTargetProvider.java).
 `SymbolDocumentationTargetProvider` is public but `@ApiStatus.Experimental` in this target;
 prefer the stable `DocumentationTargetProvider` or `PsiDocumentationTargetProvider` when a
 symbol-specific contract is unnecessary.

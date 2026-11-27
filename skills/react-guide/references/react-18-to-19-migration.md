@@ -6,7 +6,7 @@ Read only for an explicitly authorized React 18→19 migration departure audit. 
 
 ## Collect Inputs
 
-Collect resolved React 18 minor, 18.3 warnings when available, root APIs, deprecated/removed API call sites, JSX transform, types, string refs, legacy context, function `propTypes/defaultProps`, cleanup findings, public consumers, and existing build/runtime evidence.
+Collect resolved React 18 minor, 18.3 warnings when available, root APIs, deprecated/removed API call sites (removed React DOM APIs are listed in [React 19 migration](react-19-migration.md)), JSX transform, types, string refs, legacy context, function `propTypes/defaultProps`, cleanup findings, public consumers, and existing build/runtime evidence.
 
 ## Decision Sequence and Table
 

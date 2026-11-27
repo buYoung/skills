@@ -4,7 +4,7 @@
 
 A release-it plugin is a class extending the `Plugin` base class. Create a plugin when hooks alone are insufficient — e.g. you need to provide version information, integrate with external APIs, or replace core behavior.
 
-The interfaces below are source-checked for **21.0.1**. Match the applying project's
+The interfaces below are source-checked for **21.1.3**. Match the applying project's
 installed API and runtime before declaring a wider compatibility range. A custom version
 provider must follow the [version source contract](plugins.md#version-source-contract).
 
@@ -46,10 +46,10 @@ export default MyVersionPlugin;
   "type": "module",
   "keywords": ["release-it", "release-it-plugin"],
   "peerDependencies": {
-    "release-it": "21.0.1"
+    "release-it": "21.1.3"
   },
   "devDependencies": {
-    "release-it": "21.0.1"
+    "release-it": "21.1.3"
   }
 }
 ```
@@ -183,9 +183,17 @@ Tasks after bump but before release. Stage files for the release commit.
 
 ### release()
 
-Main release logic. Use `this.step()` to create interactive prompts or CI spinners.
+Main release logic. Use `this.step()` to create interactive prompts or CI spinners. Outside
+CI, each enabled step looks up its `prompt` name among the plugin's registered prompts:
 
 ```js
+init() {
+  this.registerPrompts({
+    'deploy-confirm': { type: 'confirm', message: () => 'Deploy to production?', default: true },
+    'notify-confirm': { type: 'confirm', message: () => 'Send the release notification?', default: true }
+  });
+}
+
 async release() {
   if (this.config.isDryRun) {
     this.log.info('Would deploy and send the configured notification');
@@ -201,7 +209,8 @@ async release() {
   await this.step({
     enabled: this.options.notify,
     task: () => this.notifySlack(),
-    label: 'Sending notification'
+    label: 'Sending notification',
+    prompt: 'notify-confirm'
   });
 }
 ```
@@ -321,10 +330,12 @@ await this.step({
 ```
 
 In CI mode: shows spinner. In interactive mode: shows prompt — if user says "No", `task` is not executed.
+A disabled step returns `false` without a lookup. An enabled step whose `prompt` is missing or
+not registered fails with a `TypeError` in the stock prompt instead of running the task.
 
 ### this.registerPrompts(definitions)
 
-Register a map keyed by the names passed to `this.step({ prompt })`. In 21.0.1,
+Register a map keyed by the names passed to `this.step({ prompt })`. In 21.1.3,
 `message` is called with the execution context; use a function, not a string:
 
 ```js
@@ -343,8 +354,8 @@ The stock prompt supports confirm/input/list definitions. A caller's injected pr
 adapter must support the namespace and definition as well: the packaged interactive
 adapter accepts only Git commit/tag/push and intentionally rejects this deploy question.
 Extend that adapter only for the capabilities requested by the applying workflow.
-Sources: [Plugin](https://github.com/release-it/release-it/blob/21.0.1/lib/plugin/Plugin.js)
-and [Prompt](https://github.com/release-it/release-it/blob/21.0.1/lib/prompt.js).
+Sources: [Plugin](https://github.com/release-it/release-it/blob/21.1.3/lib/plugin/Plugin.js)
+and [Prompt](https://github.com/release-it/release-it/blob/21.1.3/lib/prompt.js).
 
 ### Dry-run and Direct Effects
 
@@ -398,7 +409,7 @@ Given external plugins A and B:
 
 External plugins run before core plugins through `beforeRelease`, and after core plugins
 for `release`/`afterRelease`. The order within each group stays unchanged, so A still
-precedes B. See the exact [21.0.1 lifecycle order](hooks-and-lifecycle.md#plugin-order-and-side-effects)
+precedes B. See the exact [21.1.3 lifecycle order](hooks-and-lifecycle.md#plugin-order-and-side-effects)
 before placing publication, staging, or recovery logic. Getter precedence does not disable
 another plugin's bump writes.
 

@@ -4,7 +4,7 @@ description: >
   Diagnose and tune JetBrains IDE VM options against the IDE's actual boot runtime, including bundled or custom
   JetBrains Runtime (JBR) 17, 21, and 25. Use whenever a user asks about JetBrains IDE performance, freezes,
   startup or indexing speed, memory pressure, garbage collection, heap sizing, `.vmoptions`, or IntelliJ IDEA,
-  WebStorm, PyCharm, GoLand, Rider, CLion, PhpStorm, RubyMine, or DataGrip JVM tuning. Distinguish the IDE process
+  WebStorm, PyCharm, GoLand, Rider, CLion, PhpStorm, RubyMine, RustRover, or DataGrip JVM tuning. Distinguish the IDE process
   from project JDK, Gradle, build, test, and remote-backend processes; propose evidence-based minimal changes,
   confirm effective flags after restart, and provide rollback and before/after measurement steps.
 ---
@@ -49,7 +49,7 @@ For each proposed option, record the exact runtime family and build it applies t
 
 - **source declaration**: a value or availability declared by a specific JBR/OpenJDK source revision;
 - **runtime-selected value**: the ergonomic or initialized value reported by the user's running JVM;
-- **IDE bundle value**: an option supplied by the product's shipped or custom `.vmoptions` file.
+- **IDE bundle value**: an option supplied by the product's shipped or custom `.vmoptions` file or by its launcher configuration (for example, `product-info.json` in a macOS installation).
 
 Prefer the running IDE's `jcmd VM.command_line` and `VM.flags -all` output for effective values. Link source claims to the matching JBR version, revision, and file. Do not present a source initializer as the final value when runtime ergonomics can change it.
 
@@ -68,6 +68,8 @@ Default to an add/change/remove list against the confirmed current settings. Pre
 
 Recommend one change purpose at a time. Do not use fixed large heaps, `-Xms = -Xmx`, lower compilation tiers, or forced compiler/GC thread counts as generic optimizations. State the observed condition that justifies them and their costs.
 
+Keep `-XX:-UseBASE64Intrinsics` through cleanup, duplicate removal, A/B comparison, and rollback until JetBrains' Java4Shell (CVE-2026-114938) advisory states that the confirmed IDE build bundles a JBR with the upstream fix. Per the advisory published 2026-11-24, updated IDEs add it to their default options and users without the update add it manually; a manual line that repeats the default is redundant but harmless. Never suggest `-XX:UseAVX=2`: JetBrains warns that it prevents JBR 25 from starting on ARM64. See [security mitigation options](references/prerequisite-check.md#security-mitigation-options).
+
 ### 6. Include application, verification, and rollback
 
 Tell the user to use the product's **Help | Edit Custom VM Options** action or the exact override source already confirmed. Do not advise editing the installation's default file.
@@ -82,9 +84,9 @@ Unless the user explicitly requests a full file, return:
 
 1. **Confirmed environment** — IDE, actual boot runtime/build/path, bundled or custom status, OS/architecture, target process, and unknowns.
 2. **Evidence and diagnosis** — observations, likely cause, alternatives, and the provenance of version-sensitive facts.
-3. **Proposed delta** — options to add, change, or remove, with reason, applicability, and trade-off. Say “no VM option change yet” when evidence does not support one.
+3. **Proposed delta** — options to add, change, or remove, with reason, applicability, and trade-off. Say “no VM option change yet” when evidence does not support one. Do not list `-XX:-UseBASE64Intrinsics` under removals while the Java4Shell rule in step 5 applies.
 4. **Apply and verify** — exact settings location, restart requirement, and effective-value checks.
-5. **Rollback** — how to restore the captured baseline.
+5. **Rollback** — how to restore the captured baseline, keeping `-XX:-UseBASE64Intrinsics` if it is present and the step 5 rule applies.
 6. **Before/after comparison** — target metric and controlled A/B procedure, or a link to the relevant steps.
 
 When a full configuration is requested, require the current effective/original options first, preserve required IDE options, annotate only the intended changes, and still provide the delta separately.
@@ -96,7 +98,7 @@ When a full configuration is requested, require the current effective/original o
 - Verify platform- and build-dependent flags against the exact runtime binary before recommending them.
 - Distinguish option recognition, option activation, and measured improvement.
 - Report when a collector or diagnostic facility is absent from a particular JBR build.
-- State when only JBR 25.0.4 source/default inspection is available and other builds or performance outcomes remain unverified.
+- State when only this package's JBR 25.0.4.1 (`b635.79`, macOS aarch64) default-collector check and JBR 25.0.4 source inspection are available and other builds, platforms, or performance outcomes remain unverified.
 
 ## Scope
 

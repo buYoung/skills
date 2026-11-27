@@ -155,28 +155,34 @@ only need syntax highlighting, completion, or validation without fold regions.
   document instead and let `CodeFoldingManager` own folding updates.
 
   ```kotlin
-  val descriptors = ReadAction.compute<Array<FoldingDescriptor>, RuntimeException> {
+  // Inside a coroutine owned by the editor's component or service scope.
+  val descriptors = readAction {
     val builder = LanguageFolding.INSTANCE.forLanguage(psiFile.language)
     LanguageFolding.buildFoldingDescriptors(builder, psiFile, document, false)
   }
 
-  editor.foldingModel.runBatchFoldingOperation {
-    for (descriptor in descriptors) {
-      val range = descriptor.range
-      if (!range.isEmpty && range.endOffset <= document.textLength) {
-        val region = editor.foldingModel.addFoldRegion(
-          range.startOffset,
-          range.endOffset,
-          descriptor.placeholderText ?: "..."
-        )
-        region?.isExpanded = descriptor.isCollapsedByDefault != true
+  withContext(Dispatchers.EDT) {
+    editor.foldingModel.runBatchFoldingOperation {
+      for (descriptor in descriptors) {
+        val range = descriptor.range
+        if (!range.isEmpty && range.endOffset <= document.textLength) {
+          val region = editor.foldingModel.addFoldRegion(
+            range.startOffset,
+            range.endOffset,
+            descriptor.placeholderText ?: "..."
+          )
+          region?.isExpanded = descriptor.isCollapsedByDefault != true
+        }
       }
     }
   }
   ```
 
   This is the minimum shape: compute descriptors under a Read Action, then apply regions on
-  the EDT inside a batch folding operation. Production code should remove or update only its
+  the EDT inside a batch folding operation. Do not use the blocking `ReadAction.compute`
+  here; it is deprecated on 2026.1+. Outside coroutines, compute with
+  `ReadAction.nonBlocking { ... }` and apply the regions in `finishOnUiThread`. Production
+  code should remove or update only its
   own previous manual regions and preserve expansion state when that matters.
 - **Refresh folds under a read lock.** `CodeFoldingManager.updateFoldRegions(editor)` reads
   PSI and is annotated as requiring a read lock. If UI code updates editor text and

@@ -10,7 +10,7 @@ Keep three layers separate:
 2. **Runtime-selected value:** what ergonomics and initialization selected for this process, shown by `VM.flags -all`.
 3. **IDE bundle value:** what the IDE's default or custom options explicitly selected.
 
-The available direct check of local JBR 25.0.4 reported G1 as its default collector. At inspected source revision `4af5e1194b7f34a396bd56f25eef17624eb60400`, `GCConfig::select_gc_ergonomically()` selects G1 on a server-class machine when no collector is already selected, and Serial on a non-server-class machine when available. The same source rejects multiple collectors. This checked result and source are not proof of the effective collector in another build or in an IDE whose bundled options override it.
+On 2026-11-27, `java -XX:+PrintFlagsFinal -version` with the JBR bundled in IntelliJ IDEA 2026.3.0.1 (`25.0.4.1+1-b635.79`, tag `jbr-release-25.0.4.1b635.79`) reported `UseG1GC = true {ergonomic}` on macOS 15.7.1, aarch64, 14 CPUs, and 64 GiB of memory. That tag's `gcConfig.cpp` is identical to the one at inspected source revision `4af5e1194b7f34a396bd56f25eef17624eb60400`, where `GCConfig::select_gc_ergonomically()` selects G1 on a server-class machine when no collector is already selected, and Serial on a non-server-class machine when available. The same source rejects multiple collectors. This checked result and source are not proof of the effective collector in another build or in an IDE whose bundled options override it.
 
 - [JBR 25.0.4 inspected `gcConfig.cpp` revision](https://github.com/JetBrains/JetBrainsRuntime/blob/4af5e1194b7f34a396bd56f25eef17624eb60400/src/hotspot/share/gc/shared/gcConfig.cpp)
 - [JetBrains Runtime release/build matrix](https://github.com/JetBrains/JetBrainsRuntime)

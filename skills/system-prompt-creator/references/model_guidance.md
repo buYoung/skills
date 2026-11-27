@@ -30,7 +30,7 @@ not a runtime test.
 
 ## OpenAI
 
-Official sources checked 2026-09-08:
+Official sources checked 2026-11-27:
 
 - [Structured model outputs](https://developers.openai.com/api/docs/guides/structured-outputs):
   scope is supported OpenAI models and schemas. Responses uses `text.format`; Chat Completions
@@ -38,7 +38,7 @@ Official sources checked 2026-09-08:
   JSON mode addresses JSON validity; Structured Outputs adds schema adherence. Prompt-only
   schema text enables neither feature. Even schema-conforming output may contain wrong facts
   or labels. Handle refusals and incomplete responses separately from a successful parsed result.
-- [Responses API reference](https://developers.openai.com/api/reference/cli/resources/responses/methods/create):
+- [Responses API reference](https://developers.openai.com/api/reference/resources/responses/methods/create):
   `instructions` carries system/developer instructions and `input` carries runtime input.
   With `previous_response_id`, previous instructions are not automatically carried forward;
   account for that when the requested integration relies on persistent rules.
@@ -49,11 +49,16 @@ Grade semantic correctness independently of schema adherence.
 
 ## Anthropic Claude
 
-Official source checked 2026-09-08:
-[Prompting best practices](https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/claude-prompting-best-practices).
-Its general guidance recommends descriptive XML tags to separate instructions, context,
-examples, and inputs in complex prompts. The Messages example places fixed instructions in
-the top-level `system` field and runtime requests in `messages`.
+Official sources checked 2026-11-27:
+
+- [Prompting best practices](https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/claude-prompting-best-practices):
+  its general guidance recommends descriptive XML tags to separate instructions, context,
+  examples, and inputs in complex prompts. The Messages example places fixed instructions in
+  the top-level `system` field and runtime requests in `messages`. Model-specific differences
+  are on separate per-model prompting pages linked from that guide.
+- [Model deprecations](https://platform.claude.com/docs/en/about-claude/model-deprecations):
+  `temperature`, `top_p`, and `top_k` are removed in API version `2026-10-21` and return a 400
+  error; do not put them in application settings for that version.
 
 Use tags when helpful to the requested Claude prompt; this is sectioning guidance, not a
 universal serialization ranking. Verify the exact model's current instructions for any

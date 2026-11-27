@@ -21,7 +21,13 @@ Existing `active` and `superseded` values remain valid. Do not require a new app
 
 ## Commands
 
-Run the validator against the canonical FDD path. Use JSON output for machine consumption and strict mode when major findings should fail verification.
+Run the validator against the canonical FDD path. Use JSON output for machine consumption and strict mode when major findings should fail verification. Paths below are relative to the skill package root.
+
+```bash
+python3 scripts/validate_fdd.py <path-to-fdd.md>
+python3 scripts/validate_fdd.py <path-to-fdd.md> --format json
+python3 scripts/validate_fdd.py <path-to-fdd.md> --strict
+```
 
 The validator has three exit classes:
 
@@ -31,7 +37,7 @@ The validator has three exit classes:
 
 ## Structural responsibility
 
-The validator checks:
+The validator's module docstring is the authoritative check list. In summary, it checks:
 
 - Required frontmatter and profile values
 - Required numbered sections for full and compact profiles

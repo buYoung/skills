@@ -18,10 +18,10 @@ that were adapted from each upstream project.
 - **License:** MIT
 - **Used in:**
   - [`skills/task-brief-creator/`](./skills/task-brief-creator/) —
-    the branch-walking decision-tree interview pattern in Stage 4 is
-    adapted from the `grill-me` skill.
+    the Stage 4 user decision workflow is adapted from the `grill-me`
+    skill.
   - [`skills/task-brief-creator-caveman/`](./skills/task-brief-creator-caveman/) —
-    inherits the same Stage 4 interview pattern.
+    inherits the same Stage 4 decision workflow.
 
 ### License text
 
@@ -98,3 +98,19 @@ SOFTWARE.
 - **License text:** [`skills/skill-creator/LICENSE.txt`](./skills/skill-creator/LICENSE.txt), preserved from the upstream package
 - **Used in:** [`skills/skill-creator/`](./skills/skill-creator/)
 - **Local changes:** Adds one independent-candidate refinement pass after a complete draft, shared integration criteria, and routing back to the existing evaluation workflow.
+
+---
+
+## 4. ASVS 5.0.0 (from `OWASP/ASVS`)
+
+- **Upstream project:** [`OWASP/ASVS`](https://github.com/OWASP/ASVS)
+- **Specific component:** [`5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.json`](https://github.com/OWASP/ASVS/blob/v5.0.0_release/5.0/docs_en/OWASP_Application_Security_Verification_Standard_5.0.0_en.json) at tag `v5.0.0_release`
+- **Author:** The OWASP Foundation
+- **Copyright:** Copyright © 2008-2025 The OWASP Foundation
+- **License:** [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/)
+- **Used in:**
+  - [`skills/code-security-audit/`](./skills/code-security-audit/) —
+    `references/security_domains.md` reproduces the ASVS 5.0.0 requirement
+    descriptions. That text is distributed under CC BY-SA 4.0. The changes
+    are listed in
+    [`skills/code-security-audit/THIRD_PARTY_NOTICES.md`](./skills/code-security-audit/THIRD_PARTY_NOTICES.md).

@@ -2,7 +2,7 @@
 
 ## Read When
 
-Use this index for toolchain upgrades, MSRV compatibility, edition changes, removed or renamed APIs, and newly introduced diagnostics. Coverage is Rust 1.80 through 1.98.1.
+Use this index for toolchain upgrades, MSRV compatibility, edition changes, removed or renamed APIs, and newly introduced diagnostics. Coverage is Rust 1.80 through 1.100.0.
 
 Version links provide the relevant migration and behavior details. Other rows summarize changes without a separate migration procedure. For an upgrade, consider applicable changes between the current and target versions; for an API question, read only the relevant version and practice section.
 
@@ -23,12 +23,14 @@ Version links provide the relevant migration and behavior details. Other rows su
 | 1.90.0 | [1.90](1.90.md) | `lld` default linker with opt-out; `x86_64-apple-darwin` Tier 2; `MSG_NOSIGNAL`; `home_dir` with empty `HOME` | `cargo publish --workspace` |
 | 1.91.0 | [1.91](1.91.md) | `semicolon_in_expressions_from_macros` deny; binding drop order; new pointer lints; 1.91.1 fixes | `Path::file_prefix`, `BTreeMap::extract_if`, `build.build-dir` |
 | 1.92.0 | [1.92](1.92.md) | Never-type fallback lints deny; `invalid_macro_export_arguments` deny; `panic=abort` unwind tables with opt-out | `RwLockWriteGuard::downgrade`, `new_zeroed` |
-| 1.93.0 | none | No official deprecation or migration guidance; bundled musl is 1.2.5; 1.93.1 fixes an ICE and a Clippy false positive | `MaybeUninit` slice APIs, `Vec::into_raw_parts`, `VecDeque::pop_front_if` |
+| 1.93.0 | none | No official deprecation or migration guidance; bundled musl is 1.2.5; 1.93.1 fixes an ICE, a Clippy false positive, and `wasm32-wasip2` file descriptor leaks | `MaybeUninit` slice APIs, `Vec::into_raw_parts`, `VecDeque::pop_front_if` |
 | 1.94.0 | none | No official deprecation or migration guidance; 1.94.1 fixes regressions and bundled tar CVEs | `<[T]>::array_windows`, `LazyLock::get`, Cargo config `include` |
 | 1.95.0 | none | Custom target-spec JSON no longer accepted on stable, stated as no action for stable users | `cfg_select!`, `if let` guards, `Vec::push_mut`, `hint::cold_path` |
 | 1.96.0 | [1.96](1.96.md) | wasm undefined symbols become link errors, with the official restore flag; `core::range` migration deferred to a future edition; registry CVEs | `core::range` types, `assert_matches!` |
 | 1.97.0 | [1.97](1.97.md) | v0 symbol mangling default, legacy scheme nightly-only; `linker_messages` lint | `CARGO_BUILD_WARNINGS`, bit-isolation integer APIs |
 | 1.98.0 | none | No official deprecation or migration guidance; 1.98.1 fixes a vtable miscompilation, so update rather than pin 1.98.0 | Algebraic float operations, `format_into` |
+| 1.99.0 | [1.99](1.99.md) | Legacy integral modules such as `std::i32` fully deprecated; `no_mangle_generic_items` hard error; Cargo disables incremental compilation in CI; 1.99.1 fixes an x86_64 FFI `bool` miscompilation and two other regressions | C-variadic function definitions, `Layout::for_value_raw`, Cargo `debug` profile |
+| 1.100.0 | [1.100](1.100.md) | Never-type fallback is `!` in every edition and `Infallible` aliases `!`; `box` patterns removed; ABI-changing ARM target features rejected; no host tools for i686 Windows; new Cargo build-directory layout | Never type `!`, `Allocator` for `Vec` and `Box`, `DropGuard`, `[lints.cargo]`, `global-min-publish-age` |
 
 ## MSRV and Upgrade Policy
 

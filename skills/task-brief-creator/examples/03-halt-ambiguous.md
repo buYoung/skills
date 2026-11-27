@@ -53,17 +53,16 @@ The skill replies in the user's chat language. Both versions follow.
 
 **Korean:**
 
-> 입력만으로는 브리핑 만들기 어려워. 네 앵커가 전부 부족해 — **무엇이**
-> 문제인지(PROBLEM), **끝났을 때 뭐가 사실이어야** 하는지(GOAL), 인증
-> 영역의 **어느 슬라이스**가 대상인지(SCOPE), **어느 파일/서브시스템**을
-> 건드리는지(TARGET) 다 잡히질 않아.
+> 입력만으로는 브리핑 만들기 어려워. 무엇이 문제인지(PROBLEM), 끝나면
+> 어떤 상태여야 하는지(GOAL), 인증 중 어느 부분이 대상인지(SCOPE), 어떤
+> 파일이나 모듈을 건드리는지(TARGET)를 모두 알 수 없어.
 >
-> 한두 줄만 더 얹어줄래? 막힘이 자주 풀리는 질문 몇 개:
-> - 고치고 싶은 구체적인 동작/냄새/리스크가 있어?
+> 한두 줄만 더 써 줄래? 이런 걸 알려 주면 바로 진행할 수 있어:
+> - 고치고 싶은 구체적인 동작이나 코드 문제, 위험이 있어?
 >   (예: "세션 토큰이 localStorage에 저장돼 있는데 보안팀에서 HttpOnly
 >   쿠키로 옮기길 원해")
-> - 모듈이 특정돼 있어? (로그인 UI, 세션 미들웨어, OAuth 콜백 등)
-> - "끝"이 어떤 모습이야?
+> - 특정 모듈에 한정된 작업이야? (로그인 UI, 세션 미들웨어, OAuth 콜백 등)
+> - 어떻게 되면 끝난 거야?
 
 ---
 
@@ -71,9 +70,7 @@ The skill replies in the user's chat language. Both versions follow.
 
 - **Why this halts even though the user did say something** — word count
   is not a proxy for the four anchors. "Clean up the auth stuff" has
-  intent (`cleanup`) but no actionable signal. A brief produced from
-  this would commit to a problem framing the user did not intend, and
-  the downstream agent would build the wrong thing confidently.
+  intent (`cleanup`) but no actionable signal.
 - **What additional input would flip this to CONTINUE** — any one of:
   - A concrete defect (PROBLEM) — "session tokens in localStorage" → 1
     anchor present, still halt at 1/4.
@@ -145,16 +142,15 @@ refactor
 - None
 ```
 
-A coding agent picking this up would happily restructure `src/auth/`,
-land a 1500-line PR, and discover at review that the user actually
-wanted **session tokens moved out of localStorage for security** — a
-totally different problem, in different files, possibly a `feat`
-rather than a `refactor`. The cost is the entire restructuring cycle
-plus the rework. That is the asymmetry the halt protects against.
+A coding agent picking this up would restructure `src/auth/`, land a
+1500-line PR, and discover at review that the user actually wanted
+**session tokens moved out of localStorage for security** — a different
+problem, in different files, possibly a `feat` rather than a `refactor`.
 
 (The sketch is also deliberately malformed *structurally*: it omits the
 required `## Execution Plan`, its load-bearing `Current State (As-Is)`
-bullets lack `[confirmed]` / `[inferred]`, and its bare `- None` under
-`Open Questions` lacks `— <reason>`. `validate_brief.py` would report all
-three contract failures. The deeper failure is still the fabricated
+bullets lack `[confirmed]` / `[inferred]`, its `Out of Scope` exclusion
+lacks `[hard]` / `[deferred]`, and its bare `- None` under
+`Open Questions` lacks `— <reason>`. `validate_brief.py` reports all
+four contract failures. The deeper failure is still the fabricated
 problem framing, which no structural validator can catch.)

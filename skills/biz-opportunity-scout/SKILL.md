@@ -1,6 +1,6 @@
 ---
 name: biz-opportunity-scout
-description: Identify and validate profitable business opportunities by analyzing market size (TAM/SAM/SOM), unit economics, competitive landscape, and PMF indicators. Generates comprehensive HTML reports with opportunity scorecards.
+description: Identify and validate profitable business opportunities by analyzing market size (TAM/SAM/SOM), unit economics, competitive landscape, and PMF indicators. Generates comprehensive HTML reports with opportunity scorecards. Use when asked to validate a business idea, assess a pivot or expansion, size a market, evaluate unit economics, map competitors, check product-market fit, or produce a go/no-go or scorecard report for a business opportunity.
 ---
 
 # Biz Opportunity Scout
@@ -40,14 +40,8 @@ Capability to identify, analyze, and validate business opportunities through qua
 |-----------|-------------|
 | Numeric Report | Quantitative analysis with calculated metrics |
 | Investment Pitch | Key figures formatted for investor presentation |
-| Go/No-Go Decision | Binary recommendation with supporting rationale |
+| Go/No-Go Decision | GO / CONDITIONAL / NO-GO recommendation with supporting rationale |
 | Opportunity Scorecard | Composite score/grade across all dimensions |
+| Sources & Assumptions | Source of each external figure and every assumption used in a calculation |
 
-See [report_template.md](references/report_template.md) for HTML output structure and file naming conventions.
-
-## Report File Naming
-
-| Option | Pattern | Example |
-|--------|---------|---------|
-| Default | `report/scout-report_[service-name]_[date].html` | `report/scout-report_coffee-subscription_2024-01-14.html` |
-| Custom | User-specified folder and filename | User input |
+See [report_template.md](references/report_template.md) for HTML output structure, dimension scoring, and file naming conventions.

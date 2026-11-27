@@ -2,7 +2,7 @@
 
 ## Read When
 
-Read only for an explicitly authorized Vite 7→8 migration. Do not use for ordinary Vite 8 work, a Vite 6 source, or framework-owned Vite dependency upgrades.
+Read only for an explicitly authorized Vite 7→8 migration. Do not use for ordinary Vite 8 work, a Vite 6 source before its [Vite 7 arrival](vite-6-to-7-migration.md) is verified, or framework-owned Vite dependency upgrades.
 
 ## Collect Inputs
 

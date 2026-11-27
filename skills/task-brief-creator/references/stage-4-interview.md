@@ -25,17 +25,28 @@ They are the stable decision-table contract: number, decision content, recommend
 
 ## Requirements and Recommendations
 
-Ask about a requirement when the input and bounded code review support multiple materially different interpretations of the goal, behavior, scope, or acceptance boundary.
+Preserve each requirement's meaning, not an unresolved interpretation of its words.
+Ask about a requirement when the input and bounded code review support multiple materially different interpretations of the goal, behavior, scope, or acceptance boundary, before treating one interpretation as the task.
 Explain the uncertainty and meaningful alternatives in the existing four-column table; recommend the smallest option that fulfils the stated intent and cite the evidence.
 Do not postpone intent clarification by exploring more implementation branches, and do not convert an uncertain interpretation into a firm obligation just to enumerate every input item.
 
 When the user appears to have missed a necessary condition, explain how it affects the requested outcome and recommend a concrete addition.
-Mark optional enhancements as recommendations and keep them separate from required clarification. They remain excluded if unanswered; do not create extra architecture, tooling, or verification obligations without a task-related reason.
+Label recommendations as proposals, not existing requirements. Offer only task-relevant additions, and keep optional enhancements separate from required clarification. They remain excluded if unanswered; do not create extra architecture, tooling, or verification obligations without a task-related reason.
 Ask first and allow the user an opportunity to respond. A selected safe fallback may keep a plan executable, but it does not make the recommendation an approved user decision.
 If a safe fallback exists, keep the unresolved decision in the exact default/reconfirm `Open Questions` form; otherwise halt without saving.
 
 Measured facts, implementation choices, and deeper technical unknowns remain author/worker work. User-held observations, reproduction conditions, and external facts unavailable to the author may be requested as factual inputs; distinguish those requests from product decisions.
 For performance work, investigate the current baseline instead of requiring the user to measure it; ask only for target intent, user-held workload constraints, or unavailable environment information.
+
+### User-owned gaps to close before drafting
+
+- **Desired Outcome (To-Be)** — confirm when absent, ambiguous, or when the codebase review suggests more than one plausible interpretation.
+- **Out of Scope** — the most valuable guardrail for the downstream agent.
+  Put unclear or high-risk scope boundaries in the decision table with a recommended exclusion/inclusion.
+- **Acceptance Criteria** — what makes the task verifiably done.
+  If the code has a separate internal completion condition and the user has a separate success condition, carry both instead of collapsing them into one vague criterion.
+- **Compatibility and ownership** — ask before breaking a contract or crossing an externally owned boundary.
+- **Open Questions** — keep only non-blocking user-owned decisions with a safe fallback and reconfirm milestone.
 
 ---
 
@@ -153,6 +164,21 @@ Rules:
   For any blocking row, halt without writing.
 - If a saved single brief or briefset contains structured non-blocking `Open Questions`, present those items after save using the same four-column table and patch the saved file after the user answers.
 - Never use a row to delegate a technical unknown to a reviewer or downstream worker.
+
+---
+
+## Before Writing Open Questions
+
+- Make one active judgement pass.
+  Ask: would a downstream coding agent still need to ask the requester what to do, or can the brief make a reasonable call?
+- Do not use `Open Questions` to avoid making an implementation recommendation.
+  If the answer is a reasonable bounded choice, put it into `Worker decision`, `Constraints`, or the relevant execution stage.
+- Keep `Open Questions` for user-owned decisions only.
+  Product direction, scope expansion, compatibility breaks, acceptance thresholds, and external ownership can require a question.
+- Save a question only when it is non-blocking and use exactly `- [non-blocking] <question> — Default: <safe fallback>; Reconfirm before: <stage or milestone>`.
+- If the user has not answered a blocking decision and no safe fallback exists, **HALT** and create no file.
+- `Open Questions: None` is acceptable only after this pass.
+  It means "a downstream agent can proceed without re-interviewing the requester," not "nothing interesting was found."
 
 ---
 

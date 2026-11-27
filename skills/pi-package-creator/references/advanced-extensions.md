@@ -16,7 +16,7 @@ Read only the sections for features the package needs. For providers and MCP, co
 
 Handlers run one after another in registration and load order, with no automatic timeout. When a handler throws, Pi usually reports the error and runs the remaining handlers. `tool_call` and `user_bash` are deliberate exceptions: a thrown error blocks the tool call or shell command, because continuing could run an operation the handler meant to stop.
 
-Use the exact event names the target supports. These contracts target Pi `v1.4.0`; the `v1.3.0` release lacks some request and UI behavior described here. See the release boundaries in [evidence](evidence.md).
+Use the exact event names the target supports. These contracts target Pi `v1.6.1`; older releases lack some request and UI behavior described here. See the release boundaries in [evidence](evidence.md).
 
 ## Choose an event
 
@@ -114,7 +114,7 @@ In `before_agent_start`:
 
 `context` changes the request context, not the permanent session history. `context_with_system` runs afterward and is more invasive: Pi reports removal of the leading system message as an error but does not repair it automatically. Preserve tool declarations, relevant intermediate system messages, and required instructions.
 
-Output-limit/overflow recovery in `v1.4.0` omits a discarded assistant attempt together with its associated tool results, including on resumed sessions. Context handlers must not reintroduce orphaned results from an older cached transcript. Context omission does not undo tool side effects.
+Since `v1.4.0`, output-limit/overflow recovery omits a discarded assistant attempt together with its associated tool results, including on resumed sessions. Context handlers must not reintroduce orphaned results from an older cached transcript. Context omission does not undo tool side effects.
 
 ### Inspect tool calls and results
 
@@ -246,7 +246,9 @@ For simple UI, prefer:
 - `ctx.ui.setStatus("acme-status", text)`; pass `undefined` to clear.
 - `ctx.ui.setWidget("acme-widget", lines)`; pass `undefined` to clear.
 
-In Pi `v1.4.0` (not the `v1.3.0` release), editor-slot dialogs (`select`, `confirm`, `input`, `editor`, and non-overlay `custom`) form a stack: the newest dialog is visible, and closing it reveals the previous one. A confirmation opened from inside a custom component can therefore return to that component. Keep each dialog's completion and cancellation scoped to its own interaction; do not assume a new dialog resolved the older Promise.
+Since `v1.6.1`, `select`, `confirm`, and `input` accept a `blockedKind` option that sets how a terminal with program status (OSC 7501) reports the waiting dialog, for example `"permission"` for a `select` that approves an action. The defaults are `"permission"` for `confirm` and `"question"` for `select` and `input`.
+
+Since Pi `v1.4.0` (not the `v1.3.0` release), editor-slot dialogs (`select`, `confirm`, `input`, `editor`, and non-overlay `custom`) form a stack: the newest dialog is visible, and closing it reveals the previous one. A confirmation opened from inside a custom component can therefore return to that component. Keep each dialog's completion and cancellation scoped to its own interaction; do not assume a new dialog resolved the older Promise. Since `v1.5.0`, an open dialog also keeps the editor slot when `ctx.ui.setEditorComponent()` is called; the new editor appears after the last dialog closes.
 
 A minimal terminal dialog inside a command handler:
 
@@ -268,7 +270,8 @@ const accepted = await ctx.ui.custom<boolean>((_tui, _theme, _keys, done) => ({
 }));
 ```
 
-- The custom factory returns a component with `render(width): string[]` and `invalidate()`. Input handling, mouse handling, and `dispose()` are optional.
+- The custom factory returns a component with `render(width)` and `invalidate()`. `render` returns the lines to draw; the `pi-tui` type is `readonly string[]`, and returning a new array is fine. Input handling, mouse handling, and `dispose()` are optional.
+- Treat lines returned by another component's `render()` as read-only, including `super.render(width)` in a `Container` subclass. Since `v1.6.0`, a `Container` returns the same cached array while its children are unchanged, so changing it in place corrupts later frames. Copy first, for example `const lines = [...super.render(width)]`.
 - Every rendered line must fit its visible width. Use `truncateToWidth`, `visibleWidth`, or `wrapTextWithAnsi` from `pi-tui`.
 - After changing component state, invalidate its cache and call `tui.requestRender()`.
 - Finish with `done(value)`. Pi closes that custom overlay's own handle, even if another overlay is above it. Do not call the handle's `hide()` to finish a `custom()` interaction: it removes the overlay without resolving the Promise. Use `setHidden()` only for temporary visibility changes.

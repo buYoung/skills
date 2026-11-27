@@ -28,9 +28,7 @@ Examples target PostgreSQL or MySQL 8.0+ as labeled. `eb.fn.agg` can construct a
 
 An ORDER BY inside OVER controls window calculations, not final result order. Equal sort keys are peers; ROW_NUMBER/top-N choices need a tie-breaker when deterministic individual rows are required. RANK includes ties differently from ROW_NUMBER. Use a CTE/subquery to filter a window result instead of referring to its alias in the same query's WHERE. See [SELECT](select.md) for scope and CTE patterns.
 
-For PostgreSQL and MySQL with ORDER BY and no explicit frame, the default is RANGE BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW, including peers of the current row. ROWS counts physical rows; it is not the default. Without ORDER BY, the default frame spans the partition. LAST_VALUE uses the frame, so the existing alias `lowest_salary` does not promise the partition minimum. For that intent, explicitly span the full partition. Sources: [PostgreSQL windows](https://www.postgresql.org/docs/18/functions-window.html), [MySQL frames](https://dev.mysql.com/doc/refman/8.0/en/window-functions-frames.html).
-
-MySQL 8.0+ 및 PostgreSQL에서 지원하는 윈도우 함수의 Kysely 변환 패턴입니다.
+For PostgreSQL and MySQL with ORDER BY and no explicit frame, the default is RANGE BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW, including peers of the current row. ROWS counts physical rows; it is not the default. Without ORDER BY, the default frame spans the partition. LAST_VALUE uses the frame, so the existing alias `lowest_salary` does not promise the partition minimum. For that intent, explicitly span the full partition. Sources: [PostgreSQL windows](https://www.postgresql.org/docs/19/functions-window.html), [MySQL frames](https://dev.mysql.com/doc/refman/8.0/en/window-functions-frames.html).
 
 ## Standard Window Functions
 
@@ -323,7 +321,7 @@ SELECT id, created_at, amount,
 FROM transactions
 ```
 ```ts
-// Window Frame은 raw SQL 사용
+// Explicit window frames use raw SQL
 db.selectFrom('transactions')
   .select((eb) => [
     'id',
@@ -336,7 +334,7 @@ db.selectFrom('transactions')
 
 ### COUNT with DISTINCT in Window
 
-The following pair illustrates SQL construction only: PostgreSQL and MySQL 8.0 do not support DISTINCT inside window aggregate calls. Do not use it as executable SQL on either engine. See [PostgreSQL window-call restrictions](https://www.postgresql.org/docs/18/sql-expressions.html#SYNTAX-WINDOW-FUNCTIONS) and [MySQL restrictions](https://dev.mysql.com/doc/refman/8.0/en/window-function-restrictions.html).
+The following pair illustrates SQL construction only: PostgreSQL and MySQL (per the 8.0, 8.4, and 9.7 manuals) do not support DISTINCT inside window aggregate calls. Do not use it as executable SQL on either engine. See [PostgreSQL window-call restrictions](https://www.postgresql.org/docs/19/sql-expressions.html#SYNTAX-WINDOW-FUNCTIONS) and [MySQL restrictions](https://dev.mysql.com/doc/refman/9.7/en/window-function-restrictions.html).
 
 ```sql
 SELECT id, department,
@@ -379,7 +377,7 @@ db.selectFrom('employees as e')
 
 For the 0.29 baseline, use raw SQL for explicit ROWS/RANGE frames; the documented [OVER callback](https://kysely-org.github.io/kysely-apidoc/classes/AggregateFunctionBuilder.html#over) covers partitioning and ordering. Recheck the installed API for another version rather than assuming a frame method exists.
 
-Frame bounds, interval syntax, GROUPS, and exclusions depend on the server. MySQL 8.0 does not support GROUPS or EXCLUDE; PostgreSQL's `INTERVAL '1 day'` spelling in [SELECT](select.md#window-frame-clause-raw-sql-required) is not the MySQL spelling. See [MySQL restrictions](https://dev.mysql.com/doc/refman/8.0/en/window-function-restrictions.html).
+Frame bounds, interval syntax, GROUPS, and exclusions depend on the server. The MySQL 8.0, 8.4, and 9.7 manuals state that GROUPS and EXCLUDE are parsed but produce an error; PostgreSQL's `INTERVAL '1 day'` spelling in [SELECT](select.md#window-frame-clause-raw-sql-required) is not the MySQL spelling. See [MySQL restrictions](https://dev.mysql.com/doc/refman/9.7/en/window-function-restrictions.html).
 
 To make LAST_VALUE select the end of the entire ordered partition, specify the full frame (assuming a matching numeric driver type and a non-null salary):
 
@@ -402,18 +400,18 @@ This is an intentional change from the default-frame example, not an equivalent 
 -- Explicit physical-row frame, not the default with ORDER BY
 ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW
 
--- 이전 N개 행부터 현재 행까지
+-- From N preceding rows through the current row
 ROWS BETWEEN 2 PRECEDING AND CURRENT ROW
 
--- 이전 N개 행부터 다음 N개 행까지
+-- From N preceding rows through N following rows
 ROWS BETWEEN 1 PRECEDING AND 1 FOLLOWING
 
--- 파티션 전체
+-- Entire partition
 ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING
 ```
 
 ```ts
-// Kysely에서 Window Frame 사용
+// Explicit window frame in Kysely (raw SQL)
 db.selectFrom('transactions')
   .select((eb) => [
     'id',
@@ -430,7 +428,7 @@ select "id", SUM("amount") OVER (PARTITION BY "type" ORDER BY "created_at" ROWS 
 
 ## Filter Clause (PostgreSQL Only)
 
-PostgreSQL에서는 `FILTER` 절을 사용하여 조건부 집계를 할 수 있습니다.
+PostgreSQL can aggregate conditionally with the `FILTER` clause.
 
 ```sql
 -- PostgreSQL
@@ -484,11 +482,11 @@ db.with('ranked', (db) =>
 
 | Function | Description | Example |
 |----------|-------------|---------|
-| `array_agg` | 값들을 배열로 집계 | `eb.fn.agg<string[]>('array_agg', ['name']).over(...)` |
-| `string_agg` | 문자열을 구분자로 연결 | `sql\`string_agg(${eb.ref('name')}, ', ') OVER (...)\`` |
-| `json_agg` | JSON 배열 집계 | `eb.fn.jsonAgg('pet').over(...)` |
-| `bool_and` | 모든 값이 TRUE | `eb.fn.agg<boolean>('bool_and', ['is_active']).over(...)` |
-| `bool_or` | 하나라도 TRUE | `eb.fn.agg<boolean>('bool_or', ['is_active']).over(...)` |
+| `array_agg` | Aggregates values into an array | `eb.fn.agg<string[]>('array_agg', ['name']).over(...)` |
+| `string_agg` | Concatenates strings with a delimiter | `sql\`string_agg(${eb.ref('name')}, ', ') OVER (...)\`` |
+| `json_agg` | Aggregates values into a JSON array | `eb.fn.jsonAgg('pet').over(...)` |
+| `bool_and` | TRUE if all non-null values are TRUE | `eb.fn.agg<boolean>('bool_and', ['is_active']).over(...)` |
+| `bool_or` | TRUE if any non-null value is TRUE | `eb.fn.agg<boolean>('bool_or', ['is_active']).over(...)` |
 
 ```ts
 // PostgreSQL - array_agg with window function
@@ -506,9 +504,9 @@ select "customer_id", array_agg("product_name") over(partition by "customer_id")
 
 ### MySQL Specific Notes
 
-- **MySQL 8.0+** 부터 표준 윈도우 함수 지원
-- `JSON_ARRAYAGG`, `JSON_OBJECTAGG`는 MySQL 8.0.14부터 윈도우 함수로 사용 가능
-- `GROUP_CONCAT`은 윈도우 함수로 사용 **불가** (GROUP BY 절에서만 사용)
+- Standard window functions are available from **MySQL 8.0**.
+- `JSON_ARRAYAGG` and `JSON_OBJECTAGG` can be used as window functions from MySQL 8.0.14.
+- `GROUP_CONCAT` **cannot** be used as a window function; use it only as a grouped aggregate.
 
 ```ts
 // MySQL - JSON_ARRAYAGG as window function (8.0.14+)
@@ -528,7 +526,7 @@ select `customer_id`, JSON_ARRAYAGG(`product_name`) over(partition by `customer_
 
 ### Top N per Group
 ```sql
--- 부서별 급여 상위 3명
+-- Top 3 salaries per department
 WITH ranked AS (
   SELECT *, ROW_NUMBER() OVER (PARTITION BY department ORDER BY salary DESC) AS rn
   FROM employees

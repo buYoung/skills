@@ -6,8 +6,10 @@ HTML report output specification using Tailwind CSS.
 
 | Option | Pattern | Example |
 |--------|---------|---------|
-| Default | `report/scout-report_[service-name]_[YYYY-MM-DD].html` | `report/scout-report_coffee-subscription_2024-01-14.html` |
+| Default | `report/scout-report_[service-name]_[YYYY-MM-DD].html` | `report/scout-report_coffee-subscription_2026-11-27.html` |
 | Custom | `[user-folder]/[user-filename].html` | User-specified path |
+
+`[YYYY-MM-DD]` is the date the report is generated.
 
 ## HTML Structure
 
@@ -36,7 +38,9 @@ HTML report output specification using Tailwind CSS.
   <!-- Unit Economics Section -->
   <!-- Competitive Analysis Section -->
   <!-- PMF Indicators Section -->
+  <!-- Investment Pitch -->
   <!-- Go/No-Go Recommendation -->
+  <!-- Sources & Assumptions -->
   <!-- Footer -->
 </body>
 </html>
@@ -82,7 +86,7 @@ HTML report output specification using Tailwind CSS.
     </svg>
     Executive Summary
   </h2>
-  <div class="prose prose-blue max-w-none text-gray-600 leading-relaxed">
+  <div class="space-y-4 text-gray-600 leading-relaxed">
     <p>[Summary text goes here...]</p>
   </div>
 </section>
@@ -176,6 +180,20 @@ HTML report output specification using Tailwind CSS.
 </div>
 ```
 
+### Investment Pitch
+
+Key figures from the sections above, one Metric Card each. Use the same values as the analysis sections; do not introduce new figures here.
+
+```html
+<section class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-8">
+  <h2 class="text-lg font-semibold text-gray-900 mb-4">Investment Pitch</h2>
+  <p class="text-gray-600 leading-relaxed mb-6">[One-paragraph pitch: problem, solution, target segment]</p>
+  <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+    <!-- Metric Cards: SAM, SOM, Market Growth (CAGR), LTV:CAC, Payback Period, Overall Score -->
+  </div>
+</section>
+```
+
 ### Go/No-Go Decision
 
 ```html
@@ -186,10 +204,28 @@ HTML report output specification using Tailwind CSS.
   <div class="relative z-10">
     <h2 class="text-xl font-medium text-white/90 mb-2 uppercase tracking-widest text-xs">Final Recommendation</h2>
     <div class="inline-block border-4 border-white/30 rounded-lg px-8 py-4 my-4 backdrop-blur-sm">
-      <p class="text-5xl font-black tracking-tight">[GO / NO-GO]</p>
+      <p class="text-5xl font-black tracking-tight">[GO / CONDITIONAL / NO-GO]</p>
     </div>
     <p class="mt-4 text-lg text-white/90 max-w-2xl mx-auto leading-relaxed">[Rationale summary]</p>
   </div>
+</section>
+```
+
+### Sources & Assumptions
+
+List every external figure with its source and retrieval date, and every assumption with the reason it was chosen.
+
+```html
+<section class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mt-8">
+  <h2 class="text-lg font-semibold text-gray-900 mb-4">Sources & Assumptions</h2>
+  <h3 class="text-sm font-semibold text-gray-700 mb-2">Sources</h3>
+  <ul class="list-disc pl-5 space-y-1 text-sm text-gray-600 mb-6">
+    <li>[Figure] — [Source name, URL] ([Retrieved YYYY-MM-DD])</li>
+  </ul>
+  <h3 class="text-sm font-semibold text-gray-700 mb-2">Assumptions</h3>
+  <ul class="list-disc pl-5 space-y-1 text-sm text-gray-600">
+    <li>[Assumption, e.g. capture rate] — [Value] — [Reason or user input]</li>
+  </ul>
 </section>
 ```
 
@@ -218,9 +254,24 @@ HTML report output specification using Tailwind CSS.
 |-----------|--------|------------------|
 | Market Size | 20% | TAM/SAM/SOM attractiveness |
 | Unit Economics | 25% | LTV:CAC, margins, payback |
-| Competition | 20% | Moat potential, entry barriers |
+| Competition | 20% | Moat potential, competitive intensity |
 | PMF Signal | 20% | Retention, growth indicators |
 | Execution Risk | 15% | Complexity, resource requirements |
+
+## Dimension Scoring
+
+Each dimension score is the average of its input scores, rounded to the nearest integer (halves round up). The overall score is the weighted sum of the five rounded dimension scores, rounded the same way. Color Scheme, Grade Labels, and Go/No-Go Logic use the rounded values.
+
+| Dimension | Input (source) | Value → Score |
+|-----------|----------------|---------------|
+| Market Size | Market Attractiveness ([market_sizing.md](market_sizing.md)) | Strong 80 · Moderate 50 · Weak 20 |
+| Unit Economics | LTV:CAC, CM %, Payback Period tier in Benchmark Thresholds ([unit_economics.md](unit_economics.md)) | Excellent 90 · Good 70 · Acceptable 50 · Poor 30 |
+| Competition | Moat Potential ([competitive_analysis.md](competitive_analysis.md)) | Strong 80 · Moderate 50 · Weak 20 |
+| Competition | Competitive Intensity ([competitive_analysis.md](competitive_analysis.md)) | Low 80 · Medium 50 · High 20 |
+| PMF Signal | Retention Signal, Growth Signal ([pmf_indicators.md](pmf_indicators.md)) | Strong 80 · Moderate 50 · Weak 20 |
+| Execution Risk | Complexity and resource requirements, rated Low / Medium / High with the reason in Sources & Assumptions | Low 80 · Medium 50 · High 20 |
+
+Entry Barriers is shown in the Competitive Analysis section as context and does not enter the Competition score.
 
 ## Grade Labels
 

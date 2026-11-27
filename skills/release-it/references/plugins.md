@@ -46,11 +46,11 @@ or a custom plugin. Preserve version semantics such as pre-release identifiers a
 metadata; the packaged semver menu is not a parser for every versioning scheme.
 External getter precedence does not automatically stop other plugins from writing.
 
-In 21.0.1, `npm.publish: false` disables publishing but retains npm version writes.
+In 21.1.3, `npm.publish: false` disables publishing but retains npm version writes.
 `npm.ignoreVersion: true` changes getter selection, not npm's bump method. Use `npm: false`
 or an appropriate `disablePlugin()` when that plugin must not touch a tooling manifest;
 if npm publication is also required, design its version inputs and writes together.
-See the [npm source](https://github.com/release-it/release-it/blob/21.0.1/lib/plugin/npm/npm.js).
+See the [npm source](https://github.com/release-it/release-it/blob/21.1.3/lib/plugin/npm/npm.js).
 
 For a generated interactive command, adapt all consumers listed in
 [interactive-workflow.md](interactive-workflow.md#copyable-project-example). A custom plugin
@@ -67,7 +67,14 @@ Recommended bump from commit messages + changelog generation following Conventio
 
 ```bash
 npm install -D @release-it/conventional-changelog
+# For a preset other than angular or conventionalcommits, e.g. ember:
+npm install -D conventional-changelog-ember
 ```
+
+Of the presets, version 12.0.2 depends only on `conventional-changelog-angular` and
+`conventional-changelog-conventionalcommits`. Other presets load from
+`conventional-changelog-<name>`; without that package the plugin fails with
+`Unable to load the "<name>" preset`.
 
 ### Basic config
 
@@ -86,10 +93,10 @@ npm install -D @release-it/conventional-changelog
 
 | Option | Description |
 |--------|-------------|
-| `preset` | Commit convention preset: `angular`, `conventionalcommits`, `atom`, `ember`, `eslint`, `jshint` |
+| `preset` | Preset name or `{ name, ...options }`: `angular`, `conventionalcommits`, `atom`, `codemirror`, `ember`, `eslint`, `express`, `jquery`, `jscs`, `jshint` |
 | `infile` | Path to changelog file to update (e.g. `CHANGELOG.md`) |
 | `header` | Text to prepend to changelog file |
-| `types` | Array of type objects to customize which commit types appear |
+| `preset.types` | conventionalcommits only: type objects that set sections and changelog/bump effect |
 | `writerOpts` | Options passed to `conventional-changelog-writer` |
 
 ### Custom commit types
@@ -104,7 +111,7 @@ npm install -D @release-it/conventional-changelog
           { "type": "feat", "section": "Features" },
           { "type": "fix", "section": "Bug Fixes" },
           { "type": "perf", "section": "Performance" },
-          { "type": "docs", "section": "Documentation", "hidden": false }
+          { "type": "docs", "section": "Documentation", "effect": "changelog" }
         ]
       },
       "infile": "CHANGELOG.md"
@@ -112,6 +119,9 @@ npm install -D @release-it/conventional-changelog
   }
 }
 ```
+
+`effect` is `bump` (default; changelog and bump recommendation), `changelog` (changelog only),
+or `hidden`. The conventionalcommits 10.4 preset reads `effect`, not a `hidden` flag.
 
 ### How it works
 
@@ -232,14 +242,15 @@ npm install -D @release-it/keep-a-changelog
 
 ---
 
-## release-it-calver-plugin
+## @csmith/release-it-calver-plugin
 
-Calendar versioning (CalVer) instead of semantic versioning.
+Calendar versioning (CalVer) instead of semantic versioning. Checked against 2026.9.0
+(peer `release-it ^21.0.0`); the unscoped name `release-it-calver-plugin` is not on npm.
 
 ### Install
 
 ```bash
-npm install -D release-it-calver-plugin
+npm install -D @csmith/release-it-calver-plugin
 ```
 
 ### Basic config
@@ -247,25 +258,29 @@ npm install -D release-it-calver-plugin
 ```json
 {
   "plugins": {
-    "release-it-calver-plugin": {
-      "format": "YYYY.MM.DD"
+    "@csmith/release-it-calver-plugin": {
+      "cycle": "month"
     }
   }
 }
 ```
 
-### Format tokens
+### Options
 
-| Token | Description | Example |
-|-------|-------------|---------|
-| `YYYY` | Full year | `2024` |
-| `YY` | Short year | `24` |
-| `MM` | Month (zero-padded) | `03` |
-| `0M` | Month (zero-padded) | `03` |
-| `DD` | Day (zero-padded) | `15` |
-| `0D` | Day (zero-padded) | `15` |
-| `MINOR` | Auto-incrementing counter | `1`, `2`, `3` |
-| `MICRO` | Auto-incrementing counter | `1`, `2`, `3` |
+| Option | Values | Default |
+|--------|--------|---------|
+| `cycle` | `year` (`2026.0`), `month` (`2026.3.0`), `week` (`2026.13.0`), `day` (`2026.3.24.0`), `auto` | `month` |
+| `prefix` | String prepended to the version, e.g. `ui-` | `""` |
+| `separator` | `"."` or `"-"` | `"."` |
+
+The plugin does not take a token format. Segments are not zero-padded, and the trailing
+number increments within the cycle. The deprecated `format` option is mapped to a `cycle`
+with a warning. With the default separator, `month` and `week` give three-segment semver;
+`year` and `day` output, and any output with the `-` separator, is not semver. The plugin
+README notes that `npm version` rejects the four-segment `day` form, so when the npm plugin
+writes the version, use a three-segment cycle or move the writes to another provider (see
+the [version source contract](#version-source-contract)). Source:
+[plugin README](https://github.com/casmith/release-it-calver-plugin/blob/v2026.9.0/README.md).
 
 ---
 

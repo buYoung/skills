@@ -5,6 +5,8 @@ Tests whether a skill's description causes Claude to trigger (read the skill)
 for a set of queries. Outputs results as JSON.
 """
 
+# Local modification: correct the CLAUDECODE note.
+
 import argparse
 import json
 import os
@@ -77,9 +79,10 @@ def run_single_query(
         if model:
             cmd.extend(["--model", model])
 
-        # Remove CLAUDECODE env var to allow nesting claude -p inside a
-        # Claude Code session. The guard is for interactive terminal conflicts;
-        # programmatic subprocess usage is safe.
+        # Claude Code sets CLAUDECODE=1 in the subprocesses it spawns; its docs
+        # describe the variable only as a way to detect that context. It is
+        # removed so the nested `claude -p` does not inherit it. Nested runs
+        # are not documented as supported.
         env = {k: v for k, v in os.environ.items() if k != "CLAUDECODE"}
 
         process = subprocess.Popen(

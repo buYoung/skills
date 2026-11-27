@@ -20,7 +20,7 @@ release-it executes lifecycle methods in this order across all plugins:
 
 ### Plugin Order and Side Effects
 
-For release-it **21.0.1**, with enabled external plugins A and B in that configuration order:
+For release-it **21.1.3**, with enabled external plugins A and B in that configuration order:
 
 - `init`, getters, `beforeBump`, `bump`, `beforeRelease`: A → B → npm → git → github → gitlab → version.
 - `release`, `afterRelease`: npm → git → github → gitlab → version → A → B.
@@ -36,8 +36,8 @@ example disables publishing; do not extend its remaining-state table to other wo
 without tracing their enabled actions. A hook or plugin failure may occur before local
 rollback is registered. See [recovery policies](git-integration.md#recovery-policies).
 
-Source: [entry point](https://github.com/release-it/release-it/blob/21.0.1/lib/index.js) and
-[plugin factory](https://github.com/release-it/release-it/blob/21.0.1/lib/plugin/factory.js).
+Source: [entry point](https://github.com/release-it/release-it/blob/21.1.3/lib/index.js) and
+[plugin factory](https://github.com/release-it/release-it/blob/21.1.3/lib/plugin/factory.js).
 
 ## Hook Format
 

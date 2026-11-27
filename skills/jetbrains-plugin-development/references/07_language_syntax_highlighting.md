@@ -40,10 +40,29 @@ Register via factory:
                                implementationClass="com.example.mylang.MySyntaxHighlighterFactory"/>
 ```
 
-Expose categories to the user via `ColorSettingsPage`:
+Expose categories to the user via `ColorSettingsPage`. The registering extension point
+depends on the minimum IDE version. For `since-build` 263 (2026.3) or later, declare the
+page in `com.intellij.colorSettings`; `displayName` (or `key` and `bundle`) must match
+`getDisplayName()`, because the Settings tree is built from the declaration without loading
+the class:
+
+```xml
+<colorSettings implementation="com.example.mylang.MyColorSettingsPage"
+               displayName="MyLang"/>
+```
+
+Before 2026.3, use `com.intellij.colorSettingsPage`, which is deprecated since 2026.3 but
+still works:
 
 ```xml
 <colorSettingsPage implementation="com.example.mylang.MyColorSettingsPage"/>
 ```
+
+A plugin that supports both ranges can register the page with both EPs: 2026.3+ uses the
+`colorSettings` declaration and ignores `colorSettingsPage`, while earlier versions ignore the
+unknown `colorSettings` entry but then cannot load or unload the plugin without a restart.
+If dynamic reload on those versions matters, keep only `colorSettingsPage` until the
+minimum reaches 2026.3. See
+[Registering a Color Settings Page](https://plugins.jetbrains.com/docs/intellij/syntax-highlighting-and-error-highlighting.html#registering-a-color-settings-page).
 
 Inside the page, build an `AttributesDescriptor[]` from your keys and provide demo text.

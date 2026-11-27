@@ -28,17 +28,18 @@
 		},
 		{
 			"name": "analysis-skills",
-			"description": "Collection of analysis skills including code review and iterative answer self-review with blind sub-agent verification",
+			"description": "Collection of analysis skills including code review, OWASP-based code security audits, and iterative answer self-review with blind sub-agent verification",
 			"source": "./",
 			"strict": false,
 			"skills": [
 				"./skills/code-review",
+				"./skills/code-security-audit",
 				"./skills/iterative-self-review"
 			]
 		},
 		{
 			"name": "backend-skills",
-			"description": "Collection of backend development skills including Kysely SQL query conversion",
+			"description": "Collection of backend development skills including Kysely query conversion, authoring, refactoring, and type error diagnosis",
 			"source": "./",
 			"strict": false,
 			"skills": ["./skills/kysely-converter"]
@@ -49,6 +50,23 @@
 			"source": "./",
 			"strict": false,
 			"skills": ["./skills/release-it"]
+		},
+		{
+			"name": "frontend-skills",
+			"description": "Collection of frontend development skills including React 18/19 and Vite 7/8 guidance",
+			"source": "./",
+			"strict": false,
+			"skills": [
+				"./skills/react-guide",
+				"./skills/vite-guide"
+			]
+		},
+		{
+			"name": "jetbrains-skills",
+			"description": "IntelliJ Platform plugin development skills for JetBrains IDEs",
+			"source": "./",
+			"strict": false,
+			"skills": ["./skills/jetbrains-plugin-development"]
 		}
 	]
 }

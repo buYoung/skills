@@ -120,7 +120,8 @@ decision materially changes behavior; use the listed defaults for ordinary unspe
 
 For the interactive service-app workflow, the following defaults are already defined:
 - `$schema` URL → always include in JSON format
-- `git.commitMessage` → use `"chore: release v${version}"` (Conventional Commits)
+- `git.commitMessage` → use `"chore(release): v${version}"` (Conventional Commits), as in the
+  [base config](interactive-workflow.md#copyable-project-example)
 - Require clean tracked files and index repository-wide. Derive untracked-file handling
   from the actual writers and staging options; see [git-integration.md](git-integration.md)
 - Confirm commit, tag, and push with `default: true`; Enter approves each displayed action
@@ -163,8 +164,10 @@ or custom plugin request does not require those wrapper files.
    - Use `workflow_dispatch` trigger with increment input
    - `fetch-depth: 0` for changelog plugins
    - Git user config from `GITHUB_ACTOR`
+   - `permissions: contents: write` for the release commit, tag push, and GitHub release
    - `GITHUB_TOKEN` for GitHub releases
-   - `NPM_TOKEN` only if npm publish enabled
+   - npm token as `NODE_AUTH_TOKEN` only if npm publish uses a token; trusted publishing
+     needs `id-token: write` instead (see [npm-publishing.md](npm-publishing.md#oidc-trusted-publishing))
 
 4. **CHANGELOG.md** (if changelog plugin selected and file doesn't exist)
    - For conventional-changelog: empty file (plugin will populate)
@@ -175,9 +178,9 @@ or custom plugin request does not require those wrapper files.
 5. **Dependencies** — match the chosen workflow, package manager, and runtime. The checked
    interactive example uses this set; retain compatible installed versions for existing work:
    ```bash
-   pnpm add -D -E release-it@21.0.1 @inquirer/prompts@8.5.2 semver@7.8.5
+   pnpm add -D -E release-it@21.1.3 @inquirer/prompts@8.8.0 semver@7.8.6
    # If changelog plugin selected:
-   pnpm add -D -E @release-it/conventional-changelog@12.0.0 conventional-changelog-conventionalcommits@10.4.0
+   pnpm add -D -E @release-it/conventional-changelog@12.0.2 conventional-changelog-conventionalcommits@10.4.1
    ```
 
 ---
@@ -219,7 +222,7 @@ Use bulk or synchronized package release strategies only when explicitly request
 
 ```json
 {
-  "$schema": "https://unpkg.com/release-it@21.0.1/schema/release-it.json",
+  "$schema": "https://unpkg.com/release-it@21.1.3/schema/release-it.json",
   "git": {
     "commitMessage": "chore: release v${version}",
     "requireBranch": "main"
@@ -249,7 +252,7 @@ apply the target-specific overrides in [monorepo.md](monorepo.md).
 
 ```json
 {
-  "$schema": "https://unpkg.com/release-it@21.0.1/schema/release-it.json",
+  "$schema": "https://unpkg.com/release-it@21.1.3/schema/release-it.json",
   "npm": false,
   "git": {
     "commitMessage": "chore: release v${version}",

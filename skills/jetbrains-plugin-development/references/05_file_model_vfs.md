@@ -59,7 +59,7 @@ PSI. Direct `setBinaryContent` is appropriate for files the user is not editing,
 IntelliJ Platform `2026.2+` the physical disk write may be postponed after the enclosing
 write action. The VFS snapshot is updated immediately from the caller's perspective, while
 `java.nio` or an external process can still observe the old bytes briefly.
-`VirtualFile.setBinaryContent` is a public API, but the 2026.2.2 declaration requires a
+`VirtualFile.setBinaryContent` is a public API, but the 2026.3 declaration requires a
 write lock for the overload that performs the write. Keep the write inside the platform's
 write-action boundary and do not cast to a file-system implementation class.
 
@@ -73,7 +73,7 @@ project.service<ExternalProcessService>().startInBackground()
 
 `flushPendingUpdates()` is the documented completion point for this 2026.2+ case and may
 report an I/O failure, so propagate or handle its exception before launching the process. In the
-`2026.2.2` declaration it is a public `@ApiStatus.Experimental` API, so record that
+`2026.3` declaration it is a public `@ApiStatus.Experimental` API, so record that
 version-specific risk and prefer a stable non-VFS hand-off (for example, writing a
 plugin-owned temporary input directly with `java.nio` and atomically handing it to the
 process) when the feature cannot accept experimental API behavior. A VFS refresh observes
@@ -144,8 +144,8 @@ be **invalidated** (the file is deleted or moved). Always check `vf.isValid` bef
 non-trivial use, especially after Read Action boundaries.
 
 The public/API-status checks above were made against the
-[`idea/2026.2.2` source snapshot](https://github.com/JetBrains/intellij-community/tree/1c7e601c0423e544917046c23763b15d0282e2a3),
-including the [`VirtualFile`](https://github.com/JetBrains/intellij-community/blob/1c7e601c0423e544917046c23763b15d0282e2a3/platform/core-api/src/com/intellij/openapi/vfs/VirtualFile.java),
-[`ManagingFS`](https://github.com/JetBrains/intellij-community/blob/1c7e601c0423e544917046c23763b15d0282e2a3/platform/analysis-api/src/com/intellij/openapi/vfs/newvfs/ManagingFS.java),
-and [`FileSystemInterface`](https://github.com/JetBrains/intellij-community/blob/1c7e601c0423e544917046c23763b15d0282e2a3/platform/core-api/src/com/intellij/openapi/vfs/newvfs/FileSystemInterface.java)
+[`idea/2026.3` source snapshot](https://github.com/JetBrains/intellij-community/tree/c91871ae2864649d952825cff72569e3db0e7ac6),
+including the [`VirtualFile`](https://github.com/JetBrains/intellij-community/blob/c91871ae2864649d952825cff72569e3db0e7ac6/platform/core-api/src/com/intellij/openapi/vfs/VirtualFile.java),
+[`ManagingFS`](https://github.com/JetBrains/intellij-community/blob/c91871ae2864649d952825cff72569e3db0e7ac6/platform/analysis-api/src/com/intellij/openapi/vfs/newvfs/ManagingFS.java),
+and [`FileSystemInterface`](https://github.com/JetBrains/intellij-community/blob/c91871ae2864649d952825cff72569e3db0e7ac6/platform/core-api/src/com/intellij/openapi/vfs/newvfs/FileSystemInterface.java)
 declarations, and the [official Virtual Files guide](https://plugins.jetbrains.com/docs/intellij/virtual-file.html).

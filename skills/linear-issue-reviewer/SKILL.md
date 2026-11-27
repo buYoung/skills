@@ -9,6 +9,8 @@ description: >
 
 Review sub-issues completed by `linear-issue-worker` and decide whether to approve, request changes, or ask for clarification.
 
+Tool names below (`get_issue`, `list_issues`, `list_comments`, `save_issue`, `save_comment`) are examples; see Tool Call Summary in `references/linear-api.md` for how they map to the connected server.
+
 ## Position in Pipeline
 
 | Stage | Skill | Role |
@@ -36,10 +38,10 @@ Each skill uses a distinct comment prefix so comments can be attributed to the c
 
 The user provides a main issue identifier (e.g., `PRI-42`).
 
-1. Call `Linear:get_issue` with `includeRelations: true` to fetch the main issue
+1. Call `get_issue` with `includeRelations: true` to fetch the main issue. It may already be Done if the team has Parent auto-close enabled; review it anyway.
 2. Parse and store the **Acceptance Criteria** from the main issue description (used in final verification)
-3. Call `Linear:list_issues` with `parentId` set to the main issue ID
-4. For each sub-issue, call `Linear:get_issue` with `includeRelations: true` to get full details and comments
+3. Call `list_issues` with `parentId` set to the main issue ID
+4. For each sub-issue, call `get_issue` with `includeRelations: true` for full details, and `list_comments` for all of its comments (follow `cursor` until every page is read)
 
 ### Step 2 — Identify Review Targets
 
@@ -48,21 +50,25 @@ Filter sub-issues to find those needing review.
 **Review target conditions:**
 - Status is `Done`
 - A `## ✅ Work Complete` comment exists (worker's completion report)
-- No `## 리뷰 결과:` comment exists yet (not reviewed)
+- No `## 리뷰 결과:` comment is newer than the latest `## ✅ Work Complete` comment
+
+"Latest" and "newer" compare comment creation times.
 
 **Re-review detection:**
-- If a `## 리뷰 결과: 🔄 Changes Requested` comment exists AND a newer `## ✅ Work Complete` comment follows it → the worker has re-done the work → this is a **re-review target**
+- If the latest review comment is `🔄 Changes Requested` or `❓ Clarification Needed` AND a newer `## ✅ Work Complete` comment follows it → the worker has reworked the issue or answered the questions (in its `### Review Response` section) → this is a **re-review target**
 
 **Status-based handling:**
 
-| Sub-Issue Status | Completion Comment | Review Comment | Decision |
+| Sub-Issue Status | Completion Comment | Latest Review Comment | Decision |
 |---|---|---|---|
 | Done | Present | Absent | **Review target** |
 | Done | Present | Approved | Already reviewed, skip |
 | In Progress | Present | Changes Requested | Worker fixing, skip |
-| Done | Present | Changes Requested → then new Work Complete | **Re-review target** |
-| Done | Absent | Absent | Exception (see Step 3 exceptions) |
+| Done | Present | Clarification Needed, no newer Work Complete | Waiting for the worker's answer, skip |
+| Done | Present | Changes Requested or Clarification Needed → then new Work Complete | **Re-review target** |
+| Done | Absent | Absent | Exception (see "No completion comment from worker" in `references/exceptions.md`) |
 | Todo / In Progress | — | — | Skip |
+| Canceled | — | — | Skip; excluded from final verification |
 
 Present the review plan and wait for user confirmation:
 
@@ -74,6 +80,8 @@ Review Targets (PRI-42):
 Skipped:
 - PRI-44 — Already Approved
 - PRI-46 — Still In Progress
+- PRI-47 — Waiting for answer (Clarification Needed)
+- PRI-48 — Canceled
 
 Proceed?
 ```
@@ -150,7 +158,7 @@ Based on steps 3b–3e, choose one of three verdicts:
 |---|---|---|
 | **Approved** | All Done Criteria fulfilled, no critical quality issues | Keep Done |
 | **Changes Requested** | Any Done Criteria not fulfilled, or critical quality issues found | Done → In Progress (`"started"`) |
-| **Clarification Needed** | Implementation choices need explanation, judgment reserved | Keep Done |
+| **Clarification Needed** | Implementation choices need explanation, judgment reserved | Keep Done (re-reviewed after the worker's answer) |
 
 ### 3g. Post Review Comment
 
@@ -177,7 +185,7 @@ Target audience: Fullstack developers | Language: Korean | Tone: Professional
 For `Changes Requested`, also transition the status:
 
 ```
-Linear:save_issue
+save_issue
   id: "<sub-issue-id>"
   state: "started"
 ```
@@ -190,19 +198,19 @@ Proceed to the next review target and repeat from 3a.
 
 ## Main Issue Final Verification
 
-Execute this only when **all** sub-issues have been Approved.
+Execute this only when **all** sub-issues except Canceled ones have been Approved.
 
 ### Pre-condition Check
 
-1. Confirm every sub-issue has a `## 리뷰 결과: ✅ Approved` comment
+1. Confirm the latest `## 리뷰 결과:` comment of every non-Canceled sub-issue is `✅ Approved`
 2. If any sub-issue still has `🔄 Changes Requested` or `❓ Clarification Needed` as its latest review, do NOT proceed with final verification — inform the user which sub-issues are pending
 
 ### Acceptance Criteria Cross-Check
 
 1. Retrieve each Acceptance Criteria item from the main issue
-2. Map each item to the sub-issue(s) that satisfy it
+2. Map each item to the Approved sub-issue(s) that satisfy it. An item covered only by a Canceled sub-issue is a gap
 3. If all items are covered → post final review comment
-4. If gaps exist → identify which criteria are unmet and suggest next steps
+4. If gaps exist → identify which criteria are unmet and suggest next steps. If the main issue is already Done (Parent auto-close), tell the user it was closed before these gaps were resolved
 
 Post the final review comment on the main issue using the templates from `references/comment-templates.md` (Final Review sections).
 Apply the same **Review Comment Quality Guide** above to the final review comment as well.

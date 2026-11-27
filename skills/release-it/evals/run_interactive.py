@@ -25,6 +25,8 @@ import time
 
 SKILL = Path(__file__).resolve().parents[1]
 ANSI = re.compile(r"\x1b(?:\[[0-?]*[ -/]*[@-~]|\][^\x07]*(?:\x07|\x1b\\))")
+PACKAGES = ("release-it", "@inquirer/prompts", "semver", "@release-it/conventional-changelog",
+            "conventional-changelog-conventionalcommits")
 MARKERS = {
     "app": "Select one service app:",
     "version": "Select version (current:",
@@ -381,7 +383,7 @@ def main():
     parser.add_argument("--case", help="Run only a named case")
     args = parser.parse_args()
     dependencies = args.dependencies.resolve()
-    for package in ("release-it", "@inquirer/prompts", "semver", "@release-it/conventional-changelog"):
+    for package in PACKAGES:
         if not (dependencies / package / "package.json").exists():
             parser.error(f"Missing preinstalled dependency: {package}")
     cases = [
@@ -435,7 +437,7 @@ def main():
     output.mkdir(parents=True, exist_ok=True)
     write_json(output / "environment.json", {
         "dependencies": {package: json.loads((dependencies / package / "package.json").read_text())["version"]
-                         for package in ("release-it", "@inquirer/prompts", "semver", "@release-it/conventional-changelog")},
+                         for package in PACKAGES},
         "tools": {tool: subprocess.check_output([shutil.which(tool), "--version"], text=True).strip()
                   for tool in ("node", "npm", "pnpm", "git")},
         "example_sha256": {file.name: hashlib.sha256(file.read_bytes()).hexdigest()

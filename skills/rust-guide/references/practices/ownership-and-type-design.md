@@ -821,6 +821,7 @@ A trait with an ordinary async fn or return-position impl Trait method is not au
 | 1.87 | `use<..>` in trait definitions |
 | 1.88 | `let` chains (edition 2024 only); `Cell::update` |
 | 1.95 | `if let` guards in `match` |
+| 1.100 | The never type `!` can be named anywhere and `Infallible` aliases it; never-type fallback is `!` in every edition; `mem::DropGuard`; `Box::map`, `Rc::map`, `Arc::map` |
 
 Per-release details live in [the versions index](../versions/index.md).
 

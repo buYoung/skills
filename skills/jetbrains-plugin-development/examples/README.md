@@ -3,8 +3,11 @@
 Curated skeletons that show how the patterns from `references/` fit together as a working
 plugin. Each folder is a **subset of source files** for one focused feature — not a
 buildable Gradle project. The generated lexer/parser code, Gradle setup, and IDE icons are
-intentionally omitted; with the BNF/flex sources here plus the Gradle setup from
-`references/01_core_gradle_project.md`, the IntelliJ Platform Gradle Plugin generates the rest.
+intentionally omitted. In `simple_language_plugin/`, the Grammar-Kit sub-plugin
+(`org.jetbrains.intellij.platform.grammarkit`, see `references/01_core_gradle_project.md`)
+generates `SimpleLexer`, `SimpleParser`, `SimpleTypes`, and the PSI classes from
+`Simple.flex` and `Simple.bnf`; the hand-written element types and the `property` mixin it
+references are included.
 
 Apply the [public API baseline](../references/00_public_api_baseline.md) before copying any
 snippet. Re-check every API, superclass, and extension point against the exact target IDE;

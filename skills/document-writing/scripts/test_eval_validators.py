@@ -21,6 +21,7 @@ from run_production_evals import (
     behavior_job_id,
     build_harness_execution_receipt,
     canonicalize_worker_response,
+    contract_hash,
     count_user_questions,
     direct_grading_prepare_stage,
     execution_policy_for_case,
@@ -39,7 +40,9 @@ from run_production_evals import (
 from validate_design_system_output import validate as validate_design_output
 from validate_eval_run import Report as EvalReport, iso_dates, validate_action_button_example
 from validate_package import (
+    PRODUCTION_BEHAVIOR_IDS,
     Report as PackageReport,
+    contract_digest,
     inspect_png,
     validate_markdown_links,
     validate_production_suite,
@@ -52,6 +55,7 @@ from validate_package import (
 ROOT = Path(__file__).resolve().parents[1]
 VALIDATORS = ROOT / "evals" / "validators"
 RUN_VALIDATOR = ROOT / "scripts" / "validate_eval_run.py"
+DESIGN_OUTPUT_VALIDATOR = ROOT / "scripts" / "validate_design_system_output.py"
 SUITE_PATH = ROOT / "evals" / "production-suite.json"
 
 
@@ -385,6 +389,33 @@ class ValidatorTests(unittest.TestCase):
         (root / "custom-feature-name.png").write_bytes(valid_png(800, 500))
         self.assertTrue(validate_design_output(root, "app-store-page", ["google-play"], [], 1, 1024, 500, False)["failures"])
 
+    def test_png_options_without_count_are_rejected(self) -> None:
+        root = self.root / "png-options"
+        write(root, "index.md", "# Index\n")
+        completed = subprocess.run([sys.executable, str(DESIGN_OUTPUT_VALIDATOR), str(root), "--prebuilt", "app-store-page", "--png-width", "1024"], text=True, capture_output=True, check=False)
+        self.assertEqual(completed.returncode, 2)
+        self.assertIn("require --png-count", completed.stderr)
+
+    def test_contract_digest_covers_every_executed_reference_and_validator(self) -> None:
+        skill = self.root / "digest-skill"
+        shutil.copytree(ROOT, skill, ignore=shutil.ignore_patterns("evidence", "production-evidence.json", "__pycache__"))
+        baseline = contract_digest(skill)
+        self.assertEqual(baseline, contract_hash(skill))
+        for relative in (
+            "scripts/validate_fdd.py",
+            "references/document-types/feature-design-doc/feature-design-doc-validation.md",
+            "references/document-types/software-project/readme-profile.md",
+            "references/document-types/guide/guide-overview.md",
+        ):
+            with self.subTest(relative=relative):
+                target = skill / relative
+                original = target.read_bytes()
+                target.write_bytes(original + b"\n")
+                self.assertNotEqual(contract_digest(skill), baseline)
+                self.assertEqual(contract_digest(skill), contract_hash(skill))
+                target.write_bytes(original)
+        self.assertEqual(contract_digest(skill), baseline)
+
     def test_canonical_web_platform_rejects_product_subtype_filename(self) -> None:
         root = self.root / "platform-output"
         write(root, "index.md", "# Index\n")
@@ -418,10 +449,12 @@ class ValidatorTests(unittest.TestCase):
         self.assertEqual(eval_31["allowed_workspace_write_paths"], ["docs/design-system/tokens.md", "docs/design-system/components/alert.md"])
         self.assertTrue(any("never limits reads" in rule for rule in eval_31["rules"]))
 
-    def synthetic_run(self, eval_id: int, response: str, files: dict[str, str]) -> subprocess.CompletedProcess[str]:
-        run = self.root / f"synthetic-eval-{eval_id}"
+    def synthetic_run(self, eval_id: int, response: str, files: dict[str, str], label: str = "", initial: dict[str, str] | None = None) -> subprocess.CompletedProcess[str]:
+        run = self.root / f"synthetic-eval-{eval_id}{label}"
         workspace = run / "workspace"
         workspace.mkdir(parents=True)
+        for relative, content in (initial or {}).items():
+            write(workspace, relative, content)
         response_path = run / "direct-response.md"
         response_path.write_text(response, encoding="utf-8")
         before = tree_manifest(workspace)
@@ -448,6 +481,22 @@ class ValidatorTests(unittest.TestCase):
             },
         )
         self.assertEqual(platform_result.returncode, 0, platform_result.stdout + platform_result.stderr)
+
+    def test_readme_and_provisional_default_contracts(self) -> None:
+        readme = self.synthetic_run(37, "README.md를 작성했습니다.", {"README.md": "# tidyjson\n"})
+        self.assertEqual(readme.returncode, 0, readme.stdout + readme.stderr)
+        extra_usage = self.synthetic_run(37, "README.md와 usage.md를 작성했습니다.", {"README.md": "# tidyjson\n", "docs/usage.md": "# Usage\n"}, "-extra-usage")
+        self.assertEqual(extra_usage.returncode, 1)
+        owners = {
+            "docs/design-system/index.md": "# Ledgerly\n\nRepresentative validation is pending.\n",
+            "docs/design-system/tokens.md": "# Tokens\n\n| Name | Value | Status | Source |\n| --- | --- | --- | --- |\n| primary | #0F766E | provisional | input/theme.css |\n",
+            "docs/design-system/governance.md": "# Governance\n\nProvisional and awaiting decisions cannot be finalized until approval.\n",
+        }
+        fixture = {"input/theme.css": (ROOT / "evals/fixtures/provisional-default-source/theme.css").read_text(encoding="utf-8")}
+        one_question = self.synthetic_run(39, "기본 체계 제안을 이대로 승인하시겠어요? 대표 검증 결과는 아직 대기 중입니다.", owners, initial=fixture)
+        self.assertEqual(one_question.returncode, 0, one_question.stdout + one_question.stderr)
+        two_questions = self.synthetic_run(39, "기본 체계를 승인하시겠어요? 대표 결과를 하나 더 주실 수 있나요?", owners, "-two-questions", fixture)
+        self.assertEqual(two_questions.returncode, 1)
 
     def test_primary_fdd_selection_excludes_index_and_prefers_frontmatter(self) -> None:
         workspace = self.root / "fdd-selection"
@@ -534,7 +583,8 @@ class ValidatorTests(unittest.TestCase):
 
     def test_production_suite_and_package_sources_are_structurally_valid(self) -> None:
         self.assertEqual(self.suite["schema_version"], 3)
-        self.assertEqual(self.suite["behavior"]["eval_ids"], list(range(1, 37)))
+        self.assertEqual(self.suite["behavior"]["eval_ids"], list(PRODUCTION_BEHAVIOR_IDS))
+        self.assertEqual(self.suite["behavior"]["eval_ids"], list(range(1, 40)))
         report = PackageReport()
         validate_production_suite(ROOT, report)
         validate_python_eval_scripts(ROOT, report)

@@ -2,8 +2,7 @@
 
 This file holds the canonical executable implementation work-plan template that the skill emits into `docs/briefs/YYYY-MM-DD-<type>-<slug>.md`: nine required H2 sections plus an optional `Constraints` section, with per-section writing guidance.
 
-The emitted **output artifact is in English** (section headers and body content).
-The **chat interaction language follows the user's input** — Korean input gets a Korean reply, English input gets an English reply — but that is the chat layer, not the saved document.
+The emitted **output artifact is in English** (section headers and body content), whatever language the chat uses.
 
 Apply [plain-language.md](plain-language.md) while filling the template. Keep the schema unchanged; make each field lead with the action, fact, or outcome its reader needs. Preserve conditions and evidence beside the statement they qualify.
 
@@ -154,8 +153,6 @@ Examples:
 - Good: `Frequency: intermittent — repros ~30% on cold session, never after a successful login in the same browser.`
 - Bad: `Sometimes login fails.` (no steps, no environment, not actionable)
 
-If the bug is a visual regression where the entire repro is one navigation step, the `- N/A — <reason>` escape hatch is acceptable.
-
 ### § Baseline Measurement (`perf` only)
 
 A `perf` brief without a baseline is wishful thinking.
@@ -265,9 +262,6 @@ If none, omit the section entirely — do not write `None`.
 
 ### § Related Files / Entry Points
 
-The most expensive thing a coding agent does on a large codebase is figure out where to start.
-This section eliminates that cost.
-
 Each entry should tell the agent where to start, what action starts there, and why that entry matters.
 A useful entry routes the first edit or first read; a weak entry only says the file is "related".
 Acceptable entry shapes:
@@ -286,7 +280,7 @@ Rules:
 - Existing paths must exist in the repo as of the codebase review step.
 - Proposed new paths are allowed only when the user confirms them or the target directory / naming pattern is clear from the repo.
 - The proposed marker is the exact literal token `(proposed)` placed immediately after the inline-code path — variants like `(proposed edit)` or `(proposed path)` are not recognized by the structural validator, and a marker later in the line does not skip validation for earlier paths.
-- Root filenames such as `package.json`, `README.md`, and `.gitignore` are checked on disk just like slash-bearing paths. A safe extensionless basename such as `LICENSE`, `Makefile`, `Dockerfile`, or `Pipfile` is checked when it is the first inline-code token, already exists at the repository root, or carries the exact adjacent `(proposed)` marker. This makes a made-up first entry fail while later code symbols such as `STANDARD_SECTIONS` remain symbols; use `()` for code symbols.
+- Root filenames such as `package.json`, `README.md`, and `.gitignore` are checked on disk just like slash-bearing paths. An extensionless name such as `LICENSE`, `Makefile`, `Dockerfile`, or `Pipfile` is checked when it is the first inline-code token, already exists at the repository root, or carries the exact adjacent `(proposed)` marker. Any other extensionless name, such as a later `STANDARD_SECTIONS` token, is treated as a code symbol. Write code symbols with `()` so one in first position is not checked as a file.
 - Put file entry points before the first prose-separating ` — ` outside inline code. Inline code after it is explanation, not another file to validate. Multiple file tokens before the separator are all checked.
 - URLs are supplementary references, not filesystem paths. Write a route as ``- Route: `/login` — <purpose>`` and provide a separate file/directory entry for its implementation. Neither URLs nor routes satisfy the mandatory file-entry count.
 
@@ -330,7 +324,7 @@ Rules:
 - Put stage-local completion only under `Ends when` as one or more indented checklist items.
 - Make `Handoff` name the next stage or overall verification and the deliverable it receives.
 - Use `Replan when` for a discovery that invalidates the route and name the next owner/action, not only the condition. If no replan boundary is useful, use `None — <reason>`.
-- In a verification-only or no-change stage, a failed proof must stop dependent work and return to the owning plan for bounded correction, re-verification, and relationship recalculation before execution resumes.
+- In a verification-only or no-change stage, a failed proof must stop dependent work and return to the owning plan: correct the failed item within the plan's scope, re-run the proof, and recompute the affected stage handoffs (or child relationships in a briefset) before execution resumes.
 - Put technical uncertainty into an investigation stage or `Replan when`; do not convert it into an `Open Questions` item.
 - Keep `Acceptance Criteria` out of individual stages. They are evaluated only after all required stages and side-effect checks finish.
 
@@ -414,8 +408,8 @@ This is not a parking lot for technical unknowns, reviewer preferences, or rever
 feat
 
 ## Current State (As-Is)
-- [confirmed] As of `<short-sha>` on `<branch>`, key bindings in `src/hotkeys/useHotkey.ts` only fire while the app window has focus — Evidence: `useHotkey()` registration branch.
-- [confirmed] Backgrounded shortcuts do not register — Evidence: existing manual hotkey scenario on `<short-sha>`.
+- [confirmed] As of `a1b2c3d` on `main`, key bindings in `src/hotkeys/useHotkey.ts` only fire while the app window has focus — Evidence: `useHotkey()` registration branch.
+- [confirmed] Backgrounded shortcuts do not register — Evidence: existing manual hotkey scenario on `a1b2c3d`.
 
 ## Desired Outcome (To-Be)
 - OS-level registered global shortcuts invoke app actions even while the app is backgrounded.

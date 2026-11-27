@@ -22,7 +22,8 @@
 - Do not judge arbitrarily — state the interpretation used in the review comment
 - Consider using `Clarification Needed` verdict
 
-## Re-review after Changes Requested
+## Re-review after Changes Requested or Clarification Needed
 
 - Use only the most recent `## ✅ Work Complete` comment as the review basis
-- Additionally verify that all issues from the previous `## 리뷰 결과: 🔄 Changes Requested` have been addressed
+- After `🔄 Changes Requested`, verify that every item from that review has been addressed
+- After `❓ Clarification Needed`, check that its `### Review Response` section answers every item under `### 확인 사항`; if an answer is missing, ask again with `Clarification Needed`

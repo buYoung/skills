@@ -84,7 +84,7 @@ These are platform and workload options, not routine IDE tuning:
 | Large pages | The OS is explicitly configured, the exact JBR supports them, and measurement shows a benefit | Startup/allocation failure modes, locked/reserved memory, operational setup |
 | NUMA controls | A multi-socket system shows locality problems | Can worsen placement; behavior is collector and platform dependent |
 
-Do not recommend large pages on macOS. On Linux and Windows, confirm OS setup and actual activation, not just option acceptance.
+Do not recommend large pages on macOS; JBR 25.0.4.1 on macOS aarch64 prints `-XX:+UseLargePages not supported in this VM` and leaves the flag false. On Linux and Windows, confirm OS setup and actual activation, not just option acceptance.
 
 ## Memory diagnostics
 

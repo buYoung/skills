@@ -29,7 +29,7 @@ Storefront requirements are time-sensitive. Deterministic checks require observa
 
 ## Current-only schema-v3 workflow
 
-The production suite defines eval 1 through 36 once with the current skill. It contains no baseline, repetition, blind comparison, or worker self-report. Run the deterministic preflight once before any model dispatch. If it fails, do not call Luna or rerun the preflight in that attempt.
+The production suite defines eval 1 through 39 once with the current skill. It contains no baseline, repetition, blind comparison, or worker self-report. Run the deterministic preflight once before any model dispatch. If it fails, do not call Luna or rerun the preflight in that attempt.
 
 Create a full scope by omitting `--eval-ids`, or a targeted scope by listing the selected evals:
 
@@ -90,7 +90,7 @@ python3 skills/document-writing/scripts/run_production_evals.py --stage evidence
 
 The aggregate separately reports planned tasks, present responses, valid execution receipts, deterministic passes and failures, completed independent grades, and semantic passes. With no grades, macro pass rate is `null`, not zero. Harness task IDs are explicitly not raw host model context IDs.
 
-Targeted evidence always keeps `production_ready: false`, even when every selected eval passes. A later full release requires all 36 receipts, all 36 independent grades, all hard gates, macro pass rate at least 0.90, reused selection thresholds, a valid eval 24 document and PNG, and a generated static review.
+Targeted evidence always keeps `production_ready: false`, even when every selected eval passes. A later full release requires all 39 receipts, all 39 independent grades, all hard gates, macro pass rate at least 0.90, reused selection thresholds, a valid eval 24 document and PNG, and a generated static review.
 
 Ordinary verification for a targeted iteration is:
 
@@ -103,7 +103,7 @@ Do not use `--require-production-ready` for targeted evidence. Generated evidenc
 
 ## CI limitation
 
-CI validates package structure, hashes, links, syntax, and deterministic negative controls. It does not dispatch model contexts, perform live research, create images, or grade outputs. Passing CI proves the evidence contract, not fresh model quality or storefront-policy currency.
+CI does not run these checks; the repository workflow only verifies changelog entries and drafts GitHub releases. Run `pnpm test` locally to check package structure, hashes, links, syntax, and deterministic negative controls. It does not dispatch model contexts, perform live research, create images, or grade outputs. A passing run proves the evidence contract, not fresh model quality or storefront-policy currency.
 
 ## Reusable design-rule cases
 
@@ -116,3 +116,7 @@ Eval 33 now checks the ordinary ActionButton function's direct-call contract. Th
 Eval 35 checks application of fixed original geometry/fills and template layers versus permitted content variation. Eval 36 distinguishes comparable recorded results, a remaining recurrence, and an approved follow-up check from claims of complete or general improvement.
 
 Only evaluation definitions, fixtures, and execution/validation tools are versioned. Run evaluations when fresh behavioral or visual evidence is needed. Workspaces, rendered outputs, screenshots, grades, and generated evidence are disposable local artifacts.
+
+## Software project and base-system cases
+
+Eval 37 writes a CLI package README from supplied facts; its contract allows only `README.md`, and private expectations judge the README profile, prerequisite order, the overwrite warning, and the absence of invented license, links, or options. Eval 38 delegates the base values and expects them in the canonical owners with the delegation recorded in governance. Eval 39 supplies an existing stylesheet: implementation values become sourced provisional defaults, unsourced decisions stay awaiting approval, and the one-question limit must go to base-system approval while representative validation stays recorded as pending.

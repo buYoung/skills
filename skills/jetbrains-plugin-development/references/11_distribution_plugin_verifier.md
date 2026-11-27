@@ -8,7 +8,8 @@ supported descriptor checks; it does not launch the IDE or execute the feature.
 The task is provided by the IntelliJ Platform Gradle Plugin
 2.x — you only configure it when overriding the default IDE set. (Older guides refer to
 this task as `runPluginVerifier`; that is the 1.x name and the 2.x equivalent is
-`verifyPlugin`.)
+`verifyPlugin`, configured through `intellijPlatform.pluginVerification`, per the
+[2.x migration guide](https://plugins.jetbrains.com/docs/intellij/tools-intellij-platform-gradle-plugin-migration.html).)
 
 ```kotlin
 intellijPlatform {

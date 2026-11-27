@@ -1,5 +1,6 @@
 // Pairs with references/07_language_syntax_highlighting.md — exposes the highlighter keys
-// in Settings | Editor | Color Scheme so users can theme them.
+// in Settings | Editor | Color Scheme so users can theme them. getDisplayName() must match
+// the displayName of the <colorSettings> declaration in plugin.xml.
 package com.example.simplelang
 
 import com.intellij.openapi.editor.colors.TextAttributesKey

@@ -38,7 +38,7 @@ export default function (pi: ExtensionAPI) {
 
 - The default export is a function that returns `void` or `Promise<void>`. Pi waits for factories one after another, with no built-in time limit. Keep registration deterministic and finite.
 - Start processes, sockets, timers, and watchers at session start or on first use, not at module top level.
-- Import `Type` from `typebox`, not from `pi-coding-agent`.
+- Import `Type` from `typebox`, not from `pi-coding-agent`. Pi AI's own root no longer exports TypeBox; Pi still maps an extension's `@earendil-works/pi-ai` import to a view that adds `Type`, `Static`, and `TSchema`, but type checking against the published package does not see them.
 - Prefer exports from the public package root. Do not deep-import `src` or `dist`. Check any public subpath used by an advanced integration against the target runtime; loader aliases do not establish that a subpath is public.
 - An inline `pi.registerTool({...})` infers parameter types. For a definition stored separately or shared in an array, wrap it in the public `defineTool({...})` helper from `pi-coding-agent` to keep that inference.
 
@@ -69,6 +69,16 @@ execute(toolCallId, params, signal, onUpdate, ctx)
 ```
 
 The third argument is the optional `AbortSignal`, the fourth the optional progress callback, and the fifth the `ExtensionToolContext`. Do not copy examples written for a different signature.
+
+### Argument validation
+
+Pi validates tool arguments as JSON Schema with `@earendil-works/pi-schema`, whatever library built the schema. Before validation it coerces loose values: numeric strings to numbers, `"true"` to `true`, a single value to a one-item array, and `null` in an optional property is dropped. A value that coercion cannot repair, such as an array where the schema expects an object, fails before `execute` runs.
+
+- TypeBox features outside JSON Schema do not apply: `Type.Refine()` refinements are not run, codecs do not decode, and formats registered with `Format.Set()` are not checked. Check such constraints in `execute`.
+- `Type.BigInt()` and `Type.Undefined()` arguments convert (`"42"` to `42n`, `null` to `undefined`); `Type.Void()` rejects every JSON value.
+- The model sees errors such as `- path: missing` or `- limit: expected number, got string`.
+
+These rules apply since `v1.5.0`, with the `BigInt` and `Undefined` conversions since `v1.5.1`.
 
 ### Results
 
@@ -115,11 +125,12 @@ const result = await pi.exec("git", ["status", "--short"], {
   cwd: ctx.cwd,
   signal,
   timeout: 5000,
+  maxBuffer: 1024 * 1024,
 });
 if (result.killed || result.code !== 0) {
   return {
     content: [{ type: "text", text: result.stderr || "git status failed" }],
-    details: { exitCode: result.code, killed: result.killed },
+    details: { exitCode: result.code, killed: result.killed, truncated: result.truncated },
     isError: true,
   };
 }
@@ -130,7 +141,9 @@ return {
 ```
 
 - `pi.exec` uses `shell: false`, so pipes and redirects are not interpreted.
-- Its timeout is in **milliseconds**.
+- Its timeout is in **milliseconds**. A command that ignores SIGTERM after a timeout or abort receives SIGKILL 5 seconds later.
+- `maxBuffer` limits stdout and stderr combined, in bytes. The default is the smaller of 256 MiB and the runtime's string limit. Past the limit, Pi terminates the command and returns `truncated: true`, `killed: true`, and a nonzero `code`; the collected output is incomplete.
+- A command ended by a signal reports `128 +` the signal number as its code, for example 143 for SIGTERM and 137 for SIGKILL. Releases before `v1.6.0` reported 0.
 - Pass the session's `ctx.cwd`.
 - Do not join user input into a shell command to shorten the code.
 - If the package needs Git, document Git as a prerequisite.
@@ -172,7 +185,7 @@ return {
 - Verify both many-line and single-line oversized output. Confirm that the text stays within budget, still contains a meaningful portion of the output, and that the saved file equals the original.
 - Document that the complete-output file is temporary.
 
-This pattern bounds model-facing content after collection. A process or network stream whose output may be unbounded also needs a cap while collecting, or a strategy that streams to a file.
+This pattern bounds model-facing content after collection. A process or network stream whose output may be unbounded also needs a cap while collecting, such as `pi.exec`'s `maxBuffer`, or a strategy that streams to a file.
 
 ### Tool composition and mutable state
 
@@ -186,7 +199,7 @@ For a tool that reaches MCP tools, declare `reachesTools(input)` on its definiti
 
 `ctx.executeTool()` alone does not wait for registration. Use the current `ctx.tools` catalog to discover callable tools instead of assuming that every loaded name is available in the current exposure.
 
-In Pi `v1.4.0`, packages embedding SDK sessions with the built-in `codemode` share worker capacity across all sessions in that process: two workers by default, configurable with a positive integer `PI_CODEMODE_MAX_WORKERS`. At capacity, scripts queue in arrival order for at most 60 seconds or their shorter `timeout_ms`; that wait counts toward the script deadline. The `v1.3.0` release rejects at capacity instead of queuing. A canceled worker retains its slot until it exits. Do not hold every slot while awaiting another in-process session that itself needs codemode. A queued timeout fails without running the script; it does not prove that the requested operation executed.
+Since Pi `v1.4.0`, packages embedding SDK sessions with the built-in `codemode` share worker capacity across all sessions in that process: two workers by default, configurable with a positive integer `PI_CODEMODE_MAX_WORKERS`. At capacity, scripts queue in arrival order for at most 60 seconds or their shorter `timeout_ms`; that wait counts toward the script deadline. The `v1.3.0` release rejects at capacity instead of queuing. A canceled worker retains its slot until it exits. Do not hold every slot while awaiting another in-process session that itself needs codemode. A queued timeout fails without running the script; it does not prove that the requested operation executed.
 
 Set `executionMode: "sequential"` on a tool whose shared mutable state cannot tolerate parallel calls. For file mutations, wrap the whole read/modify/write transaction, not only the final write, in the public `withFileMutationQueue(absolutePath, async () => ...)` helper.
 
@@ -194,9 +207,9 @@ Set `executionMode: "sequential"` on a tool whose shared mutable state cannot to
 
 ### Tool activation across resume and tree navigation
 
-Pi `v1.4.0` restores the branch's recorded tool additions and removals, including records before compaction. With default tool selection, an extension tool that the branch never mentioned is treated as newly registered: it activates only for `direct` or `model-only` exposure and when `defaultActive` is not `false`. A tool the branch removed stays inactive. Built-in tools follow `defaultTools` instead.
+Since `v1.4.0`, Pi restores the branch's recorded tool additions and removals, including records before compaction. With default tool selection, an extension tool that the branch never mentioned is treated as newly registered: it activates only for `direct` or `model-only` exposure and when `defaultActive` is not `false`. A tool the branch removed stays inactive. Built-in tools follow `defaultTools` instead.
 
-Recorded tools that are allowed but not yet registered, such as tools from an MCP server still connecting, remain pending and activate when they register. At startup, explicit tool selection takes precedence over transcript restoration; `--tools +name`/`-name` modifiers apply to the restored selection. Tree navigation restores the target branch while respecting the effective tool allowlist and exclusions. Do not unconditionally reactivate every tool from `session_start`, which would undo the branch's removals. Check resumed sessions and `/tree`, not just a fresh session.
+Recorded tools that are allowed but not yet registered, such as tools from an MCP server still connecting, remain pending and activate when they register. The pending list is dropped when the next agent run starts or when `pi.setActiveTools()` deactivates a tool of the restored loadout. Since `v1.6.0`, deactivating only tools outside that loadout, such as the extension's own newly activated tool in `session_start`, keeps the list; earlier releases dropped it on any deactivation. At startup, explicit tool selection takes precedence over transcript restoration; `--tools +name`/`-name` modifiers apply to the restored selection. Tree navigation restores the target branch while respecting the effective tool allowlist and exclusions. Do not unconditionally reactivate every tool from `session_start`, which would undo the branch's removals. Check resumed sessions and `/tree`, not just a fresh session.
 
 ## Commands, flags, and shortcuts
 
@@ -277,7 +290,13 @@ To replace a built-in tool:
 
 These factories take the working directory as their first argument and fix it when called, but the extension factory has no session context. Create the delegate inside `execute` from `ctx.cwd`, not from a `process.cwd()` captured at load time, so relative paths follow the current session. The shorter `createReadTool` returns an `AgentTool` without the definition-level prompt and rendering information, so re-registering it as an extension cannot preserve those fields.
 
-Pi `v1.4.0`'s built-in `grep` runs ripgrep with `--no-config`, so `RIPGREP_CONFIG_PATH` cannot silently change its regex, literal, or filtering behavior. Preserve that boundary when wrapping the built-in; a separate custom search tool may expose different behavior explicitly.
+Since `v1.4.0`, the built-in `grep` runs ripgrep with `--no-config`, so `RIPGREP_CONFIG_PATH` cannot silently change its regex, literal, or filtering behavior. Preserve that boundary when wrapping the built-in; a separate custom search tool may expose different behavior explicitly.
+
+The search operations changed in later releases:
+
+- Since `v1.5.1`, `grep` takes context lines from ripgrep and never calls `GrepOperations.readFile`; the field remains only for compatibility. The search always runs the local ripgrep, so to search a remote system, override the tool's `execute()`.
+- Since `v1.5.1`, `grep`'s `glob` is relative to `path`, and since `v1.6.0` the `find` tool's path patterns are relative to its search directory. A pattern without `/` still matches file names at any depth.
+- Since `v1.5.1`, `ReadOperations` accepts an optional `createReadStream` so a custom reader can stream large files.
 
 ### What stops CLI startup
 
@@ -287,5 +306,7 @@ Each of these makes a fresh CLI startup exit with code 1:
 - Tool or flag conflicts between extensions.
 - Errors thrown by a registration call inside the factory, such as `registerMcpServer` with an invalid configuration or with a server name that another extension already registered.
 - Invalid provider registrations. Pi validates queued `registerProvider` calls only after every factory finishes, so a `try`/`catch` around the call cannot intercept the failure. [Integrations](integrations.md) lists the required fields.
+
+Since `v1.5.0`, a configured package that fails to install does not stop startup: Pi skips it, reports an extension warning, and tries again on the next start or `/reload`.
 
 Runtime event errors are usually reported while execution continues, but `tool_call` and `user_bash` errors block their operation. A successful reload does not replace a fresh-start check.

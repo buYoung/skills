@@ -5,6 +5,10 @@ External System framework provides a generic plumbing for "import project struct
 build system X". Use this when your plugin imports project structure from an external
 build or dependency tool.
 
+From 2026.3 the External System API is the separate module `intellij.platform.externalSystem`
+with its own classloader; add `bundledModule("intellij.platform.externalSystem")` to the
+Gradle dependencies (see `01_core_dependencies.md`).
+
 ## Gradle/Maven-style importers
 
 ### Core types
@@ -19,8 +23,8 @@ build or dependency tool.
 | `ExternalSystemProjectAware` / `ExternalSystemProjectTracker` | Describe tracked files / register the descriptor and schedule re-import |
 
 Implement `ExternalSystemProjectAware` for the integration's tracked settings. Obtain
-[`ExternalSystemProjectTracker`](https://github.com/JetBrains/intellij-community/blob/1c7e601c0423e544917046c23763b15d0282e2a3/platform/external-system-api/src/com/intellij/openapi/externalSystem/autoimport/ExternalSystemProjectTracker.kt)
-from the project and call it; the tracker is `@ApiStatus.NonExtendable` in `idea/2026.2.2`, so
+[`ExternalSystemProjectTracker`](https://github.com/JetBrains/intellij-community/blob/c91871ae2864649d952825cff72569e3db0e7ac6/platform/external-system-api/src/com/intellij/openapi/externalSystem/autoimport/ExternalSystemProjectTracker.kt)
+from the project and call it; the tracker is `@ApiStatus.NonExtendable` in `idea/2026.3`, so
 plugins must not implement or subclass it.
 
 ### Skeleton

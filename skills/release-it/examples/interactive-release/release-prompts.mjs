@@ -19,7 +19,7 @@ export async function requireAnswer(pendingAnswer, stage) {
   }
 }
 
-// release-it 21.0.1 calls register() and show(); there is no run() interface.
+// release-it 21.1.3 calls register() and show(); there is no run() interface.
 export class InquirerPrompt {
   prompts = new Map();
   completed = [];

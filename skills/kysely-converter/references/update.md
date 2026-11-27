@@ -47,7 +47,7 @@ Keep the target filter, transaction instance, execution options, and caller expe
 
 MySQL ORDER BY/LIMIT forms here are single-table updates; they cannot be attached to multi-table updates. Matched rows and actually changed rows can differ with driver flags, so do not interpret every count as changed data. See [MySQL UPDATE](https://dev.mysql.com/doc/refman/8.0/en/update.html).
 
-For PostgreSQL UPDATE FROM, ensure the joined relation selects at most one source row per target, or the chosen update value can be indeterminate. RETURNING and PostgreSQL's JSONB subscripting examples need matching server/type support. The `||` concatenation example is PostgreSQL SQL, not a portable MySQL expression. See [PostgreSQL UPDATE](https://www.postgresql.org/docs/18/sql-update.html). Read [operators](operators.md) for shared predicates and [INSERT result guidance](insert.md#input-and-result-contract) for RETURNING dialect boundaries.
+For PostgreSQL UPDATE FROM, ensure the joined relation selects at most one source row per target, or the chosen update value can be indeterminate. RETURNING and PostgreSQL's JSONB subscripting examples need matching server/type support. The `||` concatenation example is PostgreSQL SQL, not a portable MySQL expression. See [PostgreSQL UPDATE](https://www.postgresql.org/docs/19/sql-update.html). Read [operators](operators.md) for shared predicates and [INSERT result guidance](insert.md#input-and-result-contract) for RETURNING dialect boundaries.
 
 ## Basic UPDATE
 ```sql

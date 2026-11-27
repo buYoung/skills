@@ -141,7 +141,7 @@ Building packages together can unify features requested for their dependencies. 
 
 For example, suppose an `engine` enables an optional serialization dependency only through a `serialization` feature. A CLI enables that feature while another member uses serialization APIs without requesting it. A combined build can expose those APIs through feature unification; the second member built alone can fail. Each consumer therefore declares the capabilities it uses, and a portable package's supported feature/target combinations are meaningful independently of the host application's build.
 
-- Disable defaults at the shared declaration when consumers must opt out. A local `default-features = false` cannot undo defaults enabled elsewhere.
+- Disable defaults at the shared declaration when consumers must opt out. A local `default-features = false` cannot undo defaults that another package in the build enables. Since Cargo 1.99 an edition 2024 member can turn off defaults inherited from `[workspace.dependencies]`; earlier editions and older toolchains ignore or reject that override.
 - Workspace dependency entries cannot be optional; a member can inherit one as optional.
 - Check the affected package alone with its promised features/target as well as in relevant workspace combinations. Host `--all-features` does not establish firmware or Wasm compatibility.
 - `--all-features` is not a universal matrix for platform-specific or documented mutually exclusive configurations. Verify supported combinations.

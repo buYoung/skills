@@ -371,7 +371,7 @@ callback_parts only constructs the raw arguments; it does not register anything 
 | `bool` | `bool`/`_Bool` | Same layout; a C `int` used as boolean must be converted |
 | `usize` | `size_t` | Same width on all supported targets |
 
-Ownership crosses the boundary explicitly: a `Box::into_raw` handed to C is leaked until C returns it to a Rust function that calls `Box::from_raw`. Two allocators must never free each other's memory. Since 1.91 C-variadic functions can be declared (not defined) for `sysv64`, `win64`, `efiapi`, and `aapcs`.
+Ownership crosses the boundary explicitly: a `Box::into_raw` handed to C is leaked until C returns it to a Rust function that calls `Box::from_raw`. Two allocators must never free each other's memory. Since 1.91 C-variadic functions can be declared for `sysv64`, `win64`, `efiapi`, and `aapcs`; since 1.99 they can also be defined in Rust with the `"C"` and `"C-unwind"` ABIs, reading arguments through `core::ffi::VaList`.
 
 ## Own a Foreign Allocation with a Rust Handle
 
@@ -519,6 +519,8 @@ A container that owns `T` through a raw pointer (`struct MyVec<T> { ptr: NonNull
 | 1.92 | `Box::new_zeroed`, `Rc::new_zeroed`, `Arc::new_zeroed` |
 | 1.93 | `<[MaybeUninit<T>]>::assume_init_ref`, `assume_init_mut`, `assume_init_drop`, `write_copy_of_slice`; `Vec::into_raw_parts` |
 | 1.98 | Moving a `ManuallyDrop<Box<T>>` after dropping its contents is documented as sound |
+| 1.99 | C-variadic function definitions; `Layout::for_value_raw`, `size_of_val_raw`, `align_of_val_raw`; `Box::into_non_null`, `from_non_null`; `Box::leak` documentation advises against later freeing leaked memory; 1.99.1 fixes x86_64 FFI `bool` returns |
+| 1.100 | `mem::conjure_zst`; `UnsafeCell::as_ref_unchecked`, `as_mut_unchecked`; `Allocator` with `Box::new_in` and `Vec::new_in` |
 
 Per-release details live in [the versions index](../versions/index.md).
 

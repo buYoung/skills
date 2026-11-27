@@ -4,7 +4,7 @@
 
 | Symptom | Likely cause |
 |---|---|
-| "Read access is allowed from inside read-action only" | You're reading PSI/VFS without a Read Action. Wrap in `ReadAction.compute { }` / `readAction { }`. |
+| "Read access is allowed from inside read-action only" | You're reading PSI/VFS without a Read Action. Wrap in `readAction { }` in coroutines or `ReadAction.nonBlocking(...)` elsewhere; blocking `ReadAction.compute` is deprecated on 2026.1+. |
 | "Write access is allowed from event dispatch thread only" | The code or target version still requires an EDT write. Preserve it with `invokeLater` + `WriteAction.run` or `edtWriteAction`; do not assume the 2026.2 background-write contract applies to older targets. |
 | "Slow operations are prohibited on EDT" | You ran heavy work on the EDT. Move to `Task.Backgroundable` or `cs.launch`. |
 | IDE "freezes" briefly | Long Read or Write on EDT, or long Read on BGT blocking incoming Writes. Use `nonBlocking` / suspending `readAction`. |
@@ -82,7 +82,7 @@ import com.intellij.util.concurrency.AppExecutorUtil
 ```
 
 `writeIntentReadAction` and `writeCommandAction` are public `@Experimental` APIs in
-2026.2.2. Add their imports only after the plugin explicitly accepts that version-bound
+2026.3. Add their imports only after the plugin explicitly accepts that version-bound
 stability risk. Never copy neighboring internal helpers from platform source.
 
 ## Related references

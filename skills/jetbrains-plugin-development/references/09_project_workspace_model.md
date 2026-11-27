@@ -4,11 +4,11 @@
 
 The Workspace Model is the representation underlying `Module`/`ContentEntry`/`OrderEntry`.
 The `WorkspaceModel` interface and the storage/entity types below are in the stable API dumps
-for IntelliJ Community `idea/2026.2.2` at commit
-`1c7e601c0423e544917046c23763b15d0282e2a3`. Check the
-[`WorkspaceModel` declaration](https://github.com/JetBrains/intellij-community/blob/1c7e601c0423e544917046c23763b15d0282e2a3/platform/backend/workspace/src/WorkspaceModel.kt),
-[`WorkspaceEntity` declaration](https://github.com/JetBrains/intellij-community/blob/1c7e601c0423e544917046c23763b15d0282e2a3/platform/workspace/storage/src/com/intellij/platform/workspace/storage/WorkspaceEntity.kt),
-and generated [JPS entity API](https://github.com/JetBrains/intellij-community/blob/1c7e601c0423e544917046c23763b15d0282e2a3/platform/workspace/jps/gen/com/intellij/platform/workspace/jps/entities/ModuleEntityModifications.kt)
+for IntelliJ Community `idea/2026.3` at commit
+`c91871ae2864649d952825cff72569e3db0e7ac6`. Check the
+[`WorkspaceModel` declaration](https://github.com/JetBrains/intellij-community/blob/c91871ae2864649d952825cff72569e3db0e7ac6/platform/backend/workspace/src/WorkspaceModel.kt),
+[`WorkspaceEntity` declaration](https://github.com/JetBrains/intellij-community/blob/c91871ae2864649d952825cff72569e3db0e7ac6/platform/workspace/storage/src/com/intellij/platform/workspace/storage/WorkspaceEntity.kt),
+and generated [JPS entity API](https://github.com/JetBrains/intellij-community/blob/c91871ae2864649d952825cff72569e3db0e7ac6/platform/workspace/jps/gen/com/intellij/platform/workspace/jps/entities/ModuleEntityModifications.kt)
 again when changing the minimum IDE version.
 
 Use it for:

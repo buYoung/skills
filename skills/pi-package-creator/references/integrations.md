@@ -66,7 +66,7 @@ Replace the endpoint, ID, context and output limits, modalities, reasoning suppo
 
 ### Classifier image input and compatibility
 
-Pi `v1.4.0` supports image input for System One classifiers through the `typesafe-system-one` and `cloudflare-workers-ai-system-one` APIs. Extensions call `ctx.modelRegistry.classify(model, { state, questions, images }, options)`; codemode exposes the corresponding `models.classify()` call. This is classification, not image generation or chat.
+Since `v1.4.0`, Pi supports image input for System One classifiers through the `typesafe-system-one` and `cloudflare-workers-ai-system-one` APIs. Extensions call `ctx.modelRegistry.classify(model, { state, questions, images }, options)`; codemode exposes the corresponding `models.classify()` call. This is classification, not image generation or chat.
 
 - Require the selected model's `input` to include `"image"`. An image-capable API does not make every model multimodal. Public `images` entries use base64 image content with `data` and `mimeType`; extension callers use Pi AI's `ImageContent` shape, including `type: "image"`.
 - Check `result.stopReason` and `errorMessage`; a resolved classifier result is not necessarily a successful classification. Pass the caller's cancellation through the options when calling from an extension.
@@ -98,7 +98,7 @@ import { openAICompletionsApi } from "@earendil-works/pi-ai/compat";
 - `compat` is one specific public compatibility entry point, not permission to import arbitrary host subpaths.
 - The extension loader maps `compat` as a transitional entry point; its source describes it as kept "until compat is removed". Keep these imports in one module so that a later migration stays local.
 - API factories such as `openAICompletionsApi` are not TypeScript exports of the `@earendil-works/pi-ai` core root.
-- `@earendil-works/pi-ai/models` is also a public entry point, mapped by both the Node loader and bundled virtual modules at the reference revision. These loader mappings are included in `v1.4.0`, not the `v1.3.0` release; do not assume the older release can load this import from an extension. It exports model-service APIs such as `createModels`, not the legacy global catalog helpers. Inside a session, prefer `ctx.modelRegistry` when the operation should use that session's configured providers and credentials; creating a separate service does not inherit them.
+- `@earendil-works/pi-ai/models` is also a public entry point, mapped by both the Node loader and bundled virtual modules at the reference revision. These loader mappings exist since `v1.4.0`, not in the `v1.3.0` release; do not assume the older release can load this import from an extension. It exports model-service APIs such as `createModels`, not the legacy global catalog helpers. Inside a session, prefer `ctx.modelRegistry` when the operation should use that session's configured providers and credentials; creating a separate service does not inherit them.
 - Declare the `@earendil-works/pi-ai` peer. The bundled runtime-load check exposes an import that is unavailable on the installed target; report an incompatibility if it cannot load.
 
 ```ts
@@ -148,7 +148,7 @@ The complete-provider and `ProviderConfig` contracts differ:
 
 ### Preserve request identity and telemetry
 
-Pi `v1.4.0` includes client identity in Pi AI's public API:
+Since `v1.4.0`, Pi AI's public API includes client identity:
 
 - `ProviderRequestOptions.identity` is a `ClientIdentity` with optional `userAgent`, `attribution`, and `version`. `userAgent` accepts `"detailed"`, `"short"`, or `{ custom: string }`. `attribution: null` explicitly disables inherited attribution.
 - `createModels({ identity })` sets request defaults. `withClientIdentity(models, identity)` wraps an existing model service; per-request identity fields override the wrapper, which overrides the service defaults. `mergeClientIdentity` merges fields and skips `undefined`.
@@ -203,6 +203,8 @@ export default function (pi: ExtensionAPI) {
 
 The endpoint and token variable are placeholders. HTTP transport means streamable HTTP; the legacy SSE transport is not supported.
 
+At this revision, Pi's MCP client requests protocol revision `2025-11-25` and also accepts `2025-06-18`, `2025-03-26`, and `2024-11-05`. A server that selects any other revision fails to connect with `MCP server selected unsupported protocol version`.
+
 ### Declare a bundled stdio server
 
 Use an absolute path to the packaged script:
@@ -245,7 +247,8 @@ This requires a real shipped `server/index.js` and an available Node executable.
 
 - A registered server is a session declaration, not a write to `mcp.json`. Register it again on every extension load.
 - A server with the same name in file-based configuration takes precedence over the extension registration. The `mcp.json` reader and editor accept a leading UTF-8 BOM at this revision; extension registrations themselves are objects, not JSON text.
-- Optional OAuth settings include `clientId`, `clientSecret`, `callbackPort`, `callbackUrl`, `scope`, `clientName`, `clientRegistration: "dcr" | "cimd"`, and `authServerMetadataUrl`. Follow the actual server's flow and the configuration the user provides; registration alone does not check authentication.
+- Optional OAuth settings include `clientId`, `clientSecret`, `callbackPort`, `callbackUrl`, `scope`, `clientName`, `clientRegistration`, and `authServerMetadataUrl`. Follow the actual server's flow and the configuration the user provides; registration alone does not check authentication.
+- `clientRegistration` is `"auto"` (the default since `v1.5.0`), `"dcr"`, or `"cimd"`. Without `clientId`, `"auto"` uses Pi's Client ID Metadata Document when the authorization server supports it, `clientName` is not set, and any `callbackUrl` is `/callback` on `localhost` or `127.0.0.1`; otherwise it registers a client dynamically. `"dcr"` always registers. With `clientId`, Pi uses that pre-registered client. `"cimd"` cannot be combined with `clientId` or `clientName`.
 
 ### Connectors only: `mcp_servers_change`
 

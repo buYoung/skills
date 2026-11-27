@@ -65,7 +65,7 @@ Listed in the order the interactive prompt should surface them — most-used cho
 | `prerelease` / `pre` (rc counter) | `1.3.0-rc.0` → `1.3.0-rc.1` | Increment the pre-release counter. Switch to the rc track with `--preRelease=rc` (typically after beta has stabilized) |
 | `major` | `2.0.0` | Breaking changes |
 | `premajor` | `2.0.0-alpha.0` | Pre-release of next major (less common; used when the next major needs its own alpha/beta/rc cycle) |
-| Explicit version | `3.0.0` | Stock 21.0.1 version resolution accepts valid semver >= current; the packaged interactive menu requires > current |
+| Explicit version | `3.0.0` | Stock 21.1.3 version resolution accepts valid semver >= current; the packaged interactive menu requires > current |
 
 ```bash
 release-it minor              # Interactive with minor bump
@@ -77,7 +77,7 @@ Version resolution accepting an equal version does not make a repeated release i
 For example, npm's bump may require `npm.allowSameVersion`, and existing tags or hosted
 releases have their own behavior. Define repeat/update semantics for the applying workflow
 instead of applying the interactive menu's strict-increase rule to every CLI/API call.
-Source: [21.0.1 Version plugin](https://github.com/release-it/release-it/blob/21.0.1/lib/plugin/version/Version.js).
+Source: [21.1.3 Version plugin](https://github.com/release-it/release-it/blob/21.1.3/lib/plugin/version/Version.js).
 
 > **About the (alpha)/(beta)/(rc) labels.** In semver, the increment **type** (`prepatch`/`preminor`/`premajor`) and the pre-release **identifier** (`alpha`/`beta`/`rc`) are independent axes — `prepatch` could be tagged `-alpha.0`, `-beta.0`, or just `-0` depending on `preReleaseId`. The labels above encode a recommended team convention so the prompt reads naturally for users who aren't semver experts:
 >
@@ -206,11 +206,13 @@ release-it \
 jobs:
   release:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 0
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
           node-version: 'lts/*'
           registry-url: 'https://registry.npmjs.org'
@@ -221,11 +223,17 @@ jobs:
       - run: npm ci
       - run: npx release-it --ci
         env:
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 ```
 
 `fetch-depth: 0` is needed if using conventional-changelog or any plugin that reads git history.
+`contents: write` lets `GITHUB_TOKEN` push the release commit and tag and create the GitHub
+Release. With `registry-url`, `setup-node` writes an `.npmrc` containing
+`_authToken=${NODE_AUTH_TOKEN}`, so the npm token must reach release-it under that name; an
+environment variable named only `NPM_TOKEN` is not read by that file. Drop `NODE_AUTH_TOKEN`
+when npm publishing is disabled or uses trusted publishing. For token limits and the OIDC
+workflow, see [npm-publishing.md](npm-publishing.md#cicd-environments).
 
 ## Programmatic API
 
@@ -247,7 +255,7 @@ console.log(output);
 
 ### Errors and Diagnostic Commands
 
-In **21.0.1**, the API's catch logs `err.message || err`, then rethrows the same error.
+In **21.1.3**, the API's catch logs `err.message || err`, then rethrows the same error.
 It uses `info` for `err.cause === 'INFO'`, otherwise `error`. This is release-it's internal
 convention, not a general JavaScript error classification. A wrapper using the default
 logger should not print the same API error again. Limit suppression to that call's rejection:
@@ -270,7 +278,7 @@ means no matching ref; a spawn failure or a different failure must not be report
 absent tag. Capture diagnostics rather than discarding them. Commands requiring interactive
 authentication or hooks may need different stdio; do not apply a probe helper to every task.
 
-Sources: [21.0.1 API](https://github.com/release-it/release-it/blob/21.0.1/lib/index.js),
+Sources: [21.1.3 API](https://github.com/release-it/release-it/blob/21.1.3/lib/index.js),
 [Node execFileSync](https://nodejs.org/api/child_process.html#child_processexecfilesyncfile-args-options),
 [Git show-ref](https://git-scm.com/docs/git-show-ref).
 

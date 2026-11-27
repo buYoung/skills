@@ -5,7 +5,8 @@
 - Plain `var` fields in a `BaseState` subclass. No persistence.
 - `@JvmField` missing on a `SerializablePersistentStateComponent` data class. Empty XML.
 - Storing secrets in `PersistentStateComponent`. Use `PasswordSafe`.
-- Light application service with `roamingType = DEFAULT`. Disallowed; set `DISABLED`.
+- Application-level light service (`@Service`) that is a `PersistentStateComponent` with
+  `roamingType = DEFAULT`, including an omitted `roamingType`. Disallowed; set `DISABLED`.
 - `Configurable.apply` not actually flushing into the service. Settings page seems to "do
   nothing".
 - Forgetting `disposeUIResources` on a `Configurable` and leaking a panel that holds an
@@ -18,5 +19,5 @@
 - `02_runtime_services.md` — services as the canonical place for state.
 - `03_lifecycle_disposer.md` — `DialogWrapper.getDisposable()`, dialog scopes.
 - `08_ui_settings_persistent_state.md` — persistent settings and secret-storage boundaries.
-- `01_core_plugin_xml.md` — `<applicationConfigurable>`, `<toolWindow>`,
-  `<notificationGroup>` registration.
+- `08_ui_settings_configurable.md`, `08_ui_tool_windows.md`, and `08_ui_notifications.md` —
+  `<applicationConfigurable>`, `<toolWindow>`, and `<notificationGroup>` registration.

@@ -41,23 +41,24 @@ A few additional concepts:
   stable `edtWriteAction` makes an EDT write explicit. Use `Dispatchers.EDT` for EDT model
   access, or an explicit read/write action.
 - **2025.3+:** `Dispatchers.UI` is the public pure-UI dispatcher. It runs on EDT without
-  Write Intent, so PSI/VFS/Document access is forbidden inside it.
-- **2026.2.2:** suspending `writeAction` delegates to `backgroundWriteAction` and acquires
+  Write Intent; in 2026.3, starting a read or write action inside it is reported as an error,
+  so keep PSI/VFS/Document access out of it.
+- **2026.2+:** suspending `writeAction` delegates to `backgroundWriteAction` and acquires
   the Write Lock from `Dispatchers.Default`. Use `edtWriteAction` when EDT execution is
   part of the old behavior or the called API requires EDT. Do not infer thread affinity
   merely from holding the Write Lock.
-- **Dumb Mode** is a separate axis (indexes are unavailable). See `05_file_model_psi_basics.md`.
+- **Dumb Mode** is a separate axis (indexes are unavailable). See `05_file_model_indexing_stubs.md`.
 - **`ProcessCanceledException`** (PCE) is the platform's cancellation signal. Read Actions,
   many platform calls (`PsiFile.getText()`, `PsiReference.resolve()`), and progress checks
   all may throw it. **Never catch-all and swallow it.**
 
 ## Fixed-source evidence
 
-The 2026.2 statements above are verified against IntelliJ Community tag `idea/2026.2.2`,
-commit `1c7e601c0423e544917046c23763b15d0282e2a3`:
+The 2026.2+ statements above are verified against IntelliJ Community tag `idea/2026.3`,
+commit `c91871ae2864649d952825cff72569e3db0e7ac6`:
 
-- [`Application.java`](https://github.com/JetBrains/intellij-community/blob/1c7e601c0423e544917046c23763b15d0282e2a3/platform/core-api/src/com/intellij/openapi/application/Application.java)
-- [`coroutines.kt`](https://github.com/JetBrains/intellij-community/blob/1c7e601c0423e544917046c23763b15d0282e2a3/platform/core-api/src/com/intellij/openapi/application/coroutines.kt)
+- [`Application.java`](https://github.com/JetBrains/intellij-community/blob/c91871ae2864649d952825cff72569e3db0e7ac6/platform/core-api/src/com/intellij/openapi/application/Application.java)
+- [`coroutines.kt`](https://github.com/JetBrains/intellij-community/blob/c91871ae2864649d952825cff72569e3db0e7ac6/platform/core-api/src/com/intellij/openapi/application/coroutines.kt)
 
 The recommended entry points in this reference are public and are not annotated
 `@ApiStatus.Internal` or `@IntellijInternalApi` at that commit. Internal source is useful

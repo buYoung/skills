@@ -79,6 +79,16 @@ Then check the option names and defaults exposed by that binary:
 
 This only confirms that the standalone runtime accepts or exposes an option. The restarted IDE process still must be checked with `VM.command_line` and `VM.flags -all`, and performance must be measured separately.
 
+## Security mitigation options
+
+On 2026-11-24 JetBrains published the Java4Shell advisory (CVE-2026-114938). The HotSpot Base64 decoding intrinsic can write out of bounds on x86-64 CPUs with AVX-512 VBMI when it decodes attacker-controlled Base64; ARM64, including Apple Silicon, is not affected. IDEs bundling JBR 17 (17.0.6 and later), 21, or 25 are affected until updated.
+
+- Updated IDE releases add `-XX:-UseBASE64Intrinsics` to their default VM options. The first mitigated version differs by product and release line; take it from the advisory's table instead of inferring it. Before updating, JetBrains' workaround is the same line added through **Help | Edit Custom VM Options**, followed by a restart.
+- Treat the option as part of the baseline until the advisory states that the confirmed IDE build bundles a JBR with the upstream fix; JetBrains plans to remove the default option at that point and to update the advisory when the runtime builds are available. Until then, keep it wherever it is present in a delta, comparison condition, or rollback, even though it can make Base64 decoding slower. After an update a manual copy is redundant but harmless. Check the advisory before stating whether a given build ships the option or still needs it.
+- The default need not appear in the installation's `.vmoptions` file; IntelliJ IDEA 2026.3.0.1 for macOS aarch64 supplies it through `Contents/Resources/product-info.json`. Confirm the value on the target process with `jcmd <pid> VM.flags`. A standalone `java -XX:+PrintFlagsFinal -version` shows the runtime's own value, not the IDE's launch options.
+- Do not suggest `-XX:UseAVX=2`, even where other advisories propose it. JetBrains warns that it prevents JBR 25 from starting on ARM64.
+- The IDE update covers the IDE process and remote development backends, which receive the same defaults. Project JDKs, Gradle and Maven daemons, tests, and run configurations need the vendor's fixed JDK or the same option in their own configuration.
+
 ## Evidence record
 
 For every version-sensitive claim, retain this shape in the answer or working notes:
@@ -95,3 +105,4 @@ For every version-sensitive claim, retain this shape in the answer or working no
 - [JetBrains: Advanced configuration and VM-options precedence](https://www.jetbrains.com/help/idea/tuning-the-ide.html)
 - [JetBrains Runtime repository and release/build matrix](https://github.com/JetBrains/JetBrainsRuntime)
 - [Oracle JDK 25 `jcmd` command reference](https://docs.oracle.com/en/java/javase/25/docs/specs/man/jcmd.html)
+- [JetBrains: Java4Shell vulnerability advisory](https://blog.jetbrains.com/security/2026/11/java4shell-vulnerability/)

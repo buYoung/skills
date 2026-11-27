@@ -475,5 +475,7 @@ Package contents matter independently of local compilation: `cargo package --lis
 | 1.87 | `use<..>` in trait definitions |
 | 1.90 | `cargo publish --workspace` |
 | 1.91 | `build.build-dir`; `cargo publish` no longer leaves `.crate` files in `target/package` when `build-dir` is set |
+| 1.99 | Edition 2024 members can turn off `default-features` inherited from `[workspace.dependencies]` |
+| 1.100 | `[lints.cargo]` and `cargo::unused_dependencies`; `Infallible` is an alias of `!` |
 
 Per-release details live in [the versions index](../versions/index.md).

@@ -42,7 +42,8 @@ Attributes:
 |---|---|
 | `class` | implementation FQN |
 | `topic` | topic interface FQN |
-| `activeInTestMode` | also fire in test mode (default `false`) |
+| `activeInTestMode` | instantiate the listener in test mode (default `true`) |
+| `activeInHeadlessMode` | instantiate the listener in headless mode (default `true`) |
 | `os` | OS gate |
 
 Listener class rules:

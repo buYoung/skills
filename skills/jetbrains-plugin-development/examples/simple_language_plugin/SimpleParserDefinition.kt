@@ -2,6 +2,7 @@
 // lexer, parser, and PSI.
 package com.example.simplelang
 
+import com.example.simplelang.parser.SimpleParser
 import com.example.simplelang.psi.SimpleTypes
 import com.intellij.lang.ASTNode
 import com.intellij.lang.ParserDefinition

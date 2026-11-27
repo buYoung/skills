@@ -35,14 +35,20 @@ PlatformPatterns.psiElement(MyTypes.ID)
   .afterLeaf(PlatformPatterns.psiElement(MyTypes.EQ));
 ```
 
-`CompletionType.BASIC` is the standard `Ctrl+Space`. `SMART` is the older deprecated
-"smart completion" path. `CLASS_NAME` is the class-name path.
+`CompletionType.BASIC` is the standard `Ctrl+Space`. `SMART` is type-matching completion,
+invoked by the `SmartTypeCompletion` action (`Ctrl+Shift+Space` in the default keymap).
+`CLASS_NAME` is deprecated; use `BASIC` instead.
 
-Tweak the result set:
+Tweak the result set. `withPrefixMatcher` and `withRelevanceSorter` return a new
+`CompletionResultSet`, so chain them and keep the result; `restartCompletionOnPrefixChange`
+returns `void`, and `runRemainingContributors(params, passResult)` returns the collected
+results:
 
 ```java
-result.withPrefixMatcher(prefix)              // override prefix
-      .withRelevanceSorter(...)
-      .restartCompletionOnPrefixChange(...)
-      .runRemainingContributors(params, true) // explicitly chain
+CompletionResultSet adjusted = result.withPrefixMatcher(prefix)  // override prefix
+                                     .withRelevanceSorter(sorter);
+adjusted.restartCompletionOnPrefixChange(StandardPatterns.string().endsWith("."));
+adjusted.runRemainingContributors(params, true); // run later contributors, pass results through
 ```
+
+The three-argument `runRemainingContributors(params, consumer, stop)` is deprecated.

@@ -129,7 +129,7 @@ node "$skill_dir/scripts/test-tools.mjs" "$package_dir" \
 - Each case runs independently in a fresh process and workspace, which are removed afterward.
 - After reporting its result, each case process emits `session_shutdown`, disposes the session, and must exit on its own. If it is still alive 2 seconds later, an extension left a timer, watcher, socket, or child process active. A passing case then fails with that message, and its other observations stay in the report. Release such handles in `session_shutdown`.
 
-The tool runner uses the actually loaded extension, an in-memory session, and Pi's agent loop with scripted faux model responses. It exercises argument validation, tool hooks, result and error handling, nested execution, and execution events without requesting a provider response. A call that fails schema validation should fail before the tool does any work.
+The tool runner uses the actually loaded extension, an in-memory session, and Pi's agent loop with scripted faux model responses. It exercises argument validation, tool hooks, result and error handling, nested execution, and execution events without requesting a provider response. A call that fails schema validation should fail before the tool does any work. Pi coerces loose arguments before validating them, so choose rejection inputs that coercion cannot repair: an array where the schema expects an object fails, but a numeric string for a number field or a single value for an array field passes.
 
 ### Complete case format
 
@@ -165,7 +165,7 @@ String values support `{{cwd}}` for the actual workspace path and `{{name}}` for
 | Behavior | Input or fixture | Assert |
 |---|---|---|
 | Ordinary success | Representative valid input and the files it needs | `isError: false`, meaningful text, exact domain values in `details`, correct `cwd` |
-| Input rejection | Wrong type, missing required value, out-of-range field | `isError: true`; no successful business result or unintended side effect |
+| Input rejection | Wrong type that coercion cannot repair, missing required value, out-of-range field | `isError: true`; no successful business result or unintended side effect |
 | Operational failure | Missing file, non-repository cwd, controlled nonzero subprocess, failed local service | `isError: true`; an actionable diagnostic and no success-shaped result |
 | Cancellation | An operation still running when `abortAfterMs` fires | Observed cancellation; no continuing subprocess, late write, or success message |
 | Flag or configuration | The default and a changed supported flag | Display or behavior changes as intended; structured values stay valid |
@@ -222,14 +222,14 @@ Use the isolated CLI setup in [operations](operations.md). Select the rows for r
 |---|---|---|
 | Fresh startup | Launch `pi -e "$package_dir"` in the isolated environment | No load, flag, or tool conflict; every intended resource is present |
 | Direct command | Run its slash command with ordinary, missing, and invalid arguments | Correct result or diagnostic; no unwanted model turn; only documented state changes |
-| Prompt | Invoke it with omitted values, quoted spaces, `""`, and extra arguments | Expansion matches the substitution grammar in [resources](resources.md), including preserved empty quoted arguments on `v1.3.0` and `v1.4.0` |
+| Prompt | Invoke it with omitted values, quoted spaces, `""`, an apostrophe inside a word, and extra arguments | Expansion matches the substitution grammar and argument parsing in [resources](resources.md), including empty quoted arguments, preserved since `v1.3.0` |
 | Skill | Invoke `/skill:<name>` and follow a relative supporting reference | Intended body, base directory, and arguments; the reference stays readable in the extracted artifact |
 | Theme | Select its exact name in `/settings` | No fallback or diagnostic; inspect text, code, diff, selection, and tool and error backgrounds |
 | Reload | Invoke the feature, run `/reload`, invoke it again | One registration, watch, or process; the updated resource; no use of the old context; the reloading handler returns immediately |
 | Session state | Change state, then switch, fork, or resume the session as supported | State restored from the correct branch; no cache leaking from the old session |
-| Tool activation | For a package with tools, resume an older session and navigate `/tree`; include removed and newly registered tools | In `v1.4.0`, branch removals remain inactive; eligible unmentioned extension tools activate; explicit tool selection and pending registrations remain respected |
+| Tool activation | For a package with tools, resume an older session and navigate `/tree`; include removed and newly registered tools | Since `v1.4.0`, branch removals remain inactive; eligible unmentioned extension tools activate; explicit tool selection and pending registrations remain respected |
 | Mode guards | Run the feature in each advertised `tui`, `rpc`, `json`, or `print` mode | UI calls only where supported; a valid output protocol and correct `ctx.mode` behavior |
-| Concurrent dialogs or overlays | When the feature opens them, close or cancel dialogs in its supported order; require `v1.4.0` when relying on editor-slot stacking | With stacking support, the previous editor-slot dialog returns; `done()` closes only its own custom overlay; each interaction settles once |
+| Concurrent dialogs or overlays | When the feature opens them, close or cancel dialogs in its supported order; require `v1.4.0` or later when relying on editor-slot stacking | With stacking support, the previous editor-slot dialog returns; `done()` closes only its own custom overlay; each interaction settles once |
 | Filters | Toggle a resource off and on in disposable `pi config` settings | Exactly that selection changes; unused conventional resources never appear |
 | Project delta | Exercise the documented `autoload: false` selection changes | The last matching delta wins; untouched personal resources stay unchanged |
 

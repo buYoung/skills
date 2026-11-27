@@ -31,7 +31,7 @@ Product-Market Fit exists when a product satisfies strong market demand, evidenc
 | Metric | Formula | PMF Signal |
 |--------|---------|------------|
 | Organic Growth % | Non-paid signups / Total signups | > 50% |
-| Viral Coefficient | Invites sent × Conversion rate | > 1.0 |
+| Viral Coefficient | Avg invites sent per user × Invite conversion rate | > 1.0 (viral growth) |
 | NPS | Promoters % - Detractors % | > 40 |
 | Referral Rate | Referred customers / Total customers | > 25% |
 

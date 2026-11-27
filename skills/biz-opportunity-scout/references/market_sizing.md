@@ -45,7 +45,16 @@ TAM: $X billion (Global/Regional)
 SAM: $X million (Target Segment)
 SOM: $X million (Year 1-3 Target)
 Market Growth: X% CAGR
+Market Attractiveness: Weak / Moderate / Strong
 ```
+
+| Market Attractiveness | Criteria |
+|-----------------------|----------|
+| Strong | SOM follows from a top-down or bottom-up calculation whose inputs all have a recorded source, and CAGR is positive |
+| Moderate | SOM follows from a calculation in which only some inputs have a recorded source, or CAGR is flat |
+| Weak | SOM has no supporting calculation or none of its inputs has a recorded source, or CAGR is negative |
+
+Use the lowest row whose criteria match. A CAGR that could not be found counts as flat.
 
 ## Data Collection via Web Search
 
@@ -53,7 +62,7 @@ Use web search to gather the following data points:
 
 | Search Query Examples | Target Data |
 |-----------------------|-------------|
-| "[industry] market size 2024" | TAM estimation |
+| "[industry] market size [current year]" | TAM estimation |
 | "[industry] CAGR forecast" | Growth rate projections |
 | "[target segment] demographics statistics" | SAM calculation inputs |
 | "[competitor] revenue annual report" | Market share benchmarks |

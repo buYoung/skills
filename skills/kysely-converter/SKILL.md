@@ -18,7 +18,7 @@ Translate query intent into Kysely code using the project's schema types, dialec
 
 Inspect the relevant project package manifest, installed Kysely package metadata when available, lockfile resolution, TypeScript version, database dialect/server version, driver, schema types, and nearby query code. A dependency range is not an exact installed version. Account for workspace-specific resolutions and plugins that transform queries or results.
 
-Use the user's requested version together with installation and lock information. If they conflict, ask which version to target before choosing APIs. If no version can be confirmed, explicitly state **“Assuming Kysely 0.29.5”** and proceed with that baseline; do not present it as the installed version. Missing dialect, schema, or return requirements still need clarification when they affect correctness.
+Use the user's requested version together with installation and lock information. If they conflict, ask which version to target before choosing APIs. If no version can be confirmed, explicitly state **“Assuming Kysely 0.29.9”** and proceed with that baseline; do not present it as the installed version. Missing dialect, schema, or return requirements still need clarification when they affect correctness.
 
 For 0.29.x, read [the version reference](references/kysely-0.29.md) before selecting APIs. For another version, verify relevant APIs against that version's official release notes and tagged source/declarations. Do not apply the 0.29 reference as proof of compatibility with older or later versions, or silently upgrade the project.
 

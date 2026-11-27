@@ -3,7 +3,7 @@
 ## Approved
 
 ```
-Linear:save_comment
+save_comment
   issueId: "<sub-issue-id>"
   body: |
     ## 리뷰 결과: ✅ Approved
@@ -24,7 +24,7 @@ Linear:save_comment
 ## Changes Requested
 
 ```
-Linear:save_comment
+save_comment
   issueId: "<sub-issue-id>"
   body: |
     ## 리뷰 결과: 🔄 Changes Requested
@@ -46,7 +46,7 @@ Linear:save_comment
 Then transition the status:
 
 ```
-Linear:save_issue
+save_issue
   id: "<sub-issue-id>"
   state: "started"
 ```
@@ -54,7 +54,7 @@ Linear:save_issue
 ## Clarification Needed
 
 ```
-Linear:save_comment
+save_comment
   issueId: "<sub-issue-id>"
   body: |
     ## 리뷰 결과: ❓ Clarification Needed
@@ -67,13 +67,13 @@ Linear:save_comment
     1. [구현 선택에 대한 질문]
     2. [의도 확인 필요 사항]
 
-    → 상태 유지: Done (확인 후 판단)
+    → 상태 유지: Done (작업자가 새 Work Complete 댓글의 Review Response로 답하면 다시 리뷰)
 ```
 
 ## Final Review — All Criteria Met
 
 ```
-Linear:save_comment
+save_comment
   issueId: "<main-issue-id>"
   body: |
     ## 📋 최종 리뷰 완료
@@ -82,6 +82,7 @@ Linear:save_comment
     - ✅ PRI-43 — Approved
     - ✅ PRI-44 — Approved
     - ✅ PRI-45 — Approved
+    - ⏭️ PRI-46 — Canceled (검증 제외)
 
     ### Acceptance Criteria 검증
     - [x] Criterion 1 — PRI-43, PRI-44에서 충족
@@ -96,7 +97,7 @@ Linear:save_comment
 ## Final Review — Gaps Found
 
 ```
-Linear:save_comment
+save_comment
   issueId: "<main-issue-id>"
   body: |
     ## 📋 최종 리뷰 — 추가 작업 필요

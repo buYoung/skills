@@ -28,7 +28,7 @@ const releaseRoot = path.join(dependencies, 'release-it');
 const { default: release } = await import(pathToFileURL(path.join(releaseRoot, 'lib/index.js')));
 const { default: Prompt } = await import(pathToFileURL(path.join(releaseRoot, 'lib/prompt.js')));
 const version = JSON.parse(readFileSync(path.join(releaseRoot, 'package.json'), 'utf8')).version;
-assert.equal(version, '21.0.1', 'These internal prompt/lifecycle checks target release-it 21.0.1');
+assert.equal(version, '21.1.3', 'These internal prompt/lifecycle checks target release-it 21.1.3');
 const initialCwd = process.cwd();
 const initialFetch = globalThis.fetch;
 const results = [];
@@ -139,6 +139,36 @@ export default class Failure extends Plugin {
   return { errorMessages: 1 };
 }
 
+async function checkUnnamedStep() {
+  const { directory, plugin } = fixture('unnamed-step-prompt', `import { Plugin } from 'release-it';
+export default class UnnamedStep extends Plugin {
+  static disablePlugin() { return 'npm'; }
+  getLatestVersion() { return '1.2.3'; }
+  init() {
+    this.registerPrompts({ named: { type: 'confirm', message: () => 'Named step?', default: true } });
+  }
+  async release() {
+    const skipped = await this.step({ enabled: false, task: () => {}, label: 'Disabled step' });
+    this.log.info('disabled-step:' + skipped);
+    await this.step({ enabled: true, task: () => this.log.info('unnamed-task-ran'), label: 'Unnamed step' });
+  }
+}`);
+  const events = [];
+  const questions = [];
+  const prompt = new Prompt({ container: { createPrompt: async (type, options) => {
+    questions.push(options);
+    return true;
+  } } });
+  process.chdir(directory);
+  await assert.rejects(release({ ...baseOptions, plugins: { [plugin]: {} } }, { prompt, log: logger(events) }),
+    TypeError);
+  const infos = events.filter(event => event.level === 'info').map(event => event.args[0]);
+  assert.ok(infos.includes('disabled-step:false'), 'A disabled step without a prompt name must return false');
+  assert.ok(!infos.includes('unnamed-task-ran'), 'An unnamed enabled step must not run its task');
+  assert.equal(questions.length, 0);
+  return { disabledStep: false, unnamedStep: 'TypeError', questions: 0 };
+}
+
 const cases = [
   ['version-provider', () => checkExample('version-provider', minimal)],
   ['version-provider-dry-run', () => checkExample('version-provider-dry-run', minimal, { isDryRun: true })],
@@ -146,7 +176,8 @@ const cases = [
   ['webhook-decline', () => checkExample('webhook-decline', webhook, { hasQuestion: true, answer: false })],
   ['webhook-dry-run', () => checkExample('webhook-dry-run', webhook, { hasQuestion: true, isDryRun: true })],
   ['plugin-group-order', checkOrder],
-  ['api-error-ownership', checkApiError]
+  ['api-error-ownership', checkApiError],
+  ['unnamed-step-prompt', checkUnnamedStep]
 ];
 for (const [name, run] of cases) {
   try { results.push({ name, passed: true, ...await run() }); }

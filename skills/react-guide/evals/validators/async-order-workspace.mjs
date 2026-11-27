@@ -3,6 +3,7 @@ import { readFile } from 'node:fs/promises';
 import path from 'node:path';
 
 const root = process.argv[2];
+assert.ok(root, 'usage: node async-order-workspace.mjs <repaired-fixture-root>');
 const read = (file) => readFile(path.join(root, file), 'utf8');
 const [source, pkg, vite, api, audit, report] = await Promise.all([
   read('src/orders/OrderWorkspace.jsx'),

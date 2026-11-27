@@ -12,7 +12,7 @@
 1. Commit or stash changes before running release-it
 2. If the workflow intentionally permits existing changes, define its staging and recovery
    policy before disabling the check with `--no-git.requireCleanWorkingDir` or
-   `"git": { "requireCleanWorkingDir": false }`. In 21.0.1 this also prevents registration
+   `"git": { "requireCleanWorkingDir": false }`. In 21.1.3 this also prevents registration
    of local exit/SIGINT rollback handlers.
 
 For wrappers, inspect the actual preflight command. release-it's built-in tracked/index
@@ -74,11 +74,13 @@ When disabled, release-it adds `--set-upstream origin <branch>` to the push comm
 
 ### npm Authentication Errors
 
-**Error**: `ENEEDAUTH` or `E403` or `E401`
+**Error**: `ENEEDAUTH` or `E403` or `E401`, or `E_STAGE_REQUIRED`
 
 **Causes**:
-- Missing or invalid npm token
-- `.npmrc` not configured
+- Missing, expired, or revoked npm token (classic tokens no longer work; granular write
+  tokens expire after at most 90 days)
+- `.npmrc` not configured, or the token exported under a name the `.npmrc` does not read
+- A stage-only token used for a direct `npm publish` (`E_STAGE_REQUIRED`)
 - Scoped package not configured for public access
 
 **Solutions**:
@@ -102,7 +104,10 @@ When disabled, release-it adds `--set-upstream origin <branch>` to the push comm
    }
    ```
 
-4. For CI, ensure `NPM_TOKEN` env var is set
+4. For CI, ensure the variable named in `.npmrc` is set. `actions/setup-node` with
+   `registry-url` reads `NODE_AUTH_TOKEN`, not `NPM_TOKEN`. For `E_STAGE_REQUIRED`, set
+   `npm.stage: true` or use a token that allows direct publishing. See
+   [npm-publishing.md](npm-publishing.md#cicd-environments)
 
 5. If registry doesn't support `npm ping`/`npm whoami` (e.g. Nexus):
    ```json
@@ -230,7 +235,7 @@ git config user.email "${GITHUB_ACTOR}@users.noreply.github.com"
 Use `fetch-depth: 0` in GitHub Actions:
 
 ```yaml
-- uses: actions/checkout@v4
+- uses: actions/checkout@v7
   with:
     fetch-depth: 0
 ```
@@ -242,6 +247,7 @@ Without this, changelog generation and tag-based version detection may fail.
 Ensure the CI has push access:
 - SSH: add deploy key with write access
 - HTTPS: use token with repo permissions in the remote URL
+- GitHub Actions `GITHUB_TOKEN`: grant `permissions: contents: write` to the job
 
 ---
 
@@ -281,7 +287,7 @@ Ensure the CI has push access:
 - **Version changes remain after No/Ctrl+C:** bump and staging precede the commit question.
   Check the selected recovery policy; the example deliberately preserves state. A restoration
   policy needs the original baseline, known outputs, and completed-action checks, not only HEAD.
-- **Cancellation/error is printed twice:** 21.0.1 logs an API error before rethrowing it.
+- **Cancellation/error is printed twice:** 21.1.3 logs an API error before rethrowing it.
   Suppress only the wrapper's repeat of that error; keep diagnostics for preflight and recovery.
 - **Missing tag prints a Git fatal message:** explicitly capture stderr in synchronous
   diagnostic commands and distinguish a missing ref from a failed lookup.

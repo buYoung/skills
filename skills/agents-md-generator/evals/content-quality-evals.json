@@ -19,6 +19,13 @@
         "전역 folding action wrapper의 차단은 JSONINJA_EDITOR_KEY가 붙은 플러그인 문서에만 적용되고 그 밖에는 원 handler로 위임되며, dispose 시 wrapper가 여전히 현재 handler인 경우에만 원 handler를 복구한다고 설명한다.",
         "설정 동기화 전환 시 기존 값을 새 저장소로 복사해 보존하고, 레거시 project 설정은 대상이 미이주·비custom일 때만 이주해 기존 custom 값을 덮어쓰지 않으며, 열린 비disposed project 모두에 알린다고 설명한다.",
         "온보딩 방문 여부는 application persistent state가 주 상태이고, 과거 project PropertiesComponent 방문 키가 true이면 application 상태로 승계하며 새 방문은 양쪽에 기록된다고 설명한다."
+      ],
+      "structural_assertions": [
+        "작성한 AGENTS.md의 서문(첫 `## ` 제목 앞)에 `<!-- agents-md-generator: v1; doc-type: single_repo -->` 관리 표식이 독립된 한 줄로 정확히 1개 있고, `parse_sections.py --doc-type single_repo`가 `management_status: managed`와 `generated_doc_type: single_repo`를 보고한다. 최초 편입 확인 전에는 대상 파일을 쓰지 않고 표식 삽입을 변경안에 포함한다.",
+        "필수 표준 제목 `## 1. Overview`, `## 3. Core Behaviors & Patterns`, `## 4. Conventions`, `## 5. Working Agreements`가 각각 한 번씩 그대로 있다. `## 2. Ownership Map`은 근거가 있을 때만 두고, 생략해도 뒤 영역 번호를 바꾸지 않는다. `parse_sections.py` 결과에서 `missing_required_standard`가 비어 있고 `is_duplicate_standard`가 true인 영역이 없다.",
+        "입력 AGENTS.md의 사용자 영역(`parse_sections.py`에서 `is_standard`가 false인 영역)이 모두 원래 순서로 남고, 각 영역이 입력과 바이트 단위로 같다.",
+        "서문과 관리 영역의 글자 수 합계가 대상 디렉터리에서 `loc_to_limit.py`가 보고한 `character_limit` 이하이며, 사용자 영역은 합계에서 뺀다.",
+        "생성 문서가 ISO 준수나 인증을 주장하지 않고, ISO 고지나 plain-language 체크리스트를 덧붙이지 않는다."
       ]
     },
     {
@@ -36,6 +43,12 @@
         "전역 folding action wrapper의 차단은 JSONINJA_EDITOR_KEY가 붙은 플러그인 문서에만 적용되고 그 밖에는 원 handler로 위임되며, dispose 시 wrapper가 여전히 현재 handler인 경우에만 원 handler를 복구한다고 설명한다.",
         "설정 동기화 전환 시 기존 값을 새 저장소로 복사해 보존하고, 레거시 project 설정은 대상이 미이주·비custom일 때만 이주해 기존 custom 값을 덮어쓰지 않으며, 열린 비disposed project 모두에 알린다고 설명한다.",
         "온보딩 방문 여부는 application persistent state가 주 상태이고, 과거 project PropertiesComponent 방문 키가 true이면 application 상태로 승계하며 새 방문은 양쪽에 기록된다고 설명한다."
+      ],
+      "structural_assertions": [
+        "작성한 AGENTS.md의 서문(첫 `## ` 제목 앞)에 `<!-- agents-md-generator: v1; doc-type: single_repo -->` 관리 표식이 독립된 한 줄로 정확히 1개 있고, `parse_sections.py --doc-type single_repo`가 `management_status: managed`와 `generated_doc_type: single_repo`를 보고한다. 최초 편입 확인 전에는 대상 파일을 쓰지 않고 표식 삽입을 변경안에 포함한다.",
+        "필수 표준 제목 `## 1. Overview`, `## 3. Core Behaviors & Patterns`, `## 4. Conventions`, `## 5. Working Agreements`가 각각 한 번씩 그대로 있다. `## 2. Ownership Map`은 근거가 있을 때만 두고, 생략해도 뒤 영역 번호를 바꾸지 않는다. `parse_sections.py` 결과에서 `missing_required_standard`가 비어 있고 `is_duplicate_standard`가 true인 영역이 없다.",
+        "서문과 관리 영역의 글자 수 합계가 대상 디렉터리에서 `loc_to_limit.py`가 보고한 `character_limit` 이하이며, 사용자 영역은 합계에서 뺀다.",
+        "생성 문서가 ISO 준수나 인증을 주장하지 않고, ISO 고지나 plain-language 체크리스트를 덧붙이지 않는다."
       ]
     },
     {
@@ -53,9 +66,17 @@
         "전역 folding action wrapper의 차단은 JSONINJA_EDITOR_KEY가 붙은 플러그인 문서에만 적용되고 그 밖에는 원 handler로 위임되며, dispose 시 wrapper가 여전히 현재 handler인 경우에만 원 handler를 복구한다고 설명한다.",
         "설정 동기화 전환 시 기존 값을 새 저장소로 복사해 보존하고, 레거시 project 설정은 대상이 미이주·비custom일 때만 이주해 기존 custom 값을 덮어쓰지 않으며, 열린 비disposed project 모두에 알린다고 설명한다.",
         "온보딩 방문 여부는 application persistent state가 주 상태이고, 과거 project PropertiesComponent 방문 키가 true이면 application 상태로 승계하며 새 방문은 양쪽에 기록된다고 설명한다."
+      ],
+      "structural_assertions": [
+        "작성한 AGENTS.md의 서문(첫 `## ` 제목 앞)에 `<!-- agents-md-generator: v1; doc-type: single_repo -->` 관리 표식이 독립된 한 줄로 정확히 1개 있고, `parse_sections.py --doc-type single_repo`가 `management_status: managed`와 `generated_doc_type: single_repo`를 보고한다. 최초 편입 확인 전에는 대상 파일을 쓰지 않고 표식 삽입을 변경안에 포함한다.",
+        "필수 표준 제목 `## 1. Overview`, `## 3. Core Behaviors & Patterns`, `## 4. Conventions`, `## 5. Working Agreements`가 각각 한 번씩 그대로 있다. `## 2. Ownership Map`은 근거가 있을 때만 두고, 생략해도 뒤 영역 번호를 바꾸지 않는다. `parse_sections.py` 결과에서 `missing_required_standard`가 비어 있고 `is_duplicate_standard`가 true인 영역이 없다.",
+        "입력 AGENTS.md의 사용자 영역(`parse_sections.py`에서 `is_standard`가 false인 영역)이 모두 원래 순서로 남고, 각 영역이 입력과 바이트 단위로 같다.",
+        "서문과 관리 영역의 글자 수 합계가 대상 디렉터리에서 `loc_to_limit.py`가 보고한 `character_limit` 이하이며, 사용자 영역은 합계에서 뺀다.",
+        "생성 문서가 ISO 준수나 인증을 주장하지 않고, ISO 고지나 plain-language 체크리스트를 덧붙이지 않는다."
       ]
     }
   ],
   "rubric": "content-quality-rubric.json",
-  "source_head": "9eed77ed863f82843f9aadca0af479cf6efa0afd"
+  "source_head": "9eed77ed863f82843f9aadca0af479cf6efa0afd",
+  "source_repository": "JetBrains JSONinja plugin repository (intellij-json-helper2) at source_head. It is not bundled with this package, so the semantic assertions and their rubric evidence can be checked only against that repository; structural assertions are checked with this package's scripts."
 }

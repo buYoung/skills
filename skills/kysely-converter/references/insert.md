@@ -145,7 +145,7 @@ db.insertInto('person')
 
 ## INSERT with Expression Values
 
-This PostgreSQL example repeats the bound input for `middle_name`; a target-column reference in VALUES is not a portable reference to the earlier input value. The scalar aggregate requires compatible nullable/numeric types. See [PostgreSQL INSERT](https://www.postgresql.org/docs/18/sql-insert.html). MySQL permits some earlier-column references in VALUES but restricts selecting the target table in a subquery; do not transplant this example unchanged. See [MySQL INSERT](https://dev.mysql.com/doc/refman/8.0/en/insert.html).
+This PostgreSQL example repeats the bound input for `middle_name`; a target-column reference in VALUES is not a portable reference to the earlier input value. The scalar aggregate requires compatible nullable/numeric types. See [PostgreSQL INSERT](https://www.postgresql.org/docs/19/sql-insert.html). MySQL permits some earlier-column references in VALUES but restricts selecting the target table in a subquery; do not transplant this example unchanged. See [MySQL INSERT](https://dev.mysql.com/doc/refman/8.0/en/insert.html).
 
 ```sql
 INSERT INTO person (first_name, last_name, middle_name, age)

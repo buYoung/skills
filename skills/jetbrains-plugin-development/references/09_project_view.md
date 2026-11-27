@@ -1,15 +1,15 @@
 # Project View
 
-## API boundary for 2026.2.2
+## API boundary for 2026.3
 
 For external plugins, use `TreeStructureProvider`, `ProjectViewNodeDecorator`, and—when a
 complete alternative pane is required—`AbstractProjectViewPane`. Their declarations and EP
 registrations are present without internal status in IntelliJ Community
-`idea/2026.2.2` at commit `1c7e601c0423e544917046c23763b15d0282e2a3`: see
-[`TreeStructureProvider`](https://github.com/JetBrains/intellij-community/blob/1c7e601c0423e544917046c23763b15d0282e2a3/platform/editor-ui-api/src/com/intellij/ide/projectView/TreeStructureProvider.java),
-[`ProjectViewNodeDecorator`](https://github.com/JetBrains/intellij-community/blob/1c7e601c0423e544917046c23763b15d0282e2a3/platform/lang-impl/src/com/intellij/ide/projectView/ProjectViewNodeDecorator.kt),
-[`AbstractProjectViewPane`](https://github.com/JetBrains/intellij-community/blob/1c7e601c0423e544917046c23763b15d0282e2a3/platform/lang-impl/src/com/intellij/ide/projectView/impl/AbstractProjectViewPane.java),
-and [`LangExtensionPoints.xml`](https://github.com/JetBrains/intellij-community/blob/1c7e601c0423e544917046c23763b15d0282e2a3/platform/platform-resources/src/META-INF/LangExtensionPoints.xml).
+`idea/2026.3` at commit `c91871ae2864649d952825cff72569e3db0e7ac6`: see
+[`TreeStructureProvider`](https://github.com/JetBrains/intellij-community/blob/c91871ae2864649d952825cff72569e3db0e7ac6/platform/editor-ui-api/src/com/intellij/ide/projectView/TreeStructureProvider.java),
+[`ProjectViewNodeDecorator`](https://github.com/JetBrains/intellij-community/blob/c91871ae2864649d952825cff72569e3db0e7ac6/platform/lang-impl/src/com/intellij/ide/projectView/ProjectViewNodeDecorator.kt),
+[`AbstractProjectViewPane`](https://github.com/JetBrains/intellij-community/blob/c91871ae2864649d952825cff72569e3db0e7ac6/platform/lang-impl/src/com/intellij/ide/projectView/impl/AbstractProjectViewPane.java),
+and the EP declarations in [`intellij.platform.editor.ui.xml`](https://github.com/JetBrains/intellij-community/blob/c91871ae2864649d952825cff72569e3db0e7ac6/platform/editor-ui-api/resources/intellij.platform.editor.ui.xml) and [`intellij.platform.lang.impl.xml`](https://github.com/JetBrains/intellij-community/blob/c91871ae2864649d952825cff72569e3db0e7ac6/platform/lang-impl/resources/intellij.platform.lang.impl.xml).
 
 ## Project View customization
 

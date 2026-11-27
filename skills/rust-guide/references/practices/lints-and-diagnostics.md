@@ -218,7 +218,7 @@ workspace = true
 Rules:
 
 - Lints in `[lints]` apply to the current package only, never to dependencies.
-- The tool namespace is the part before `::`; `unsafe_code` goes under `[lints.rust]`, `clippy::foo` under `[lints.clippy]`, `rustdoc::broken_intra_doc_links` under `[lints.rustdoc]`.
+- The tool namespace is the part before `::`; `unsafe_code` goes under `[lints.rust]`, `clippy::foo` under `[lints.clippy]`, `rustdoc::broken_intra_doc_links` under `[lints.rustdoc]`. From 1.100 Cargo's own lints go under `[lints.cargo]`, for example `unused_dependencies = "deny"` for `cargo::unused_dependencies`.
 - `level = "forbid"` in the manifest cannot be lowered anywhere in the crate; use it only for policies without exceptions (`unsafe_code = "forbid"` in crates that must stay free of `unsafe`).
 - Tests often need `unwrap` and `dbg!`: put `#![cfg_attr(test, allow(clippy::unwrap_used))]` at the crate root, or scope the restriction lints to non-test builds.
 
@@ -420,5 +420,7 @@ Lints recognize supported patterns. They cannot establish arbitrary FFI contract
 | 1.91 | `dangling_pointers_from_locals`, `integer_to_ptr_transmutes`; `semicolon_in_expressions_from_macros` deny |
 | 1.92 | Never-type fallback lints deny; `invalid_macro_export_arguments` deny |
 | 1.97 | `linker_messages`; `CARGO_BUILD_WARNINGS` |
+| 1.99 | `no_mangle_generic_items` hard error; `semicolon_in_expressions_from_non_local_macros` (warn) for macros from other crates |
+| 1.100 | `[lints.cargo]` and `cargo::unused_dependencies` (warn); `dependency_on_unit_never_type_fallback` removed with the edition-wide `!` fallback; `aligned_fields_in_packed` (deny) replaces the hard error for `repr(align)` fields in a `repr(packed)` type |
 
 Per-release details live in [the versions index](../versions/index.md).

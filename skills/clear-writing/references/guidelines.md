@@ -10,6 +10,7 @@
 - [Principle 4: Usable](#principle-4-usable)
 - [Testing with real readers](#testing-with-real-readers)
 - [What the standard does not do](#what-the-standard-does-not-do)
+- [Sources](#sources)
 
 ## How to read this file
 
@@ -172,8 +173,18 @@ The IPLF says the only way to know for sure that a document works is to test it 
 
 ## What the standard does not do
 
-- **Certification**: According to the IPLF, Part 1 is guidance and is not used for certification. Do not tell users that a text conforms to or is certified under ISO 24495-1.
+- **Certification**: According to the IPLF, Part 1 is a standard for guidance, not a normative standard, and a separate part for certifying an organization's plain-language practice is still in development. Do not tell users that a text conforms to or is certified under ISO 24495-1.
 - **Fixed metrics**: The standard focuses on how well readers can use a document rather than on mechanical measures such as readability formulas. The IPLF describes its word-level guidance as high level and language-neutral, and notes that countries may add language-specific practices, such as sentence length.
 - **Easy language**: The standard distinguishes plain language (for a general audience) from easy language (for people with reading difficulties).
 - **Scope**: It covers printed or digital information that is mainly text. It does not replace accessibility guidance such as WCAG or EN 301 549. Creators of podcasts and videos may still find it useful.
 - **Other parts**: ISO 24495-2 covers legal communication and ISO 24495-3 covers science writing. This skill does not include their specific guidance.
+
+## Sources
+
+Checked on 2026-11-27.
+
+- ISO 24495-1:2023 catalog page, for the edition and publication status: <https://www.iso.org/standard/78907.html>. ISO publishes standard previews on its Online Browsing Platform: <https://www.iso.org/obp/ui/en/>.
+- IPLF, [Advancing standards](https://www.iplfederation.org/advancing-standards): the roughly 485 ideas of which 7% concern word choice, language neutrality, language-specific practices such as sentence length, Parts 2 and 3, and the part for certification in development.
+- IPLF, [Plain language word analysis](https://www.iplfederation.org/plain-language-word-analysis): the idea and word counts behind the 7% figure.
+- IPLF, [How ISO works](https://www.iplfederation.org/how-iso-works): the plain language standard as a standard for guidance, not a normative standard.
+- IPLF, [About plain language](https://www.iplfederation.org/about-plain-language): testing a document with a sample of its readers.

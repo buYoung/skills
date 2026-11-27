@@ -96,6 +96,18 @@
       "prompt": "For a Rust dependency shortlist, A has 4,000 repository stars and 20,000 recent downloads, B has 500 stars and 50 million recent downloads, and C has 5,000 stars and 5 million recent downloads. We already depend on B. How should these figures affect new recommendations and existing usage?",
       "expected_output": "Explains the catalog admission floor as an editorial filter with two independent conditions, not proof of quality or unique users. Identifies C as numerically eligible without declaring it technically suitable, keeps adoption distinct from existing-use support, and considers role, maintenance, compatibility, security, licensing, and integration cost as relevant conditions. Does not invent current metrics.",
       "files": []
+    },
+    {
+      "id": 17,
+      "prompt": "Our edition 2021 library builds on Rust 1.98.1 and CI caches target/ between runs. We plan to move the toolchain to 1.100.0. What can break or behave differently, and what should we check before raising rust-version?",
+      "expected_output": "Reads the 1.99 and 1.100 release references rather than assuming a toolchain bump is neutral. Explains that 1.100 applies the `!` never-type fallback to editions before 2024, so inference that relied on `()` can stop compiling, and that `dependency_on_unit_never_type_fallback` is removed rather than silenceable; recommends writing the intended type and updating affected dependencies. Mentions the 1.99 deprecation of legacy integral modules and the `no_mangle_generic_items` hard error where relevant, and that Cargo 1.99 disables incremental compilation when `CI` is set, so cached incremental reuse needs an explicit setting. Keeps the toolchain upgrade separate from raising `rust-version` and from an edition change, and recommends building, testing, and running Clippy on the new toolchain plus the MSRV job.",
+      "files": []
+    },
+    {
+      "id": 18,
+      "prompt": "Stable rejects our old #[bench] functions. Which harness should a new benchmark suite use, and does that mean we should migrate the criterion benchmarks another team already maintains?",
+      "expected_output": "Explains that `#[bench]` without `custom_test_frameworks` is a hard error on stable since 1.88 and that an external harness runs from a bench target with `harness = false`. Recommends divan for a new suite because it passes the catalog adoption floor, while stating that criterion's current repository is below the star floor and is therefore not a new recommendation; existing criterion suites remain valid and popularity alone does not justify migrating them. Covers release-mode measurement, `black_box`, untimed setup, and comparable repeated runs. Does not present the adoption figures as quality or performance evidence, and does not invent current metrics.",
+      "files": []
     }
   ]
 }

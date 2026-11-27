@@ -90,7 +90,7 @@ Notes on the migration:
   `@Experimental` suspending `writeCommandAction(project, name) { }` when the supported
   version range accepts that API. Otherwise keep the stable classic call.
 - The suspending `writeCommandAction` keeps the EDT and undo contracts. In contrast,
-  `writeAction` runs the write phase on a background thread in 2026.2.2; substituting it
+  `writeAction` runs the write phase on a background thread since 2026.2; substituting it
   would change behavior.
 - `serviceImplementation` XML registration disappears in favor of `@Service`.
 
@@ -112,7 +112,7 @@ For EDT call sites, do not block; either offer a coroutine API or schedule with
 
 - On 2024.1-era targets, `writeAction` switched to EDT and was experimental.
 - On 2025.1+, `edtWriteAction` is the stable, explicit choice for legacy EDT writes.
-- At `idea/2026.2.2` (`1c7e601c0423e544917046c23763b15d0282e2a3`), `writeAction`
+- At `idea/2026.3` (`c91871ae2864649d952825cff72569e3db0e7ac6`), `writeAction`
   delegates to `backgroundWriteAction`. Audit every called API before choosing it.
 - For a coroutine launched by an action, use `AnActionEvent.coroutineScope` on 2026.1+,
   `currentThreadCoroutineScope()` on 2024.2–2025.3, or an injected service scope on 2024.1.

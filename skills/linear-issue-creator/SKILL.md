@@ -12,6 +12,8 @@ description: >
 
 Create issues in Linear using the Linear MCP with a **1 main issue + N sub-issues** structure.
 
+Tool names in this skill (`save_issue`) are the Linear MCP server's names. Clients add their own prefix (Claude Code shows `mcp__<server>__save_issue`), so check the connected server's tool list for the exact name (`/mcp` in Claude Code shows each tool's full name) and the input schema in its tool definition for parameters before the first call.
+
 ---
 
 ## Core Principles
@@ -22,7 +24,9 @@ Create issues in Linear using the Linear MCP with a **1 main issue + N sub-issue
 | Unit | One feature or problem | One PR-completable task |
 | Key question | "What changes for the user?" | "What code do we change?" |
 | Labels | None | Exactly 2 (1 area + 1 type) |
-| Status mgmt | Auto-completes when all sub-issues are done | Transitions individually |
+| Status mgmt | Finished after the reviewer's final review | Transitions individually |
+
+Linear marks the main issue Done when all sub-issues are done only if the team has Parent auto-close enabled (Settings > Team > Workflow). It then happens as soon as the last sub-issue is done, before `linear-issue-reviewer` runs its final review. Either way, the main issue counts as finished only after the reviewer's final review comment (`## 📋 최종 리뷰 완료`); without auto-close, the user closes it after that comment.
 
 ---
 
@@ -89,7 +93,7 @@ If the user has already provided sufficient information, proceed directly. Other
 
 ### Step 2: Create the Main Issue
 
-Call `Linear:save_issue` to create the main issue.
+Call `save_issue` to create the main issue.
 
 **Parameters:**
 ```
@@ -97,7 +101,7 @@ title: "[ProjectName] Main title"
 team: "private"
 project: "project-name"
 description: (use template below)
-priority: appropriate priority (1=Urgent, 2=High, 3=Normal, 4=Low)
+priority: appropriate priority (0=No priority, 1=Urgent, 2=High, 3=Medium, 4=Low)
 ```
 
 Use the **main issue description template** from `references/templates.md`.
@@ -123,10 +127,10 @@ Use the **sub-issue description template** from `references/templates.md`.
 
 ### Step 4: Link Dependencies
 
-If sub-issues depend on each other, connect them with `blockedBy`.
+If sub-issues depend on each other, connect them with `blockedBy`. Pass it in the dependent sub-issue's create call when the prerequisite already exists (as in the examples in `references/templates.md`), or update the dependent issue afterwards:
 
 ```
-Linear:save_issue (update)
+save_issue (update)
   id: "dependent issue identifier"
   blockedBy: ["prerequisite issue identifier"]
 ```
@@ -137,6 +141,8 @@ Summarize all created issues for the user:
 
 - Main issue identifier + title + URL
 - Sub-issue list (identifier, title, 2 labels, dependencies)
+
+In draft output mode, report the file path instead (see **Draft Output (No Linear Writes)**).
 
 ---
 
@@ -193,7 +199,7 @@ See `references/prd-pipeline.md` for the detailed guide.
    - Replace with expressions developers actually use
    - Deliberately vary sentence length
 
-4. **copy-editing principles**: Run PRD-relevant Seven Sweeps checks
+4. **copy-editing principles**: Run PRD-relevant Seven Sweeps checks. The four below are the minimum; section 4 of `references/prd-pipeline.md` has the checklist for all seven.
    - **Clarity**: No ambiguous requirements
    - **Specificity**: Concrete numbers, endpoints, data types specified
    - **So What**: Each requirement explains "why it's needed"
@@ -204,7 +210,7 @@ See `references/prd-pipeline.md` for the detailed guide.
 
 ### PRD Step 3: Create Main Issue
 
-Same as Generic Step 2 — call `Linear:save_issue`.
+Same as Generic Step 2 — call `save_issue`.
 Use the **PRD Main Issue Description Template** from `references/templates.md`.
 
 ### PRD Step 4: Create Sub-Issues
@@ -215,6 +221,41 @@ Use the **PRD Sub-Issue Description Template** from `references/templates.md`.
 ### PRD Step 5: Link Dependencies + Report Results
 
 Same as Generic Steps 4-5.
+
+---
+
+## Draft Output (No Linear Writes)
+
+When the user asks not to create the issues in Linear and to save the descriptions to a file instead (e.g., "Linear에 실제로 생성하지 말고 이슈 설명문만 파일로 저장해줘"), run the selected workflow as usual but skip every `save_issue` call and write one Markdown file.
+
+- **Path**: the path the user gives; otherwise `linear-issue-drafts/[project]_[YYYY-MM-DD].md` under the current directory.
+- **Identifiers**: use `MAIN` and `SUB-01`, `SUB-02`, … wherever a Linear identifier would go (parent, dependencies, the Dependencies section).
+- **Blocks**: one block per issue, main issue first. Each block lists the fields the create call would send, then the description from the template.
+
+```markdown
+# MAIN — [corral] Implement global hotkey system
+
+- Project: corral
+- Team: private
+- Priority: 3 (Medium)
+- Labels: None
+
+(main issue description)
+
+---
+
+# SUB-01 — [corral] Configure Tauri global hotkey plugin
+
+- Project: corral
+- Team: private
+- Parent: MAIN
+- Labels: Front-end, Feature
+- Blocked by: None
+
+(sub-issue description)
+```
+
+The Mandatory Rules and the Pre-Creation Checklist still apply to the drafted fields.
 
 ---
 

@@ -18,7 +18,7 @@ is project-scoped because it bridges Documents and PSI for that project's PSI ro
 ### Reading
 
 ```kotlin
-ReadAction.compute<String, Throwable> {
+readAction {                   // suspending; see 04_threading_coroutines_2024.md
   doc.text                     // entire text
   doc.getText(TextRange(s, e)) // a slice
   doc.lineCount
@@ -26,6 +26,9 @@ ReadAction.compute<String, Throwable> {
   doc.getLineStartOffset(line)
 }
 ```
+
+The blocking `ReadAction.compute` is deprecated on 2026.1+. Outside coroutines, use
+`ReadAction.nonBlocking(...)` as described in `04_threading_read_write_actions.md`.
 
 ### Writing — through `WriteCommandAction`
 
@@ -35,7 +38,7 @@ WriteCommandAction.runWriteCommandAction(project, "Insert", null, {
   doc.replaceString(start, end, "new")
   doc.deleteString(start, end)
 })
-// Public but Experimental on 2026.2.2; see 04_threading_coroutines_2024.md:
+// Public but Experimental on 2026.3; see 04_threading_coroutines_2024.md:
 writeCommandAction(project, "Insert") { doc.insertString(offset, "text") }
 ```
 
@@ -46,7 +49,7 @@ Direct `Document` mutations bypass the user's undo stack unless inside a
 
 When you modify a `Document`, the PSI is **not** instantly updated; the platform commits
 edits asynchronously. Operations that depend on a fresh PSI tree need to wait. In the
-2026.2.2 public declaration, `commitDocument` is a synchronous commit operation, but
+2026.3 public declaration, `commitDocument` is a synchronous commit operation, but
 event-system-enabled documents should be committed on the EDT in a write-safe context:
 
 ```kotlin
@@ -110,7 +113,7 @@ and must be handled as an explicit design choice.
 Do not call unsupported platform implementation classes, reflection, or internal document/VFS helpers to
 force completion. Check the declaration's lock/thread annotations and API status against the
 target IDE before adopting a newer save or commit method. `ManagingFS.flushPendingUpdates()`
-is public but `@ApiStatus.Experimental` in the `2026.2.2` baseline; if that instability is
+is public but `@ApiStatus.Experimental` in the `2026.3` baseline; if that instability is
 not acceptable, hand the external process a plugin-owned file written directly through a
 stable JDK I/O path instead of depending on an undocumented barrier.
 
@@ -126,10 +129,10 @@ Pass a parent disposable; otherwise the listener leaks. For application-level re
 saves/reloads, use the declarative `FileDocumentManagerListener`.
 
 The save/commit and API-status checks above were made against the
-[`idea/2026.2.2` source snapshot](https://github.com/JetBrains/intellij-community/tree/1c7e601c0423e544917046c23763b15d0282e2a3),
-including the [`FileDocumentManager`](https://github.com/JetBrains/intellij-community/blob/1c7e601c0423e544917046c23763b15d0282e2a3/platform/core-api/src/com/intellij/openapi/fileEditor/FileDocumentManager.java),
-[`PsiDocumentManager`](https://github.com/JetBrains/intellij-community/blob/1c7e601c0423e544917046c23763b15d0282e2a3/platform/core-api/src/com/intellij/psi/PsiDocumentManager.java),
-and [`ManagingFS`](https://github.com/JetBrains/intellij-community/blob/1c7e601c0423e544917046c23763b15d0282e2a3/platform/analysis-api/src/com/intellij/openapi/vfs/newvfs/ManagingFS.java)
+[`idea/2026.3` source snapshot](https://github.com/JetBrains/intellij-community/tree/c91871ae2864649d952825cff72569e3db0e7ac6),
+including the [`FileDocumentManager`](https://github.com/JetBrains/intellij-community/blob/c91871ae2864649d952825cff72569e3db0e7ac6/platform/core-api/src/com/intellij/openapi/fileEditor/FileDocumentManager.java),
+[`PsiDocumentManager`](https://github.com/JetBrains/intellij-community/blob/c91871ae2864649d952825cff72569e3db0e7ac6/platform/core-api/src/com/intellij/psi/PsiDocumentManager.java),
+and [`ManagingFS`](https://github.com/JetBrains/intellij-community/blob/c91871ae2864649d952825cff72569e3db0e7ac6/platform/analysis-api/src/com/intellij/openapi/vfs/newvfs/ManagingFS.java)
 declarations, and the [official Documents guide](https://plugins.jetbrains.com/docs/intellij/documents.html).
 
 ### Read-only ranges

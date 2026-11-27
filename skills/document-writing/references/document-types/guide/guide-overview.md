@@ -15,6 +15,7 @@ Enable a reader to complete a known task from a normal starting state by followi
 - The reader starts from a failure and must diagnose branches: troubleshooting runbook.
 - The reader mainly looks up options or exact syntax: reference or specification.
 - The document explains concepts without asking the reader to act: explanatory overview.
+- The document is a software project's README or usage manual covering fit, installation, first use, or recurring tasks: software project documentation.
 
 ## Load next
 

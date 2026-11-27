@@ -36,7 +36,7 @@ Trace the deletion predicate through helper construction to execution. `clearWhe
 
 ## Dialect boundaries
 
-PostgreSQL USING joins determine qualifying target rows; RETURNING from a USING table does not mean that table was deleted. See [PostgreSQL DELETE](https://www.postgresql.org/docs/18/sql-delete.html). RETURNING support differs by engine; see [INSERT result guidance](insert.md#input-and-result-contract).
+PostgreSQL USING joins determine qualifying target rows; RETURNING from a USING table does not mean that table was deleted. See [PostgreSQL DELETE](https://www.postgresql.org/docs/19/sql-delete.html). RETURNING support differs by engine; see [INSERT result guidance](insert.md#input-and-result-contract).
 
 MySQL DELETE ORDER BY/LIMIT applies to single-table forms, not the multi-table USING/JOIN form. The LEFT JOIN example's WHERE predicate on `person` removes unmatched rows; moving it to ON would change the deletion set. See [MySQL DELETE](https://dev.mysql.com/doc/refman/8.0/en/delete.html).
 

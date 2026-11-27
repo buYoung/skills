@@ -32,7 +32,7 @@ wrapper. Preserve the chosen execution mode and enabled capabilities when fixing
   to distinguish write paths, staging scope, the shared index, and recoverable state.
 
 The concrete adapter and source-level behavior in this skill are checked against release-it
-**21.0.1**. Match configuration schemas, runtime requirements, and plugin interfaces to the
+**21.1.3**. Match configuration schemas, runtime requirements, and plugin interfaces to the
 applying project's version; an example's dependency pin is not an instruction to upgrade it.
 
 ## Default Interactive Contract
@@ -109,10 +109,10 @@ release-it supports 6 config file formats. Pick one:
 | TOML | `.release-it.toml` | Table-based config |
 | package.json | `"release-it": {}` property | Zero extra files |
 
-Example schema for the checked version: `"$schema": "https://unpkg.com/release-it@21.0.1/schema/release-it.json"`.
+Example schema for the checked version: `"$schema": "https://unpkg.com/release-it@21.1.3/schema/release-it.json"`.
 Use the applying project's release-it version when generating its configuration.
 
-Only override options that differ from defaults. See [configuration.md](references/configuration.md) for all defaults and the `extends` mechanism.
+Only override options that differ from defaults. See [configuration.md](references/configuration.md) for common defaults, config file lookup, and the `extends` mechanism.
 
 ## Common Workflows
 

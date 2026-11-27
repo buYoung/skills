@@ -1,6 +1,6 @@
 ---
 name: react-guide
-description: Use for explaining, designing, implementing, reviewing, refactoring, migrating, or diagnosing React 18/19 applications when React-specific judgment is needed for CSR, SSR, streaming, hydration, structure, APIs, Hooks, state/data, async UI, accessibility, performance, compatibility, or Compiler behavior. Covers React's own server-rendering APIs; excludes framework-specific APIs, RSC/Server Functions implementation, custom server-runtime construction, unsupported React majors, build-tool-only work, and styling/copy-only work.
+description: Use for explaining, designing, implementing, reviewing, refactoring, migrating, or diagnosing React 18/19 web applications built on React DOM when React-specific judgment is needed for CSR, SSR, streaming, hydration, structure, APIs, Hooks, state/data, async UI, accessibility, performance, compatibility, or Compiler behavior. Covers React's own server-rendering APIs; excludes React Native, framework-specific APIs, RSC/Server Functions implementation, custom server-runtime construction, unsupported React majors, build-tool-only work, and styling/copy-only work.
 license: MIT
 ---
 
@@ -24,9 +24,9 @@ Start with the closest reference, then read related references directly as the t
 - React 18 runtime or Compiler compatibility: [React 18 compatibility](references/react-18-runtime-compatibility.md)
 - React 18 departure audit: [React 18 to 19 migration](references/react-18-to-19-migration.md)
 - React 19 arrival validation: [React 19 migration](references/react-19-migration.md)
-- React 19 ref/provider or 19.2 APIs: [React 19 component APIs](references/react-19-component-apis.md)
+- React 19 ref/provider or 19.2/19.3 APIs: [React 19 component APIs](references/react-19-component-apis.md)
 - React 19 Actions, forms, `use`: [React 19 async APIs](references/react-19-actions-async.md)
-- React Compiler config or diagnostics: [React 19 Compiler](references/react-19-compiler.md)
+- React 19 Compiler config or diagnostics: [React 19 Compiler](references/react-19-compiler.md)
 
 ## Boundary
 

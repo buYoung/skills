@@ -105,9 +105,9 @@ Plugin DevKit byte-code instrumentation adds runtime assertions for these:
 Use these on every public method whose threading is not obvious. They are documentation and
 runtime safety net at the same time.
 
-Both experimental annotations above are external public API in 2026.2.2, but their stability
+Both experimental annotations above are external public API in 2026.3, but their stability
 is not guaranteed. Confirm them in every supported IDE version and prefer stable annotations
 when they express the same contract. Evidence:
 
-- [`RequiresReadLockAbsence.java`](https://github.com/JetBrains/intellij-community/blob/1c7e601c0423e544917046c23763b15d0282e2a3/platform/core-api/src/com/intellij/util/concurrency/annotations/RequiresReadLockAbsence.java)
-- [`RequiresBlockingContext.kt`](https://github.com/JetBrains/intellij-community/blob/1c7e601c0423e544917046c23763b15d0282e2a3/platform/core-api/src/com/intellij/util/concurrency/annotations/RequiresBlockingContext.kt)
+- [`RequiresReadLockAbsence.java`](https://github.com/JetBrains/intellij-community/blob/c91871ae2864649d952825cff72569e3db0e7ac6/platform/core-api/src/com/intellij/util/concurrency/annotations/RequiresReadLockAbsence.java)
+- [`RequiresBlockingContext.kt`](https://github.com/JetBrains/intellij-community/blob/c91871ae2864649d952825cff72569e3db0e7ac6/platform/core-api/src/com/intellij/util/concurrency/annotations/RequiresBlockingContext.kt)

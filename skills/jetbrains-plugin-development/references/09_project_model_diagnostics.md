@@ -11,8 +11,9 @@
 - Iterating `ProjectFileIndex.iterateContent` from the EDT for huge projects. Move to a
   background thread inside a Read Action.
 - Ignoring `isExcluded` and traversing into excluded directories.
-- Not implementing `DumbAware` on a `StartupActivity` that doesn't need indexes — it then
-  blocks until indexing finishes.
+- Writing a new `StartupActivity` instead of a `ProjectActivity`. `StartupActivity` is
+  obsolete; an existing Java `StartupActivity` that does not need indexes should implement
+  `DumbAware`, otherwise it runs on the EDT after project open.
 
 ## Related references
 

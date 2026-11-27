@@ -4,7 +4,7 @@ Defines the exact structure and content requirements for generated `AGENTS.md` f
 
 ## Management Marker
 
-The section-only examples below remain unchanged. Every newly generated document must additionally contain exactly one standalone `<!-- agents-md-generator: v1; doc-type: single_repo -->` line in its preamble before the first `##` heading. Use `monorepo_root` for monorepo roots; packages use `single_repo`. The marker is included in the preamble character budget and must not be placed inside a code block or custom section. Existing unmarked documents receive it only after approval of a concrete adoption preview; follow [update_strategy.md](update_strategy.md) for marker validation, preservation, and document-type transitions.
+Every newly generated document must contain exactly one standalone `<!-- agents-md-generator: v1; doc-type: single_repo -->` line in its preamble before the first `##` heading. The structure examples below show sections only and omit this line. Use `monorepo_root` for monorepo roots; packages use `single_repo`. The marker is included in the preamble character budget and must not be placed inside a code block or custom section. Existing unmarked documents receive it only after approval of a concrete adoption preview; follow [update_strategy.md](update_strategy.md) for marker validation, preservation, and document-type transitions.
 
 ## Table of Contents
 
@@ -16,9 +16,7 @@ The section-only examples below remain unchanged. Every newly generated document
 
 ## Monorepo Root Document Structure (`/AGENTS.md`)
 
-Used only when generating the root document for a monorepo.
-
-When package-level ownership boundaries, shared cross-package contracts, or active cross-package change routes are detected:
+Used only when generating the root document for a monorepo. Include `## 2. Ownership Map` only when package-level ownership boundaries, shared cross-package contracts, or active cross-package change routes are detected; otherwise omit it and keep `## 3. Working Agreements` numbered as shown.
 
 ```markdown
 # AGENTS.md
@@ -28,18 +26,6 @@ When package-level ownership boundaries, shared cross-package contracts, or acti
 
 ## 2. Ownership Map
 [Optional evidence-backed map split into Stable Ownership Boundaries and Active Change Routes. Omit this section when no stable boundaries or active routes are detected.]
-
-## 3. Working Agreements
-[Common working agreements applicable to all packages]
-```
-
-When no stable root-level ownership boundaries or active root-level change routes are detected:
-
-```markdown
-# AGENTS.md
-
-## 1. Overview
-[1-2 sentences describing the monorepo's purpose]
 
 ## 3. Working Agreements
 [Common working agreements applicable to all packages]
@@ -47,7 +33,7 @@ When no stable root-level ownership boundaries or active root-level change route
 
 ## Standard Document Structure (Single Repo & Packages)
 
-When ownership boundaries or active change routes are detected:
+Include `## 2. Ownership Map` only when ownership boundaries or active change routes are detected; otherwise omit it and keep sections 3-5 numbered as shown.
 
 ```markdown
 # AGENTS.md
@@ -57,24 +43,6 @@ When ownership boundaries or active change routes are detected:
 
 ## 2. Ownership Map
 [Optional evidence-backed map split into Stable Ownership Boundaries and Active Change Routes. Omit this section when no stable boundaries or active routes are detected.]
-
-## 3. Core Behaviors & Patterns
-[Observed patterns from code analysis]
-
-## 4. Conventions
-[Naming, comments, code style rules]
-
-## 5. Working Agreements
-[Agent behavior rules - see working_agreements.md]
-```
-
-When no stable ownership boundaries or active change routes are detected:
-
-```markdown
-# AGENTS.md
-
-## 1. Overview
-[1-2 sentences describing the project's purpose and role]
 
 ## 3. Core Behaviors & Patterns
 [Observed patterns from code analysis]
@@ -98,7 +66,7 @@ When no stable ownership boundaries or active change routes are detected:
 
 ### Section 2: Ownership Map
 
-Ownership Map is an **optional** standard section. It replaces directory inventory with a concise map of both long-lived system responsibility boundaries and currently active change routes that matter when updating an established project after meaningful changes. `Stable Ownership Boundaries` is the continuation of the previous single-list Ownership Map content; `Active Change Routes` is an additive subsection, not a replacement.
+Ownership Map is an **optional** standard section. It replaces directory inventory with a concise map of both long-lived system responsibility boundaries and currently active change routes that matter when updating an established project after meaningful changes.
 
 Do **not** force this section. If analysis finds no concrete, stable ownership boundaries or active change routes, omit `## 2. Ownership Map` entirely. Do not emit placeholder text such as "No ownership map detected", generic directory lists, or speculative ownership.
 
@@ -112,9 +80,9 @@ Do **not** force this section. If analysis finds no concrete, stable ownership b
 [Recently or repeatedly changed routes discovered from git history, then confirmed against current code or documented contracts.]
 ```
 
-Omit an empty subsection rather than writing a placeholder. `Stable Ownership Boundaries` explains the durable safety map and should still include the same kind of high-value boundaries the old single-list Ownership Map would have produced. `Active Change Routes` explains recent or repeated change deltas that are not obvious from the stable boundary alone. Allocate space for both within the overall document limit, redistributing section allocations when necessary; do not impose an additional bullet-count limit.
+Omit an empty subsection rather than writing a placeholder. Allocate space for both within the overall document limit, redistributing section allocations when necessary; do not impose an additional bullet-count limit.
 
-Each bullet should answer "if I need to change this behavior, where do I start and what must I not break?" A useful bullet reads like a routing rule for future changes, not like an architecture inventory. Stable bullets and Active bullets have different contracts: Stable bullets describe durable ownership; Active bullets describe only the recent/change-specific delta.
+Each bullet should answer "if I need to change this behavior, where do I start and what must I not break?" A useful bullet reads like a routing rule for future changes, not like an architecture inventory.
 
 For Stable bullets, use this sentence frame unless a repository-specific phrasing is clearer:
 
@@ -141,9 +109,9 @@ Do not open a bullet with a long list of files; name the owner or entry point fi
 
 **Content Requirements**:
 
-- Put durable, always-relevant system boundaries under `### Stable Ownership Boundaries`. This subsection should preserve the useful output shape of the prior Ownership Map: request lifecycle, transaction ownership, public response contracts, report rendering, workers, package ownership, or other long-lived safety boundaries when current code supports them. Do not remove these stable boundaries just because `Active Change Routes` also exists.
+- Put durable, always-relevant system boundaries under `### Stable Ownership Boundaries`. Typical candidates are request lifecycle, transaction ownership, public response contracts, report rendering, workers, package ownership, or other long-lived safety boundaries when current code supports them. Do not remove these stable boundaries just because `Active Change Routes` also exists.
 - Keep Stable bullets focused on current ownership, protected contracts, and representative verification surfaces. Preserve currently executed compatibility, migration, and global-guard conditions in Stable or Core when they affect safe changes, even if they are internal rather than public contracts. Exclude history-only churn, obsolete migrations, and rename timelines; lack of a recent commit does not make a live contract obsolete.
-- Put history-informed, currently relevant change routes under `### Active Change Routes`. These should come from recent high-churn paths, repeated co-change clusters, renames/moves, or active compatibility/migration work, then be confirmed against current code or documented contracts. Treat this subsection as additional update-mode signal, not as a filter that narrows or replaces stable boundaries.
+- Put history-informed, currently relevant change routes under `### Active Change Routes`. These should come from recent high-churn paths, repeated co-change clusters, renames/moves, or active compatibility/migration work, then be confirmed against current code or documented contracts.
 - Active routes are child routes or cross-boundary routes, not standalone ownership summaries. If an Active route belongs under a Stable boundary, start with `Within **[Stable boundary name]**...` and keep only the recent/change-specific delta. Do not restate the parent boundary's broad owner, public contract, or general verification surface.
 - Do not duplicate the same route in both subsections. If a stable boundary is also active, keep the durable contract in `Stable Ownership Boundaries` and put only the recent/change-specific route in `Active Change Routes`. If no meaningful delta remains after removing inherited Stable details, omit the Active route.
 - Include only boundaries with concrete repository evidence: named entry points, state owners, behavior decision points, external surfaces, connection contracts, side effects, or verification anchors.
@@ -177,13 +145,8 @@ Before writing a Stable boundary, reject or split it unless all answers are conc
 - Verification: What exact existing path, output, response, generated artifact, log point, or check target would show the boundary still works?
 - Scope: Is this one coherent responsibility with a clear owner, contract, and verification surface? If not, split it.
 
-Before writing an Active route, reject or rewrite it unless the delta is concrete:
+Before writing an Active route, reject or rewrite it unless its `parent`, `trigger`, `delta start`, and `delta risk/verify` parts from Content Requirements are concrete:
 
-- Parent: Which Stable boundary does this route belong under? If none, which Stable boundaries does it cross?
-- Delta trigger: Which recent, repeated, versioned, compatibility, migration, rename, or co-change signal makes it worth calling out?
-- Delta start: Which focused start point differs from or narrows the Stable start point?
-- Delta risk/verify: Which contract risk or verification surface is not already obvious from the Stable boundary?
-- If the route has a Stable parent and repeats the same owner, contract, and verification surface, rewrite it as `Within **[Stable boundary]**...` and keep only the delta.
 - If the delta does not change the start point, add a compatibility/migration risk, add a focused verification surface, or cross multiple Stable boundaries, omit it.
 - If the route crosses multiple Stable boundaries and no single parent owns it, state the crossed boundaries instead of inventing a new broad owner.
 - If a Stable bullet contains active-only details, move those details into an Active route or drop them when they are not worth a separate route.
@@ -214,8 +177,7 @@ Before writing an Active route, reject or rewrite it unless the delta is concret
 - Listing many files in a bullet without saying which file owns the decision, where a future change should start, and how the result is verified
 - Writing bullets that begin with "`A`, `B`, `C`, and `D` own..." because this usually produces an inventory instead of a change route
 - Dropping stable boundaries just because they were not recently changed, or dropping active routes because they do not look like top-level architecture
-- Writing Active routes as standalone ownership summaries instead of parent-linked or cross-boundary deltas
-- Repeating the Stable parent boundary's broad owner, contract, and verification in an Active route
+- Writing Active routes as standalone ownership summaries, or repeating the Stable parent boundary's broad owner, contract, and verification, instead of parent-linked or cross-boundary deltas
 - Keeping history-only churn, obsolete migrations, or rename/move timelines in Stable bullets; conversely, dropping a currently executed compatibility or safety condition merely because it is internal or lacks recent changes
 - Ending bullets with weak verification language such as "test accordingly", "verify related behavior", or "check downstream effects" instead of naming the concrete verification surface
 - Turning `AGENTS.md` into a changelog with time-relative focus summaries
@@ -289,12 +251,10 @@ Surface-level scanning (e.g., "this codebase uses error handling") is not enough
 
 - Listing individual functions or classes instead of cross-cutting patterns
 - Describing what a single file does rather than what the codebase does consistently
-- Including patterns that appear only once (not truly cross-cutting)
+- Including incidental implementation details that appear only once (not truly cross-cutting)
 - Omitting a single critical boundary that defines safe agent work just because it has only one entry point
 - One-line summaries that name a pattern without explaining how it works (e.g., "Uses repository pattern" without describing the actual convention)
 - Staying at the surface: saying "has error handling" without explaining the propagation flow, or "uses events" without describing the event protocol and wiring mechanism
-
-The recurrence anti-pattern above applies to incidental one-off implementation details, not single critical safety boundaries. Such boundaries remain eligible when supported by current evidence.
 
 ### Section 4: Conventions
 
@@ -362,8 +322,7 @@ See the working agreements specification referenced from SKILL.md.
 - **Format**: Valid Markdown
 - **Tone**: Direct, concise, neutral, and respectful
 - **Headings**: Keep standard section names and numbers unchanged. Use specific bullet labels and permitted subheadings that predict their content
-- **Content Style**: Apply [plain_language.md](plain_language.md). Lead with the reader's action or rule, name actors where needed, and keep conditions next to their outcomes. Use connected sentences rather than dense clause chains or unexplained shorthand; preserve verified meaning and exact technical identifiers
-- **Review**: After compression, check that the intended reader can find, understand, and apply the managed guidance. Keep this editorial review outside the generated document and preserve custom sections and preambles under the update contract
+- **Content Style**: Write managed prose per [plain_language.md](plain_language.md), and check its four reader outcomes after compression
 
 ## Anti-Patterns (Excluded Content)
 

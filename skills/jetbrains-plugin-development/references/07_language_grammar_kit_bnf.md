@@ -4,7 +4,7 @@
 
 Grammar-Kit generates the parser, the element/token type holders, and PSI interfaces from
 a BNF file. Hand-rolled parsers are possible but only worth the effort for unusual grammars.
-For the IntelliJ Platform Gradle Plugin 2.18.1 setup in this skill, apply
+For the IntelliJ Platform Gradle Plugin 2.20.1 setup in this skill, apply
 `org.jetbrains.intellij.platform.grammarkit` in the `plugins` block (see
 `01_core_gradle_project.md`); it supplies the `generateParser` and `generateLexer` tasks.
 Do not treat generator dependencies as runtime plugin dependencies or also apply the
@@ -16,7 +16,6 @@ build, check its supported generator integration before migrating from the stand
 ```
 {
   parserClass="com.example.mylang.parser.MyParser"
-  parserUtilClass="com.example.mylang.parser.MyParserUtil"
   extends="com.intellij.extapi.psi.ASTWrapperPsiElement"
 
   psiClassPrefix="My"
@@ -35,9 +34,7 @@ build, check its supported generator integration before migrating from the stand
   ]
 }
 
-myFile ::= item_*
-
-private item_ ::= property | COMMENT | CRLF
+myFile ::= property*
 
 property ::= ID EQ ID? {
   mixin="com.example.mylang.psi.impl.MyNamedElementImpl"
@@ -51,6 +48,16 @@ What's generated:
 - `MyParser.java` — the parser body, driving `PsiBuilder`.
 - `MyTypes.java` — every token/element type as a constant + `Factory.createElement(ASTNode)`.
 - `psi/My*.java` interfaces and `psi/impl/My*Impl.java` implementations.
+
+The classes named by `elementTypeClass`, `tokenTypeClass`, `implements`, and `mixin` are not
+generated; write them yourself (see `SimpleElementType.kt`, `SimpleNamedElement.kt`, and
+`SimpleNamedElementImpl.kt` in `examples/simple_language_plugin/`). Add `parserUtilClass` only
+when you write your own parser utility class; the [Grammar-Kit README](https://github.com/JetBrains/Grammar-Kit#readme)
+requires it to extend or mimic `GeneratedParserUtilBase`. `PsiBuilder` skips the
+whitespace tokens and the `getCommentTokens()` set of the `ParserDefinition` (see
+`07_language_parser_definition_psi_file.md`), so the grammar does not match whitespace,
+line breaks, or `COMMENT`. The `COMMENT` token is still declared so that `MyTypes` defines it
+for the lexer.
 
 Custom logic (e.g. `getName`/`setName` for rename support) goes in **`mixin` classes** that
 the generated `*Impl` classes extend, **never** in the generated files themselves
@@ -81,7 +88,7 @@ public class MyParser implements PsiParser {
 ```
 
 `PsiParser`, `PsiBuilder`, `ASTNode`, `IElementType`, and
-`ASTWrapperPsiElement` used by this skeleton are public platform APIs in the `2026.2.2`
+`ASTWrapperPsiElement` used by this skeleton are public platform APIs in the `2026.3`
 source baseline. Before using another parser helper, inspect its declaration and metadata;
 `public` visibility alone does not permit `@ApiStatus.Internal`, `@IntellijInternalApi`, or
 implementation-only platform parser classes. Keep plugin-owned custom logic in the mixins
@@ -93,5 +100,5 @@ If a mixin adds Kotlin-specific behavior, declare the Kotlin plugin dependency a
 its supported public API; otherwise keep the generated PSI language-local.
 
 The API check was performed against the
-[`idea/2026.2.2` source snapshot](https://github.com/JetBrains/intellij-community/tree/1c7e601c0423e544917046c23763b15d0282e2a3)
+[`idea/2026.3` source snapshot](https://github.com/JetBrains/intellij-community/tree/c91871ae2864649d952825cff72569e3db0e7ac6)
 and the [official parser/PSI guide](https://plugins.jetbrains.com/docs/intellij/implementing-parser-and-psi.html).

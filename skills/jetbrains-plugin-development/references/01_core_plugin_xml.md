@@ -22,7 +22,9 @@ your plugin contributes.
     <ul><li>1.2.3 — fixed foo</li></ul>
   ]]></change-notes>
 
-  <idea-version since-build="241" until-build="243.*"/>
+  <!-- The Gradle plugin patches these values from pluginConfiguration.ideaVersion;
+       leave until-build out unless a known break requires it. -->
+  <idea-version since-build="241"/>
 
   <depends>com.intellij.modules.platform</depends>
 

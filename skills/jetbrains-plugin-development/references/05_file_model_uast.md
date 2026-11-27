@@ -57,7 +57,7 @@ Language coverage: Java and Kotlin are fully supported; Scala is beta; Groovy su
 declarations only.
 
 UAST itself and the inspection/visitor APIs above are public external APIs in the
-2026.2.2 source baseline. The `UastCodeGenerationPlugin` and related UAST extension points
+2026.3 source baseline. The `UastCodeGenerationPlugin` and related UAST extension points
 are marked experimental and are not recommended for external plugins; do not use them as a
 mutation shortcut. Add the bundled Java plugin dependency (`com.intellij.java`) and verify
 that each language plugin you intend to analyze is present in the target product. Do not
@@ -71,9 +71,9 @@ available on the IDE versions you advertise. K1 was removed in 2026.2; only olde
 that still ship K1 can participate in a K1/K2 compatibility matrix. See the
 [2026 Kotlin API changes](https://plugins.jetbrains.com/docs/intellij/api-changes-list-2026.html#kotlin-plugin-2026-2).
 The API status statements above were checked against
-the [`idea/2026.2.2` source snapshot](https://github.com/JetBrains/intellij-community/tree/1c7e601c0423e544917046c23763b15d0282e2a3)
+the [`idea/2026.3` source snapshot](https://github.com/JetBrains/intellij-community/tree/c91871ae2864649d952825cff72569e3db0e7ac6)
 including the protected extension constructors and public `checkMethod` callback in
-[`AbstractBaseUastLocalInspectionTool`](https://github.com/JetBrains/intellij-community/blob/1c7e601c0423e544917046c23763b15d0282e2a3/java/java-analysis-api/src/com/intellij/codeInspection/AbstractBaseUastLocalInspectionTool.java),
+[`AbstractBaseUastLocalInspectionTool`](https://github.com/JetBrains/intellij-community/blob/c91871ae2864649d952825cff72569e3db0e7ac6/java/java-analysis-api/src/com/intellij/codeInspection/AbstractBaseUastLocalInspectionTool.java),
 the public `create(Language, ...)` method in
-[`UastHintedVisitorAdapter`](https://github.com/JetBrains/intellij-community/blob/1c7e601c0423e544917046c23763b15d0282e2a3/java/java-analysis-api/src/com/intellij/uast/UastHintedVisitorAdapter.kt),
+[`UastHintedVisitorAdapter`](https://github.com/JetBrains/intellij-community/blob/c91871ae2864649d952825cff72569e3db0e7ac6/java/java-analysis-api/src/com/intellij/uast/UastHintedVisitorAdapter.kt),
 and the [official UAST guide](https://plugins.jetbrains.com/docs/intellij/uast.html).

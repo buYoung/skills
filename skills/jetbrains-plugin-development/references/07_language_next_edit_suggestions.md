@@ -2,11 +2,11 @@
 
 ## API boundary and version
 
-This boundary is checked against IntelliJ Community `idea/2026.2.2` at commit
-`1c7e601c0423e544917046c23763b15d0282e2a3`. The public
-[`EditorExtensionPoints.xml`](https://github.com/JetBrains/intellij-community/blob/1c7e601c0423e544917046c23763b15d0282e2a3/platform/platform-resources/src/META-INF/EditorExtensionPoints.xml)
+This boundary is checked against IntelliJ Community `idea/2026.3` at commit
+`c91871ae2864649d952825cff72569e3db0e7ac6`. The public
+[`intellij.platform.lang.impl.xml`](https://github.com/JetBrains/intellij-community/blob/c91871ae2864649d952825cff72569e3db0e7ac6/platform/lang-impl/resources/intellij.platform.lang.impl.xml)
 declares `com.intellij.inline.edit.awaiter`, but its
-[`InlineEditAwaiter`](https://github.com/JetBrains/intellij-community/blob/1c7e601c0423e544917046c23763b15d0282e2a3/platform/platform-impl/codeinsight-inline/src/com/intellij/codeInsight/inline/edit/InlineEditAwaiter.kt)
+[`InlineEditAwaiter`](https://github.com/JetBrains/intellij-community/blob/c91871ae2864649d952825cff72569e3db0e7ac6/platform/platform-impl/codeinsight-inline/src/com/intellij/codeInsight/inline/edit/InlineEditAwaiter.kt)
 contract is `@ApiStatus.Internal`. Descriptor visibility alone does not make it an external
 plugin API.
 

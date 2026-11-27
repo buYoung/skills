@@ -1,16 +1,16 @@
 # Status Bar Widgets
 
-## API boundary for 2026.2.2
+## API boundary for 2026.3
 
 External plugins may implement the public
-[`StatusBarWidget`](https://github.com/JetBrains/intellij-community/blob/1c7e601c0423e544917046c23763b15d0282e2a3/platform/ide-core/src/com/intellij/openapi/wm/StatusBarWidget.kt)
+[`StatusBarWidget`](https://github.com/JetBrains/intellij-community/blob/c91871ae2864649d952825cff72569e3db0e7ac6/platform/ide-core/src/com/intellij/openapi/wm/StatusBarWidget.kt)
 or `CustomStatusBarWidget` contracts, or extend the SDK-documented
 [`EditorBasedWidget` / `EditorBasedStatusBarPopup`](https://plugins.jetbrains.com/docs/intellij/status-bar-widgets.html)
 bases. The
-[`EditorBasedStatusBarPopup` declaration](https://github.com/JetBrains/intellij-community/blob/1c7e601c0423e544917046c23763b15d0282e2a3/platform/platform-impl/src/com/intellij/openapi/wm/impl/status/EditorBasedStatusBarPopup.kt)
-is an unannotated public extension surface in `idea/2026.2.2`; do not
+[`EditorBasedStatusBarPopup` declaration](https://github.com/JetBrains/intellij-community/blob/c91871ae2864649d952825cff72569e3db0e7ac6/platform/platform-impl/src/com/intellij/openapi/wm/impl/status/EditorBasedStatusBarPopup.kt)
+is an unannotated public extension surface in `idea/2026.3`; do not
 call their individual members when those members are marked `@ApiStatus.Internal`. This
-boundary is checked at commit `1c7e601c0423e544917046c23763b15d0282e2a3`.
+boundary is checked at commit `c91871ae2864649d952825cff72569e3db0e7ac6`.
 
 ## Status bar widgets
 

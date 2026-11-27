@@ -8,9 +8,7 @@ behavior profile to shape Acceptance Criteria around reproduction.
 that lets a coding agent pin the failure *before* touching code.
 Where a new regression test is mentioned, the example assumes the user
 allowed that test during Stage 4; otherwise the brief would require an
-existing test or manual repro path instead. Treat the saved brief as
-the work instruction; the meta sections show how a one-line input got
-ground enough to support it.
+existing test or manual repro path instead.
 
 ---
 
@@ -41,15 +39,13 @@ Inline `rg` / `Read`, ~5 reads / 6 greps:
 
 ## Stage 4 — User Decision Table
 
-Stage 3 already pins the suspected interaction site. Stage 4 asks for
-the remaining user-owned decisions needed to make a `fix` plan safe:
-reproduction evidence, scope boundaries, and permission for new regression coverage.
+Stage 3 already pins the suspected interaction site.
 The author selects `fix` from the explicit defect and routes patch-versus-remove into Stage 1 evidence plus a bounded Worker decision.
 
 | 순번 | 내용 | 수정 추천안 | 근거 |
 |---|---|---|---|
 | 1 | Reproduction detail | Provide the observed environment so it can be pinned in `## Reproduction`: exact iOS Safari version and device, the failing test account (no literal password — name where the secret lives), the observed error surface, and how often it reproduces. | `fix` plans need a reproducible failing state before implementation. The codebase can identify the likely validation site, but only the user can supply the observed environment, account, and frequency. |
-| 2 | Out of Scope boundary | Lock both the broader validation-chain refactor and the `/api/login` request/response contract out of scope. | Stage 3 found both adjacent to the suspected line. Touching them would widen the defect fix into unrelated behavior change. |
+| 2 | Out of Scope boundary | Lock both the broader validation-chain refactor and the `/api/login` request/response contract out of scope. | Both sit next to the suspected line in `validatePassword()`. Touching them would widen the defect fix into unrelated behavior change. |
 | 3 | Regression coverage permission | Allow one Cypress case for the shared password-submission contract on a supported desktop browser; retain BrowserStack iPhone Safari verification for the reported device-specific failure. | Repository policy requires user permission before adding a new test case. |
 
 User: approve rows 2-3; for row 1 the user supplies the values —
@@ -76,8 +72,9 @@ a bounded Worker decision. Stage 5 follows.
 fix
 
 ## Current State (As-Is)
-- [confirmed] user reports rejected valid credentials on iOS Safari with `@`-containing password — Evidence: Stage 4 BrowserStack observations recorded below; Stage 1 verifies report.
-- [inferred] `validatePassword()` calling `decodeURIComponent` on raw input is likely interaction site — Confirm by: compare pinned failure before and after isolating that step and inspect PR #211's contract.
+- [confirmed] `validatePassword()` run `decodeURIComponent` on raw password before `LoginForm.tsx` post to `/api/login` — Evidence: `validatePassword()` in `src/auth/validation.ts` and submit handler in `src/auth/LoginForm.tsx`.
+- [inferred] Valid credentials containing `@` rejected on iOS Safari 17 — Confirm by: run `Reproduction` steps against unfixed code in Stage 1.
+- [inferred] That `decodeURIComponent` step is likely interaction site with `@` — Confirm by: compare pinned failure before and after isolating that step and inspect PR #211's contract.
 
 ## Reproduction
 - Steps: open `/login` on iOS Safari 17, enter known-valid QA account `qa+iossafari@example.com` whose password contains `@` (password: see 1Password item "QA iOS Safari"), tap "Log in".
@@ -143,18 +140,10 @@ fix
 
 ---
 
-## Post-Save Verification Summary
+## Stage 6 — Save Report
 
-This example focuses on the saved brief shape.
-In a live run, the Stage 5.6 content and intent self-check still runs after
-the file is written and structurally validated; for a `fix` it confirms
-that `Reproduction` still gates Stage 1, that the input's scope and
-acceptance threshold survived into the brief, and that caveman parity held.
-The work type does not start Stage 5.7 — cold-pickup is opt-in, so the
-Stage 6 banner reports structural validation, then content validation
-(self-check plus caveman parity), with no unrequested optional-check line
-or invitation.
-The user can request the independent sub-agent read at any point in Stage 6.
+> Saved — `docs/briefs/2026-04-23-fix-ios-safari-login-at-symbol.md` (`fix`: iOS Safari login fails when password contains `@`; structural validation passed; content validation passed — content and intent self-check passed, caveman parity OK).
+> Open it and let me know if anything needs editing.
 
 ## Picked Up Cold — Coding Agent's First Actions
 
@@ -177,18 +166,15 @@ scope. From the brief alone:
    suite stays green (per `Acceptance Criteria` and `Side Effect
    Checkpoints`).
 
-The agent does **not** restructure the validation chain (per `Out of
-Scope`), does not change the `/api/login` contract (per `Out of Scope`),
-and does not need to ask the user for the repro account — the brief
-names the account and where its password lives.
-
 ---
 
 ## Notes
 
 - **Why the Acceptance Criteria lead with the actual device reproduction** —
   the `fix` behavior profile requires reproduction-first on the affected
-  target. The approved Cypress case is a separate supported-browser contract check.
+  target. The approved Cypress case is a separate supported-browser contract
+  check: [Cypress browser support](https://docs.cypress.io/app/references/launching-browsers#webkit-experimental)
+  covers experimental desktop WebKit, not iPhone Safari.
   Without that permission, the brief would use an existing test or manual
   reproduction path instead.
 - **Why Side Effect Checkpoint #2 lists URL-significant characters** —
@@ -200,13 +186,3 @@ names the account and where its password lives.
   credentials; the brief references the secret's location instead. The
   load-bearing fact for this bug — the password contains `@` — is stated
   explicitly, so nothing the downstream agent needs is lost.
-- **Why "remove vs. patch" is not an Open Question** — PR #211 evidence
-  makes this a technical investigation followed by a reversible worker
-  choice. Stage 1 bounds it with compatibility checks and a replan condition.
-- **Why the four-anchor check passed despite a one-line input** — PROBLEM
-  (login fails), GOAL (login should succeed) is implicit, SCOPE (login
-  flow on iOS Safari with `@` in password — narrow), TARGET (the auth
-  module — Stage 3 confirms `validation.ts`). All four derivable, no
-  halt needed.
-
-Browser feasibility: [Cypress browser support](https://docs.cypress.io/app/references/launching-browsers#webkit-experimental) describes experimental desktop WebKit; it is not an iPhone Safari target. [BrowserStack Cypress targets](https://www.browserstack.com/docs/automate/cypress/browsers-and-os) likewise list desktop OS/browser combinations. The documented BrowserStack iPhone session is a separate manual verification route.

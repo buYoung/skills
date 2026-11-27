@@ -12,7 +12,7 @@ Help an operator diagnose and recover from an abnormal state safely, using obser
 
 ## Route elsewhere when
 
-- The reader follows a normal setup or usage path: action guide.
+- The reader follows a normal setup or usage path: action guide, or software project documentation for a project's README or usage manual.
 - The artifact only records a past incident: record.
 - The artifact analyzes an incident after the fact: analysis report.
 - It defines product-level failure behavior rather than operational recovery: FDD.

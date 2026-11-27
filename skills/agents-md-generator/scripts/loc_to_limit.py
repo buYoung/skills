@@ -13,9 +13,10 @@ import shutil
 import subprocess
 import sys
 
-# Directory excludes matter outside git repositories: tokei honors .gitignore
-# only inside a git repo, so vendored deps and build output would otherwise
-# inflate LOC in exported or unzipped directories.
+# Directory excludes matter outside git repositories: tokei applies .gitignore
+# only when the measured directory or a parent contains .git, so vendored deps
+# and build output would otherwise inflate LOC in exported or unzipped
+# directories.
 EXCLUDES = [
     "*.json", "*.yaml", "*.yml", "*.md", "*.sh", "*.lock", "*.map", "*.svg",
     "node_modules", "vendor", "dist",

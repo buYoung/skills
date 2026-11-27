@@ -17,6 +17,7 @@ Provide an exact, stable, non-linear lookup surface for definitions, fields, opt
 - The reader must follow a sequence: action guide.
 - The document defines one product feature holistically for implementation: FDD.
 - Durable organizational obligations dominate: policy or rules.
+- The document is a software project's README or usage manual rather than a standalone interface or configuration reference: software project documentation.
 
 ## Load next
 

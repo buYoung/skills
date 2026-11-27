@@ -32,13 +32,18 @@ and [adapter compatibility notes](interactive-workflow.md) before reusing them.
 
 ## Config File Formats
 
-release-it looks for config files in the project root in this order:
+release-it 21.1.3 loads `.release-it` from the working directory through c12. It tries the
+name without an extension, then the extensions `.js`, `.ts`, `.mjs`, `.cjs`, `.mts`, `.cts`,
+`.json`, `.jsonc`, `.json5`, `.yaml`, `.yml`, `.toml` in that order, then the same name under
+`.config/`, and uses the first match.
+A `release-it` property in `package.json` is merged beneath that file rather than ignored.
+`--config <file>` loads a different file, and `--config false` skips both sources.
 
 ### JSON (most common)
 
 ```json
 {
-  "$schema": "https://unpkg.com/release-it@21.0.1/schema/release-it.json",
+  "$schema": "https://unpkg.com/release-it@21.1.3/schema/release-it.json",
   "git": {
     "commitMessage": "chore: release v${version}"
   },
@@ -170,14 +175,18 @@ release-it --no-plugins.@release-it/keep-a-changelog.strictLatest
 
 ## Git Options (defaults)
 
+The option tables below list common options with release-it 21.1.3 defaults from
+`config/release-it.json`. Options marked _(unset)_ have no entry there; the plugin source
+supplies the stated behavior.
+
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
 | `git.changelog` | string | `git log --pretty=format:"* %s (%h)" ${from}...${to}` | Changelog generation command |
-| `git.requireCleanWorkingDir` | boolean | `true` | Check tracked/index state; also controls local exit/SIGINT rollback registration when committing in 21.0.1 |
+| `git.requireCleanWorkingDir` | boolean | `true` | Check tracked/index state; also controls local exit/SIGINT rollback registration when committing in 21.1.3 |
 | `git.requireBranch` | string/array/false | `false` | Restrict releases to specific branches (supports wildcards) |
 | `git.requireUpstream` | boolean | `true` | Require upstream remote exists |
 | `git.requireCommits` | boolean | `false` | Fail if no commits since latest tag |
-| `git.requireCommitsFail` | boolean | `true` | Continue if no commits but exit code 0 |
+| `git.requireCommitsFail` | boolean | `true` | When `requireCommits` stops the release, exit with code 1; `false` stops with code 0 |
 | `git.commitsPath` | string | `""` | Directory to check for commits |
 | `git.addUntrackedFiles` | boolean | `false` | Use `--all` instead of `--update` in directory staging |
 | `git.commit` | boolean | `true` | Execute commit step |
@@ -203,6 +212,7 @@ release-it --no-plugins.@release-it/keep-a-changelog.strictLatest
 | `npm.publishArgs` | array | `[]` | Extra args for `npm publish` |
 | `npm.publishPackageManager` | string | `"npm"` | Use `pnpm` or `bun` instead |
 | `npm.tag` | string/null | `null` | npm dist-tag (auto-derived for pre-releases) |
+| `npm.stage` | boolean | `false` | Run `npm stage publish` (or pnpm) for later 2FA approval instead of publishing directly |
 | `npm.otp` | string/null | `null` | One-time password for 2FA |
 | `npm.ignoreVersion` | boolean | `false` | Skip npm's current-version getter so another provider can supply it; does not disable npm's bump writes |
 | `npm.allowSameVersion` | boolean | `false` | Allow same version as current |
@@ -220,6 +230,9 @@ release-it --no-plugins.@release-it/keep-a-changelog.strictLatest
 | `github.autoGenerate` | boolean | `false` | Let GitHub auto-generate notes |
 | `github.preRelease` | boolean | `false` | Mark as pre-release (auto-set for pre-releases) |
 | `github.draft` | boolean | `false` | Create as draft |
+| `github.makeLatest` | boolean/`"legacy"` | _(unset; sent as `true`)_ | Mark the release as latest |
+| `github.discussionCategoryName` | string | _(unset)_ | Create a release discussion in this category |
+| `github.update` | boolean | _(unset)_ | Update the latest GitHub release when its tag equals `latestTag`; otherwise warn and create a new release |
 | `github.tokenRef` | string | `"GITHUB_TOKEN"` | Env var name for GitHub token |
 | `github.assets` | string[]/null | `null` | Glob patterns for assets |
 | `github.host` | string/null | `null` | GitHub Enterprise host |
@@ -242,10 +255,13 @@ release-it --no-plugins.@release-it/keep-a-changelog.strictLatest
 | `gitlab.tokenRef` | string | `"GITLAB_TOKEN"` | Env var name for GitLab token |
 | `gitlab.tokenHeader` | string | `"Private-Token"` | HTTP header for token |
 | `gitlab.certificateAuthorityFile` | string/null | `null` | CA file for self-hosted SSL |
-| `gitlab.secure` | boolean | `false` | Verify server certificate |
+| `gitlab.certificateAuthorityFileRef` | string | _(unset; reads `CI_SERVER_TLS_CA_FILE`)_ | Env var name holding the CA file path |
+| `gitlab.secure` | boolean | `true` | Verify server certificates; `false` disables verification |
+| `gitlab.proxy` | boolean | `false` | Route GitLab API requests through `http_proxy`/`https_proxy`/`no_proxy` |
 | `gitlab.assets` | string[]/null | `null` | Glob patterns for assets |
 | `gitlab.useIdsForUrls` | boolean | `false` | Use project IDs in URLs (GitLab 17.2+) |
 | `gitlab.useGenericPackageRepositoryForAssets` | boolean | `false` | Use generic package repo |
 | `gitlab.genericPackageRepositoryName` | string | `"release-it"` | Package repo name |
 | `gitlab.origin` | string/null | `null` | Custom origin URL |
 | `gitlab.skipChecks` | boolean | `false` | Skip token/permission checks |
+| `gitlab.repoId` | string/number/null | `null` | Numeric project ID used instead of the URL-encoded path in API requests |

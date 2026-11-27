@@ -5,10 +5,15 @@
 The recommended UI builder for any new dialog, settings page, or tool window content. It
 sits on top of Swing but is dramatically more concise.
 
+Kotlin UI DSL v1 (`com.intellij.ui.layout.*`) was removed completely in 2026.3; code that
+still uses it fails to compile or load there. Follow the
+[migration to version 2](https://plugins.jetbrains.com/docs/intellij/kotlin-ui-dsl.html#migration-to-version-2).
+
 ```kotlin
 class MySettingsComponent {
   var userName: String = ""
   var enabled: Boolean = true
+  var retries: Int = 3
 
   val panel: JComponent = panel {
     row("User name:") {

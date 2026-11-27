@@ -73,12 +73,12 @@ that limitation instead of using internal registration or bundle-cache manipulat
 
 The external-public rule applies to individual `DynamicBundle` members as well: its
 internal cache and language-pack helpers are unavailable to plugin code. On the pinned
-2026.2.2 baseline, the inherited single-string constructor is `Obsolete`; the example
-delegates to the public class-and-path constructor and public `getMessage` inherited from
-`AbstractBundle`. For an existing older target, check those declarations before migrating
+2026.3 baseline, the inherited single-string constructor is `@Deprecated` (it was
+`Obsolete` in 2026.2.2); the example delegates to the public class-and-path constructor
+and public `getMessage` inherited from `AbstractBundle`. For an existing older target, check those declarations before migrating
 an inheritance-based bundle; do not copy its internal resource-resolution implementation.
 
-Sources: [DynamicBundle at the pinned commit](https://github.com/JetBrains/intellij-community/blob/1c7e601c0423e544917046c23763b15d0282e2a3/platform/core-api/src/com/intellij/DynamicBundle.java),
-[AbstractBundle](https://github.com/JetBrains/intellij-community/blob/1c7e601c0423e544917046c23763b15d0282e2a3/platform/util/src/com/intellij/AbstractBundle.kt),
-[Core.analyzer.xml](https://github.com/JetBrains/intellij-community/blob/1c7e601c0423e544917046c23763b15d0282e2a3/platform/core-api/resources/META-INF/Core.analyzer.xml),
+Sources: [DynamicBundle at the pinned commit](https://github.com/JetBrains/intellij-community/blob/c91871ae2864649d952825cff72569e3db0e7ac6/platform/core-api/src/com/intellij/DynamicBundle.java),
+[AbstractBundle](https://github.com/JetBrains/intellij-community/blob/c91871ae2864649d952825cff72569e3db0e7ac6/platform/util/src/com/intellij/AbstractBundle.kt),
+[Core.analyzer.xml](https://github.com/JetBrains/intellij-community/blob/c91871ae2864649d952825cff72569e3db0e7ac6/platform/core-api/resources/META-INF/Core.analyzer.xml),
 and [EP status list](https://plugins.jetbrains.com/docs/intellij/intellij-platform-extension-point-list.html).

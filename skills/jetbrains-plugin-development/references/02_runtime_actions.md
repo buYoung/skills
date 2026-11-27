@@ -58,7 +58,7 @@ Tells the platform whether to dispatch `update` on `BGT` (preferred for new code
 | `EDT` | You must read live Swing component state (focus, tree selection, custom UI) | Swing UI state |
 
 Implement it whenever `update` is overridden. Plugin DevKit reports a missing override.
-Although 2026.2.2 returns BGT for an action whose `update` remains the default, an overridden
+Although 2026.3 returns BGT for an action whose `update` remains the default, an overridden
 `update` still falls back to EDT. `actionPerformed` is invoked on EDT.
 
 ### Field-on-AnAction is forbidden
@@ -146,7 +146,7 @@ class MyAction : DumbAwareAction("My Action") {
 ```
 
 Same applies to many providers (`DumbAware` interface) — folding builders, line marker
-providers, completion contributors. See `05_file_model_psi_basics.md` for the indexing model.
+providers, completion contributors. See `05_file_model_indexing_stubs.md` for the indexing model.
 
 ### Reading context from `AnActionEvent`
 
@@ -162,7 +162,7 @@ val nav     = e.getData(CommonDataKeys.NAVIGATABLE)
 
 `getData(...)` returns null if absent. Re-check the precondition in `actionPerformed` because
 the platform does not guarantee that `update()` ran with the same context immediately before
-the action. `getRequiredData(...)` is deprecated for removal in 2026.2.2, so do not use it in
+the action. `getRequiredData(...)` is deprecated for removal in 2026.3, so do not use it in
 new code.
 
 ### Long work in `actionPerformed`
@@ -185,19 +185,22 @@ launched work. Retrieve it only during `actionPerformed`; do not cache it. For
 method that launches from its injected scope. `Task.Backgroundable` remains the classic
 public alternative.
 
-See `04_threading_model.md` for the full progress/cancellation story.
+See `04_threading_background_work_progress.md` and `04_threading_coroutines_2024.md` for the
+full progress/cancellation story.
 
 ### Fixed-source evidence
 
-The action threading and coroutine contracts were checked against tag `idea/2026.2.2`,
-commit `1c7e601c0423e544917046c23763b15d0282e2a3`:
+The action threading and coroutine contracts were checked against tag `idea/2026.3`,
+commit `c91871ae2864649d952825cff72569e3db0e7ac6`:
 
-- [`AnAction.java`](https://github.com/JetBrains/intellij-community/blob/1c7e601c0423e544917046c23763b15d0282e2a3/platform/editor-ui-api/src/com/intellij/openapi/actionSystem/AnAction.java)
-- [`AnActionEvent.java`](https://github.com/JetBrains/intellij-community/blob/1c7e601c0423e544917046c23763b15d0282e2a3/platform/editor-ui-api/src/com/intellij/openapi/actionSystem/AnActionEvent.java)
-- [`ActionUpdateThread.java`](https://github.com/JetBrains/intellij-community/blob/1c7e601c0423e544917046c23763b15d0282e2a3/platform/editor-ui-api/src/com/intellij/openapi/actionSystem/ActionUpdateThread.java)
+- [`AnAction.java`](https://github.com/JetBrains/intellij-community/blob/c91871ae2864649d952825cff72569e3db0e7ac6/platform/editor-ui-api/src/com/intellij/openapi/actionSystem/AnAction.java)
+- [`AnActionEvent.java`](https://github.com/JetBrains/intellij-community/blob/c91871ae2864649d952825cff72569e3db0e7ac6/platform/editor-ui-api/src/com/intellij/openapi/actionSystem/AnActionEvent.java)
+- [`ActionUpdateThread.java`](https://github.com/JetBrains/intellij-community/blob/c91871ae2864649d952825cff72569e3db0e7ac6/platform/editor-ui-api/src/com/intellij/openapi/actionSystem/ActionUpdateThread.java)
 
 The 2026.1 introduction of `AnActionEvent.coroutineScope` is recorded in the official
 [2026 API changes](https://plugins.jetbrains.com/docs/intellij/api-notable-list-2026.html).
+The 2024.2 lower bound for running `actionPerformed` logic in the current thread coroutine
+scope comes from [Coroutine Scopes](https://plugins.jetbrains.com/docs/intellij/coroutine-scopes.html).
 
 The recommended methods are public (`getActionUpdateThread` is override-only); the examples
 do not call Action System implementation classes or internal scope installers.

@@ -57,11 +57,12 @@ keeps a separate PSI tree per language:
 val viewProvider = psiFile.viewProvider
 val languages: Set<Language> = viewProvider.languages
 val htmlPsi = viewProvider.getPsi(HTMLLanguage.INSTANCE)
-val jsPsi   = viewProvider.getPsi(Language.findInstance(JavaScriptSupportLoader::class.java).language)
 val element = viewProvider.findElementAt(offset, HTMLLanguage.INSTANCE)
 ```
 
-Custom multi-language files supply a `FileViewProviderFactory`.
+Custom multi-language files supply a `FileViewProviderFactory`. `HTMLLanguage` belongs to the
+XML and HTML support, which is the separate bundled plugin `com.intellij.xml` from 2026.3;
+see `01_core_dependencies.md` for the dependency to declare.
 
 ### `CachedValue` — PSI-aware caching
 
@@ -78,7 +79,9 @@ val result = CachedValuesManager.getCachedValue(psiElement) {
 
 Common trackers:
 
-- `PsiModificationTracker.MODIFICATION_COUNT` — any PSI change.
+- `PsiModificationTracker.MODIFICATION_COUNT` — any physical PSI change, plus entering or
+  leaving Dumb Mode. For a narrower dependency, its Javadoc suggests
+  `PsiModificationTracker.getInstance(project).forLanguage(language)`.
 - `ModificationTracker.NEVER_CHANGED` — permanent cache.
 - `ModificationTracker.EVER_CHANGED` — never cache (debug only).
 - `VirtualFileManager.VFS_STRUCTURE_MODIFICATIONS` — VFS topology changes.

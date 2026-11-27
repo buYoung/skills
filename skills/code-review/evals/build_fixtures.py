@@ -6,7 +6,8 @@ import subprocess
 
 
 def git(repo, *args):
-    return subprocess.check_output(['git', '-C', str(repo), *args], text=True).strip()
+    # No caller needs input; DEVNULL gives `hash-object --stdin` EOF instead of the caller's stdin.
+    return subprocess.check_output(['git', '-C', str(repo), *args], stdin=subprocess.DEVNULL, text=True).strip()
 
 
 def write(repo, name, text):

@@ -159,7 +159,7 @@ const gitOptions = {
 Pass these options as `git` in the same interactive API call, retaining the wrapper's
 clean-check/rollback handling. Adapt and verify the remote, upstream branch, and tag
 policy for the actual target; the computed tag must equal release-it's selected tag.
-Do not insert literal `${tagName}` templates into a JSON `pushArgs` array: 21.0.1 does not
+Do not insert literal `${tagName}` templates into a JSON `pushArgs` array: 21.1.3 does not
 format array arguments. The built-in method appends its upstream arguments after
 `pushArgs`; with an existing upstream and `pushRepo: ''` it appends none. Inspect this
 ordering again on a version upgrade.
@@ -231,7 +231,7 @@ Array and wildcards supported:
 
 ### requireCleanWorkingDir
 
-Requires clean tracked files and index (default: `true`). In release-it 21.0.1 the built-in
+Requires clean tracked files and index (default: `true`). In release-it 21.1.3 the built-in
 check is `git diff --quiet HEAD`; it does not reject ordinary untracked files. Setting it
 to `false` also prevents the Git plugin from registering its local exit/SIGINT rollback
 handlers. It does not disable every recovery path; see [Recovery Policies](#recovery-policies).
@@ -285,7 +285,7 @@ hook/plugin side effects.
 ### Recovery Policies
 
 Choose recovery behavior for the workflow instead of treating every interruption as one
-transaction. In 21.0.1, `bump` precedes `Git.beforeRelease()`, which enables local rollback
+transaction. In 21.1.3, `bump` precedes `Git.beforeRelease()`, which enables local rollback
 only when both `git.commit` and `git.requireCleanWorkingDir` are enabled, then stages files.
 The commit confirmation comes later. A failure during bump can therefore occur before
 those handlers are installed.
@@ -304,18 +304,18 @@ is useful only when its source is the intended baseline and its path list is jus
 it is not a cleanup command for arbitrary generated files. Check Git compatibility if
 introducing it into a project that previously used older Git.
 
-Also account for completed external actions. With npm publishing enabled, 21.0.1 can
+Also account for completed external actions. With npm publishing enabled, 21.1.3 can
 publish before Git commit; a local file restore cannot undo that publication. See
 [lifecycle order](hooks-and-lifecycle.md#plugin-order-and-side-effects). Preserve commits
 and tags after a deliberate stop when that is the workflow's contract. Prompt No, prompt
 Ctrl+C, process signals outside prompts, execution failures, and partial pushes require
 their actual state to be inspected, not the same assumed cleanup.
 
-Disabling local exit rollback does not disable the push-error path: 21.0.1 may attempt
+Disabling local exit rollback does not disable the push-error path: 21.1.3 may attempt
 `git push origin --delete <tag>` after a failed push. Report remote state as unknown until
 inspected, including when local state appears unchanged.
 
-Source: [21.0.1 Git implementation](https://github.com/release-it/release-it/blob/21.0.1/lib/plugin/git/Git.js).
+Source: [21.1.3 Git implementation](https://github.com/release-it/release-it/blob/21.1.3/lib/plugin/git/Git.js).
 
 ### requireUpstream
 
@@ -341,7 +341,9 @@ Stop the process if there are no commits since the latest tag:
 }
 ```
 
-Set `requireCommitsFail: false` to continue but exit with code 0 instead of 1.
+The release stops with exit code 1. Set `requireCommitsFail: false` to stop with exit code 0
+instead. The upstream option table says "continue", but the 21.1.3 source still throws, so
+later steps do not run; only the exit code and log level change.
 
 ### commitsPath
 

@@ -69,7 +69,8 @@ this list before reaching for a debugger.
 
 ## Related references
 
-- `02_runtime_services.md` — services (`@Service`, `@Service(cs)`).
+- `02_runtime_services.md` — light services (`@Service`) and injected `CoroutineScope`
+  constructor parameters.
 - `02_runtime_listeners_message_bus.md` — listeners and MessageBus subscriptions.
 - `02_runtime_actions.md` — action registration and update behavior.
 - `03_lifecycle_disposer.md` — Disposer parent rules, dynamic plugin requirements.

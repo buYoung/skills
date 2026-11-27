@@ -10,7 +10,7 @@
   - Read-then-write composites
   - Progress and cancellation
   - `runBlockingCancellable` — bridging blocking → suspending
-  - `blockingContext { }` is deprecated (2024.2+)
+  - `blockingContext { }` is deprecated (2025.2+)
 
 
 ## Coroutine API (2024.1+) — recommended
@@ -106,7 +106,7 @@ import com.intellij.openapi.application.backgroundWriteAction
 import com.intellij.openapi.application.writeIntentReadAction
 ```
 
-| API | 2024.1-era behavior | 2026.2.2 behavior/status |
+| API | 2024.1-era behavior | 2026.3 behavior/status |
 |---|---|---|
 | `writeAction { }` | Experimental, EDT-switching | Public stable alias of `backgroundWriteAction`; runs from `Dispatchers.Default` |
 | `edtWriteAction { }` | Added as the stable explicit path in 2025.1 | Public stable; EDT plus Write Lock |
@@ -216,26 +216,29 @@ Rules:
 - Do not use `kotlinx.coroutines.runBlocking` instead — it ignores platform context and
   cancellation.
 
-### `blockingContext { }` is deprecated (2024.2+)
+### `blockingContext { }` is deprecated (2025.2+)
 
 In 2024.1, `blockingContext { foo() }` was used to enter blocking-mode within a suspend
-function. From 2024.2, the platform installs blocking context implicitly; just call
-`foo()` directly. The old form emits a deprecation warning.
+function. The deprecation message in the source says the platform installs blocking context
+implicitly starting from 2024.2, but the function itself became a deprecated no-op only in
+2025.2. Call `foo()` directly; the old form emits a deprecation warning on 2025.2+.
 
 ## Fixed-source evidence and public API status
 
-The 2026.2.2 behavior and annotations above were checked at tag `idea/2026.2.2`, commit
-`1c7e601c0423e544917046c23763b15d0282e2a3`:
+The 2026.3 behavior and annotations above were checked at tag `idea/2026.3`, commit
+`c91871ae2864649d952825cff72569e3db0e7ac6`:
 
-- [`application/coroutines.kt`](https://github.com/JetBrains/intellij-community/blob/1c7e601c0423e544917046c23763b15d0282e2a3/platform/core-api/src/com/intellij/openapi/application/coroutines.kt)
-- [`ReadConstraint.kt`](https://github.com/JetBrains/intellij-community/blob/1c7e601c0423e544917046c23763b15d0282e2a3/platform/core-api/src/com/intellij/openapi/application/ReadConstraint.kt)
-- [`command/coroutines.kt`](https://github.com/JetBrains/intellij-community/blob/1c7e601c0423e544917046c23763b15d0282e2a3/platform/core-api/src/com/intellij/openapi/command/coroutines.kt)
-- [`progress/coroutines.kt`](https://github.com/JetBrains/intellij-community/blob/1c7e601c0423e544917046c23763b15d0282e2a3/platform/core-api/src/com/intellij/openapi/progress/coroutines.kt)
-- [`progress/shared/src/tasks.kt`](https://github.com/JetBrains/intellij-community/blob/1c7e601c0423e544917046c23763b15d0282e2a3/platform/progress/shared/src/tasks.kt)
-- [`util/progress/src/steps.kt`](https://github.com/JetBrains/intellij-community/blob/1c7e601c0423e544917046c23763b15d0282e2a3/platform/util/progress/src/steps.kt)
-- [`AnActionEvent.java`](https://github.com/JetBrains/intellij-community/blob/1c7e601c0423e544917046c23763b15d0282e2a3/platform/editor-ui-api/src/com/intellij/openapi/actionSystem/AnActionEvent.java)
+- [`application/coroutines.kt`](https://github.com/JetBrains/intellij-community/blob/c91871ae2864649d952825cff72569e3db0e7ac6/platform/core-api/src/com/intellij/openapi/application/coroutines.kt)
+- [`ReadConstraint.kt`](https://github.com/JetBrains/intellij-community/blob/c91871ae2864649d952825cff72569e3db0e7ac6/platform/core-api/src/com/intellij/openapi/application/ReadConstraint.kt)
+- [`command/coroutines.kt`](https://github.com/JetBrains/intellij-community/blob/c91871ae2864649d952825cff72569e3db0e7ac6/platform/core-api/src/com/intellij/openapi/command/coroutines.kt)
+- [`progress/coroutines.kt`](https://github.com/JetBrains/intellij-community/blob/c91871ae2864649d952825cff72569e3db0e7ac6/platform/core-api/src/com/intellij/openapi/progress/coroutines.kt)
+- [`progress/shared/src/tasks.kt`](https://github.com/JetBrains/intellij-community/blob/c91871ae2864649d952825cff72569e3db0e7ac6/platform/progress/shared/src/tasks.kt)
+- [`util/progress/src/steps.kt`](https://github.com/JetBrains/intellij-community/blob/c91871ae2864649d952825cff72569e3db0e7ac6/platform/util/progress/src/steps.kt)
+- [`AnActionEvent.java`](https://github.com/JetBrains/intellij-community/blob/c91871ae2864649d952825cff72569e3db0e7ac6/platform/editor-ui-api/src/com/intellij/openapi/actionSystem/AnActionEvent.java)
 
-Version boundaries come from the official [2025 API changes](https://plugins.jetbrains.com/docs/intellij/api-notable-list-2025.html)
+The `blockingContext` boundary was compared with the `242` and `251` branch sources, which
+do not mark it `@Deprecated` yet. Version boundaries come from the official
+[2025 API changes](https://plugins.jetbrains.com/docs/intellij/api-notable-list-2025.html)
 and [2026 API changes](https://plugins.jetbrains.com/docs/intellij/api-notable-list-2026.html).
 
 Only unannotated public APIs and explicitly identified public `@Experimental` APIs are

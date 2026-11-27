@@ -26,7 +26,7 @@ Migration map:
 | Implementing a platform interface across all projects | Extension point implementation (no shared base class needed) | `01_core_extensions.md` |
 | Reacting to platform events | Declarative listener (`<applicationListeners>` / `<projectListeners>`) | `02_runtime_listeners_message_bus.md` |
 | Long-lived background work tied to project lifetime | `@Service` + injected `CoroutineScope` | `02_runtime_services.md`, `04_threading_coroutines_2024.md` |
-| `projectOpened` / `projectClosed` callbacks | Suspending `ProjectActivity` registered via `<postStartupActivity>` / `<backgroundPostStartupActivity>`, or `ProjectManagerListener` | `09_project_lifecycle.md`, `02_runtime_listeners_message_bus.md` |
+| `projectOpened` / `projectClosed` callbacks | Suspending `ProjectActivity` registered via `<postStartupActivity>`, or `ProjectManagerListener` | `09_project_lifecycle.md`, `02_runtime_listeners_message_bus.md` |
 
 A `ProjectComponent` with `initComponent` setup and `projectOpened` per-project work
 becomes:

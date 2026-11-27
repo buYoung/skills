@@ -7,7 +7,9 @@
 - Forgetting `ProcessTerminatedListener.attach(processHandler)` so the console doesn't
   print exit code.
 - Using a global `OkHttpClient` field on a service. Wrap construction in `cs.launch { }` or
-  lazy init so plugin unload can release it. Better: build per-call.
+  lazy init so plugin unload can release it. Better: build per-call. On 2026.3+ OkHttp is no
+  longer bundled; the plugin must ship it or switch to `java.net.http.HttpClient` (see
+  `10_execution_ide_infrastructure_apis.md`).
 - DOM file description `isMyFile` based on root tag without considering namespaces — picks
   up unrelated XML.
 - `ErrorReportSubmitter` synchronously calling out to a server on the EDT. Submit in a

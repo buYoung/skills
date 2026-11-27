@@ -18,7 +18,7 @@ are sufficient. It does not provide an interactive shell emulator.
 
 For 2025.3+ Reworked Terminal integration, declare the Terminal plugin dependency
 `org.jetbrains.plugins.terminal` and use the documented external API. On the pinned
-2026.2.2 source:
+2026.3 source:
 
 - `com.intellij.terminal.frontend.view.TerminalView` and
   `com.intellij.terminal.frontend.toolwindow.TerminalToolWindowTabsManager` are public
@@ -30,8 +30,9 @@ For 2025.3+ Reworked Terminal integration, declare the Terminal plugin dependenc
   `org.jetbrains.plugins.terminal.allowedActionsProvider` support terminal shortcut actions.
   The EP is dynamic and its containing frontend module has `visibility="public"`.
   Its companion's internal `EP_NAME` is not a plugin-callable entry point.
-- A public interface can contain internal members: do not use `TerminalView.sessionDeferred`,
-  `addInputInterceptor`, or `setTopComponent`, which are marked `Internal` in this source.
+- A public interface can contain internal members: do not use `TerminalView.sessionDeferred`
+  or `setTopComponent`, which are marked `Internal` in this source. The internal
+  `addInputInterceptor` of 2026.2.2 no longer exists in 2026.3.
 
 These APIs remain experimental; record the chosen target version and instability. Do not
 copy the older `org.jetbrains.plugins.terminal.TerminalView` or `ShellTerminalWidget` path
@@ -42,7 +43,7 @@ alternative or verify a documented classic-terminal API on that exact branch; do
 pretend the newer API exists there. Unsupported engine-specific embedding remains a limitation.
 
 Sources: [Embedded Terminal SDK](https://plugins.jetbrains.com/docs/intellij/embedded-terminal.html),
-[`TerminalView`](https://github.com/JetBrains/intellij-community/blob/1c7e601c0423e544917046c23763b15d0282e2a3/plugins/terminal/frontend/src/com/intellij/terminal/frontend/view/TerminalView.kt),
-[`TerminalToolWindowTabsManager`](https://github.com/JetBrains/intellij-community/blob/1c7e601c0423e544917046c23763b15d0282e2a3/plugins/terminal/frontend/src/com/intellij/terminal/frontend/toolwindow/TerminalToolWindowTabsManager.kt),
-[`TerminalAllowedActionsProvider`](https://github.com/JetBrains/intellij-community/blob/1c7e601c0423e544917046c23763b15d0282e2a3/plugins/terminal/frontend/src/com/intellij/terminal/frontend/view/TerminalAllowedActionsProvider.kt),
-and [frontend module/EP metadata](https://github.com/JetBrains/intellij-community/blob/1c7e601c0423e544917046c23763b15d0282e2a3/plugins/terminal/frontend/resources/intellij.terminal.frontend.xml).
+[`TerminalView`](https://github.com/JetBrains/intellij-community/blob/c91871ae2864649d952825cff72569e3db0e7ac6/plugins/terminal/frontend/src/com/intellij/terminal/frontend/view/TerminalView.kt),
+[`TerminalToolWindowTabsManager`](https://github.com/JetBrains/intellij-community/blob/c91871ae2864649d952825cff72569e3db0e7ac6/plugins/terminal/frontend/src/com/intellij/terminal/frontend/toolwindow/TerminalToolWindowTabsManager.kt),
+[`TerminalAllowedActionsProvider`](https://github.com/JetBrains/intellij-community/blob/c91871ae2864649d952825cff72569e3db0e7ac6/plugins/terminal/frontend/src/com/intellij/terminal/frontend/view/TerminalAllowedActionsProvider.kt),
+and [frontend module/EP metadata](https://github.com/JetBrains/intellij-community/blob/c91871ae2864649d952825cff72569e3db0e7ac6/plugins/terminal/frontend/resources/intellij.terminal.frontend.xml).

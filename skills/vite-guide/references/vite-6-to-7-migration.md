@@ -2,7 +2,7 @@
 
 ## Read When
 
-Read only for an explicitly authorized Vite 6→7 migration. Do not use for ordinary Vite 7 tasks or propose another major.
+Read only for an explicitly authorized Vite 6→7 migration, including the first stage of an authorized Vite 6→8 migration. Do not use for ordinary Vite 7 tasks or propose a major beyond the authorized target.
 
 ## Collect Inputs
 
@@ -24,7 +24,7 @@ Collect resolved Vite 6 source, target authorization, the target package Node en
 
 ## Actions and Prohibitions
 
-Fix Node, removed APIs, target/Sass/hooks/plugins in order. Do not mix unrelated redesign, hide removed APIs, or propose Vite 8.
+Fix Node, removed APIs, target/Sass/hooks/plugins in order. Do not mix unrelated redesign, hide removed APIs, or apply Vite 8 changes inside the 6→7 stage.
 
 ## Uncertainty and Regressions
 
@@ -36,6 +36,6 @@ Run existing dev/build and applicable preview/deployment checks. Declare Vite 7 
 
 ## Result and Related Guidance
 
-Report the itemized migration evidence, exact target runtime contract, and unverified checks. Use [client runtime](vite-client-runtime.md), [build/plugins](vite-build-plugins.md), [deployment](vite-deployment.md), or [SSR integration](vite-ssr.md) during the migration as needed. No preflight or prior-stage report is required.
+Report the itemized migration evidence, exact target runtime contract, and unverified checks. Use [client runtime](vite-client-runtime.md), [build/plugins](vite-build-plugins.md), [deployment](vite-deployment.md), or [SSR integration](vite-ssr.md) during the migration as needed. No preflight or prior-stage report is required. When Vite 8 is the authorized target, continue with [Vite 7 to 8 migration](vite-7-to-8-migration.md) only after Vite 7 arrival is verified.
 
 Fact source: [Vite 7 migration guide](https://v7.vite.dev/guide/migration).

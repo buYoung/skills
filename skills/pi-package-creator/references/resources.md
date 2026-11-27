@@ -118,7 +118,7 @@ Focus on entry points and execution flow.
 Additional context: concurrency
 ```
 
-Empty quoted arguments are preserved in `v1.3.0` and `v1.4.0`. The older `v1.2.0` release drops them; check the actual target when supporting that release.
+Empty quoted arguments are preserved since `v1.3.0`. The older `v1.2.0` release drops them; check the actual target when supporting that release.
 
 ### Frontmatter
 
@@ -150,9 +150,11 @@ Substitution makes one pass over the original template:
 
 ### Argument parsing
 
-- Single and double quotes group whitespace. Adjacent quoted and unquoted fragments join: `a"b c"d` is one argument, `ab cd`.
-- An unmatched quote consumes the rest of the input instead of raising an error.
-- There is no backslash escaping, environment expansion, glob expansion, or command substitution: `a\ b` yields `a\` and `b`.
+- Single and double quotes group whitespace, but only a quote at the start of an argument opens a group. Text after the closing quote joins the same argument: `"a b"c` is one argument, `a bc`. A quote inside a word is literal, so `doesn't` stays one argument and `a"b c"d` gives two, `a"b` and `c"d`.
+- A quote with no closing match is kept as text, and the rest is parsed normally: `"abc def` gives `"abc` and `def`.
+- Inside quotes, a backslash before the opening quote character gives that character: `"say \"hi\""` gives `say "hi"`. Any other backslash stays literal, including `\'` inside double quotes.
+- There is no other backslash escaping, environment expansion, glob expansion, or command substitution: unquoted `a\ b` yields `a\` and `b`.
+- These quoting rules apply since `v1.5.1`. Earlier releases also open a quote inside a word, join adjacent fragments such as `a"b c"d` into `ab cd`, let an unmatched quote consume the rest of the input, and have no backslash escape.
 - `$@` does not preserve argument boundaries the way a shell does. Two empty arguments join into a space, so an all-arguments default does not apply to that pair.
 
 A template produces text. Never treat substitution as shell-safe quoting: if the expanded task runs a command, build the process arguments separately instead of interpolating untrusted text into a shell string.

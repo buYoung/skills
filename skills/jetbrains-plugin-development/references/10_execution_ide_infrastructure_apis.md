@@ -39,8 +39,8 @@ RunOnceUtil.runOnceForProject(project, "my-key", Runnable { /* once per project 
 
 Useful for one-time migrations or onboarding messages.
 The suspending top-level `runOnceForProject` overload is `@ApiStatus.Internal` in
-`idea/2026.2.2`; use the public `RunOnceUtil` methods shown above. The source is fixed at
-[`RunOnceUtil.kt`](https://github.com/JetBrains/intellij-community/blob/1c7e601c0423e544917046c23763b15d0282e2a3/platform/ide-core/src/com/intellij/ide/util/RunOnceUtil.kt).
+`idea/2026.3`; use the public `RunOnceUtil` methods shown above. The source is fixed at
+[`RunOnceUtil.kt`](https://github.com/JetBrains/intellij-community/blob/c91871ae2864649d952825cff72569e3db0e7ac6/platform/ide-core/src/com/intellij/ide/util/RunOnceUtil.kt).
 
 ### `ApplicationInfo` / `SystemInfo` / `PathManager`
 
@@ -74,8 +74,13 @@ client:
 HttpRequests.request("https://example.com/api").readString(/* progress = */ null)
 ```
 
-For anything beyond trivial, use `Dispatchers.IO` plus your own client (OkHttp, Ktor) — the
-platform's API is convenient but not full-featured.
+For anything beyond trivial, use `Dispatchers.IO` plus a full client — the platform's API is
+convenient but not full-featured. From 2026.3 the IDE no longer bundles OkHttp, so a plugin
+that loads `okhttp3` classes must ship the library itself or it fails with
+`NoClassDefFoundError`. The 2026.3 notes suggest `java.net.http.HttpClient` instead;
+`com.intellij.util.net.PlatformHttpClient` returns a JDK client that follows the IDE proxy,
+certificate, and user agent settings, but it is `@ApiStatus.Experimental` at the 2026.3
+baseline, so record that risk or build the JDK client yourself.
 
 ### `PowerSaveMode`
 

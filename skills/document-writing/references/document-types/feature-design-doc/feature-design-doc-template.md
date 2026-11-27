@@ -55,16 +55,15 @@ Define the feature in one sentence.
 
 ### This feature is
 
-> Use this section for category and identity.
-> These statements explain what kind of feature this is.
+> State what kind of feature this is.
 
 - ...
 
 ### This feature is not
 
 > Use this section only for category-level misunderstandings.
-> Do not put version-specific exclusions here. Put those in Scope.
-> Do not put deliberately rejected goals here. Put those in Non-Goals.
+> Version-specific exclusions belong in Scope; deliberately rejected goals
+> belong in Non-Goals.
 > Omit this subsection when no such misunderstanding is likely; do not invent
 > contrasts to fill it.
 

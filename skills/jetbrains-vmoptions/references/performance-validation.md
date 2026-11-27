@@ -34,7 +34,7 @@ Save enough information to restore A exactly. If the current source file or proc
 
 - Change only the lines needed for the stated tuning purpose.
 - Remove a conflicting or duplicate option instead of appending another semantic copy.
-- Preserve IDE-required options and unrelated user properties.
+- Preserve IDE-required options and unrelated user properties. If A contains `-XX:-UseBASE64Intrinsics`, keep it in B under the condition in [security mitigation options](prerequisite-check.md#security-mitigation-options).
 - Preflight version-sensitive flags with the exact runtime binary where possible.
 - Define the rollback before restarting.
 

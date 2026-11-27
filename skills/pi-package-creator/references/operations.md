@@ -33,14 +33,14 @@ Personal package declarations live in `~/.pi/agent/settings.json`, and `PI_CODIN
 
 ### Project trust
 
-Project resources load only after the project is trusted. Inspect a project's declarations before granting trust: packages run code with the Pi process's access, and installing a package can run the lifecycle scripts of the package and its dependencies. Trust is not a filesystem, subprocess, network, or credential sandbox.
+Project resources load only after the project is trusted. Since `v1.5.0`, Pi trusts a project without trust-requiring resources automatically only when no decision is saved, so a saved "Do not trust" now holds for it. Inspect a project's declarations before granting trust: packages run code with the Pi process's access, and installing a package can run the lifecycle scripts of the package and its dependencies. Trust is not a filesystem, subprocess, network, or credential sandbox.
 
 Personal extensions can load before the trust decision, including during some package commands. A `project_trust` handler must therefore come from a personal extension; a project extension loads too late. Do not use package startup to grant project trust silently.
 
 Package commands handle trust differently from interactive startup:
 
 - `pi install -l`, `pi remove -l`, and `pi config -l` need a trusted project. When there is no terminal to ask, they stop with `Project is not trusted. Use --approve ...`. Add `-a`/`--approve` to trust the project for that run.
-- `pi update` uses only a saved trust decision or `-a`. In a project trusted another way (`defaultProjectTrust`, a `project_trust` handler, or a session-only answer), it reads no project settings. It skips project packages but still prints `Updated packages`, and `pi update <source>` for a project-only package fails with `No matching package found`. Use `-a` when updating project packages.
+- `pi update` uses only a saved trust decision or `-a`. In a project trusted another way (`defaultProjectTrust`, a `project_trust` handler, or a session-only answer), it reads no project settings. It skips project packages but can still print `Packages are already up to date`, and `pi update <source>` for a project-only package fails with `No matching package found`. Use `-a` when updating project packages.
 
 ### Package identity
 
@@ -68,6 +68,7 @@ pi remove ./pi-workspace-kit -l
 ```
 
 - `-e` loads the package for one invocation without adding settings. With an npm or git source, `-e` can still download and install packages, so do not describe it as network-free or free of side effects.
+- Since `v1.5.0`, Pi keeps `-e` npm and git sources in a cache and checks them on every start and `/reload`. An npm source without an exact version is reinstalled when the registry has a newer matching version. A git source is fetched and reset to its ref or default branch, except a commit-hash ref that is already checked out. `PI_OFFLINE=1` and failed checks keep the cached copy.
 - `pi remove` removes managed npm and git files as well as the declaration. It does not delete a local source directory.
 
 | Goal | Command |
@@ -87,13 +88,14 @@ pi remove ./pi-workspace-kit -l
 
 **Never store persistent state, user settings, or irreplaceable work inside an installed package checkout.** When a managed git update moves to a different commit, Pi runs `reset --hard` and `clean -fdx`, which can remove even ignored files. Cleanup can also resume after an incomplete update.
 
-- **npm:** an exact semver spec is pinned; ranges and dist-tags are not. Update skips a pinned npm entry but still prints `Updated <source>`, so that message does not prove a change.
+- **npm:** an exact semver spec is pinned; ranges and dist-tags are not. Update skips a pinned npm entry, and `pi update <source>` reports it as `<source> is already up to date` even when a newer version exists.
+- Since `v1.5.1`, update output lists each changed package under a line such as `Updated 2 packages:`, with its version or commit change, such as `npm:@example/pi-workspace-kit 0.1.0 -> 0.2.0`. `Packages are already up to date` means that nothing changed, including when every entry was skipped; `No packages were updated, see the warnings above` follows a warning such as npm leaving the old version installed.
 - **git:** package update can fetch every git source. Any configured ref suppresses update notifications, but a branch ref can still advance to the branch's new commit. A branch name is not an immutable release pin.
 - `pi update <source>` selects an existing identity and uses its saved source. Putting a new version in that argument does not migrate a pin; use `pi install` with the new version or ref.
 
 ### Offline mode
 
-`PI_OFFLINE=1` suppresses automatic resolution downloads and package update work. It is not a security boundary: explicit `pi install` and `pi remove` do not check it, and extension code can still reach the network. An update success message printed while offline does not prove that anything was downloaded.
+`PI_OFFLINE=1` suppresses automatic resolution downloads and package update work; `pi update` then prints `Skipped package updates (offline mode)`. It is not a security boundary: explicit `pi install` and `pi remove` do not check it, and extension code can still reach the network.
 
 ## Run Pi in an isolated environment
 
@@ -124,7 +126,7 @@ If the package has third-party runtime dependencies, install them locally in the
 Expect these observations for the resources and capabilities the package actually provides. An absent optional type is not an error.
 
 - No extension factory or load errors.
-- No `[Extension issues]`, `[Skill conflicts]`, `[Prompt conflicts]`, or `[Theme conflicts]` caused by the package.
+- No `[Extension issues]`, `[Skill warnings]`, `[Prompt conflicts]`, or `[Theme conflicts]` caused by the package. Since `v1.5.0`, skill collisions and validation warnings both appear under `[Skill warnings]`.
 - Public names appear as documented.
 - Each tool returns the expected content and details and marks errors correctly.
 - A prompt expands representative quoted, empty, and omitted arguments.
@@ -169,7 +171,8 @@ Check string and object entries, a user `[]`, and any project override the packa
 
 | Symptom | Inspect first |
 |---|---|
-| Package installs but nothing appears | Empty/malformed `pi`, root `index.ts` without `pi.extensions` or `extensions/`, missing packed paths, wrong source syntax, user filters |
+| Package installs but nothing appears | Malformed `pi` resource fields, root `index.ts` without `pi.extensions` or `extensions/`, missing packed paths, wrong source syntax, user filters |
+| Startup warns that a configured package failed to install | The source, network, and credentials; Pi skipped the package and retries on the next start or `/reload` |
 | `Extension does not export a valid factory function` | Helper, test, or declaration file discovered as an extension; missing default factory |
 | `Extension runtime not initialized` | Factory calling session-dependent APIs |
 | Startup exits with a tool/flag conflict | Duplicate public names across enabled extensions |

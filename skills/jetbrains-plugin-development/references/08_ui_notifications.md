@@ -22,8 +22,9 @@ Register groups in `plugin.xml`:
 ```
 
 `displayType`: `BALLOON`, `STICKY_BALLOON`, `TOOL_WINDOW`, `NONE`. Sticky balloons stay
-until dismissed; pure log entries can be `NONE`. The "Event Log" tool window archives all
-notifications.
+until dismissed. The Notifications tool window keeps notifications until they are cleared;
+`displayType="NONE"` logs an entry there without a balloon, and `isLogByDefault="false"`
+shows a balloon without a tool-window entry.
 
 `EditorNotificationProvider` (and the older `EditorNotifications.Provider`) display banners
 above an editor for a specific file:

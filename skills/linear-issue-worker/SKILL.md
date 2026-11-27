@@ -2,7 +2,7 @@
 name: linear-issue-worker
 description: >
   Execute code tasks from Linear sub-issues: resolve dependencies, implement changes, validate Done Criteria, and sync status.
-  Use when asked to work on, implement, or start coding a Linear issue (e.g. PRI-42).
+  Use when asked to work on, implement, or start coding a Linear issue, either a main issue or one of its sub-issues (e.g. PRI-42).
 ---
 
 # Linear Issue Worker
@@ -10,6 +10,8 @@ description: >
 Execute code tasks from Linear issues produced by the `linear-issue-creator` skill.
 Read structured sub-issues, resolve dependency order, perform the actual file changes,
 and keep Linear in sync throughout.
+
+Tool names below (`get_issue`, `list_issues`, `list_comments`, `save_issue`, `save_comment`) are examples; see Tool Call Summary in `references/linear-api.md` for how they map to the connected server.
 
 ---
 
@@ -24,28 +26,34 @@ This skill consumes that structure and turns it into real code changes.
 
 ## Workflow
 
-### Step 1 — Receive the Main Issue
+### Step 1 — Receive the Issue
 
-The user provides a main issue identifier (e.g., `PRI-42`).
+The user provides an issue identifier (e.g., `PRI-42`), either the main issue or one of its sub-issues.
 
-1. Call `Linear:get_issue` with `includeRelations: true`
-2. Parse the main issue description to extract:
-   - **Purpose / Background** — why this work exists
+1. Read the issue with `get_issue` and `includeRelations: true`
+2. If the issue has a parent, it is a sub-issue: read the parent as the main issue, and run Steps 2–3 for the given sub-issue only. If one of its blockers is not Done, report the blocker and stop.
+3. Parse the main issue description to extract:
+   - **Purpose / Background** — why this work exists (issues created from older PRD templates use **Background & Purpose**)
    - **Goal** — desired end state
    - **Acceptance Criteria** — final validation checklist (used at the very end)
+   - **Technical Requirements Overview** — PRD issues only; overall technical constraints that sub-issues share
    - **Scope** — boundaries of the work
    - **Impact Area** — affected parts of the codebase
-3. Keep this context in mind — it guides all sub-issue work, but you do NOT code against the main issue directly
+4. Keep this context in mind — it guides all sub-issue work, but you do NOT code against the main issue directly
 
 ### Step 2 — List and Sort Sub-Issues
 
-1. Call `Linear:list_issues` with `parentId` set to the main issue identifier
-2. For each sub-issue, call `Linear:get_issue` with `includeRelations: true` to retrieve `blockedBy` data
+1. Call `list_issues` with `parentId` set to the main issue identifier
+2. For each sub-issue, call `get_issue` with `includeRelations: true` to retrieve `blockedBy` data
    - If `get_issue` fails for a sub-issue, retry once. If it still fails, use the data already available from `list_issues` and check the `blocks` field of other sub-issues to infer the dependency graph
-3. Filter out sub-issues with status `Done` or `Canceled`
-4. Build a dependency-respecting execution order:
+3. For each sub-issue, read its comments with `list_comments` to find review results from `linear-issue-reviewer`. Order comments by creation time; "latest" below means the most recently created.
+4. Filter the list:
+   - Drop `Canceled` sub-issues
+   - Drop `Done` sub-issues, except when the latest `## 리뷰 결과:` comment is `❓ Clarification Needed` and no `## ✅ Work Complete` comment is newer than it. Keep those as answer targets
+   - Sub-issues back in In Progress with a latest `## 리뷰 결과: 🔄 Changes Requested` comment are rework targets
+5. Build a dependency-respecting execution order:
    - A sub-issue is **ready** when it has no `blockedBy` entries, or all its blockers are `Done`
-   - Sort ready issues by priority (Urgent first), then creation order
+   - Sort ready issues by priority (Urgent first, No priority last), then creation order
    - If circular dependencies are detected, report to the user and stop
 
 Present the execution plan and wait for user confirmation:
@@ -53,6 +61,7 @@ Present the execution plan and wait for user confirmation:
 📋 Execution Plan for PRI-42:
 1. PRI-43 — [project] Configure hotkey plugin (no dependencies)
 2. PRI-44 — [project] Build settings UI (blocked by PRI-43)
+3. PRI-45 — [project] Add hotkey conflict check (rework: Changes Requested)
 
 Proceed?
 ```
@@ -91,18 +100,23 @@ Check the sub-issue's **labels** to determine approach:
 | `Perf` | Measure before and after |
 | `Docs` | Documentation changes only |
 
+If the latest `## 리뷰 결과:` comment is newer than the latest `## ✅ Work Complete` comment, handle the review first:
+
+- `🔄 Changes Requested`: every item under `### 수정 필요 사항` and every unchecked item under `### Done Criteria 검증` becomes an exit condition alongside the Done Criteria. Fix those items and keep the parts the review confirmed.
+- `❓ Clarification Needed`: answer each item under `### 확인 사항`. If an answer requires a code change, run the full cycle from 3b. Otherwise keep the issue Done, skip 3b–3d and 3f, and post only the completion comment (3e) with the answers.
+
 ### 3b. Transition to In Progress + Start Comment
 
 Update the issue status:
 ```
-Linear:save_issue
+save_issue
   id: "<sub-issue-id>"
   state: "started"
 ```
 
 Post a start comment (write in Korean, Professional tone, no AI patterns — natural and direct):
 ```
-Linear:save_comment
+save_comment
   issueId: "<sub-issue-id>"
   body: |
     ## 🚀 Work Started
@@ -135,7 +149,7 @@ Before marking complete, go through each Done Criteria checkbox:
 ### 3e. Post Completion Comment
 
 ```
-Linear:save_comment
+save_comment
   issueId: "<sub-issue-id>"
   body: |
     ## ✅ Work Complete
@@ -148,9 +162,15 @@ Linear:save_comment
     - [x] Criterion 1 — [brief evidence]
     - [x] Criterion 2 — [brief evidence]
 
+    ### Review Response (only after a review)
+    - 수정 필요 사항 1 — [how it was fixed]
+    - 확인 사항 1 — [answer]
+
     ### Notes
     - [Any deviations, edge cases discovered, etc.]
 ```
+
+The reviewer treats a `## ✅ Work Complete` comment newer than its latest review as the signal to review again, so post one after every rework or clarification answer.
 
 **Comment Quality Guide (Content Skill Principles):**
 
@@ -172,7 +192,7 @@ Target audience: Fullstack developers | Language: Korean | Tone: Professional
 ### 3f. Transition to Done
 
 ```
-Linear:save_issue
+save_issue
   id: "<sub-issue-id>"
   state: "Done"
 ```
@@ -187,13 +207,13 @@ For exception handling (missing files, unavailable dependencies, ambiguous crite
 
 ## Completion
 
-When all sub-issues are processed:
+When all sub-issues are processed (for a single sub-issue from Step 1, run this only if no other sub-issue of the main issue is still open):
 
 1. Review the main issue's **Acceptance Criteria**
 2. Post a summary comment on the **main issue** (write in Korean, Professional tone. Apply content skill principles — specific, no AI patterns, clear):
 
 ```
-Linear:save_comment
+save_comment
   issueId: "<main-issue-id>"
   body: |
     ## 📋 Overall Completion Report
@@ -213,7 +233,7 @@ Linear:save_comment
     [Concretely summarize all changes and current state]
 ```
 
-3. If all acceptance criteria are met and all sub-issues are Done, inform the user that the work is complete
+3. If all acceptance criteria are met and all sub-issues are Done, inform the user that the work is complete and ready for `linear-issue-reviewer`. If the team has Parent auto-close enabled, Linear has already marked the main issue Done; that does not replace the review.
 4. If some criteria are unmet, explain what remains and suggest next steps
 
 ---

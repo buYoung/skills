@@ -5,7 +5,7 @@ Briefset mode is the alternative path: a **parent execution-management plan** pl
 
 The saved parent and every saved child use caveman full mode for body prose only.
 Their `Open Questions` bodies stay in normal prose, as do Stage 4 tables, Stage 6 reports, and every chat surface.
-Both parent and child plans preserve the same facts, bullets, section depth, execution relationships, and completion rules as their normal-mode equivalents; caveman changes register, never content or structure.
+Both parent and child plans preserve the facts, bullets, section depth, execution relationships, and completion rules of their pre-conversion content inventories; caveman changes register, never content or structure.
 Section headers, title lines, child paths, checklist markers, and the Auto-Clarity carve-outs in `caveman-style.md` stay verbatim.
 
 The trigger is **coordination across multiple execution contexts**, not "this work is big".
@@ -242,7 +242,7 @@ If a section legitimately has nothing, write `- None — <reason>` with a one-li
   ```
 
   A valid no-change route still produces addressable evidence and tells the parent whether successors continue, skip, or replan.
-  For verification-only or evidence-only child, `Replan when` names failed proof and next action: stop successors, return to parent, activate bounded correction plus re-verification work, and recalculate topology and handoffs before resume.
+  For a verification-only or evidence-only child, `Replan when` must name both the failed proof and the next action: stop successors, return to the parent, activate bounded correction plus re-verification work, and recalculate topology and handoffs before resuming.
   If a no-change route is impossible, use the reasoned `None` form for both fields.
 - For every parent dependency edge, repeat the exact deliverable path in a producer `Deliverable`, `Handoff`, or `No-op handoff` field and in the successor's first-stage `Starts when` field.
   The producer states the minimum format; the successor states what it requires before starting.
@@ -284,7 +284,7 @@ Before locking the child list, run an **already-satisfied gate** against current
 - If one active child remains, collapse to single-plan mode.
 - If two or more remain, keep briefset mode.
 - If the user explicitly requested a saved verification record despite an already-satisfied outcome, keep a verification-only plan and make the no-change route explicit; do not invent edits.
-  If proof fails, plan stops successors and gives parent explicit correction, re-verification, topology, and handoff recalculation route. Bare condition not enough.
+  If that proof fails, the plan must stop successors and give the parent an explicit correction, re-verification, topology, and handoff recalculation route instead of ending at a bare condition.
 
 When only part of a child's requested outcome may already be satisfied, keep the child but give Stage 1 an observable `No-op when` condition and an addressable `No-op handoff`.
 
@@ -355,8 +355,8 @@ For exit 2, inspect the actual argument, repository-root, missing-file, or read 
 
 ### Stage 5.6 — Content and Intent Self-Check (briefset)
 
-Run the self-check from `SKILL.md` Stage 5.6 on the **parent** and on **every child** independently.
-Briefset mode adds one parent-specific coverage rule:
+Run the Stage 5.6 self-check (`SKILL.md` Stage 5.6 with the checklist in `self-check.md`) on the **parent** and on **every child** independently.
+Briefset mode adds these parent-specific checks:
 
 - **Parent decomposition coverage:** every input-implied execution context maps to a child brief.
   If the input describes 4 work units and the parent lists 3 children, the missing unit must either become a 4th child or be explicitly justified as folded into an existing child (with the absorbing child's outcome updated).
@@ -369,14 +369,14 @@ Briefset mode adds one parent-specific coverage rule:
   A child name, result label, branch nickname, or prose such as "when the verified result is available" is not an address.
 - **Parallel default:** independent children occupy their earliest eligible wave; every later start is justified by a concrete precondition, verified conflict, or task-specific delivery constraint. The saved set explains the operational reason without agent or tooling narration.
 - **Coordination consistency:** each parallelization and hotspot item describes one child pair; no pair is both parallel and serialized; no direct or indirect dependency pair is parallel, and serialized pairs occupy different waves; a `parallel-safe` hotspot names the ownership partition and join rule.
-- **No-change safety:** already-satisfied candidates were removed or collapsed before save, while every surviving child's Stage 1 says how to prove no edits are needed, where that evidence goes, and who performs bounded correction/re-verification if proof fails.
+- **No-change safety:** already-satisfied candidates were removed or collapsed before save, while every surviving child's Stage 1 says how to prove no edits are needed, where that evidence goes, and who performs bounded correction/re-verification if the proof fails.
   A no-change branch must still tell successors whether to continue, skip, or replan.
 - **Verification concreteness:** every child stage and parent dependency edge names a repository-supported command or bounded inspection, its concrete inputs, and an observable expected signal such as an exit code, output token, created state, or threshold.
   A command that expects no matches also names the target population so an empty or wrong input cannot masquerade as success.
 - **Deferred coverage:** valid findings excluded from the current briefset appear as `[deferred]` in the parent `Shared Constraints` when they affect the whole initiative, or in the relevant child when they affect only that child.
   Do not drop a finding merely because it is outside the chosen child boundaries.
 
-Each child runs all items in the standard Stage 5.6 self-check from `SKILL.md`, including execution-stage continuity and whole-work completion separation, but its input-coverage boundary is the scope allocated to that child by the parent plus relevant shared constraints.
+Each child runs all items in the standard Stage 5.6 checklist in `self-check.md`, including execution-stage continuity and whole-work completion separation, but its input-coverage boundary is the scope allocated to that child by the parent plus relevant shared constraints.
 Sibling-owned concerns from the umbrella input are not missing from the target child; parent decomposition coverage checks them across the set.
 If the parent or any child fails a Stage 5.6 item, batch the justified patches against the same artifact state, re-run `validate_briefset.py`, then run the self-check again within the two-pass budget in `SKILL.md`; there is no separate budget per child. Stop with residuals when the budget is exhausted.
 Run caveman parity on the parent and every child against their pre-conversion content inventories: preserve every child, dependency, ordering edge, parallel join, conflict hotspot, shared constraint, global acceptance criterion, fact, stage, field, and checklist level. An imagined normal-mode output is not evidence of parity.

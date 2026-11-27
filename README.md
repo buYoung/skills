@@ -2,7 +2,7 @@
 
 [![GitHub](https://img.shields.io/badge/GitHub-buYoung%2Fskills-blue?logo=github)](https://github.com/buYoung/skills)
 
-**Skills** is a collection of AI agent skills designed for efficient collaboration between developers and AI coding assistants. Each skill provides structured capabilities that AI agents can leverage to perform specific tasks.
+**Skills** is a collection of skill packages for coding agents such as Claude Code and Codex. Each package has a `SKILL.md` entry point and, where needed, its own references, scripts, examples, and evals.
 
 ## Prerequisites
 
@@ -10,20 +10,15 @@ Some skills require external tools to be installed:
 
 | Skill | Required Tools |
 |-------|----------------|
-| agents-md-generator | [tokei (required)](https://github.com/XAMPPRocky/tokei), [ripgrep (rg) (preferred)](https://github.com/BurntSushi/ripgrep), [tree](https://mama.indstate.edu/users/ice/tree/) |
-| jetbrains-plugin-development | None |
-| jetbrains-vmoptions | None |
-| kysely-converter | None |
-| code-review | None |
-| typst-creator | None |
-| code-security-audit | None |
-| system-prompt-creator | None |
-| release-it | None |
-| task-brief-creator | None |
-| task-brief-creator-caveman | None |
+| agents-md-generator | Python 3.10+, [tokei (required)](https://github.com/XAMPPRocky/tokei), [ripgrep (rg) (preferred)](https://github.com/BurntSushi/ripgrep), [tree](https://mama.indstate.edu/users/ice/tree/), git (update mode) |
+| typst-creator | Typst CLI 0.13.0–0.15.1 for compilation (optional); Python 3.9+ for the version-support validator |
+| task-brief-creator | Python 3.8+ for structural validators |
+| task-brief-creator-caveman | Python 3.8+ for structural validators |
 | document-writing | Python 3.9+ for package/FDD validation; Node.js 20+ for eval result validators; web access or user-supplied first-party sources for current storefront research |
-| skill-creator | Independent agents for candidate refinement; Python 3 and PyYAML for validation; Claude CLI for description optimization |
-| clear-writing | None |
+| skill-creator | Independent agents for candidate refinement; Python 3.10+ and PyYAML for validation; Claude CLI on macOS or Linux for description optimization |
+| react-guide | Node.js for eval validators |
+| vite-guide | Node.js for eval validators |
+| pi-package-creator | Pi v1.6.1 and Node.js 22.19+ for package checks; npm and `tar` for artifact checks |
 
 ## 🚀 Available Skills
 
@@ -37,14 +32,15 @@ Only skills that have been personally tested and approved by the user are listed
 | [jetbrains-vmoptions](skills/jetbrains-vmoptions/) | Diagnoses JetBrains IDE performance against the actual bundled or custom JBR 17/21/25 runtime, proposes minimal evidence-based VM option changes, verifies effective flags after restart, and provides rollback and controlled before/after measurement steps. |
 | [system-prompt-creator](skills/system-prompt-creator/) | Analyzes user requirements to generate production-ready system prompts. It determines whether a single or multi-prompt architecture is needed and requests missing information if requirements are insufficient. |
 | [typst-creator](skills/typst-creator/) | Create, update, review, or diagnose Typst source across stable Typst 0.13.0–0.15.1 with exact-version and cross-version compatibility routing. |
-| [task-brief-creator](skills/task-brief-creator/) | Generates executable implementation work plans at `docs/briefs/` for one coding agent to author and another to execute. Nine required sections include an `Execution Plan` with ordered stages, deliverables, handoffs, replan boundaries, and stage-level completion distinct from whole-work acceptance. Technical decisions stay with the plan author or worker; only non-blocking user-owned decisions with a safe default remain in `Open Questions`. Briefset mode coordinates multiple execution contexts. Halts on vague input. Manual trigger only. |
-| [code-security-audit](skills/code-security-audit/) | Performs OWASP-based code security audits on any codebase. Analyzes source code against ASVS 5.0.0 verification requirements, API Security Top 10 2023 risk patterns, OWASP CheatSheet secure coding practices, and WSTG testing methodologies. |
+| [task-brief-creator](skills/task-brief-creator/) | Generates executable implementation work plans at `docs/briefs/` for one coding agent to author and another to execute. Each plan has nine required sections, including a staged `Execution Plan`. Briefset mode splits work that spans several execution contexts into a parent plan and child plans. Halts on vague input. Runs only when explicitly requested. |
+| [code-security-audit](skills/code-security-audit/) | Performs OWASP-based code security audits on a codebase or a scoped path within it. Analyzes source code against ASVS 5.0.0 verification requirements, API Security Top 10 2023 risk patterns, OWASP CheatSheet secure coding practices, and WSTG v4.2 testing methodologies. |
 | [release-it](skills/release-it/) | release-it configuration, setup, and plugin development. Analyzes project context (package.json, git remote, existing CI) to propose tailored release configs. Covers hooks, CLI workflows, pre-release, npm publishing, GitHub/GitLab releases, official plugins, and custom plugin development. |
-| [document-writing](skills/document-writing/) | Creates, updates, reviews, and fact-checks human-readable structured documents through ten routed types, including Design System Documents. Its `app-store-page` prebuilt dynamically identifies any in-scope digital storefront and researches current first-party visual asset requirements without relying on an allowlist. |
+| [document-writing](skills/document-writing/) | Creates, updates, rewrites, reviews, fact-checks, and normalizes human-readable structured documents through eleven routed types, including software READMEs, usage documentation, and Design System Documents for product UI or digital storefront visual assets. |
 | [code-review](skills/code-review/) | Reviews Git changes for concrete defects and evidence-backed maintainability concerns. Defaults to all uncommitted changes, traces behavior in the selected version, checks counterevidence, and provides approval verdicts only on request. |
-| [react-guide](skills/react-guide/) | React 18/19 guidance for explanation, design, implementation, and diagnosis across CSR, SSR/streaming/hydration, structure, Hooks/Effects, state/data, async UI, accessibility, performance, migrations, compatibility, and React Compiler behavior. |
+| [react-guide](skills/react-guide/) | React 18/19 guidance for React DOM web applications, covering explanation, design, implementation, and diagnosis across CSR, SSR/streaming/hydration, structure, Hooks/Effects, state/data, async UI, accessibility, performance, migrations, compatibility, and React Compiler behavior. |
 | [vite-guide](skills/vite-guide/) | Vite 7/8 guidance for explanation, design, implementation, and diagnosis across client and SSR runtime integration, env/assets, separate client/server builds, manifests, Rollup/Rolldown, plugins, deployment recovery, performance, and Vite 6→7→8 migrations. |
-| [task-brief-creator-caveman](skills/task-brief-creator-caveman/) | Caveman-output variant of `task-brief-creator`. It preserves the same nine-section execution contract, facts, bullets, stages, field order, handoffs, replan boundaries, and checklist depth while shortening only saved-plan prose values. Chat, decision tables, reports, and `Open Questions` stay in normal prose, and Auto-Clarity restores normal prose whenever compression would obscure execution. |
+| [task-brief-creator-caveman](skills/task-brief-creator-caveman/) | Caveman-output variant of `task-brief-creator`. Saved plans keep the same sections, stages, and checklists, but their prose is compressed. Chat, decision tables, reports, and `Open Questions` stay in normal prose, and Auto-Clarity restores normal prose wherever compression would obscure execution. |
+| [clear-writing](skills/clear-writing/) | Writes, rewrites, and reviews practical reader-facing text such as notices, letters, emails, and text messages using ISO 24495-1 principles. Selects relevant content, improves structure and wording, and delivers finished text without drafting notes while preserving necessary meaning and exact references. |
 | [skill-creator](skills/skill-creator/) | Creates, improves, and evaluates reusable skills. Refines a complete draft once through five independent candidates, integrates changes against shared requirements and consistency criteria, then continues the existing evaluation and feedback workflow. |
 
 ## 🧪 Skills Waiting for Review
@@ -56,7 +52,7 @@ These skills are currently under evaluation and will be promoted to **Available 
 | [biz-opportunity-scout](skills/biz-opportunity-scout/) | Identify and validate profitable business opportunities by analyzing TAM/SAM/SOM, unit economics, competitive landscape, and PMF indicators with HTML report generation |
 | [iterative-self-review](skills/iterative-self-review/) | Iterative answer refinement loop. The main agent drafts a response and a sub-agent performs blind verification (only `user input + current answer`, no hints or history), reports back to the main agent only, and the loop terminates on a combination of positive (clean pass, severity floor), convergence (oscillation, stable findings, no-op, diminishing returns), defensive (regression), user-clarification, and hard-cap triggers. Evidence-mandatory findings, no numeric confidence scores. |
 | [rust-guide](skills/rust-guide/) | Explains Rust characteristics and practical patterns through mechanisms, recommended usage, conditions, examples, and exceptions. Covers ownership, allocation, errors, async and parallel execution, code organization, Cargo workspaces, curated libraries, WebAssembly, embedded/no_std, SIMD, performance, unsafe/FFI, diagnostics, and compatibility. |
-| [clear-writing](skills/clear-writing/) | Writes, rewrites, and reviews reader-facing text using ISO 24495-1 principles. Selects relevant content, improves structure and wording, and delivers finished text without drafting notes while preserving necessary meaning and exact references. |
+| [pi-package-creator](skills/pi-package-creator/) | Creates, extends, repairs, validates, tests, and packages Pi coding-agent packages: extensions and custom tools, skills, prompt templates, and themes. Includes a starter package, package checks, and executable tool tests. |
 
 ## 🔒 Private Skills
 
@@ -65,7 +61,7 @@ Personal-use skills not included in the public marketplace.
 | Skill | Description |
 |-------|-------------|
 | [linear-issue-creator](skills/linear-issue-creator/) | Creates structured Linear issues with a main issue + sub-issues, applying project linking, title prefix, and labeling rules. |
-| [linear-issue-worker](skills/linear-issue-worker/) | Executes code tasks from Linear sub-issues. Resolves dependency graphs, transitions statuses, performs code work, and posts completion comments. |
+| [linear-issue-worker](skills/linear-issue-worker/) | Executes code tasks from Linear sub-issues. Resolves dependency graphs, transitions statuses, performs code work, addresses reviewer feedback, and posts completion comments. |
 | [linear-issue-reviewer](skills/linear-issue-reviewer/) | Reviews completed Linear sub-issues by cross-validating Done Criteria, worker completion comments, and actual code changes. Produces Approved / Changes Requested / Clarification Needed verdicts. |
 
 ## 📖 How to Install Skills
@@ -80,7 +76,7 @@ Personal-use skills not included in the public marketplace.
 2. Install the skills plugin:
    - Select `Browse and install plugins`
    - Select `buyoung-agent-skills`
-   - Select `document-skills`, `analysis-skills`, `backend-skills`, or `devops-skills`
+   - Select `document-skills`, `analysis-skills`, `backend-skills`, `devops-skills`, `frontend-skills`, or `jetbrains-skills`
    - Select `Install now`
 
    Or directly install via:
@@ -89,6 +85,8 @@ Personal-use skills not included in the public marketplace.
    /plugin install analysis-skills@buyoung-agent-skills
    /plugin install backend-skills@buyoung-agent-skills
    /plugin install devops-skills@buyoung-agent-skills
+   /plugin install frontend-skills@buyoung-agent-skills
+   /plugin install jetbrains-skills@buyoung-agent-skills
    ```
 
 3. Use skills by mentioning them in your prompts (e.g., "Use agents-md-generator to create an AGENTS.md file")
@@ -137,10 +135,11 @@ Add the desired skill to your AI Agent (Claude Code, Codex, OpenCode, Gemini, et
 
 ### document-writing
 
-Use natural-language intent; the skill selects one of ten document types and loads only its routed references. Design System Documents apply one prebuilt per output set: product UI uses `default`, while digital storefront visual assets use `app-store-page`. Any in-scope storefront is identified dynamically from the request and current first-party material; examples do not form a supported-store list.
+Describe the document you need; the skill picks one of eleven document types. Design System Documents apply one prebuilt per output set: product UI uses `default`, while digital storefront visual assets use `app-store-page`. Any in-scope storefront is identified dynamically from the request and current first-party material; examples do not form a supported-store list.
 
 #### Examples
 
+- "Write a README for this CLI package."
 - "Explain idempotency keys to PM and customer support readers."
 - "Write a runbook for diagnosing and recovering from DB connection failures."
 - "Document this feature's behavior and policy decisions as the implementation decision source."
@@ -151,9 +150,7 @@ Use natural-language intent; the skill selects one of ten document types and loa
 
 ### skill-creator
 
-Install this repository's `skill-creator` through the `document-skills` plugin or copy the skill package to your agent's skills directory. It supports new skill creation, existing-skill improvement, execution evaluation, and description optimization.
-
-After a complete draft, five independent candidates revise the same input once. The main agent compares and integrates the results before continuing the existing evaluation and feedback workflow. Request a different candidate count or skip that pass when appropriate; later feedback edits do not automatically restart it.
+After a complete draft, five independent candidates revise the same input once, and the main agent integrates their results before the usual evaluation and feedback workflow. You can ask for a different candidate count or skip this pass. Later evaluation-driven edits do not restart it unless you ask for another round.
 
 #### Examples
 
@@ -162,12 +159,12 @@ After a complete draft, five independent candidates revise the same input once. 
 
 ## 📄 What is SKILL.md?
 
-`SKILL.md` defines tools (capabilities) and skills usable by AI agents. It is compatible with Claude Skills and provides structured instructions for AI to perform specific tasks effectively.
+`SKILL.md` is the entry point of a skill package. Its frontmatter `name` and `description` tell the agent when to use the skill, and its body gives the workflow and links to the package's other files. The format is compatible with Claude Skills.
 
 ## 📚 References
 
 - [system-prompt-creator](skills/system-prompt-creator/): The [Data Format Selection Guide](skills/system-prompt-creator/references/data_format_selection.md) was developed referencing the analysis table from [Improving Agents](https://www.improvingagents.com).
-- [task-brief-creator](skills/task-brief-creator/): The branch-walking decision-tree interview pattern incorporates the [grill-me](https://github.com/mattpocock/skills/tree/main/skills/grill-me) skill from [mattpocock/skills](https://github.com/mattpocock/skills).
+- [task-brief-creator](skills/task-brief-creator/): The Stage 4 user decision workflow is adapted from the [grill-me](https://github.com/mattpocock/skills/tree/main/skills/grill-me) skill from [mattpocock/skills](https://github.com/mattpocock/skills).
 - [task-brief-creator-caveman](skills/task-brief-creator-caveman/): The caveman full-mode prose-compression rules (article/filler removal, fragment-friendly patterns, Auto-Clarity carve-outs) were adapted from the [caveman](https://github.com/juliusbrussee/caveman) skill by [juliusbrussee](https://github.com/juliusbrussee).
 - [skill-creator](skills/skill-creator/): Adapted from Anthropic's [skill-creator](https://github.com/anthropics/skills/tree/main/skills/skill-creator), with an independent post-draft refinement and integration workflow. The upstream Apache-2.0 license is retained in the package.
 
@@ -179,6 +176,6 @@ This project is open source. Bug reports, feature suggestions, and PRs are alway
 
 MIT License — see [`LICENSE`](./LICENSE).
 
-This repository incorporates material from third-party MIT- and Apache-2.0-licensed projects.
+This repository incorporates material from third-party projects licensed under MIT, Apache-2.0, and CC BY-SA 4.0.
 See [`THIRD_PARTY_NOTICES.md`](./THIRD_PARTY_NOTICES.md) for upstream
 attributions and license texts.

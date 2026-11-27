@@ -14,6 +14,7 @@
         { "id": "github-actions-workflow", "text": "A GitHub Actions workflow YAML file exists with release-it --ci command" },
         { "id": "workflow-has-tokens", "text": "GitHub Actions supplies the credentials required for the requested capabilities; NPM_TOKEN is not required when npm publishing is disabled or uses trusted publishing." },
         { "id": "workflow-fetch-depth", "text": "GitHub Actions checkout uses fetch-depth: 0" },
+        { "id": "workflow-permissions-auth", "text": "The release job grants contents: write for the release commit, tag push, and GitHub Release; an npm token used with setup-node registry-url is passed as NODE_AUTH_TOKEN, not only as NPM_TOKEN." },
         { "id": "json-schema-present", "text": "Config includes $schema URL for IDE autocomplete" }
       ]
     },
@@ -44,6 +45,7 @@
         { "id": "slack-webhook", "text": "Plugin implements Slack webhook POST in release() or afterRelease()" },
         { "id": "disable-npm-plugin", "text": "Plugin has static disablePlugin() returning 'npm' or config uses npm: false" },
         { "id": "uses-step-method", "text": "Plugin uses this.step() for interactive prompt/spinner" },
+        { "id": "step-prompt-registered", "text": "Every enabled this.step() call names a prompt registered with registerPrompts(), with a function-valued message, so the stock interactive prompt can resolve it." },
         { "id": "sample-config", "text": "A sample .release-it.json config showing plugin registration exists" },
         { "id": "esm-module-syntax", "text": "Plugin uses ESM syntax (import/export)" }
       ]
@@ -158,7 +160,7 @@
     },
     {
       "id": 6,
-      "prompt": "release-it 21.0.1의 프로그램 방식 대화형 명령을 다른 버전 공급자에 맞춰줘. package.json은 Node 도구 설치용이고 버전 9.9.9야. 실제 제품 버전은 VERSION의 2.3.4이며 기존 커스텀 플러그인이 VERSION과 저장소 루트의 release-manifest.json을 갱신해. npm 배포는 없어. 기존 취소 정책은 변경을 남기고 상태를 보여주는 방식이야. 두 파일이 실제 릴리스 커밋에 포함되게 하고, 버전 선택과 최종 상태 보고도 제품 버전을 사용하게 해줘. Git 확인 기본값은 모두 Yes야.",
+      "prompt": "release-it 21.1.3의 프로그램 방식 대화형 명령을 다른 버전 공급자에 맞춰줘. package.json은 Node 도구 설치용이고 버전 9.9.9야. 실제 제품 버전은 VERSION의 2.3.4이며 기존 커스텀 플러그인이 VERSION과 저장소 루트의 release-manifest.json을 갱신해. npm 배포는 없어. 기존 취소 정책은 변경을 남기고 상태를 보여주는 방식이야. 두 파일이 실제 릴리스 커밋에 포함되게 하고, 버전 선택과 최종 상태 보고도 제품 버전을 사용하게 해줘. Git 확인 기본값은 모두 Yes야.",
       "expected_output": "Provider-aware adaptation that preserves the existing recovery policy, reads and reports the product version, prevents unrelated npm version writes, and traces both outputs into the commit.",
       "files": [],
       "assertions": [
@@ -181,7 +183,7 @@
     },
     {
       "id": 8,
-      "prompt": "release-it 21.0.1용 커스텀 플러그인을 작성해줘. manifest.json에서 제품 버전을 읽고 갱신하며 npm 플러그인은 비활성화해. 릴리스 단계에서 confirm 질문을 등록해 사용자 승인 시에만 알림 함수를 호출해. 질문 기본값은 true이고 알림 함수는 의존성으로 교체 가능해야 해. dry-run에서는 파일 쓰기와 알림 호출이 없어야 해. 외부 플러그인 A, B를 이 순서로 등록했을 때 실행 순서도 설명해줘.",
+      "prompt": "release-it 21.1.3용 커스텀 플러그인을 작성해줘. manifest.json에서 제품 버전을 읽고 갱신하며 npm 플러그인은 비활성화해. 릴리스 단계에서 confirm 질문을 등록해 사용자 승인 시에만 알림 함수를 호출해. 질문 기본값은 true이고 알림 함수는 의존성으로 교체 가능해야 해. dry-run에서는 파일 쓰기와 알림 호출이 없어야 해. 외부 플러그인 A, B를 이 순서로 등록했을 때 실행 순서도 설명해줘.",
       "expected_output": "A compatible version-provider plugin with named prompt definitions, guarded direct effects, and correct lifecycle group ordering, verified using a local notification stub.",
       "files": [],
       "assertions": [

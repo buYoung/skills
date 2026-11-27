@@ -37,9 +37,9 @@ Missing dependencies, asymmetric cleanup, and absent stale-response protection a
 
 ## Development Re-execution and Server Rendering
 
-Effects synchronize after commit; they do not run during server rendering. A root Strict Mode development check performs an extra setup → cleanup → setup cycle to expose missing cleanup. It is not evidence that production always runs an Effect twice. Current React also distinguishes Strict Mode on only a subtree from root-level initial Effect re-execution; check the installed version and boundary placement. Preserve cleanup and complete dependencies instead of adding a run-once ref to hide the probe. See [Strict Mode](https://react.dev/reference/react/StrictMode).
+Effects synchronize after commit; they do not run during server rendering. A root Strict Mode development check performs an extra setup → cleanup → setup cycle to expose missing cleanup. It is not evidence that production always runs an Effect twice. Current React also distinguishes Strict Mode on only a subtree from root-level initial Effect re-execution; check the installed version and boundary placement. React 19.3 also runs the root cycle for Effects mounted during hydration, matching client-rendered roots, so check the installed minor before treating a missing or extra cycle as a defect. Preserve cleanup and complete dependencies instead of adding a run-once ref to hide the probe. See [Strict Mode](https://react.dev/reference/react/StrictMode) and the [React 19.3 changelog](https://react.dev/blog/2026/09/09/react-19-3#changelog).
 
-Browser APIs can be used in client Effects or event handlers, but a module-level browser access still executes during an SSR import. Keep the server and first client render deterministic; defer browser-only differences until after hydration using [SSR and hydration](react-ssr-hydration.md).
+Browser APIs can be used in client Effects or event handlers, but a module-level browser access still executes during an SSR import. Keep the server and first client render deterministic; defer browser-only differences until after hydration, or from React 19.3 mark a browser-only subtree with `use(browser())`, using [SSR and hydration](react-ssr-hydration.md).
 
 ## Verify
 

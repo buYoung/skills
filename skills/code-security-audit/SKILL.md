@@ -1,6 +1,6 @@
 ---
 name: code-security-audit
-description: Performs OWASP-based code security audits on any codebase. Analyzes source code against ASVS 5.0.0 verification requirements, API Security Top 10 2023 risk patterns, OWASP CheatSheet secure coding practices, and WSTG testing methodologies. Input is a codebase to review; output is a detailed Markdown security audit report. Use when the user requests a security audit, security review, vulnerability assessment, or code security analysis.
+description: Performs OWASP-based code security audits on any codebase. Analyzes source code against ASVS 5.0.0 verification requirements, API Security Top 10 2023 risk patterns, OWASP CheatSheet secure coding practices, and WSTG v4.2 testing methodologies. Input is a codebase or a scoped path within it; output is a detailed Markdown security audit report. Use when the user requests a security audit, security review, vulnerability assessment, or code security analysis of a codebase against OWASP standards. Not for general defect review of Git changes (commits, ranges, staged or uncommitted diffs); use code-review for that.
 ---
 
 # Code Security Audit Capabilities
@@ -11,8 +11,8 @@ OWASP 4-source integrated code security audit system for universal codebase anal
 
 - **OWASP ASVS 5.0.0**: 345 verification requirements across 17 security domains (L1/L2/L3)
 - **OWASP API Security Top 10 2023**: 10 API-specific risk categories with code-level indicators
-- **OWASP CheatSheet Series**: 109 practical secure coding cheat sheets for remediation guidance
-- **OWASP WSTG (Web Security Testing Guide)**: 12 testing categories with 120+ test scenarios
+- **OWASP CheatSheet Series**: 142 practical secure coding cheat sheets (count as of 2026-11-27) for remediation guidance
+- **OWASP WSTG (Web Security Testing Guide) v4.2**: 12 testing categories with 97 test IDs; WSTG IDs in this skill follow the v4.2 checklist
 
 ## Source Roles
 
@@ -21,7 +21,7 @@ OWASP 4-source integrated code security audit system for universal codebase anal
 | ASVS 5.0.0 | Verification requirements baseline | Defines what to check — structured requirements per domain |
 | API Security Top 10 2023 | Risk taxonomy | Defines what to look for — API-specific threat patterns |
 | CheatSheet Series | Implementation guidance | Defines how to fix — secure coding patterns and practices |
-| WSTG | Test methodology | Defines how to verify — concrete test scenarios per vulnerability |
+| WSTG v4.2 | Test methodology | Defines how to verify — concrete test scenarios per vulnerability |
 
 ## Domains
 
@@ -45,11 +45,13 @@ OWASP 4-source integrated code security audit system for universal codebase anal
 
 ### Audit Levels (OWASP ASVS 5.0.0)
 
+Requirement counts are cumulative and include the documentation requirements that `references/security_domains.md` lists only as comments.
+
 | Level | Target Application | Requirements | Description |
 |-------|-------------------|-------------|-------------|
-| **L1** | All applications | ~86 | Essential baseline — covers critical vulnerabilities that are typically exploitable and must be addressed in every application (e.g., SQL injection, OS command injection, basic auth checks) |
-| **L2** | Applications handling sensitive data (PII, financial, health) | ~230 | Standard security — includes L1 plus defense-in-depth controls such as SSRF protection, template injection prevention, secure session management, and proper cryptographic usage |
-| **L3** | Mission-critical systems (banking, healthcare, military, infrastructure) | ~345 | Comprehensive defense — includes L1+L2 plus advanced controls such as formula injection prevention, full input canonicalization, and exhaustive cryptographic verification |
+| **L1** | All applications | 70 | Essential baseline — covers critical vulnerabilities that are typically exploitable and must be addressed in every application (e.g., SQL injection, OS command injection, basic auth checks) |
+| **L2** | Applications handling sensitive data (PII, financial, health) | 253 (70 L1 + 183 L2) | Standard security — includes L1 plus defense-in-depth controls such as SSRF protection, template injection prevention, secure session management, and proper cryptographic usage |
+| **L3** | Mission-critical systems (banking, healthcare, military, infrastructure) | 345 (253 + 92 L3) | Comprehensive defense — includes L1+L2 plus advanced controls such as formula injection prevention, full input canonicalization, and exhaustive cryptographic verification |
 
 ### Focus Area Catalog
 
@@ -60,7 +62,7 @@ OWASP 4-source integrated code security audit system for universal codebase anal
 | **injection** | V1, V2 | SQLi, XSS, command injection, LDAP/XPath injection, template injection, XXE |
 | **cryptography** | V11, V12 | Weak algorithms, key management, TLS configuration, secret storage |
 | **api-security** | V4, V17 | Rate limiting, resource consumption, REST/GraphQL/WebSocket security |
-| **session** | V7, V9, V10 | Token handling, session fixation, cookie attributes, JWT validation, CSRF |
+| **session** | V3.3, V3.5, V7, V9, V10 | Token handling, session fixation, cookie attributes, JWT validation, CSRF |
 | **file-handling** | V5 | Path traversal, unrestricted upload, file type validation, storage security |
 | **data-protection** | V14 | Sensitive data exposure, privacy controls, client-side data leakage |
 | **configuration** | V13, V16 | Security headers, CORS, error handling, logging, deployment hardening |
@@ -79,7 +81,7 @@ OWASP 4-source integrated code security audit system for universal codebase anal
 - **ASVS Requirement Verification**: Checks code against applicable ASVS 5.0.0 requirements at the specified level
 - **Vulnerability Pattern Detection**: Identifies known vulnerable code patterns from the integrated knowledge base
 - **Cross-Source Correlation**: Maps findings to ASVS requirements, API Top 10 risks, CheatSheet guidance, and WSTG test IDs
-- **Severity Classification**: Rates findings as Critical/High/Medium/Low with evidence and confidence
+- **Severity Classification**: Rates findings as Critical/High/Medium/Low/Info with evidence and confidence
 - **Remediation Guidance**: Provides concrete fix patterns sourced from CheatSheet Series
 - **Structured Report Generation**: Produces a comprehensive Markdown audit report
 
@@ -99,7 +101,8 @@ OWASP 4-source integrated code security audit system for universal codebase anal
 The audit produces a Markdown report containing:
 
 - **Executive Summary**: Overall risk posture, critical findings count, audit scope
-- **Findings Table**: Each finding with severity, ASVS ID, CWE, evidence, and remediation
+- **Findings Table**: Each finding with severity, title, domain, ASVS ID, CWE, and location
+- **Detailed Findings**: Per-finding description, evidence, impact, and remediation
 - **Domain Reports**: Per-domain detailed analysis with code references
 - **Remediation Roadmap**: Prioritized fix recommendations
 - **Audit Metadata**: Scope, level, limitations, methodology notes

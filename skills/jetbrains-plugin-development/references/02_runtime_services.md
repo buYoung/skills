@@ -157,12 +157,12 @@ See `08_ui_settings_persistent_state.md`.
 ## Fixed-source evidence
 
 Service scope guidance follows the official coroutine-scope contract. The 2026.1 action
-scope and 2026.2.2 public declaration are recorded in:
+scope and 2026.3 public declaration are recorded in:
 
 - [Coroutine Scopes](https://plugins.jetbrains.com/docs/intellij/coroutine-scopes.html)
 - [Launching Coroutines](https://plugins.jetbrains.com/docs/intellij/launching-coroutines.html)
-- [`AnActionEvent.java` at `idea/2026.2.2`](https://github.com/JetBrains/intellij-community/blob/1c7e601c0423e544917046c23763b15d0282e2a3/platform/editor-ui-api/src/com/intellij/openapi/actionSystem/AnActionEvent.java)
-- [`MessageBus.kt` at `idea/2026.2.2`](https://github.com/JetBrains/intellij-community/blob/1c7e601c0423e544917046c23763b15d0282e2a3/platform/extensions/src/com/intellij/util/messages/MessageBus.kt)
+- [`AnActionEvent.java` at `idea/2026.3`](https://github.com/JetBrains/intellij-community/blob/c91871ae2864649d952825cff72569e3db0e7ac6/platform/editor-ui-api/src/com/intellij/openapi/actionSystem/AnActionEvent.java)
+- [`MessageBus.kt` at `idea/2026.3`](https://github.com/JetBrains/intellij-community/blob/c91871ae2864649d952825cff72569e3db0e7ac6/platform/extensions/src/com/intellij/util/messages/MessageBus.kt)
 
 `AnActionEvent.getCoroutineScope()` and service constructor injection are external public
 contracts. `MessageBus.connect(CoroutineScope)` is also public and unannotated at the pinned

@@ -17,7 +17,7 @@ description: >-
 
 This skill carries the IntelliJ Platform SDK domain knowledge needed to write, debug, and modify
 JetBrains IDE plugins using only APIs supported for external plugins. The source baseline is
-IntelliJ Community tag `idea/2026.2.2`, commit `1c7e601c0423e544917046c23763b15d0282e2a3`.
+IntelliJ Community tag `idea/2026.3`, commit `c91871ae2864649d952825cff72569e3db0e7ac6`.
 Guidance for 2024.1+ remains version-conditioned; this source baseline does not raise a
 plugin's minimum supported IDE version automatically.
 
@@ -68,8 +68,9 @@ grants permission to use an internal API.
 These five invariants explain almost every "why doesn't this work?" question.
 
 1. **`plugin.xml` is the contract.** A class is invisible to the IDE until it is registered.
-   `@Service`, `@Service(cs)` annotations and a few `META-INF/` filename conventions are the
-   only exceptions; everything else (extensions, listeners, actions, EPs you define, dependencies)
+   `@Service` light services (including ones that take an injected `CoroutineScope`
+   constructor parameter) and a few `META-INF/` filename conventions are the only
+   exceptions; everything else (extensions, listeners, actions, EPs you define, dependencies)
    must appear in `plugin.xml` (or a `config-file` of an `<depends optional>` block).
 2. **Extensions are stateless; services hold state.** EP implementations are constructed once
    per scope and shared across all calls and threads. Storing mutable state on an extension
@@ -147,7 +148,7 @@ Reference filenames are prefixed by category for fast scanning: `01_core`, `02_r
 - [07_language_syntax_highlighting.md](references/07_language_syntax_highlighting.md): Lexer-based syntax highlighting (`SyntaxHighlighterBase`, `TextAttributesKey` with `DefaultLanguageHighlighterColors` fallbacks), `<lang.syntaxHighlighterFactory>` registration, and `ColorSettingsPage` for user-themable colors.
 - [07_language_annotator.md](references/07_language_annotator.md): `Annotator` for PSI-based semantic warnings/errors, `AnnotationHolder` builder API (`.create()` is mandatory), Annotator vs `LocalInspectionTool` decision, and stateless/cheap/cached-resolution rules.
 - [07_language_highlighting_filters.md](references/07_language_highlighting_filters.md): `HighlightInfoFilter`, syntax/error highlighting suppression, external annotator filters, and false-positive control.
-- [07_language_completion.md](references/07_language_completion.md): `CompletionContributor`, `CompletionType` (BASIC/SMART/CLASS_NAME), `CompletionParameters`/`CompletionResultSet`, `LookupElementBuilder`, prefix matchers, `runRemainingContributors`, and `<completion.contributor>` registration.
+- [07_language_completion.md](references/07_language_completion.md): `CompletionContributor`, `CompletionType` (BASIC/SMART; deprecated CLASS_NAME), `CompletionParameters`/`CompletionResultSet`, `LookupElementBuilder`, prefix matchers, `runRemainingContributors`, and `<completion.contributor>` registration.
 - [07_language_inline_completion.md](references/07_language_inline_completion.md): `InlineCompletionProvider`, gray inline suggestions, provider registration, debounce, direct calls, and update behavior.
 - [07_language_next_edit_suggestions.md](references/07_language_next_edit_suggestions.md): Next Edit Suggestions, internal awaiter boundaries, direct-call routing, and public API guardrails.
 - [07_language_postfix_templates.md](references/07_language_postfix_templates.md): `PostfixTemplateProvider`, postfix completion registration, description resources, and applicability diagnostics.
@@ -155,8 +156,8 @@ Reference filenames are prefixed by category for fast scanning: `01_core`, `02_r
 - [07_language_find_usages_provider.md](references/07_language_find_usages_provider.md): `FindUsagesProvider`, `WordsScanner`, usage presentation, result grouping, Rename, and Safe Delete prerequisites.
 - [07_language_element_patterns.md](references/07_language_element_patterns.md): `PlatformPatterns`/`StandardPatterns`/`PsiJavaPatterns` matcher DSL — gating completion and reference contributors via `.withParent`/`.withSuperParent`/`.afterLeaf`/`.afterSibling`/custom `PatternCondition`.
 - [07_language_injection.md](references/07_language_injection.md): `MultiHostInjector` for injecting another language into string literals (regex inside Java strings, SQL inside Kotlin templates) so the inner language gets full PSI/completion/inspection.
-- [07_language_code_vision_inlay_hints_polysymbols.md](references/07_language_code_vision_inlay_hints_polysymbols.md): Inline editor hints — `DeclarativeInlayHintsProvider` (2023.2+) and legacy `<inlayHintsProvider>` for parameter/type hints, `<codeVision.provider>` for usages/refs counts, and Polysymbols for polyglot web files.
-- [07_language_custom_language_diagnostics.md](references/07_language_custom_language_diagnostics.md): Custom-language pitfalls — `language=` casing (`"JAVA"` vs `"java"`), reused stateful `Lexer`, BNF mixin work in generated `*Impl`, uncached annotator resolution, no-op `setName`, missing `BAD_CHARACTER` and `<colorSettingsPage>`.
+- [07_language_code_vision_inlay_hints_polysymbols.md](references/07_language_code_vision_inlay_hints_polysymbols.md): Inline editor hints — declarative `InlayHintsProvider` via `<codeInsight.declarativeInlayProvider>` (2023.1+), `<codeInsight.parameterNameHints>`, legacy `<codeInsight.inlayProvider>`, experimental Code Vision via `<codeInsight.codeVisionProvider>` / `<codeInsight.daemonBoundCodeVisionProvider>`, and Polysymbols for polyglot web files.
+- [07_language_custom_language_diagnostics.md](references/07_language_custom_language_diagnostics.md): Custom-language pitfalls — `language=` casing (`"JAVA"` vs `"java"`), reused stateful `Lexer`, BNF mixin work in generated `*Impl`, uncached annotator resolution, no-op `setName`, missing `BAD_CHARACTER` and color settings page registration.
 - [08_ui_surface_selection.md](references/08_ui_surface_selection.md): Choosing between Kotlin UI DSL, JB Swing components, actions, or standard Swing fallback.
 - [08_ui_settings_persistent_state.md](references/08_ui_settings_persistent_state.md): `PersistentStateComponent`, `BaseState`, immutable state, `@State`, `@Storage`, and `PasswordSafe`.
 - [08_ui_settings_configurable.md](references/08_ui_settings_configurable.md): `Configurable` settings pages.
@@ -179,8 +180,8 @@ Reference filenames are prefixed by category for fast scanning: `01_core`, `02_r
 - [09_project_libraries_sdks_facets.md](references/09_project_libraries_sdks_facets.md): `LibraryTablesRegistrar` and modifying libraries via Write Action, `AdditionalLibraryRootsProvider`/`SyntheticLibrary`, `ProjectJdkTable` and custom `SdkType`/`ProjectSdkSetupValidator`, and `FacetManager`/`FacetType` for per-module tech config.
 - [09_project_workspace_model.md](references/09_project_workspace_model.md): Modern entity-based project structure — `ImmutableEntityStorage`/`MutableEntityStorage`, `WorkspaceEntity` subclasses (`ModuleEntity`, `ContentRootEntity`, `LibraryEntity`), suspend `WorkspaceModel.update`, change `Flow<VersionedStorageChange>`, and `SymbolicEntityId`/`ExternalMappingKey` for external-system tracking.
 - [09_project_view.md](references/09_project_view.md): Public Project View customization with `TreeStructureProvider`, `ProjectViewNodeDecorator`, and the supported `AbstractProjectViewPane` extension contract, plus limits on internal selection-helper and extractor methods.
-- [09_project_lifecycle.md](references/09_project_lifecycle.md): Project lifecycle hooks — `ProjectActivity` (suspend) and `StartupActivity.DumbAware` via `<postStartupActivity>`, `ProjectManagerListener`, `ModuleListener`, `ModuleRootListener`.
-- [09_project_model_diagnostics.md](references/09_project_model_diagnostics.md): Project-model pitfalls — `defaultProject` misuse, holding `Project` references on application-level state, root-model edits outside Write Action, missing `model.commit()`/`dispose()`, EDT iteration of `ProjectFileIndex`, ignoring `isExcluded`, non-`DumbAware` `StartupActivity`.
+- [09_project_lifecycle.md](references/09_project_lifecycle.md): Project lifecycle hooks — `ProjectActivity` (suspend) via `<postStartupActivity>`, obsolete `StartupActivity` for existing Java code, `ProjectManagerListener`, `ModuleListener`, `ModuleRootListener`.
+- [09_project_model_diagnostics.md](references/09_project_model_diagnostics.md): Project-model pitfalls — `defaultProject` misuse, holding `Project` references on application-level state, root-model edits outside Write Action, missing `model.commit()`/`dispose()`, EDT iteration of `ProjectFileIndex`, ignoring `isExcluded`, new `StartupActivity` code instead of `ProjectActivity`.
 - [10_execution_run_debug_configurations.md](references/10_execution_run_debug_configurations.md): Run/debug configurations, factories, `RunProfileState`, runners, run line markers, and before-run tasks.
 - [10_execution_process_console_terminal.md](references/10_execution_process_console_terminal.md): `ProcessHandler`, `ConsoleView`, filters, and embedded terminal.
 - [10_execution_external_system_integration.md](references/10_execution_external_system_integration.md): External System API for Gradle/Maven-style project importers.
@@ -259,9 +260,11 @@ Run through this whenever you touch plugin code or `plugin.xml`. Most regression
 - [ ] Every new EP usage cites a real EP — verified against the IDE's `plugin.xml`
       completion (which only offers EPs from the plugins your `<depends>` resolved).
       Language IDs spelled correctly (case-sensitive).
-- [ ] Every new extension implementation is `final`/`class` (not `object`), parameterless
-      constructor (or only `Project`/`Module`/`CoroutineScope`), no static initializers, no work
-      in the constructor.
+- [ ] Every new extension implementation is `final`/`class` (not `object`; a stateless
+      `LanguageFileType` singleton registered with `fieldName="INSTANCE"` is the exception),
+      parameterless constructor (or only `Project`/`Module`/`CoroutineScope`), no static
+      initializers, no work in the constructor. A `Language` singleton is referenced by ID,
+      not registered as an extension, so this check does not cover it.
 - [ ] Every service is a light service (`@Service`) unless there is a real reason not to.
       Constructors only take 0–2 of: `Project`, `Module`, `CoroutineScope`. No other services
       injected via constructor.

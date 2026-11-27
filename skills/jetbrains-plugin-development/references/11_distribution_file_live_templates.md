@@ -25,8 +25,8 @@ specifies `name`, `value`, `description`, applicable contexts, and variables.
 
 ## Public registration boundary
 
-On the pinned 2026.2.2 source, both registrations above are public, dynamic EPs in
-[LangExtensionPoints.xml](https://github.com/JetBrains/intellij-community/blob/1c7e601c0423e544917046c23763b15d0282e2a3/platform/platform-resources/src/META-INF/LangExtensionPoints.xml).
+On the pinned 2026.3 source, both registrations above are public, dynamic EPs in
+[intellij.platform.lang.impl.xml](https://github.com/JetBrains/intellij-community/blob/c91871ae2864649d952825cff72569e3db0e7ac6/platform/lang-impl/resources/intellij.platform.lang.impl.xml).
 The word `internal` in `internalFileTemplate` names a template category; it is not an API
 status annotation. Conversely, the platform's `DefaultLiveTemplateEP` bean is Kotlin
 `internal`: contribute declarative XML through the supported EP, never instantiate,

@@ -346,8 +346,8 @@ For exit 2, inspect the actual argument, repository-root, missing-file, or read 
 
 ### Stage 5.6 — Content and Intent Self-Check (briefset)
 
-Run the self-check from `SKILL.md` Stage 5.6 on the **parent** and on **every child** independently.
-Briefset mode adds one parent-specific coverage rule:
+Run the Stage 5.6 self-check (`SKILL.md` Stage 5.6 with the checklist in `self-check.md`) on the **parent** and on **every child** independently.
+Briefset mode adds these parent-specific checks:
 
 - **Parent decomposition coverage:** every input-implied execution context maps to a child brief.
   If the input describes 4 work units and the parent lists 3 children, the missing unit must either become a 4th child or be explicitly justified as folded into an existing child (with the absorbing child's outcome updated).
@@ -367,7 +367,7 @@ Briefset mode adds one parent-specific coverage rule:
 - **Deferred coverage:** valid findings excluded from the current briefset appear as `[deferred]` in the parent `Shared Constraints` when they affect the whole initiative, or in the relevant child when they affect only that child.
   Do not drop a finding merely because it is outside the chosen child boundaries.
 
-Each child runs all items in the standard Stage 5.6 self-check from `SKILL.md`, including execution-stage continuity and whole-work completion separation, but its input-coverage boundary is the scope allocated to that child by the parent plus relevant shared constraints.
+Each child runs all items in the standard Stage 5.6 checklist in `self-check.md`, including execution-stage continuity and whole-work completion separation, but its input-coverage boundary is the scope allocated to that child by the parent plus relevant shared constraints.
 Sibling-owned concerns from the umbrella input are not missing from the target child; parent decomposition coverage checks them across the set.
 If the parent or any child fails a Stage 5.6 item, batch the justified patches against the same artifact state, re-run `validate_briefset.py`, then run the self-check again within the two-pass budget in `SKILL.md`; there is no separate budget per child. Stop with residuals when the budget is exhausted.
 Do not skip the child self-check on the assumption "the parent covers it" — children are independently executable, so they are independently completeness-checked.

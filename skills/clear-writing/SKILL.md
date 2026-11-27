@@ -1,6 +1,6 @@
 ---
 name: clear-writing
-description: Apply ISO 24495-1 to create text that helps readers easily find, understand, and use the information they need. Use this skill only to write, revise, or review practical documents that convey information, explain procedures, or support decision-making, and provide only the requested output.
+description: Apply ISO 24495-1 plain-language guidance so readers can easily find, understand, and use the information they need. Use to write, rewrite, or review practical reader-facing texts that inform, explain a procedure, or support a decision, such as notices, letters, emails, text messages, announcements, and forms, including requests for plain language, 쉬운 말, or a clearer version of such a text. Provide only the requested output. Do not use for typed durable documents such as software READMEs or usage docs, Feature Design Docs, design systems, runbooks, policies, specifications, proposals, reports, or meeting records; use document-writing for those.
 ---
 
 # Clear Writing
@@ -23,7 +23,7 @@ The standard treats the principles as interdependent, not as a sequence: a text 
 | 3 Understandable | Readers can easily understand what they find | 5.3.2 Choose familiar words · 5.3.3 Write clear sentences · 5.3.4 Write concise sentences · 5.3.5 Write clear and concise paragraphs · 5.3.6 Consider including images and multimedia · 5.3.7 Project a respectful tone · 5.3.8 Ensure that the document is cohesive |
 | 4 Usable | Readers can easily use the information | 5.4.2 Evaluate the document continually as it is developed · 5.4.3 Evaluate the document further with readers · 5.4.4 Continue to evaluate readers' use of the document |
 
-`references/guidelines.md` explains what each guideline asks and how to apply and check it. Read it once at the start of the task, and go back to the relevant section when a specific question comes up (for example, where warnings belong relative to steps). It also marks which statements summarize the standard, which come from IPLF commentary, and which are practical guidance written for this skill — keep that distinction when you cite the standard.
+`references/guidelines.md` explains what each guideline asks and how to apply and check it. Read it once at the start of the task, and go back to the relevant section when a specific question comes up (for example, where warnings belong relative to steps). It also marks which statements summarize the standard, which come from IPLF commentary, and which are practical guidance written for this skill — keep that distinction when you cite the standard. Its Sources section lists the pages checked for the edition, publication status, and IPLF statements.
 
 ## Choose the mode
 
@@ -50,7 +50,7 @@ Ask in a single message that is quick to answer, covering only what is still mis
 - In a rewrite, list any source passages whose meaning you cannot pin down. Guessing there can change someone's obligations or rights.
 - If the described readers have serious difficulty reading (for example, a cognitive disability or very limited command of the language), note briefly that ISO 24495-1 separates plain language from easy language, and ask whether to continue with plain language. If they want easy language instead, say that this skill does not apply easy-language rules.
 
-After the answers, proceed. Do not start a second round of questions unless an answer reveals a gap that would make the text wrong. If the user has explicitly told you not to ask, write for the most likely readers, purpose, and situation the context supports.
+After the answers, proceed. Do not start a second round of questions unless an answer reveals a gap that would make the text wrong. If the user has explicitly told you not to ask, write for the most likely readers, purpose, and situation the context supports. If a fact the text needs is still missing, such as a deadline or an amount, do not invent it or leave a placeholder. When the material shows the fact is not yet decided, say so in the text in reader terms. Otherwise write the rest of the text and add one line after it, set apart from the reader-facing text, that names the missing facts the user must supply before sending.
 
 ## Step 2: Decide the content (Principle 1)
 
@@ -107,13 +107,13 @@ The standard says following Principles 1 to 3 makes a usable text likely, but on
 4. In a rewrite, compare the full source with the draft. Preserve the meaning and accuracy of information readers need and content the author must include. Check that omissions remove only irrelevant or redundant material, and that required exact strings still match. Change wording, order, and structure whenever that serves the reader.
 5. Fix what fails, then check again.
 
-Do not claim that a text "conforms to" or is "certified under" ISO 24495-1. Part 1 offers guidance, and the IPLF states that it is not for certification. Your own check covers only 5.4.2; confirming that readers can use the document also takes evaluation with readers (5.4.3) and of their continued use (5.4.4), which you cannot do here. If the user asks about compliance or testing, explain this and suggest reader-testing methods from `references/guidelines.md`.
+Do not claim that a text "conforms to" or is "certified under" ISO 24495-1. The IPLF describes Part 1 as a standard for guidance, not a normative one, and certifying an organization's plain-language practice is left to a separate part that ISO is still developing. Your own check covers only 5.4.2; confirming that readers can use the document also takes evaluation with readers (5.4.3) and of their continued use (5.4.4), which you cannot do here. If the user asks about compliance or testing, explain this and suggest reader-testing methods from `references/guidelines.md`.
 
 ## Output
 
 Choose the output language or languages to suit the user's request and intended readers, using the task context when no language is specified.
 
-**Write and rewrite modes:** deliver only the finished reader-facing text. Include only content that belongs in that document: no preface, summary of changes, checklist, drafting or design notes, placeholders, or other commentary attached to the text. If the user later asks why something changed or wants a check, answer then.
+**Write and rewrite modes:** deliver only the finished reader-facing text. Include only content that belongs in that document: no preface, summary of changes, checklist, drafting or design notes, placeholders, or other commentary attached to the text. The only exception is the missing-facts line described in Step 1. If the user later asks why something changed or wants a check, answer then.
 
 - Format for the destination. Markdown headings and tables suit documents and web pages. For text messages, chat, or plain-text email, use plain-text structure (line breaks, numbered lines) instead of Markdown syntax.
 

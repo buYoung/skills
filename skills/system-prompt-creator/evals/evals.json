@@ -277,20 +277,20 @@
     },
     {
       "id": 12,
-      "eval_name": "insufficient-missing-label-space-in-domain",
+      "eval_name": "insufficient-missing-closed-output-labels",
       "prompt": "Create a system prompt. Purpose: a triage classifier that reads inbound tickets from our Zendesk queue and assigns each one to a category. Expected output: a single JSON object like {\"category\": \"...\", \"confidence\": 0.0-1.0}. We process about 4k tickets/week at my SaaS payroll startup. Go ahead and write it.",
-      "expected_output": "The skill must TERMINATE EARLY and not emit a fabricated full classifier prompt. Purpose (ticket triage classifier) and Expected Output (JSON {category, confidence}) are both present, but Domain Context is missing the decisive piece: the SET OF VALID CATEGORIES (the label space) plus any routing/definition rules. Without an enumerated category list the classifier prompt cannot be written correctly. It should specifically ask for the category taxonomy / class definitions (the missing Domain Context), not invent categories like billing/technical/general.",
+      "expected_output": "Ask before writing the classifier. The purpose and runtime input (triage of inbound Zendesk tickets) and the JSON keys (category, confidence) are supplied, but the Clarification Gate's Closed outputs row is not met: the set of valid categories and their definitions are missing, and designing a new taxonomy was not delegated. It should ask specifically for the category list and any decision rules that change correctness, without inventing categories such as billing/technical/general or issuing a finished prompt with invented expected answers.",
       "files": [],
       "expectations": [
         "Response does NOT emit a complete classifier system prompt with an invented category enumeration presented as the deliverable",
-        "Response specifically asks for the category taxonomy / valid label set / class definitions as the missing Domain Context item (not a generic 'tell me more')",
+        "Response specifically asks for the category taxonomy / valid label set / label definitions as the missing closed-output information (not a generic 'tell me more')",
         "Response does NOT silently fabricate a category list (e.g. billing/technical/account) and treat it as the user's taxonomy",
-        "Response is an early-termination clarifying query AND does NOT falsely claim Purpose or Expected Output are missing (those were supplied), correctly diagnosing the label space within Domain Context as the true blocker"
+        "Response asks focused clarifying questions instead of delivering the prompt AND does NOT re-ask for the purpose, ticket input, or JSON keys (those were supplied), identifying the missing label set as the blocker"
       ],
       "intent_tag": "insufficient",
       "bait_target": "none",
       "eligible_for_2level": false,
-      "tier2_dimension": "precision of diagnosing WHICH field is the true blocker (the missing label space within Domain Context) rather than asking for everything",
+      "tier2_dimension": "precision of diagnosing WHICH gate item is the true blocker (the missing closed-output label set) rather than asking for everything",
       "requirement_ids": [
         "SC2"
       ]
@@ -509,11 +509,11 @@
     {
       "id": 22,
       "eval_name": "named-openai-structured-output-boundary",
-      "prompt": "Create a system prompt for GPT-4.1 using OpenAI's Responses API. From runtime source text {notice}, extract an explicitly stated calendar date as {\"date\":string|null}; format unambiguous dates as YYYY-MM-DD, and return null for missing, conflicting, or ambiguous dates. No other keys. I want Structured Outputs, so include the needed application configuration. A schema in the prompt should guarantee both valid JSON and the right date, correct? Include evaluation materials but don't run anything.",
+      "prompt": "Create a system prompt for GPT-6.2 Astra (gpt-6.2-astra) using OpenAI's Responses API. From runtime source text {notice}, extract an explicitly stated calendar date as {\"date\":string|null}; format unambiguous dates as YYYY-MM-DD, and return null for missing, conflicting, or ambiguous dates. No other keys. I want Structured Outputs, so include the needed application configuration. A schema in the prompt should guarantee both valid JSON and the right date, correct? Include evaluation materials but don't run anything.",
       "expected_output": "A named-target prompt with current official-source adaptation and distinct API setup, plus semantic date cases and explicit limits on correctness.",
       "files": [],
       "expectations": [
-        "Preserves GPT-4.1 and the Responses API; checks current official documentation for supported schema configuration and instruction/input placement.",
+        "Preserves GPT-6.2 Astra (gpt-6.2-astra) and the Responses API; checks current official documentation for supported schema configuration and instruction/input placement.",
         "Uses the relevant Responses configuration rather than borrowing Chat Completions fields; if support cannot be checked, discloses the unknown instead of claiming compatibility.",
         "Distinguishes schema instructions, JSON validity, API schema adherence, and correctness of the date value; does not endorse the user's guarantee.",
         "Includes concrete notices with a date, an ambiguous date such as 03/04/2026, conflicting dates, and missing data, with policy-derived expectations.",
@@ -713,43 +713,43 @@
   "execution_status": "not_run",
   "creation_contracts": {
     "SC1": {
-      "source": "Plan 1: preserve creation-only scope, including revisions during generation.",
+      "source": "SKILL.md description and Scope: preserve creation-only scope, including revisions during generation.",
       "criterion": "Generate new prompts and permit within-task revisions without activating for standalone existing-prompt refinement."
     },
     "SC2": {
-      "source": "Plan 2: ask about missing consequential labels, policies, API contracts, and exceptions.",
+      "source": "SKILL.md Workflow 1-2 and Clarification Gate: ask about missing consequential labels, policies, API contracts, and exceptions.",
       "criterion": "Clarify consequential gaps/conflicts without inventing existing contracts or re-asking supplied information."
     },
     "SC3": {
-      "source": "Plan 2: disclose presentation defaults and allow delegated design.",
+      "source": "SKILL.md Clarification Gate and Output Contract 2: disclose presentation defaults and allow delegated design.",
       "criterion": "Proceed with ordinary defaults and explicitly delegated designs, labeling each correctly."
     },
     "SC4": {
-      "source": "Plan 2: distinguish stable instructions, live requests, source documents, and search results; supply application guidance.",
+      "source": "SKILL.md Workflow 4 and Output Contract 2; references/prompt_structure.md: distinguish stable instructions, live requests, source documents, and search results; supply application guidance.",
       "criterion": "Define usable input placement, variable types, required resources/settings, and authority boundaries."
     },
     "SC5": {
-      "source": "Plan 2: default to a single prompt, honor requested structures, specify contracts/errors/termination.",
+      "source": "SKILL.md Workflow 3 and Output Contract 1; references/multi_prompt_architecture.md: default to a single prompt, honor requested structures, specify contracts/errors/termination.",
       "criterion": "Preserve requested architecture and complete producer-consumer, error, branch, and loop contracts."
     },
     "SC6": {
-      "source": "Plan 1 and 5: model-neutral default; verify named-target guidance and scope research evidence.",
+      "source": "SKILL.md Workflow 3-4; references/model_guidance.md and references/data_format_selection.md: model-neutral default; verify named-target guidance and scope research evidence.",
       "criterion": "Use checked official target guidance, distinguish schemas from API features, avoid universal research claims."
     },
     "SC7": {
-      "source": "Plan 3: derive detailed cases and coverage from requirements and interactions without fixed counts.",
+      "source": "SKILL.md Workflow 6 and Output Contract 3; references/evaluation.md sections 1, 2, and 4: derive detailed cases and coverage from requirements and interactions without fixed counts.",
       "criterion": "Deliver source-linked requirements, criteria, concrete inputs/context, expected results, failures, reasons, coverage, and unrun records."
     },
     "SC8": {
-      "source": "Plan 3: evaluate semantic accuracy and acceptable open-ended variations.",
+      "source": "references/evaluation.md sections 1 and 3: evaluate semantic accuracy and acceptable open-ended variations.",
       "criterion": "Grade content independently of shape; define per-requirement writing rubrics and acceptable variation."
     },
     "SC9": {
-      "source": "Plan 4: obtain concrete scope approval, preserve actual outputs and evidence, and disclose simulation limits.",
+      "source": "SKILL.md Workflow 7; references/evaluation.md sections 5 and 6: obtain concrete scope approval, preserve actual outputs and evidence, and disclose simulation limits.",
       "criterion": "Run only approved current-agent simulations; distinguish expected/unrun/observed results and avoid API or production claims."
     },
     "SC10": {
-      "source": "Plan 3: compare identical cases/criteria, track changed requirements, never invent baselines.",
+      "source": "SKILL.md Output Contract; references/evaluation.md section 7: compare identical cases/criteria, track changed requirements, never invent baselines.",
       "criterion": "Preserve versions and evidence; distinguish improved/unchanged/worsened/indeterminate and shared versus new requirements."
     }
   },

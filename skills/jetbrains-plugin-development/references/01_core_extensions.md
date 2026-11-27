@@ -1,13 +1,13 @@
 # Extensions and Extension Points
 
-## API boundary for 2026.2.2
+## API boundary for 2026.3
 
 The examples in this reference use extension contracts intended for external plugins. Verify
 platform EPs against their declared interface or bean class as well as the descriptor metadata;
-an XML-visible EP is not automatically public. In the fixed `idea/2026.2.2` source,
-[`ProjectExtensionPointName`](https://github.com/JetBrains/intellij-community/blob/1c7e601c0423e544917046c23763b15d0282e2a3/platform/extensions/src/com/intellij/openapi/extensions/ProjectExtensionPointName.kt)
+an XML-visible EP is not automatically public. In the fixed `idea/2026.3` source,
+[`ProjectExtensionPointName`](https://github.com/JetBrains/intellij-community/blob/c91871ae2864649d952825cff72569e3db0e7ac6/platform/extensions/src/com/intellij/openapi/extensions/ProjectExtensionPointName.kt)
 explicitly says not to introduce project- or module-scoped EPs, and
-[`AbstractExtensionPointBean`](https://github.com/JetBrains/intellij-community/blob/1c7e601c0423e544917046c23763b15d0282e2a3/platform/service-container/src/com/intellij/openapi/extensions/AbstractExtensionPointBean.java)
+[`AbstractExtensionPointBean`](https://github.com/JetBrains/intellij-community/blob/c91871ae2864649d952825cff72569e3db0e7ac6/platform/service-container/src/com/intellij/openapi/extensions/AbstractExtensionPointBean.java)
 is deprecated. Do not use either for a new plugin contract.
 
 ## Contents
@@ -51,11 +51,12 @@ to that plugin's id, or use the fully qualified tag name.
 
 ### Two kinds of EPs
 
-- **Interface EP** (`<annotator implementationClass="...">`): you provide a class implementing
-  the EP's interface.
-- **Bean EP** (`<fileType name="..." extensions="..." language="..." fieldName="INSTANCE"
-  implementationClass="...">`): you provide data plus, optionally, an implementation class.
-  Attributes map to the EP's bean class via `@Attribute("...")` and `@Tag("...")`.
+- **Interface EP** (`<postStartupActivity implementation="...">`): the EP is declared with
+  `interface=`, and you provide a class implementing that interface.
+- **Bean EP** (`<annotator language="..." implementationClass="...">`, `<fileType name="..."
+  extensions="..." language="..." fieldName="INSTANCE" implementationClass="...">`): the EP
+  is declared with `beanClass=`, and you provide data plus, optionally, an implementation
+  class. Attributes map to the EP's bean class via `@Attribute("...")` and `@Tag("...")`.
 
 A common confusion: `implementationClass` (Bean EP) versus `implementation` (Interface EP).
 The XML attribute name differs by EP. The IDE's XML completion and validation will steer
@@ -75,7 +76,11 @@ specific runtime path.
 3. **No `static` initializer blocks.** Same reason as (2), and unloadable plugins cannot have
    classes referenced from static state outliving the plugin.
 4. **No `object` singletons in Kotlin** — `class` only. `object` keeps a static `INSTANCE`
-   that survives plugin unload.
+   that survives plugin unload. The exception is a stateless `LanguageFileType` singleton
+   registered with `fieldName="INSTANCE"` (see `07_language_file_type.md`); the platform
+   reads that field instead of constructing the class. A `Language` singleton is not an
+   extension implementation: registrations refer to it only by its ID (`language="MyLang"`),
+   so this rule does not apply to it.
 5. **Conditional opt-out via `ExtensionNotApplicableException.create()`** (constructor throws
    this if the extension shouldn't apply in the current environment). The legacy
    `ExtensionNotApplicableException.INSTANCE` is deprecated.

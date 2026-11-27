@@ -81,11 +81,14 @@ npm-plugin disabling, named prompt definitions and default Yes through release-i
 prompt, explicit decline, and dry-run preservation of files and notification calls.
 A marker fixture verifies external A/B ordering relative to the core version plugin in
 each lifecycle phase. Another verifies that the API logs and rethrows one plugin error.
+A last fixture checks that a disabled step returns false without a prompt lookup, while an
+enabled step without a prompt name fails with a `TypeError` before its task runs.
 Prompt answers and `fetch` are local stubs; no notification is sent.
 
 ## Independent Forward Check
 
-One fresh-context generation applied the skill to an existing `release-it --ci` workflow
+On 2026-09-25, with release-it 21.0.1 and Node 24.14.0, one fresh-context generation applied
+the skill to an existing `release-it --ci` workflow
 with GitHub Releases, a tooling package at 9.9.9, and product versions in `VERSION` and
 `release-manifest.json`. It generated a provider/config without introducing an interactive
 wrapper and exercised the real API and CLI with network sinks replaced locally.
@@ -105,16 +108,24 @@ resolution and the interactive menu's strict increase rule; the CLI reference no
 
 ## Recorded Result
 
-On 2026-09-25, **43/43 PTY scenarios and 7/7 plugin checks passed** using Node 24.14.0,
-npm 11.9.0, pnpm 10.11.0, Git 2.50.1 (Apple Git-155), release-it 21.0.1,
-`@inquirer/prompts` 8.5.2, semver 7.8.5, and conventional-changelog 12.0.0.
+On 2026-11-27, **43/43 PTY scenarios and 8/8 plugin checks passed** using Node 26.13.0,
+npm 11.20.0, pnpm 10.11.0, Git 2.50.1 (Apple Git-155), release-it 21.1.3,
+`@inquirer/prompts` 8.8.0, semver 7.8.6, conventional-changelog 12.0.2, and
+`conventional-changelog-conventionalcommits` 10.4.1.
 See [interactive-results.json](interactive-results.json) for per-scenario outcomes,
 recorded push arguments, and example hashes; [plugin-results.json](plugin-results.json)
-records the reference hash and plugin outcomes.
+records the reference hash and plugin outcomes. Syntax checks of the three JavaScript modules
+and the Python runner, evaluation JSON files, JSON reference blocks, package-local Markdown
+links/fragments, and the skill-creator `quick_validate.py` also passed. The forward check
+above was not rerun.
 
-Supporting checks passed for all three JavaScript modules, the Python runner, evaluation
-JSON files, JSON reference blocks, and package-local Markdown links/fragments. The
+On 2026-09-25, 43/43 PTY scenarios and 7/7 plugin checks passed using Node 24.14.0,
+npm 11.9.0, pnpm 10.11.0, Git 2.50.1 (Apple Git-155), release-it 21.0.1,
+`@inquirer/prompts` 8.5.2, semver 7.8.5, and conventional-changelog 12.0.0. Supporting
+checks then passed for all three JavaScript modules, the Python runner, evaluation JSON
+files, JSON reference blocks, and package-local Markdown links/fragments, and the
 skill-creator `quick_validate.py` passed using an isolated Python environment with PyYAML.
+The JSON result files now hold the 2026-11-27 run.
 
 The prior 2026-09-08 run passed 32/32 PTY scenarios under the former default-No policy.
 Its separate check against the copied Inquirer example verified real `AbortSignal` cancellation
