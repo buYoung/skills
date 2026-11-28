@@ -52,6 +52,7 @@ Read only the relevant row; these are not additional runtime alternatives.
 | Inline or fixed-capacity collections | smallvec, heapless | Distinguish spill-to-heap from fixed capacity and explicit full handling |
 | Embedded driver interfaces | embedded-hal | Reusable drivers across implementing HALs; board-specific setup still needs its own documentation |
 | Optimized byte search | memchr | Existing SIMD-backed operation before a custom unsafe kernel; a simple loop can suffice for tiny input |
+| Checked casts between plain-data types and bytes | bytemuck, zerocopy | Checked conversions before a hand-written transmute or pointer cast; explicit decoding such as `from_le_bytes` can suffice when a copy is acceptable |
 | Proven shared-state need | parking_lot, arc-swap, dashmap | Distinct lock, snapshot, and concurrent-map roles; first assess ownership and std synchronization |
 | Serialization already required by the task | serde | Check concrete format, allocation, borrowing, and no_std features separately |
 | Function-level benchmarks on stable | divan | A hand-timed loop with `std::hint::black_box` can suffice for a quick check; existing criterion suites remain valid, but criterion's current repository is below the star floor |

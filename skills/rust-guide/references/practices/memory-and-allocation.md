@@ -41,7 +41,7 @@ An array is inline in its owner, not necessarily on the stack: `Box<[T; N]>` own
 
 Trace input, transformation, serialization, queues, and output. Inspect new `String`/`Vec` values, repeated `format!`, intermediate `collect`, boxed futures, and shared owners retaining buffers. `Arc::clone` increments a reference count instead of copying the payload; `clone` cost depends on its type.
 
-Distinguish allocation count/bytes, peak live memory, retained capacity, and process RSS. Freeing Rust values does not necessarily return pages to the OS. Compiler optimization also prevents equating source-level allocations with measured allocator calls. Use [allocation profiling](performance.md#profiling) to distinguish those effects.
+Distinguish allocation count/bytes, peak live memory, retained capacity, and process RSS. Freeing Rust values does not necessarily return pages to the OS. Compiler optimization also prevents equating source-level allocations with measured allocator calls. Use [allocation profiling](performance-measurement.md#profiling) to distinguish those effects.
 
 ## Reuse Without Unbounded Retention
 

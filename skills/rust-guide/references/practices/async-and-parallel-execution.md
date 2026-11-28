@@ -65,7 +65,7 @@ fn spawn_owned(text: String) -> JoinHandle<usize> {
 
 The first wrapper borrows within its caller's lifetime; the spawned task owns its String and releases it normally when done. Shared ownership is useful when several tasks need the same data, not an automatic requirement of async code.
 
-Send requirements concern captured state and values retained across suspension points. Narrowing a guard's scope can avoid retaining it across an await; it does not make an inherently thread-affine resource transferable. Local task facilities permit non-Send futures on their designated thread, with their own lifetime requirements. See [Send and Sync](concurrency.md#send-and-sync) and [diagnostics](lints-and-diagnostics.md#async-bounds-and-pinning).
+Send requirements concern captured state and values retained across suspension points. Narrowing a guard's scope can avoid retaining it across an await; it does not make an inherently thread-affine resource transferable. Local task facilities permit non-Send futures on their designated thread, with their own lifetime requirements. See [Send and Sync](concurrency.md#send-and-sync) and [diagnostics](compiler-diagnostics.md#async-bounds-and-pinning).
 
 ## Pin and Unpin
 

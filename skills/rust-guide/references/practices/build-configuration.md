@@ -20,7 +20,7 @@
 - [Common Mistakes](#common-mistakes)
 - [Availability by Version](#availability-by-version)
 
-TOML blocks are fragments of `Cargo.toml` or `.cargo/config.toml` as labelled. Code-level optimization is in [performance](performance.md).
+TOML blocks are fragments of `Cargo.toml` or `.cargo/config.toml` as labelled. Code-level optimization is in [performance](performance-optimization.md).
 
 ## Profile Defaults
 
@@ -239,7 +239,7 @@ Use [memory and allocation](memory-and-allocation.md#allocator-selection) for al
 - Pin the toolchain with `rust-toolchain.toml` (`channel = "1.NN.N"` naming the latest patch release of the chosen version, or `"stable"` with a documented upgrade routine).
 - `cargo build --locked` and `cargo test --locked` fail when `Cargo.lock` would change, so CI does not silently resolve new versions.
 - A command-line or CI warning policy can be tied to a known toolchain: `CARGO_BUILD_WARNINGS=deny` (1.97) or `RUSTFLAGS="-D warnings"`. Broad in-source `deny(warnings)` can break local builds when new lints appear; dependency lint caps can lower configured severity. Use the scope that matches the intended policy.
-- `cargo clippy --all-targets --all-features -- -D warnings` on supported feature/target combinations with the chosen toolchain (see [lint configuration](lints-and-diagnostics.md#configuring-lints-in-cargotoml)). Use a feature matrix where all-features does not represent supported builds.
+- `cargo clippy --all-targets --all-features -- -D warnings` on supported feature/target combinations with the chosen toolchain (see [lint configuration](lints.md#configuring-lints-in-cargotoml)). Use a feature matrix where all-features does not represent supported builds.
 - Cache `~/.cargo/registry`, `~/.cargo/git`, and `target/` keyed by lockfile hash; Cargo 1.88+ garbage-collects the global cache automatically (files unused for 3 months from the network, 1 month if regenerable), which a shared CI cache must tolerate. Write a `target/` cache that pull requests can read only from jobs without secrets in their environment: Cargo, Miri, and build scripts do not guarantee that environment variables stay out of `target/`, and the Rust security response team reported in 2026-09 that `cargo miri` stored the whole environment there.
 
 ## Verification

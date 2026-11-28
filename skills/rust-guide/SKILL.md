@@ -32,26 +32,37 @@ Read the relevant section of the closest reference first. Long references have c
 
 | Task signal | Read |
 |---|---|
-| Ownership, borrowing, lifetimes, resource release | [Ownership and borrowing](references/practices/ownership-and-type-design.md#ownership-borrowing-and-resource-lifetimes), then [parameter and return types](references/practices/ownership-and-type-design.md#parameter-and-return-types) |
-| Newtype, typestate, enum/generic/dyn, shared ownership | [Type patterns](references/practices/ownership-and-type-design.md#newtypes), [dispatch](references/practices/ownership-and-type-design.md#enum-trait-generic-or-dyn), or [shared ownership](references/practices/ownership-and-type-design.md#shared-ownership-and-cycles) |
+| Ownership, borrowing, lifetimes, shared ownership, interior mutability | [Ownership and borrowing](references/practices/ownership-and-borrowing.md#ownership-borrowing-and-resource-lifetimes), then [parameter and return types](references/practices/ownership-and-borrowing.md#parameter-and-return-types) or [shared ownership](references/practices/ownership-and-borrowing.md#shared-ownership-and-cycles) |
+| Drop, drop order, RAII guards, cleanup on scope exit | [RAII and Drop](references/practices/raii-and-drop.md) |
+| Newtype, invariants, typestate, builders, non_exhaustive | [Type patterns](references/practices/type-design.md#newtypes) |
+| Enum/generic/dyn, dyn compatibility, sealed traits, async fn in traits | [Dispatch](references/practices/traits-and-dispatch.md#enum-trait-generic-or-dyn) |
 | Lookup, ordering, queues, hashing, collection capacity | [Collection semantics and representation](references/practices/collections.md#semantics-representation-and-cost), then the relevant operation |
+| Graphs, trees, parent pointers, cyclic structures | [Graphs and trees](references/practices/graphs-and-trees.md) |
 | Allocation, buffer reuse, arena/pool, allocator, retained memory | [Memory and allocation](references/practices/memory-and-allocation.md#storage-allocation-and-release) |
-| Errors, std-only implementations, thiserror/anyhow, recovery/reporting | [The error model](references/practices/error-handling.md#values-propagation-and-error-information), [manual implementation](references/practices/error-handling.md#anatomy-of-a-library-error-type), or [reporting](references/practices/error-handling.md#application-errors-with-anyhow) |
+| Error types, std-only implementations, thiserror, stable recovery information | [The error model](references/practices/error-types.md#values-propagation-and-error-information), then [manual implementation](references/practices/error-types.md#anatomy-of-a-library-error-type) |
+| `?` and From conversions, anyhow, error context and chains, exit codes | [Propagation](references/practices/error-propagation-and-reporting.md#propagation-with--and-from) or [reporting](references/practices/error-propagation-and-reporting.md#application-errors-with-anyhow) |
+| Panic or Result, unwinding, abort, catch_unwind | [Panics](references/practices/panics.md) |
 | Function/module/crate separation, visibility, core and adapters | [Modules and crate boundaries](references/practices/modules-and-crate-boundaries.md) |
-| Public API, traits, conversions, SemVer, documentation | [API and crate design](references/practices/api-and-crate-design.md) |
+| Public API naming, traits, conversions, documentation | [API design](references/practices/api-design.md) |
+| SemVer, deprecation, Cargo features, MSRV, public dependencies | [Crate compatibility](references/practices/crate-compatibility.md) |
 | Workspace, monorepo, feature unification, shared versions/releases | [Workspaces and monorepos](references/practices/workspaces-and-monorepos.md) |
 | Crate comparisons, std versus dependencies, adoption/maintenance | [Library selection](references/practices/library-selection.md) |
 | Future/task/thread, Tokio/smol, Rayon/Crossbeam, blocking and limits | [Execution model and patterns](references/practices/async-and-parallel-execution.md#futures-tasks-and-threads) |
 | Async borrowing, Send, 'static, Pin/Unpin | [Task ownership](references/practices/async-and-parallel-execution.md#borrowing-and-task-ownership), [pinning](references/practices/async-and-parallel-execution.md#pin-and-unpin) |
 | Cancellation, timeouts, shutdown | [Cancellation](references/practices/async-and-parallel-execution.md#cancellation-is-an-ownership-contract), [shutdown](references/practices/async-and-parallel-execution.md#channels-locks-and-shutdown) |
-| Threads, locks, channels, atomics, Send/Sync, contention | [Concurrency](references/practices/concurrency.md#choosing-a-model); use its contents for the specific primitive |
-| Profiling, algorithms, layout, runtime and build-time bottlenecks | [Performance](references/practices/performance.md) |
+| Threads, channels, Send/Sync, thread pools | [Concurrency](references/practices/concurrency.md#choosing-a-model); use its contents for the specific primitive |
+| Locks, lazy initialization, atomics, deadlocks, contention | [Synchronization](references/practices/synchronization.md); start from [choosing a model](references/practices/concurrency.md#choosing-a-model) when the primitive is undecided |
+| Benchmarking, profiling, interpreting measurements | [Performance measurement](references/practices/performance-measurement.md) |
+| Algorithms, allocation, layout, iterators, I/O, runtime bottlenecks | [Performance optimization](references/practices/performance-optimization.md) |
+| Slow builds, compile times, generic instantiation | [Compile times](references/practices/compile-times.md), then [build settings](references/practices/build-configuration.md#faster-development-builds) |
 | Auto-vectorization, SIMD intrinsics, CPU detection, fallback | [SIMD](references/practices/simd.md) |
 | Browser/WASI, JS boundary, Wasm memory, workers and size | [WebAssembly](references/practices/webassembly.md) |
 | Firmware, no_std, no heap, interrupts, HAL, DMA, embedded async | [Embedded and no_std](references/practices/embedded-and-no-std.md) |
 | Cargo profiles, LTO, symbols, panic, PGO, compiler flags | [Build configuration](references/practices/build-configuration.md) |
-| Raw pointers, layout, aliasing, initialization, FFI | [Safety contracts](references/practices/unsafe-and-ffi.md#unsafe-fn-unsafe-blocks-and-safety-comments), then the relevant FFI or memory section |
-| Compiler errors, Clippy diagnostics, lint configuration | [Compiler diagnostics and lints](references/practices/lints-and-diagnostics.md) |
+| Raw pointers, layout, aliasing, initialization | [Safety contracts](references/practices/unsafe-rust.md#unsafe-fn-unsafe-blocks-and-safety-comments), then the relevant memory section |
+| FFI, extern blocks, callbacks, foreign allocations and handles | [FFI](references/practices/ffi.md), with [safety contracts](references/practices/unsafe-rust.md#unsafe-fn-unsafe-blocks-and-safety-comments) for its unsafe operations |
+| Compiler errors, borrow/lifetime/Send diagnostics | [Compiler diagnostics](references/practices/compiler-diagnostics.md) |
+| Clippy diagnostics, lint configuration | [Lints](references/practices/lints.md) |
 | Edition 2024 migration | [Edition migration](references/versions/1.85.md) |
 | Toolchain upgrade and release compatibility | [Versions index](references/versions/index.md), then the relevant release files |
 

@@ -14,7 +14,7 @@ Maintenance material for `rust-guide`. It is not loaded when the skill runs; it 
 1. Read the release announcement and the version's section of `RELEASES.md` (including Compatibility Notes).
 2. Add a file under `references/versions/` only when the release contains an official deprecation, removal, rename, or migration instruction; otherwise add an index row marked as having no such guidance.
 3. Update the `Availability by Version` tables in the affected practice references and any `since` versions in the text.
-4. Re-run `cargo clippy -- -W help` on the new toolchain, record the group snapshot in the release's maintenance record (the 0.1.95 snapshot is under Lint Catalog Metadata in `2026-09-21-reference-sources.md`), and update any group placement stated in `lints-and-diagnostics.md`, `performance.md`, `concurrency.md`, or `unsafe-and-ffi.md`.
+4. Re-run `cargo clippy -- -W help` on the new toolchain, record the group snapshot in the release's maintenance record (the 0.1.95 snapshot is under Lint Catalog Metadata in `2026-09-21-reference-sources.md`), and update any group placement stated in `lints-and-diagnostics.md`, `performance.md`, `concurrency.md`, or `unsafe-and-ffi.md` (split on 2026-11-28; the current files are listed in `2026-11-28-reference-split.md`).
 5. Recompile every Rust block (extract fenced blocks tagged `rust`/`rust,deps` and build with `--edition 2024`) on the new toolchain.
 
 ## Sources by Document
