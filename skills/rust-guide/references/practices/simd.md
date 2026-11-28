@@ -206,4 +206,4 @@ Compare the scalar-source function, the automatically vectorized build, and the 
 
 Vary input size, distribution, warm/cold data, and alignment. Include dispatch and conversion costs when they occur in the real call. For very small calls, setup and tails can dominate; for large arrays, load/store bandwidth can dominate. A one-time dispatch cache is useful only if repeated feature checks matter to the workload and its extra interface complexity is justified.
 
-Use the [measurement patterns](performance.md#benchmarking) for repeated runs and optimizer-resistant inputs. Report throughput or latency together with the deployment CPU and code size. A wider instruction set is a mechanism to evaluate, not a performance result.
+Use the [measurement patterns](performance-measurement.md#benchmarking) for repeated runs and optimizer-resistant inputs. Report throughput or latency together with the deployment CPU and code size. A wider instruction set is a mechanism to evaluate, not a performance result.
